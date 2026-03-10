@@ -1,2 +1,26 @@
+# R project files
 ^.*\.Rproj$
 ^\.Rproj\.user$
+
+# Documentation files
+^docs$
+^pkgdown$
+_pkgdown.yml
+README.Rmd
+
+# Configuration files
+^\.github$
+^\.vscode$
+codecov.yml
+.lintr
+.covrignore
+
+# Temporary files
+.DS_Store
+\~\$.*\.[a-z]+$
+^inst/img$
+vignettes/img/worksheet_styling.jpg
+
+# Test files
+^tests/testthat/_snaps$
+^tests/testthat/testfiles$

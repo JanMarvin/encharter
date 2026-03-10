@@ -1,5 +1,6 @@
 #' Internal Helper: Null Coalescing Operator
 #' @keywords internal
+#' @noRd
 `%||%` <- function(a, b) if (!is.null(a)) a else b
 
 ## these shall be moved to openxlsx2
