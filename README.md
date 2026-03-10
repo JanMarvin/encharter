@@ -1,0 +1,95 @@
+encharter
+================
+
+This is a lightweight R6-based engine for generating Office Open XML
+(OOXML) charts. It is designed for users who need precise control over
+chart internals—such as combining multiple chart types, mapping
+secondary axes, or handles numeric XY coordinates in scatter and bubble
+plots—without the overhead of a full spreadsheet suite.
+
+``` r
+library(openxlsx2)
+library(encharter)
+
+# 1. Create workbook and dummy data
+wb <- wb_add_worksheet(wb_workbook(), sheet = "Data")
+df_combo <- data.frame(
+  Month = month.abb,
+  Revenue = c(200, 220, 210, 250, 280, 300, 320, 310, 340, 360, 380, 400),
+  Growth = c(0, 0.1, -0.04, 0.19, 0.12, 0.07, 0.06, -0.03, 0.1, 0.06, 0.05, 0.05)
+)
+wb <- wb_add_data(wb, sheet = "Data", x = df_combo)
+
+# 2. Initialize and configure the Chart
+combo_chart <- Chart$new("barChart")
+combo_chart$set_chart_title("Monthly Revenue & Growth")
+
+# Primary Axis: Revenue Bars
+combo_chart$add_series(
+  header = "Data!$B$1",
+  cat    = "Data!$A$2:$A$13",
+  data   = "Data!$B$2:$B$13",
+  color  = "4472C4"
+)
+
+# Secondary Axis: Growth Line
+combo_chart$add_series(
+  header    = "Data!$C$1",
+  cat       = "Data!$A$2:$A$13",
+  data      = "Data!$C$2:$C$13",
+  type      = "lineChart",
+  secondary = TRUE,
+  color     = "ED7D31",
+  marker    = "circle"
+)
+
+wb <- wb_add_chart(wb, sheet = "Data", chart_obj = combo_chart)
+```
+
+``` r
+# 1. Create dummy waterfall data
+df_wf <- data.frame(
+  Label = c("Gross Revenue", "COGS", "OpEx", "Tax", "Net Income"),
+  Value = c(1000, -400, -200, -100, 300)
+)
+wb <- wb_add_worksheet(wb, sheet = "WaterfallData")
+wb <- wb_add_data(wb, sheet = "WaterfallData", x = df_wf)
+
+# 2. Initialize and configure the Waterfall Chart
+wf_chart <- ChartEx$new()
+wf_chart$set_chart_title("Net Income Bridge")
+
+wf_chart$add_series(
+  header = "",
+  cat    = "WaterfallData!$A$2:$A$6",
+  data   = "WaterfallData!$B$2:$B$6"
+)
+
+wb <- wb_add_chartx(wb, chart_obj = wf_chart)
+```
+
+``` r
+# 1. Create dummy scatter data
+df_scatter <- data.frame(
+  Project = paste("Project", LETTERS[1:5]),
+  Risk    = c(10, 40, 30, 70, 90),
+  ROI     = c(20, 50, 80, 40, 60)
+)
+wb <- wb_add_worksheet(wb, sheet = "ScatterData")
+wb <- wb_add_data(wb, sheet = "ScatterData", x = df_scatter)
+
+# 2. Initialize and configure Scatter Chart
+sc_chart <- Chart$new("scatterChart")
+sc_chart$set_chart_title("Risk vs ROI Analysis")
+
+sc_chart$add_series(
+  header    = "Portfolio",
+  cat       = "ScatterData!$B$2:$B$6", # X-axis (Risk)
+  data      = "ScatterData!$C$2:$C$6", # Y-axis (ROI)
+  show_line = FALSE,
+  marker    = "circle",
+  marker_size = 8
+)
+
+wb <- wb_add_chart(wb, sheet = "ScatterData", chart_obj = sc_chart)
+```

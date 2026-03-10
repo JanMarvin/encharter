@@ -4,7 +4,7 @@
 \alias{wb_add_chartx}
 \title{Add ChartEx to a Workbook}
 \usage{
-wb_add_chartx(wb, sheet = current_sheet(), dims = "E2", chart_obj)
+wb_add_chartx(wb, sheet = openxlsx2::current_sheet(), dims = "E2", chart_obj)
 }
 \arguments{
 \item{wb}{A wbWorkbook object.}

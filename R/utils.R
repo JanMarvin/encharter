@@ -30,7 +30,7 @@ wb_add_chart <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL, ch
 #' @param chart_obj An instance of the ChartEx R6 class.
 #' @return The modified wbWorkbook object.
 #' @export
-wb_add_chartx <- function(wb, sheet = current_sheet(), dims = "E2", chart_obj) {
+wb_add_chartx <- function(wb, sheet = openxlsx2::current_sheet(), dims = "E2", chart_obj) {
   wb <- wb$clone(deep = TRUE)
   target_sheet <- wb$validate_sheet(sheet)
 
