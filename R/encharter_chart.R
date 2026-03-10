@@ -1,4 +1,4 @@
-#' R6 Class representing a Chart object for Excel workbooks
+#' R6 Class representing a Chart object for Spreadsheets
 #'
 #' @description
 #' The `Chart` class provides a flexible interface to build Office OpenXML
@@ -11,8 +11,9 @@
 #' the underlying XML required for the \code{add_chart_xml} method.
 #'
 #' @import R6
-#' @import xml2
-#' @import openxlsx2
+#' @importFrom xml2 read_xml xml_remove xml_add_child
+#'  xml_find_first xml_find_all xml_set_attr
+#' @importFrom openxlsx2 wb_color
 #' @export
 Chart <- R6::R6Class(
   "Chart",
@@ -138,10 +139,10 @@ Chart <- R6::R6Class(
     },
 
     #' @description Add a data series to the chart.
-    #' @param header Excel range or string for series name (e.g., "Sheet1!$B$1").
-    #' @param data Excel range for series values (e.g., "Sheet1!$B$2:$B$10").
-    #' @param cat Excel range for category labels.
-    #' @param z_data Excel range for bubble sizes (bubbleChart only).
+    #' @param header cell range or string for series name (e.g., "Sheet1!$B$1").
+    #' @param data cell range for series values (e.g., "Sheet1!$B$2:$B$10").
+    #' @param cat cell range for category labels.
+    #' @param z_data cell range for bubble sizes (bubbleChart only).
     #' @param color Hex color for the series.
     #' @param type Chart type for this specific series (for combo charts).
     #' @param secondary Logical. Set to TRUE to move series to secondary axis.
@@ -149,6 +150,7 @@ Chart <- R6::R6Class(
     #' @param grouping Chart grouping ("standard", "stacked", "percentStacked").
     #' @param smooth Logical. Enable line smoothing.
     #' @param marker Marker type ("none", "circle", "square", etc.).
+    #' @param marker_size,marker_line,marker_fill,marker_line_width Marker attributes
     #' @param ... Additional style parameters.
     add_series = function(header, data, cat = NULL, z_data = NULL, color = "4472C4", type = NULL,
                           secondary = FALSE, dir = "col", grouping = "standard",
@@ -157,7 +159,6 @@ Chart <- R6::R6Class(
                           marker_line = NULL, marker_line_width = 0.75,
                           show_val = NULL, show_cat = NULL) {
 
-      `%||%` <- function(a, b) if (!is.null(a)) a else b
       sec_val <- if (isTRUE(secondary)) "y" else if (isFALSE(secondary)) "none" else as.character(secondary)
 
       self$series_data[[length(self$series_data) + 1]] <- list(
@@ -250,22 +251,16 @@ Chart <- R6::R6Class(
 
     render_series_node = function(plot_area, sub_series, type, cat_id, val_id) {
       c_node <- xml2::xml_add_child(plot_area, paste0("c:", type))
-      `%||%` <- function(a, b) if (!is.null(a)) a else b
 
       if (type == "scatterChart") xml2::xml_add_child(c_node, "c:scatterStyle", val = "lineMarker")
       if (type == "barChart") xml2::xml_add_child(c_node, "c:barDir", val = sub_series[[1]]$dir %||% "col")
+
       if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart")) {
         xml2::xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
 
+      # VaryColors allows Excel to automatically cycle through the theme palette
       xml2::xml_add_child(c_node, "c:varyColors", val = "1")
-
-      if (type == "bubbleChart") {
-        xml2::xml_add_child(c_node, "c:maxSize", val = "100")
-        xml2::xml_add_child(c_node, "c:bubbleScale", val = "100")
-        xml2::xml_add_child(c_node, "c:showNegBubbles", val = "0")
-        xml2::xml_add_child(c_node, "c:sizeRepresents", val = "area")
-      }
 
       if (type == "doughnutChart") {
         xml2::xml_add_child(c_node, "c:holeSize", val = as.character(self$hole_size))
@@ -281,51 +276,84 @@ Chart <- R6::R6Class(
         if (grepl("!", s$header)) xml2::xml_add_child(xml2::xml_add_child(tx, "c:strRef"), "c:f", s$header)
         else xml2::xml_add_child(tx, "c:v", s$header)
 
-        if (type %in% c("bubbleChart", "doughnutChart", "pieChart")) {
+        # --- 1. HANDLE MULTI-COLOR DATA POINTS (Bubbles, Pies, Bars) ---
+        # If it's a bubble or pie, we define individual data points (dPt) to vary colors
+        if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
           palette <- c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47", "264478", "9E480E")
-          for (i in 0:7) {
+          for (i in 0:15) { # Increased range for more points
             dPt <- xml2::xml_add_child(ser, "c:dPt")
             xml2::xml_add_child(dPt, "c:idx", val = as.character(i))
             sp_dpt <- xml2::xml_add_child(dPt, "c:spPr")
             private$render_fill(xml2::xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
+            # Add a subtle border to bubbles so they are distinct
+            ln_dpt <- xml2::xml_add_child(sp_dpt, "a:ln", w = "9525")
+            private$render_fill(xml2::xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
           }
         }
 
+        # --- 2. SERIES STYLING (Lines & Area Fills) ---
         sp <- xml2::xml_add_child(ser, "c:spPr")
-        if (type %in% c("barChart", "areaChart", "bubbleChart")) {
-          if (type == "bubbleChart") {
-            xml2::xml_add_child(sp, "a:noFill")
-            xml2::xml_add_child(xml2::xml_add_child(sp, "a:ln"), "a:noFill")
-          } else {
-            private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), s$color)
-          }
-        } else if (!type %in% c("pieChart", "doughnutChart")) {
+        if (type %in% c("barChart", "areaChart")) {
+          private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), s$color)
+        } else if (type %in% c("lineChart", "scatterChart")) {
           ln <- xml2::xml_add_child(sp, "a:ln", w = "28575")
-          private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), s$color)
+          if (isFALSE(s$show_line)) {
+            xml2::xml_add_child(ln, "a:noFill")
+          } else {
+            private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), s$color)
+          }
         }
 
+        # --- 3. MARKER STYLING (Crucial for Scatter) ---
         if (type %in% c("lineChart", "scatterChart")) {
+          # If scatter and no marker specified, default to 'circle' so it's visible
+          mkr_symbol <- if(type == "scatterChart" && (is.null(s$marker) || s$marker == "none")) "circle" else s$marker
+
           mkr <- xml2::xml_add_child(ser, "c:marker")
-          xml2::xml_add_child(mkr, "c:symbol", val = s$marker %||% "none")
+          xml2::xml_add_child(mkr, "c:symbol", val = mkr_symbol)
+          if (!is.null(mkr_symbol) && mkr_symbol != "none") {
+            xml2::xml_add_child(mkr, "c:size", val = as.character(s$marker_size %||% 5))
+
+            m_spPr <- xml2::xml_add_child(mkr, "c:spPr")
+            private$render_fill(xml2::xml_add_child(m_spPr, "a:solidFill"), s$marker_fill %||% s$color)
+
+            m_ln <- xml2::xml_add_child(m_spPr, "a:ln", w = as.character(round((s$marker_line_width %||% 0.75) * 12700)))
+            private$render_fill(xml2::xml_add_child(m_ln, "a:solidFill"), s$marker_line %||% s$color)
+          }
         }
 
-        if (isTRUE(s$show_val) || isTRUE(s$show_cat)) {
-          dlbls <- xml2::xml_add_child(ser, "c:dLbls")
-          xml2::xml_add_child(dlbls, "c:dLblPos", val = s$label_pos %||% (if(type == "doughnutChart") "bestFit" else "t"))
-          xml2::xml_add_child(dlbls, "c:showVal", val = if(s$show_val) "1" else "0")
-          xml2::xml_add_child(dlbls, "c:showCatName", val = if(s$show_cat) "1" else "0")
-          if (type == "bubbleChart") xml2::xml_add_child(dlbls, "c:showBubbleSize", val = "1")
-        }
-
+        # --- 4. DATA REFERENCES ---
         if (type %in% c("scatterChart", "bubbleChart")) {
-          xml2::xml_add_child(xml2::xml_add_child(xml2::xml_add_child(ser, "c:xVal"), "c:numRef"), "c:f", s$cat)
-          xml2::xml_add_child(xml2::xml_add_child(xml2::xml_add_child(ser, "c:yVal"), "c:numRef"), "c:f", s$data)
+
+          # Only add xVal if cat is actually provided
+          if (!is.null(s$cat)) {
+            x_val_node <- xml2::xml_add_child(ser, "c:xVal")
+            # Determine if it's a reference or literal values
+            ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
+            xml2::xml_add_child(xml2::xml_add_child(x_val_node, ref_type), "c:f", s$cat)
+          }
+
+          # Y values are mandatory for a series to exist
+          y_val_node <- xml2::xml_add_child(ser, "c:yVal")
+          y_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
+          xml2::xml_add_child(xml2::xml_add_child(y_val_node, y_ref_type), "c:f", s$data)
+
           if (type == "bubbleChart" && !is.null(s$z_data)) {
-            xml2::xml_add_child(xml2::xml_add_child(xml2::xml_add_child(ser, "c:bubbleSize"), "c:numRef"), "c:f", s$z_data)
+            z_val_node <- xml2::xml_add_child(ser, "c:bubbleSize")
+            z_ref_type <- if (grepl("!", s$z_data)) "c:numRef" else "c:numLit"
+            xml2::xml_add_child(xml2::xml_add_child(z_val_node, z_ref_type), "c:f", s$z_data)
           }
         } else {
-          xml2::xml_add_child(xml2::xml_add_child(xml2::xml_add_child(ser, "c:cat"), "c:strRef"), "c:f", s$cat)
-          xml2::xml_add_child(xml2::xml_add_child(xml2::xml_add_child(ser, "c:val"), "c:numRef"), "c:f", s$data)
+          # Standard charts (Bar, Line, Pie)
+          if (!is.null(s$cat)) {
+            cat_node <- xml2::xml_add_child(ser, "c:cat")
+            c_ref_type <- if (grepl("!", s$cat)) "c:strRef" else "c:strLit"
+            xml2::xml_add_child(xml2::xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
+          }
+
+          val_node <- xml2::xml_add_child(ser, "c:val")
+          v_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
+          xml2::xml_add_child(xml2::xml_add_child(val_node, v_ref_type), "c:f", s$data)
         }
 
         if (type %in% c("lineChart", "scatterChart")) {
@@ -398,7 +426,6 @@ Chart <- R6::R6Class(
 
     render_fill = function(node, color_val) {
       if (length(color_val) == 0 || is.null(color_val) || color_val == "") color_val <- "000000"
-      `%||%` <- function(a, b) if (!is.null(a)) a else b
       hex <- if (inherits(color_val, "wbColour")) attr(color_val, "rgb") %||% as.character(color_val) else as.character(color_val)
       clean <- toupper(gsub("^#", "", hex))
       if (nchar(clean) == 8) clean <- substr(clean, 3, 8)
@@ -406,21 +433,3 @@ Chart <- R6::R6Class(
     }
   )
 )
-
-#' Add a Chart object to a workbook sheet
-#'
-#' @description
-#' Renders a \code{Chart} R6 object and injects the resulting XML into an
-#' \code{openxlsx2} workbook at the specified location.
-#'
-#' @param wb An \code{openxlsx2} workbook object.
-#' @param sheet Sheet name or index where the chart will be placed.
-#' @param dims Character string defining the cell range (e.g., "E2:M20").
-#' @param chart_obj An initialized \code{Chart} R6 object.
-#'
-#' @return The workbook object, invisibly.
-#' @export
-wb_add_chart <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL, chart_obj) {
-  chart_xml <- chart_obj$render()
-  wb$clone(deep = TRUE)$add_chart_xml(sheet = sheet, dims = dims, xml = chart_xml)
-}

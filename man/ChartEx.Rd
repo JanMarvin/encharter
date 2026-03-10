@@ -2,7 +2,7 @@
 % Please edit documentation in R/encharter_chartex.R
 \name{ChartEx}
 \alias{ChartEx}
-\title{ChartEx R6 Class for Extended Excel Charts}
+\title{ChartEx R6 Class for Extended Spreadsheet Charts}
 \description{
 An R6 class to create and manipulate Excel Extended Charts (ChartEx),
 including Waterfall, Sunburst, Treemap, and Region Maps, which are not

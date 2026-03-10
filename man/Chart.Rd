@@ -2,7 +2,7 @@
 % Please edit documentation in R/encharter_chart.R
 \name{Chart}
 \alias{Chart}
-\title{R6 Class representing a Chart object for Excel workbooks}
+\title{R6 Class representing a Chart object for Spreadsheets}
 \description{
 The `Chart` class provides a flexible interface to build Office OpenXML
 (OOXML) chart objects. It allows for granular control over gridlines,
@@ -323,13 +323,13 @@ Add a data series to the chart.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{header}}{Excel range or string for series name (e.g., "Sheet1!$B$1").}
+\item{\code{header}}{cell range or string for series name (e.g., "Sheet1!$B$1").}
 
-\item{\code{data}}{Excel range for series values (e.g., "Sheet1!$B$2:$B$10").}
+\item{\code{data}}{cell range for series values (e.g., "Sheet1!$B$2:$B$10").}
 
-\item{\code{cat}}{Excel range for category labels.}
+\item{\code{cat}}{cell range for category labels.}
 
-\item{\code{z_data}}{Excel range for bubble sizes (bubbleChart only).}
+\item{\code{z_data}}{cell range for bubble sizes (bubbleChart only).}
 
 \item{\code{color}}{Hex color for the series.}
 
@@ -344,6 +344,8 @@ Add a data series to the chart.
 \item{\code{smooth}}{Logical. Enable line smoothing.}
 
 \item{\code{marker}}{Marker type ("none", "circle", "square", etc.).}
+
+\item{\code{marker_size, marker_line, marker_fill, marker_line_width}}{Marker attributes}
 
 \item{\code{...}}{Additional style parameters.}
 }
