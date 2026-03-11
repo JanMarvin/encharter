@@ -19,9 +19,9 @@ my_wf$set_chart_title("2024 Financial Performance")
 
 # Mapping the "Financial Bridge" data
 my_wf$add_series(
-  header_range = "Data2!$B$1",         # "Amount"
-  data_range   = "Data2!$B$2:$B$7",     # 1200, -450, -300...
-  cat_range    = "Data2!$A$2:$A$7",     # Categories
+  header = "Data2!$B$1",         # "Amount"
+  data   = "Data2!$B$2:$B$7",     # 1200, -450, -300...
+  cat    = "Data2!$A$2:$A$7",     # Categories
   type         = "waterfall"
 )
 

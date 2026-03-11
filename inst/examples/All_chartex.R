@@ -36,7 +36,7 @@ my_tm$set_chart_title("treemap")$
   set_data_label_style(
     show = TRUE,
     pos = "outEnd",       # or "ctr", "inEnd", "inBase"
-    font_size = 10,
+    sz = 10,
     bold = TRUE,
     color = wb_color("white"),    # White labels if you have dark bars
     numfmt = "#,##0.0"    # Custom precision
@@ -45,25 +45,24 @@ my_tm$set_chart_title("treemap")$
 # box whisker plot
 my_bw <- ChartEx$new()
 my_bw$
-  set_chart_title("MPG Distribution", font_size = 16, font_name = "Arial", bold = TRUE)$
-  set_x_title("by Cylinder", font_size = 12, italic = TRUE)$
-  set_y_title("Miles per Gallon", font_size = 12, font_name = "Calibri")$
-  set_y_numfmt("0.0")$
-  set_x_axis_style(font_size = 10, font_name = "Arial", bold = TRUE)$
-  set_y_axis_style(font_size = 12, font_name = "Times New Roman", italic = TRUE, color = "000000")$
+  set_chart_title("MPG Distribution", sz = 16, font_name = "Arial", bold = TRUE)$
+  set_x_title("by Cylinder", sz = 12, italic = TRUE)$
+  set_y_title("Miles per Gallon", sz = 12, font_name = "Calibri")$
+  set_x_axis(sz = 10, font_name = "Arial", bold = TRUE)$
+  set_y_axis(sz = 12, font_name = "Times New Roman", italic = TRUE, color = "000000", numfmt = "0.0")$
   add_series(
-    header_range = "Data!$A$1",
-    data_range   = "Data!$A$2:$A$33",
-    cat_range    = "Data!$B$2:$B$33",
+    header = "Data!$A$1",
+    data   = "Data!$A$2:$A$33",
+    cat    = "Data!$B$2:$B$33",
     fill_color=wb_color("magenta"), line_color=wb_color("black"), type = "boxWhisker")$
   add_series(
-    header_range = "Data!$C$1",
-    data_range   = "Data!$C$2:$C$33",
-    cat_range    = "Data!$B$2:$B$33",
+    header = "Data!$C$1",
+    data   = "Data!$C$2:$C$33",
+    cat    = "Data!$B$2:$B$33",
     fill_color=wb_color(hex = "FFA500"), line_color=wb_color("black"), type = "boxWhisker")$
   set_legend_style(
     pos = "r",
-    font_size = 15,
+    sz = 15,
     bold = TRUE,
     color = wb_color(theme = "5")
   )
@@ -90,8 +89,8 @@ map_data <- data.frame(
 ## something is missing
 my_rm <- ChartEx$new()
 my_rm$set_chart_title("Region Map")$
-  add_series(header_range = "'Region Map'!$B$1", data_range = "'Region Map'!$B$2:$B$12",
-             cat_range = "'Region Map'!$A$2:$A$12", type = "regionMap")
+  add_series(header = "'Region Map'!$B$1", data = "'Region Map'!$B$2:$B$12",
+             cat = "'Region Map'!$A$2:$A$12", type = "regionMap")
 
 wb$add_worksheet("Region Map")$add_data(x = map_data)
 wb <- wb_add_chartx(wb, sheet = "Data", dims = "H37:N48", chart_obj = my_rm)

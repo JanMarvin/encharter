@@ -29,18 +29,14 @@ ChartEx <- R6::R6Class(
     y_title = NULL,
     #' @field y_title_style List of styling parameters for the Y-axis title.
     y_title_style = list(),
-    #' @field x_axis_style Style parameters for X-axis labels.
+    #' @field x_axis_style List of styling and axis parameters for the X-axis.
     x_axis_style = list(),
-    #' @field y_axis_style Style parameters for Y-axis labels.
+    #' @field y_axis_style List of styling and axis parameters for the Y-axis.
     y_axis_style = list(),
     #' @field x_numfmt Number format for X-axis.
     x_numfmt = NULL,
     #' @field y_numfmt Number format for Y-axis.
     y_numfmt = NULL,
-    #' @field x_axis_params Parameters for X-axis scaling/gridlines.
-    x_axis_params = list(),
-    #' @field y_axis_params Parameters for Y-axis scaling/gridlines.
-    y_axis_params = list(),
     #' @field legend_params Parameters for legend positioning and style.
     legend_params = list(),
     #' @field data_label_params Parameters for data labels.
@@ -51,6 +47,7 @@ ChartEx <- R6::R6Class(
     plot_area_style = list(),
 
     #' @description Create a new ChartEx object.
+    #' @return A new `ChartEx` object.
     initialize = function() {
       self$xml <- xml2::read_xml(
         '<cx:chartSpace xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
@@ -63,13 +60,13 @@ ChartEx <- R6::R6Class(
       )
       self$legend_params <- list(pos = "t", align = "ctr", overlay = "0", style = list())
       self$data_label_params <- list(show = FALSE)
-      self$x_axis_params <- list()
-      self$y_axis_params <- list()
+      self$x_axis_style <- list()
+      self$y_axis_style <- list()
     },
 
     #' @description Set chart area styling.
-    #' @param fill Hex color or wbColor.
-    #' @param line Hex color or wbColor.
+    #' @param fill Fill color (hex or wbColour).
+    #' @param line Line/border color.
     #' @param line_width Width of the border.
     set_chart_style = function(fill = NULL, line = NULL, line_width = 1) {
       self$chart_area_style <- list(fill = fill, line = line, line_width = line_width)
@@ -77,8 +74,8 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set plot area styling.
-    #' @param fill Hex color or wbColor.
-    #' @param line Hex color or wbColor.
+    #' @param fill Fill color (hex or wbColour).
+    #' @param line Line/border color.
     #' @param line_width Width of the border.
     set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
       self$plot_area_style <- list(fill = fill, line = line, line_width = line_width)
@@ -113,70 +110,64 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set legend properties.
-    #' @param pos Position ("t", "b", "l", "r", "none").
-    #' @param align Alignment ("ctr", "min", "max").
-    #' @param overlay Logical.
-    #' @param font_size size in pts.
-    #' @param font_name typeface.
-    #' @param bold logical.
-    #' @param italic logical.
-    #' @param color Hex or wbColor.
-    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
+    #' @param pos Position (t, b, l, r, none).
+    #' @param align Alignment (ctr, min, max).
+    #' @param overlay Logical; overlay legend on chart.
+    #' @param sz Size of font.
+    #' @param font_name Name of font.
+    #' @param bold Logical.
+    #' @param italic Logical.
+    #' @param color Hex color.
+    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, sz = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
       self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
-                                 style = list(sz = font_size, font = font_name, b = bold, i = italic, color = color))
+                                 style = list(sz = sz, font = font_name, b = bold, i = italic, color = color))
       invisible(self)
     },
 
     #' @description Set data label properties.
     #' @param show Logical.
-    #' @param pos Position.
-    #' @param font_size size in pts.
-    #' @param font_name typeface.
-    #' @param bold logical.
-    #' @param italic logical.
-    #' @param color Hex or wbColor.
-    #' @param numfmt Number format string.
-    set_data_label_style = function(show = TRUE, pos = "outEnd", font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL, numfmt = NULL) {
+    #' @param pos Position (outEnd, inEnd, ctr, etc).
+    #' @param sz Font size.
+    #' @param font_name Font name.
+    #' @param bold Logical.
+    #' @param italic Logical.
+    #' @param color Hex color.
+    #' @param numfmt Excel number format string.
+    set_data_label_style = function(show = TRUE, pos = "outEnd", sz = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL, numfmt = NULL) {
       self$data_label_params <- list(show = show, pos = pos,
-                                     style = list(sz = font_size, font = font_name, b = bold, i = italic, color = color),
+                                     style = list(sz = sz, font = font_name, b = bold, i = italic, color = color),
                                      numfmt = numfmt)
       invisible(self)
     },
 
-    #' @description Set X-axis tick label style.
-    #' @param ... Styling (sz, b, i, color, font).
-    set_x_axis_style = function(...) { self$x_axis_style <- list(...); invisible(self) },
+    #' @description Set X-axis tick label style, number format, and parameters.
+    #' @param numfmt Excel number format.
+    #' @param ... Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).
+    set_x_axis = function(numfmt = NULL, ...) {
+      if (!is.null(numfmt)) self$x_numfmt <- numfmt
+      self$x_axis_style <- list(...)
+      invisible(self)
+    },
 
-    #' @description Set Y-axis tick label style.
-    #' @param ... Styling (sz, b, i, color, font).
-    set_y_axis_style = function(...) { self$y_axis_style <- list(...); invisible(self) },
-
-    #' @description Set X-axis number format.
-    #' @param f format string.
-    set_x_numfmt = function(f) { self$x_numfmt <- f; invisible(self) },
-
-    #' @description Set Y-axis number format.
-    #' @param f format string.
-    set_y_numfmt = function(f) { self$y_numfmt <- f; invisible(self) },
-
-    #' @description Set specific axis parameters (min, max, etc).
-    #' @param axis "x" or "y".
-    #' @param ... parameters (min, max, gap_width, grid_color, major_gridlines, major_tick, minor_tick).
-    set_axis_params = function(axis = "x", ...) {
-      if (axis == "x") self$x_axis_params <- list(...) else self$y_axis_params <- list(...)
+    #' @description Set Y-axis tick label style, number format, and parameters.
+    #' @param numfmt Excel number format.
+    #' @param ... Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).
+    set_y_axis = function(numfmt = NULL, ...) {
+      if (!is.null(numfmt)) self$y_numfmt <- numfmt
+      self$y_axis_style <- list(...)
       invisible(self)
     },
 
     #' @description Add a data series to the chart.
-    #' @param header_range Name range.
-    #' @param data_range Value range.
-    #' @param cat_range Category range.
-    #' @param type Chart type.
-    #' @param fill_color Hex or "auto".
-    #' @param line_color Hex.
-    #' @param line_width Numeric.
-    #' @param subtotals Numeric vector of indices for Waterfall.
-    add_series = function(header_range, data_range, cat_range = NULL, type = "waterfall", fill_color = "auto",
+    #' @param header Cell range for the series name.
+    #' @param data Cell range for the numeric values.
+    #' @param cat Cell range for the category labels.
+    #' @param type Type of chart (waterfall, sunburst, treemap, regionMap).
+    #' @param fill_color Hex color or "auto".
+    #' @param line_color Border color.
+    #' @param line_width Border width.
+    #' @param subtotals Numeric vector of indices to treat as subtotals (Waterfall only).
+    add_series = function(header, data, cat = NULL, type = "waterfall", fill_color = "auto",
                           line_color = NULL, line_width = 1, subtotals = NULL) {
       fix_quote = function(x) {
         if (is.null(x)) return(NULL)
@@ -187,7 +178,7 @@ ChartEx <- R6::R6Class(
         return(x)
       }
       self$series_data[[length(self$series_data) + 1]] <- list(
-        header = fix_quote(header_range), data = fix_quote(data_range), cat = fix_quote(cat_range),
+        header = fix_quote(header), data = fix_quote(data), cat = fix_quote(cat),
         type = type, fill_color = fill_color, line_color = line_color, line_width = line_width,
         subtotals = subtotals
       )
@@ -195,7 +186,8 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Render the internal XML for writing to a file.
-    #' @param id_start Numeric starting ID (defaults to 1).
+    #' @param id_start Numeric starting ID for XML data references.
+    #' @return A list containing the XML and attribute mappings.
     render = function(id_start = 1) {
       chart_data_node <- xml2::xml_find_first(self$xml, "//cx:chartData")
       plot_area_node <- xml2::xml_find_first(self$xml, "//cx:plotArea")
@@ -262,13 +254,11 @@ ChartEx <- R6::R6Class(
           st_node <- xml2::xml_add_child(lpr, "cx:subtotals")
 
           if (is.null(s$subtotals)) {
-            # Your original default logic: 0 and last index
             coords <- dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
             last_idx <- max(length(coords$row), length(coords$col)) - 1
             xml2::xml_add_child(st_node, "cx:idx", val = "0")
             xml2::xml_add_child(st_node, "cx:idx", val = as.character(last_idx))
           } else {
-            # Use specific indices provided in the vector
             for (idx in s$subtotals) {
               xml2::xml_add_child(st_node, "cx:idx", val = as.character(idx))
             }
@@ -293,8 +283,8 @@ ChartEx <- R6::R6Class(
       # 3. Axes
       if (!is_hierarchical) {
         axes <- xml2::xml_find_all(self$xml, "//cx:axis")
-        private$apply_axis_full(axes[[1]], self$x_axis_params, self$x_title, self$x_title_style, self$x_axis_style, self$x_numfmt, TRUE)
-        private$apply_axis_full(axes[[2]], self$y_axis_params, self$y_title, self$y_title_style, self$y_axis_style, self$y_numfmt, FALSE)
+        private$apply_axis_full(axes[[1]], self$x_axis_style, self$x_title, self$x_title_style, self$x_numfmt, TRUE)
+        private$apply_axis_full(axes[[2]], self$y_axis_style, self$y_title, self$y_title_style, self$y_numfmt, FALSE)
       }
 
       # 4. Chart Area Styling
@@ -334,7 +324,7 @@ ChartEx <- R6::R6Class(
       if (!is.null(s$color)) private$render_color(endRPr, s$color)
       if (!is.null(s$font)) xml2::xml_add_child(endRPr, "a:latin", typeface = s$font)
     },
-    apply_axis_full = function(node, p, title, title_style, axis_style, numfmt, is_x) {
+    apply_axis_full = function(node, s, title, title_style, numfmt, is_x) {
       if (length(node) == 0) return()
       axis_id <- xml2::xml_attr(node, "id")
       xml2::xml_children(node) |> xml2::xml_remove()
@@ -342,25 +332,25 @@ ChartEx <- R6::R6Class(
 
       scaling_tag <- if(is_x) "cx:catScaling" else "cx:valScaling"
       scaling <- xml2::xml_add_child(node, scaling_tag)
-      if (is_x && !is.null(p$gap_width)) xml2::xml_set_attr(scaling, "gapWidth", as.character(p$gap_width))
+      if (is_x && !is.null(s$gap_width)) xml2::xml_set_attr(scaling, "gapWidth", as.character(s$gap_width))
       if (!is_x) {
-        if (!is.null(p$min)) xml2::xml_set_attr(scaling, "min", as.character(p$min))
-        if (!is.null(p$max)) xml2::xml_set_attr(scaling, "max", as.character(p$max))
+        if (!is.null(s$min)) xml2::xml_set_attr(scaling, "min", as.character(s$min))
+        if (!is.null(s$max)) xml2::xml_set_attr(scaling, "max", as.character(s$max))
       }
       if (!is.null(title)) private$add_rich_text(xml2::xml_add_child(node, "cx:title"), title, title_style)
-      if (!is.null(p$grid_color) || (!is_x && identical(p$major_gridlines, TRUE))) {
+      if (!is.null(s$grid_color) || (!is_x && identical(s$major_gridlines, TRUE))) {
         grid <- xml2::xml_add_child(node, "cx:majorGridlines")
-        if (!is.null(p$grid_color)) {
+        if (!is.null(s$grid_color)) {
           spPr <- xml2::xml_add_child(grid, "cx:spPr")
           ln <- xml2::xml_add_child(spPr, "a:ln", w = "9525")
-          private$render_color_core(ln, p$grid_color, wrap = TRUE)
+          private$render_color_core(ln, s$grid_color, wrap = TRUE)
         }
       }
-      if (!is.null(p$major_tick)) xml2::xml_add_child(node, "cx:majorTickMarks", type = p$major_tick)
-      if (!is.null(p$minor_tick)) xml2::xml_add_child(node, "cx:minorTickMarks", type = p$minor_tick)
+      if (!is.null(s$major_tick)) xml2::xml_add_child(node, "cx:majorTickMarks", type = s$major_tick)
+      if (!is.null(s$minor_tick)) xml2::xml_add_child(node, "cx:minorTickMarks", type = s$minor_tick)
       xml2::xml_add_child(node, "cx:tickLabels")
       if (!is.null(numfmt)) xml2::xml_add_child(node, "cx:numFmt", formatCode = numfmt, sourceLinked = "0")
-      if (length(axis_style) > 0) private$apply_axis_style(node, axis_style)
+      if (length(s) > 0) private$apply_axis_style(node, s)
     },
     apply_legend_text_style = function(node, s) {
       xml2::xml_find_all(node, "cx:txPr") |> xml2::xml_remove()
