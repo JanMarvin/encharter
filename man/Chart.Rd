@@ -42,6 +42,8 @@ the underlying XML required for the \code{add_chart_xml} method.
 
 \item{\code{plot_style}}{List for the inner plot area styling.}
 
+\item{\code{show_data_table}}{Logical if a data table should be added.}
+
 \item{\code{axis_params}}{Internal list for scaling, units, and formatting.}
 }
 \if{html}{\out{</div>}}
@@ -59,6 +61,7 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item \href{#method-Chart-set_y_axis}{\code{Chart$set_y_axis()}}
 \item \href{#method-Chart-set_y2_axis}{\code{Chart$set_y2_axis()}}
 \item \href{#method-Chart-set_x2_axis}{\code{Chart$set_x2_axis()}}
+\item \href{#method-Chart-set_data_table}{\code{Chart$set_data_table()}}
 \item \href{#method-Chart-set_hole_size}{\code{Chart$set_hole_size()}}
 \item \href{#method-Chart-set_pie_options}{\code{Chart$set_pie_options()}}
 \item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
@@ -423,6 +426,23 @@ Set Secondary X-axis scaling, units, and format.
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 
 \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_data_table"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_data_table}{}}}
+\subsection{Method \code{set_data_table()}}{
+Set the data table.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_data_table(show = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{show}}{Logical TRUE or FALSE.}
 }
 \if{html}{\out{</div>}}
 }

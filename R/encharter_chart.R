@@ -44,6 +44,8 @@ Chart <- R6::R6Class(
     chart_style = list(fill = "FFFFFF", line = NULL, line_width = 1),
     #' @field plot_style List for the inner plot area styling.
     plot_style  = list(fill = NULL, line = NULL, line_width = 1),
+    #' @field show_data_table Logical if a data table should be added.
+    show_data_table = FALSE,
     #' @field axis_params Internal list for scaling, units, and formatting.
     axis_params = list(
       x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between"),
@@ -151,7 +153,7 @@ Chart <- R6::R6Class(
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between)
-      self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
+      self$axis_params$y <- modifyList(self$axis_params$y, Filter(Negate(is.null), params))
       invisible(self)
     },
 
@@ -180,7 +182,7 @@ Chart <- R6::R6Class(
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between)
-      self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
+      self$axis_params$y2 <- modifyList(self$axis_params$y2, Filter(Negate(is.null), params))
       invisible(self)
     },
 
@@ -209,7 +211,14 @@ Chart <- R6::R6Class(
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between)
-      self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
+      self$axis_params$x2 <- modifyList(self$axis_params$x2, Filter(Negate(is.null), params))
+      invisible(self)
+    },
+
+    #' @description Set the data table.
+    #' @param show Logical TRUE or FALSE.
+    set_data_table = function(show = TRUE) {
+      self$show_data_table <- show
       invisible(self)
     },
 
@@ -364,11 +373,27 @@ Chart <- R6::R6Class(
         }
       }
 
+      if (isTRUE(self$show_data_table)) {
+        dTable <- xml2::xml_add_child(plot_area, "c:dTable")
+
+        # Standard visibility flags
+        xml2::xml_add_child(dTable, "c:showHorzBorder", val = "1")
+        xml2::xml_add_child(dTable, "c:showVertBorder", val = "1")
+        xml2::xml_add_child(dTable, "c:showOutline",    val = "1")
+        xml2::xml_add_child(dTable, "c:showKeys",       val = "1")
+
+        private$apply_text_style(dTable, self$axis_params$x) # size is a little smaller
+      }
+
       private$apply_sp_pr(plot_area, self$plot_style)
-      legend <- xml2::xml_add_child(chart_root, "c:legend")
-      xml2::xml_add_child(legend, "c:legendPos", val = self$legend_params$pos)
-      xml2::xml_add_child(legend, "c:overlay", val = self$legend_params$overlay)
-      if (length(self$legend_params$style) > 0) private$apply_text_style(legend, self$legend_params$style)
+
+      l_pos <- self$legend_params$pos %||% "t"
+      if (l_pos != "none") {
+        legend <- xml2::xml_add_child(chart_root, "c:legend")
+        xml2::xml_add_child(legend, "c:legendPos", val = self$legend_params$pos)
+        xml2::xml_add_child(legend, "c:overlay", val = self$legend_params$overlay)
+        if (length(self$legend_params$style) > 0) private$apply_text_style(legend, self$legend_params$style)
+      }
 
       return(as.character(self$xml))
     }
