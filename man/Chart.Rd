@@ -60,6 +60,8 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item \href{#method-Chart-set_y2_axis}{\code{Chart$set_y2_axis()}}
 \item \href{#method-Chart-set_x2_axis}{\code{Chart$set_x2_axis()}}
 \item \href{#method-Chart-set_hole_size}{\code{Chart$set_hole_size()}}
+\item \href{#method-Chart-set_pie_options}{\code{Chart$set_pie_options()}}
+\item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
 \item \href{#method-Chart-set_legend_style}{\code{Chart$set_legend_style()}}
 \item \href{#method-Chart-set_data_label_style}{\code{Chart$set_data_label_style()}}
 \item \href{#method-Chart-set_chart_style}{\code{Chart$set_chart_style()}}
@@ -198,8 +200,11 @@ Set Primary X-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  rot = NULL,
   grid_color = NULL,
-  gridlines = NULL
+  gridlines = NULL,
+  minor_grid_color = NULL,
+  minor_gridlines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -226,9 +231,11 @@ Set Primary X-axis scaling, units, and format.
 
 \item{\code{color}}{Hex color for the axis lines.}
 
-\item{\code{grid_color}}{Hex color for the major gridlines.}
+\item{\code{rot}}{Rotation in degrees.}
 
-\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -247,8 +254,11 @@ Set Primary Y-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  rot = NULL,
   grid_color = NULL,
-  gridlines = NULL
+  gridlines = NULL,
+  minor_grid_color = NULL,
+  minor_gridlines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -269,9 +279,11 @@ Set Primary Y-axis scaling, units, and format.
 
 \item{\code{color}}{Hex color for the axis lines.}
 
-\item{\code{grid_color}}{Hex color for the major gridlines.}
+\item{\code{rot}}{Rotation in degrees.}
 
-\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -290,8 +302,11 @@ Set Secondary Y-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  rot = NULL,
   grid_color = NULL,
-  gridlines = NULL
+  gridlines = NULL,
+  minor_grid_color = NULL,
+  minor_gridlines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -312,9 +327,11 @@ Set Secondary Y-axis scaling, units, and format.
 
 \item{\code{color}}{Hex color for the axis lines.}
 
-\item{\code{grid_color}}{Hex color for the major gridlines.}
+\item{\code{rot}}{Rotation in degrees.}
 
-\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -333,8 +350,11 @@ Set Secondary X-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  rot = NULL,
   grid_color = NULL,
-  gridlines = NULL
+  gridlines = NULL,
+  minor_grid_color = NULL,
+  minor_gridlines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -355,9 +375,11 @@ Set Secondary X-axis scaling, units, and format.
 
 \item{\code{color}}{Hex color for the axis lines.}
 
-\item{\code{grid_color}}{Hex color for the major gridlines.}
+\item{\code{rot}}{Rotation in degrees.}
 
-\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -375,6 +397,41 @@ Set the doughnut hole size.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{val}}{Integer 0 to 90.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_pie_options"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_pie_options}{}}}
+\subsection{Method \code{set_pie_options()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_pie_options(ang = 0)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ang}}{The angle of the first slice in degrees, from 0 to 360.
+This rotates the chart clockwise.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_bubble_options"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_bubble_options}{}}}
+\subsection{Method \code{set_bubble_options()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_bubble_options(scale = 100, show_neg = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{scale}}{The scale factor for bubbles, from 0 to 300 (expressed as a percentage).}
+
+\item{\code{show_neg}}{Logical; if `TRUE`, bubbles with negative values will be displayed on the chart.}
 }
 \if{html}{\out{</div>}}
 }
@@ -489,6 +546,8 @@ Add a data series to the chart.
   secondary = FALSE,
   dir = "col",
   grouping = "standard",
+  overlap = NULL,
+  gap_width = NULL,
   smooth = FALSE,
   show_line = TRUE,
   marker = "none",
@@ -521,6 +580,10 @@ Add a data series to the chart.
 \item{\code{dir}}{Bar direction ("col" or "bar").}
 
 \item{\code{grouping}}{Chart grouping ("standard", "stacked", "percentStacked").}
+
+\item{\code{overlap}}{Integer between -100 and 100. Determines how much bars in the same category overlap.}
+
+\item{\code{gap_width}}{Integer between 0 and 500. Controls the space between bar clusters.}
 
 \item{\code{smooth}}{Logical. Enable line smoothing.}
 
