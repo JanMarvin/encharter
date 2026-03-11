@@ -386,7 +386,7 @@ Chart <- R6::R6Class(
     render_series_node = function(plot_area, sub_series, type, cat_id, val_id) {
       c_node <- xml2::xml_add_child(plot_area, paste0("c:", type))
 
-      # 1. INITIAL PROPERTIES
+      # 1. INITIAL PROPERTIES (Must come before <c:ser>)
       if (type == "scatterChart") {
         xml2::xml_add_child(c_node, "c:scatterStyle", val = "lineMarker")
       }
@@ -400,18 +400,18 @@ Chart <- R6::R6Class(
         xml2::xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
 
-      # varyColors MUST come before <c:ser>
       vary_val <- if (type %in% c("pieChart", "doughnutChart")) "1" else "0"
       xml2::xml_add_child(c_node, "c:varyColors", val = vary_val)
 
-      # 2. THE SERIES LOOP (EG_BarChartShared / EG_PieChartShared)
+      # 2. THE SERIES LOOP
       for (s in sub_series) {
         ser <- xml2::xml_add_child(c_node, "c:ser")
         xml2::xml_add_child(ser, "c:idx", val = as.character(private$current_idx))
         xml2::xml_add_child(ser, "c:order", val = as.character(private$current_idx))
         private$current_idx <- private$current_idx + 1
 
-        # 1. tx (Series Text/Title)
+        # --- EG_SerShared Start ---
+        # tx (Title)
         tx <- xml2::xml_add_child(ser, "c:tx")
         if (private$is_ref(s$header)) {
           xml2::xml_add_child(xml2::xml_add_child(tx, "c:strRef"), "c:f", s$header)
@@ -419,32 +419,19 @@ Chart <- R6::R6Class(
           xml2::xml_add_child(tx, "c:v", as.character(s$header))
         }
 
-        # 2. spPr (Series Styling) - MUST COME BEFORE dPt
+        # spPr (Series Styling)
         sp <- xml2::xml_add_child(ser, "c:spPr")
         if (type %in% c("barChart", "areaChart", "bubbleChart", "pieChart", "doughnutChart")) {
-          # Even for charts with data points, you can set a default series color
           private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), s$color %||% "auto")
         } else if (type %in% c("lineChart", "scatterChart")) {
           ln <- xml2::xml_add_child(sp, "a:ln", w = "28575")
           if (isFALSE(s$show_line)) xml2::xml_add_child(ln, "a:noFill")
           else private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), s$color)
         }
+        # --- EG_SerShared End ---
 
-        # 3. dPt (Data Point Colors) - MUST COME AFTER spPr
-        if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
-          palette <- c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47", "264478", "9E480E")
-          for (i in 0:15) {
-            dPt <- xml2::xml_add_child(ser, "c:dPt")
-            xml2::xml_add_child(dPt, "c:idx", val = as.character(i))
-            sp_dpt <- xml2::xml_add_child(dPt, "c:spPr")
-            private$render_fill(xml2::xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
-            ln_dpt <- xml2::xml_add_child(sp_dpt, "a:ln", w = "9525")
-            private$render_fill(xml2::xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
-          }
-        }
-
-        # 4. Markers for Line/Scatter
-        if (type %in% c("lineChart", "scatterChart")) {
+        # 3. Marker (Must be AFTER spPr but BEFORE dPt/dLbls per CT_ScatterSer)
+        if (type %in% c("lineChart", "scatterChart", "radarChart")) {
           mkr_symbol <- if(type == "scatterChart" && (is.null(s$marker) || s$marker == "none")) "circle" else s$marker
           mkr <- xml2::xml_add_child(ser, "c:marker")
           xml2::xml_add_child(mkr, "c:symbol", val = mkr_symbol)
@@ -457,7 +444,39 @@ Chart <- R6::R6Class(
           }
         }
 
-        # 5. Category and Values (c:cat / c:val or c:xVal / c:yVal)
+        # 4. dPt (Data Points)
+        if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
+          palette <- c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47", "264478", "9E480E")
+          for (i in 0:15) {
+            dPt <- xml2::xml_add_child(ser, "c:dPt")
+            xml2::xml_add_child(dPt, "c:idx", val = as.character(i))
+            sp_dpt <- xml2::xml_add_child(dPt, "c:spPr")
+            private$render_fill(xml2::xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
+            ln_dpt <- xml2::xml_add_child(sp_dpt, "a:ln", w = "9525")
+            private$render_fill(xml2::xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
+          }
+        }
+
+        # 5. dLbls (Must be AFTER dPt)
+        lp <- s$label_params %||% self$label_params
+        if (!is.null(lp)) {
+          dLbls <- xml2::xml_add_child(ser, "c:dLbls")
+          # txPr MUST be before dLblPos per your dchrt_EG_DLblShared schema
+          if (length(lp$style) > 0) {
+            private$apply_text_style(dLbls, lp$style)
+          }
+          if (!is.null(lp$pos)) {
+            xml2::xml_add_child(dLbls, "c:dLblPos", val = lp$pos)
+          }
+          xml2::xml_add_child(dLbls, "c:showLegendKey", val = if(isTRUE(lp$show_legend_key)) "1" else "0")
+          xml2::xml_add_child(dLbls, "c:showVal",       val = if(isTRUE(lp$show_val)) "1" else "0")
+          xml2::xml_add_child(dLbls, "c:showCatName",   val = if(isTRUE(lp$show_cat)) "1" else "0")
+          xml2::xml_add_child(dLbls, "c:showSerName",   val = "0")
+          xml2::xml_add_child(dLbls, "c:showPercent",   val = "0")
+          xml2::xml_add_child(dLbls, "c:showBubbleSize",val = "0")
+        }
+
+        # 6. Data References (xVal/yVal or cat/val)
         if (type %in% c("scatterChart", "bubbleChart")) {
           x_val_node <- xml2::xml_add_child(ser, "c:xVal")
           ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
@@ -483,6 +502,7 @@ Chart <- R6::R6Class(
           xml2::xml_add_child(xml2::xml_add_child(val_node, v_ref_type), "c:f", s$data)
         }
 
+        # 7. Smooth (Final property for Line/Scatter)
         if (type %in% c("lineChart", "scatterChart")) {
           xml2::xml_add_child(ser, "c:smooth", val = if(isTRUE(s$smooth)) "1" else "0")
         }

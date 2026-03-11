@@ -23,6 +23,10 @@ scatter_plot$add_series(
   show_line = FALSE
 )
 
+scatter_plot$set_data_label_style(
+  show_val = TRUE, show_cat = TRUE, show_legend_key = FALSE, color = wb_color("black")
+)
+
 scatter_plot$set_chart_title("Ad Spend vs. Performance")
 scatter_plot$set_x_title("Investment ($)")
 scatter_plot$set_y_title("Conversions")
