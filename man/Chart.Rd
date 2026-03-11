@@ -200,11 +200,13 @@ Set Primary X-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  label_color = NULL,
   rot = NULL,
   grid_color = NULL,
   gridlines = NULL,
   minor_grid_color = NULL,
-  minor_gridlines = NULL
+  minor_gridlines = NULL,
+  cross_between = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -229,13 +231,15 @@ Set Primary X-axis scaling, units, and format.
 
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 
-\item{\code{color}}{Hex color for the axis lines.}
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
 
 \item{\code{rot}}{Rotation in degrees.}
 
 \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
 
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
 }
 \if{html}{\out{</div>}}
 }
@@ -251,14 +255,19 @@ Set Primary Y-axis scaling, units, and format.
   max = NULL,
   major = NULL,
   minor = NULL,
+  major_time = NULL,
+  minor_time = NULL,
+  base_time = NULL,
   format = NULL,
   log_base = NULL,
   color = NULL,
+  label_color = NULL,
   rot = NULL,
   grid_color = NULL,
   gridlines = NULL,
   minor_grid_color = NULL,
-  minor_gridlines = NULL
+  minor_gridlines = NULL,
+  cross_between = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -273,17 +282,25 @@ Set Primary Y-axis scaling, units, and format.
 
 \item{\code{minor}}{Numeric value for minor unit interval.}
 
-\item{\code{format}}{Excel number format string.}
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
 
-\item{\code{log_base}}{Base for logarithmic scaling.}
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
 
-\item{\code{color}}{Hex color for the axis lines.}
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
 
 \item{\code{rot}}{Rotation in degrees.}
 
 \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
 
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
 }
 \if{html}{\out{</div>}}
 }
@@ -299,14 +316,19 @@ Set Secondary Y-axis scaling, units, and format.
   max = NULL,
   major = NULL,
   minor = NULL,
+  major_time = NULL,
+  minor_time = NULL,
+  base_time = NULL,
   format = NULL,
   log_base = NULL,
   color = NULL,
+  label_color = NULL,
   rot = NULL,
   grid_color = NULL,
   gridlines = NULL,
   minor_grid_color = NULL,
-  minor_gridlines = NULL
+  minor_gridlines = NULL,
+  cross_between = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -321,17 +343,25 @@ Set Secondary Y-axis scaling, units, and format.
 
 \item{\code{minor}}{Numeric value for minor unit interval.}
 
-\item{\code{format}}{Excel number format string.}
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
 
-\item{\code{log_base}}{Base for logarithmic scaling.}
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
 
-\item{\code{color}}{Hex color for the axis lines.}
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
 
 \item{\code{rot}}{Rotation in degrees.}
 
 \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
 
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
 }
 \if{html}{\out{</div>}}
 }
@@ -347,14 +377,19 @@ Set Secondary X-axis scaling, units, and format.
   max = NULL,
   major = NULL,
   minor = NULL,
+  major_time = NULL,
+  minor_time = NULL,
+  base_time = NULL,
   format = NULL,
   log_base = NULL,
   color = NULL,
+  label_color = NULL,
   rot = NULL,
   grid_color = NULL,
   gridlines = NULL,
   minor_grid_color = NULL,
-  minor_gridlines = NULL
+  minor_gridlines = NULL,
+  cross_between = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -369,17 +404,25 @@ Set Secondary X-axis scaling, units, and format.
 
 \item{\code{minor}}{Numeric value for minor unit interval.}
 
-\item{\code{format}}{Excel number format string.}
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
 
-\item{\code{log_base}}{Base for logarithmic scaling.}
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
 
-\item{\code{color}}{Hex color for the axis lines.}
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
 
 \item{\code{rot}}{Rotation in degrees.}
 
 \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
 
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
 }
 \if{html}{\out{</div>}}
 }

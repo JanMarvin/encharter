@@ -46,10 +46,10 @@ Chart <- R6::R6Class(
     plot_style  = list(fill = NULL, line = NULL, line_width = 1),
     #' @field axis_params Internal list for scaling, units, and formatting.
     axis_params = list(
-      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2"),
-      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL, color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE),
-      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL, color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE),
-      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL, color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE)
+      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between"),
+      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between"),
+      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between"),
+      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between")
     ),
 
     #' @description Initialize a new Chart object.
@@ -107,20 +107,21 @@ Chart <- R6::R6Class(
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
-    #' @param color Hex color for the axis lines.
+    #' @param color,label_color Hex color for the axis lines and label (or independent label color).
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
+    #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
     set_x_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                           major_time = NULL, minor_time = NULL, base_time = NULL,
-                          format = NULL, log_base = NULL, color = NULL, rot = NULL,
+                          format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
-                          minor_grid_color = NULL, minor_gridlines = NULL) {
+                          minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL) {
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
-                     format = format, log_base = log_base, color = color, rot = rot,
-                     grid_color = grid_color, gridlines = gridlines,
-                     minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines)
+                     format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
+                     grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
+                     minor_gridlines = minor_gridlines, cross_between = cross_between)
       self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
       invisible(self)
     },
@@ -130,19 +131,27 @@ Chart <- R6::R6Class(
     #' @param max Maximum value for the axis.
     #' @param major Numeric value for major unit interval.
     #' @param minor Numeric value for minor unit interval.
-    #' @param format Excel number format string.
-    #' @param log_base Base for logarithmic scaling.
-    #' @param color Hex color for the axis lines.
+    #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
+    #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param base_time Base time unit for date axes ("days", "months", "years").
+    #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param log_base Base for logarithmic scaling (e.g., 10).
+    #' @param color,label_color Hex color for the axis lines and label (or independent label color).
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
-    set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL,
-                          color = NULL, rot = NULL, grid_color = NULL, gridlines = NULL,
-                          minor_grid_color = NULL, minor_gridlines = NULL) {
-      params <- list(min = min, max = max, major = major, minor = minor, format = format, log_base = log_base,
-                     color = color, rot = rot, grid_color = grid_color, gridlines = gridlines,
-                     minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines)
-      self$axis_params$y <- modifyList(self$axis_params$y, Filter(Negate(is.null), params))
+    #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
+                        major_time = NULL, minor_time = NULL, base_time = NULL,
+                        format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
+                        grid_color = NULL, gridlines = NULL,
+                        minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL) {
+      params <- list(min = min, max = max, major = major, minor = minor,
+                     major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
+                     grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
+                     minor_gridlines = minor_gridlines, cross_between = cross_between)
+      self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
       invisible(self)
     },
 
@@ -151,19 +160,27 @@ Chart <- R6::R6Class(
     #' @param max Maximum value for the axis.
     #' @param major Numeric value for major unit interval.
     #' @param minor Numeric value for minor unit interval.
-    #' @param format Excel number format string.
-    #' @param log_base Base for logarithmic scaling.
-    #' @param color Hex color for the axis lines.
+    #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
+    #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param base_time Base time unit for date axes ("days", "months", "years").
+    #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param log_base Base for logarithmic scaling (e.g., 10).
+    #' @param color,label_color Hex color for the axis lines and label (or independent label color).
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
-    set_y2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL,
-                           color = NULL, rot = NULL, grid_color = NULL, gridlines = NULL,
-                           minor_grid_color = NULL, minor_gridlines = NULL) {
-      params <- list(min = min, max = max, major = major, minor = minor, format = format, log_base = log_base,
-                     color = color, rot = rot, grid_color = grid_color, gridlines = gridlines,
-                     minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines)
-      self$axis_params$y2 <- modifyList(self$axis_params$y2, Filter(Negate(is.null), params))
+    #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    set_y2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
+                           major_time = NULL, minor_time = NULL, base_time = NULL,
+                           format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
+                           grid_color = NULL, gridlines = NULL,
+                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL) {
+      params <- list(min = min, max = max, major = major, minor = minor,
+                     major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
+                     grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
+                     minor_gridlines = minor_gridlines, cross_between = cross_between)
+      self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
       invisible(self)
     },
 
@@ -172,19 +189,27 @@ Chart <- R6::R6Class(
     #' @param max Maximum value for the axis.
     #' @param major Numeric value for major unit interval.
     #' @param minor Numeric value for minor unit interval.
-    #' @param format Excel number format string.
-    #' @param log_base Base for logarithmic scaling.
-    #' @param color Hex color for the axis lines.
+    #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
+    #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param base_time Base time unit for date axes ("days", "months", "years").
+    #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param log_base Base for logarithmic scaling (e.g., 10).
+    #' @param color,label_color Hex color for the axis lines and label (or independent label color).
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
-    set_x2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL,
-                           color = NULL, rot = NULL, grid_color = NULL, gridlines = NULL,
-                           minor_grid_color = NULL, minor_gridlines = NULL) {
-      params <- list(min = min, max = max, major = major, minor = minor, format = format, log_base = log_base,
-                     color = color, rot = rot, grid_color = grid_color, gridlines = gridlines,
-                     minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines)
-      self$axis_params$x2 <- modifyList(self$axis_params$x2, Filter(Negate(is.null), params))
+    #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    set_x2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
+                           major_time = NULL, minor_time = NULL, base_time = NULL,
+                           format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
+                           grid_color = NULL, gridlines = NULL,
+                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL) {
+      params <- list(min = min, max = max, major = major, minor = minor,
+                     major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
+                     grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
+                     minor_gridlines = minor_gridlines, cross_between = cross_between)
+      self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
       invisible(self)
     },
 
@@ -601,7 +626,10 @@ Chart <- R6::R6Class(
       # 6. Visual Styles (Shape and Text)
       ln <- xml2::xml_add_child(xml2::xml_add_child(ax, "c:spPr"), "a:ln")
       private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
-      private$apply_text_style(ax, params)
+
+      label_style <- params
+      label_style$color <- params$label_color %||% params$color %||% "000000"
+      private$apply_text_style(ax, label_style)
 
       # 7. Crossing (EG_AxShared End)
       xml2::xml_add_child(ax, "c:crossAx", val = cross_id)
@@ -675,12 +703,16 @@ Chart <- R6::R6Class(
       # 6. Shape and Text Properties
       ln <- xml2::xml_add_child(xml2::xml_add_child(ax, "c:spPr"), "a:ln")
       private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
-      private$apply_text_style(ax, params)
+
+      label_style <- params
+      label_style$color <- params$label_color %||% params$color %||% "000000"
+      private$apply_text_style(ax, label_style)
 
       # 7. Crossing Properties (End of EG_AxShared)
       xml2::xml_add_child(ax, "c:crossAx", val = cross_id)
       xml2::xml_add_child(ax, "c:crosses", val = crosses)
-      xml2::xml_add_child(ax, "c:crossBetween", val = "between")
+      cb_val <- params$cross_between %||% "between"
+      xml2::xml_add_child(ax, "c:crossBetween", val = cb_val)
 
       # 8. Units (End of ValAx)
       if (!is.null(params$major)) xml2::xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
