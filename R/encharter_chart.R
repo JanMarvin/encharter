@@ -457,17 +457,33 @@ Chart <- R6::R6Class(
           }
         }
 
-        # 5. dLbls (Must be AFTER dPt)
+        # 5. dLbls (Data Labels)
         lp <- s$label_params %||% self$label_params
-        if (!is.null(lp)) {
+
+        # Only enter if lp exists AND at least one show flag is TRUE
+        if (!is.null(lp) && (isTRUE(lp$show_val) || isTRUE(lp$show_cat) || isTRUE(lp$show_legend_key))) {
+
           dLbls <- xml2::xml_add_child(ser, "c:dLbls")
-          # txPr MUST be before dLblPos per your dchrt_EG_DLblShared schema
+
+          # A. txPr (Styling)
           if (length(lp$style) > 0) {
             private$apply_text_style(dLbls, lp$style)
           }
-          if (!is.null(lp$pos)) {
-            xml2::xml_add_child(dLbls, "c:dLblPos", val = lp$pos)
+
+          # B. dLblPos
+          final_pos <- lp$pos
+          if (type == "barChart") {
+            if (final_pos == "t")      final_pos <- "outEnd"
+            else if (final_pos == "b") final_pos <- "inBase"
+          } else if (type %in% c("pieChart", "doughnutChart")) {
+            final_pos <- "bestFit"
           }
+
+          if (!is.null(final_pos)) {
+            xml2::xml_add_child(dLbls, "c:dLblPos", val = final_pos)
+          }
+
+          # C. show flags
           xml2::xml_add_child(dLbls, "c:showLegendKey", val = if(isTRUE(lp$show_legend_key)) "1" else "0")
           xml2::xml_add_child(dLbls, "c:showVal",       val = if(isTRUE(lp$show_val)) "1" else "0")
           xml2::xml_add_child(dLbls, "c:showCatName",   val = if(isTRUE(lp$show_cat)) "1" else "0")

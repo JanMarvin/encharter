@@ -56,6 +56,11 @@ chart_data <- data.frame(
   Market_Trend = c(80, 85, 90, 100, 110)
 )
 
+# breaks with area charts
+# combo_chart$set_data_label_style(
+#   show_val = TRUE, show_cat = TRUE, show_legend_key = FALSE, color = wb_color("black")
+# )
+
 # Reference for your Chart series:
 # Month:        "Sheet1!$A$2:$A$6" (Category)
 # Product A:    "Sheet1!$B$2:$B$6" (Value)
