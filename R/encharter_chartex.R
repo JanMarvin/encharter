@@ -68,18 +68,26 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set chart area styling.
+    #' @param fill Hex color or wbColor.
+    #' @param line Hex color or wbColor.
+    #' @param line_width Width of the border.
     set_chart_style = function(fill = NULL, line = NULL, line_width = 1) {
       self$chart_area_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },
 
     #' @description Set plot area styling.
+    #' @param fill Hex color or wbColor.
+    #' @param line Hex color or wbColor.
+    #' @param line_width Width of the border.
     set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
       self$plot_area_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },
 
     #' @description Set the chart title and style.
+    #' @param text Title text.
+    #' @param ... Styling (sz, b, color, font).
     set_chart_title = function(text, ...) {
       self$chart_title <- text
       self$chart_title_style <- list(...)
@@ -87,6 +95,8 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set the X-axis title and style.
+    #' @param text Title text.
+    #' @param ... Styling (sz, b, color, font).
     set_x_title = function(text, ...) {
       self$x_title <- text
       self$x_title_style <- list(...)
@@ -94,6 +104,8 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set the Y-axis title and style.
+    #' @param text Title text.
+    #' @param ... Styling (sz, b, color, font).
     set_y_title = function(text, ...) {
       self$y_title <- text
       self$y_title_style <- list(...)
@@ -101,6 +113,14 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set legend properties.
+    #' @param pos Position ("t", "b", "l", "r", "none").
+    #' @param align Alignment ("ctr", "min", "max").
+    #' @param overlay Logical.
+    #' @param font_size size in pts.
+    #' @param font_name typeface.
+    #' @param bold logical.
+    #' @param italic logical.
+    #' @param color Hex or wbColor.
     set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
       self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
                                  style = list(sz = font_size, font = font_name, b = bold, i = italic, color = color))
@@ -108,6 +128,14 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set data label properties.
+    #' @param show Logical.
+    #' @param pos Position.
+    #' @param font_size size in pts.
+    #' @param font_name typeface.
+    #' @param bold logical.
+    #' @param italic logical.
+    #' @param color Hex or wbColor.
+    #' @param numfmt Number format string.
     set_data_label_style = function(show = TRUE, pos = "outEnd", font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL, numfmt = NULL) {
       self$data_label_params <- list(show = show, pos = pos,
                                      style = list(sz = font_size, font = font_name, b = bold, i = italic, color = color),
@@ -116,25 +144,40 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set X-axis tick label style.
+    #' @param ... Styling (sz, b, i, color, font).
     set_x_axis_style = function(...) { self$x_axis_style <- list(...); invisible(self) },
 
     #' @description Set Y-axis tick label style.
+    #' @param ... Styling (sz, b, i, color, font).
     set_y_axis_style = function(...) { self$y_axis_style <- list(...); invisible(self) },
 
     #' @description Set X-axis number format.
+    #' @param f format string.
     set_x_numfmt = function(f) { self$x_numfmt <- f; invisible(self) },
 
     #' @description Set Y-axis number format.
+    #' @param f format string.
     set_y_numfmt = function(f) { self$y_numfmt <- f; invisible(self) },
 
     #' @description Set specific axis parameters (min, max, etc).
+    #' @param axis "x" or "y".
+    #' @param ... parameters (min, max, gap_width, grid_color, major_gridlines, major_tick, minor_tick).
     set_axis_params = function(axis = "x", ...) {
       if (axis == "x") self$x_axis_params <- list(...) else self$y_axis_params <- list(...)
       invisible(self)
     },
 
     #' @description Add a data series to the chart.
-    add_series = function(header_range, data_range, cat_range = NULL, type = "waterfall", fill_color = "auto", line_color = NULL, line_width = 1) {
+    #' @param header_range Name range.
+    #' @param data_range Value range.
+    #' @param cat_range Category range.
+    #' @param type Chart type.
+    #' @param fill_color Hex or "auto".
+    #' @param line_color Hex.
+    #' @param line_width Numeric.
+    #' @param subtotals Numeric vector of indices for Waterfall.
+    add_series = function(header_range, data_range, cat_range = NULL, type = "waterfall", fill_color = "auto",
+                          line_color = NULL, line_width = 1, subtotals = NULL) {
       fix_quote = function(x) {
         if (is.null(x)) return(NULL)
         if (grepl("!", x) && !grepl("^'", x)) {
@@ -145,12 +188,14 @@ ChartEx <- R6::R6Class(
       }
       self$series_data[[length(self$series_data) + 1]] <- list(
         header = fix_quote(header_range), data = fix_quote(data_range), cat = fix_quote(cat_range),
-        type = type, fill_color = fill_color, line_color = line_color, line_width = line_width
+        type = type, fill_color = fill_color, line_color = line_color, line_width = line_width,
+        subtotals = subtotals
       )
       invisible(self)
     },
 
     #' @description Render the internal XML for writing to a file.
+    #' @param id_start Numeric starting ID (defaults to 1).
     render = function(id_start = 1) {
       chart_data_node <- xml2::xml_find_first(self$xml, "//cx:chartData")
       plot_area_node <- xml2::xml_find_first(self$xml, "//cx:plotArea")
@@ -187,6 +232,7 @@ ChartEx <- R6::R6Class(
         if (!is.null(s$cat)) {
           cat_node <- xml2::xml_add_child(dat, "cx:strDim", type = "cat")
           xml2::xml_add_child(cat_node, "cx:f", c_id); xml2::xml_add_child(cat_node, "cx:nf", nf_id)
+          body_attrs[c_id] <- s$cat
         }
 
         dim_type <- if (s$type == "regionMap") "colorVal" else if (s$type %in% c("sunburst", "treemap")) "size" else "val"
@@ -211,17 +257,25 @@ ChartEx <- R6::R6Class(
 
         xml2::xml_add_child(ser, "cx:dataId", val = as.character(i - 1))
 
-        lpr <- xml2::xml_add_child(ser, "cx:layoutPr")
-        if (s$type == "waterfall") {
-          coords <- dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
-          last_idx <- max(length(coords$row), length(coords$col)) - 1
-          subtotals <- xml2::xml_add_child(lpr, "cx:subtotals")
-          xml2::xml_add_child(subtotals, "cx:idx", val = "0")
-          xml2::xml_add_child(subtotals, "cx:idx", val = as.character(last_idx))
+        if (s$type == "waterfall" && !identical(s$subtotals, FALSE)) {
+          lpr <- xml2::xml_add_child(ser, "cx:layoutPr")
+          st_node <- xml2::xml_add_child(lpr, "cx:subtotals")
+
+          if (is.null(s$subtotals)) {
+            # Your original default logic: 0 and last index
+            coords <- dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
+            last_idx <- max(length(coords$row), length(coords$col)) - 1
+            xml2::xml_add_child(st_node, "cx:idx", val = "0")
+            xml2::xml_add_child(st_node, "cx:idx", val = as.character(last_idx))
+          } else {
+            # Use specific indices provided in the vector
+            for (idx in s$subtotals) {
+              xml2::xml_add_child(st_node, "cx:idx", val = as.character(idx))
+            }
+          }
         }
 
         head_attrs[h_id] <- s$header; body_attrs[d_id] <- s$data; body_attrs[nf_id] <- s$data
-        if (!is.null(s$cat)) body_attrs[c_id] <- s$cat
       }
 
       # 2. Legends & Titles
@@ -323,7 +377,7 @@ ChartEx <- R6::R6Class(
       if (!is.null(s$sz)) xml2::xml_set_attr(endRPr, "sz", as.character(s$sz * 100))
       if (!is.null(s$b)) xml2::xml_set_attr(endRPr, "b", if(isTRUE(s$b)) "1" else "0")
       if (!is.null(s$i)) xml2::xml_set_attr(endRPr, "i", if(isTRUE(s$i)) "1" else "0")
-      if (!is.null(s$color)) private$render_color(endRPr, s$color)
+      if (!is.null(s$color)) private$render_color_core(endRPr, s$color)
       if (!is.null(s$font)) xml2::xml_add_child(endRPr, "a:latin", typeface = s$font)
     },
     render_color = function(parent_node, color_val) {

@@ -93,6 +93,17 @@ Set chart area styling.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_chart_style(fill = NULL, line = NULL, line_width = 1)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fill}}{Hex color or wbColor.}
+
+\item{\code{line}}{Hex color or wbColor.}
+
+\item{\code{line_width}}{Width of the border.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_plot_style"></a>}}
@@ -103,6 +114,17 @@ Set plot area styling.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_plot_style(fill = NULL, line = NULL, line_width = 1)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{fill}}{Hex color or wbColor.}
+
+\item{\code{line}}{Hex color or wbColor.}
+
+\item{\code{line_width}}{Width of the border.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_chart_title"></a>}}
@@ -113,6 +135,15 @@ Set the chart title and style.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_chart_title(text, ...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{text}}{Title text.}
+
+\item{\code{...}}{Styling (sz, b, color, font).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_x_title"></a>}}
@@ -123,6 +154,15 @@ Set the X-axis title and style.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_x_title(text, ...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{text}}{Title text.}
+
+\item{\code{...}}{Styling (sz, b, color, font).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_y_title"></a>}}
@@ -133,6 +173,15 @@ Set the Y-axis title and style.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_y_title(text, ...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{text}}{Title text.}
+
+\item{\code{...}}{Styling (sz, b, color, font).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_legend_style"></a>}}
@@ -152,6 +201,27 @@ Set legend properties.
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{pos}}{Position ("t", "b", "l", "r", "none").}
+
+\item{\code{align}}{Alignment ("ctr", "min", "max").}
+
+\item{\code{overlay}}{Logical.}
+
+\item{\code{font_size}}{size in pts.}
+
+\item{\code{font_name}}{typeface.}
+
+\item{\code{bold}}{logical.}
+
+\item{\code{italic}}{logical.}
+
+\item{\code{color}}{Hex or wbColor.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_data_label_style"></a>}}
@@ -171,6 +241,27 @@ Set data label properties.
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{show}}{Logical.}
+
+\item{\code{pos}}{Position.}
+
+\item{\code{font_size}}{size in pts.}
+
+\item{\code{font_name}}{typeface.}
+
+\item{\code{bold}}{logical.}
+
+\item{\code{italic}}{logical.}
+
+\item{\code{color}}{Hex or wbColor.}
+
+\item{\code{numfmt}}{Number format string.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_x_axis_style"></a>}}
@@ -181,6 +272,13 @@ Set X-axis tick label style.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_x_axis_style(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Styling (sz, b, i, color, font).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_y_axis_style"></a>}}
@@ -191,6 +289,13 @@ Set Y-axis tick label style.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_y_axis_style(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Styling (sz, b, i, color, font).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_x_numfmt"></a>}}
@@ -201,6 +306,13 @@ Set X-axis number format.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_x_numfmt(f)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{f}}{format string.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_y_numfmt"></a>}}
@@ -211,6 +323,13 @@ Set Y-axis number format.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_y_numfmt(f)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{f}}{format string.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_axis_params"></a>}}
@@ -221,6 +340,15 @@ Set specific axis parameters (min, max, etc).
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_axis_params(axis = "x", ...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{axis}}{"x" or "y".}
+
+\item{\code{...}}{parameters (min, max, gap_width, grid_color, major_gridlines, major_tick, minor_tick).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-add_series"></a>}}
@@ -235,10 +363,32 @@ Add a data series to the chart.
   type = "waterfall",
   fill_color = "auto",
   line_color = NULL,
-  line_width = 1
+  line_width = 1,
+  subtotals = NULL
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{header_range}}{Name range.}
+
+\item{\code{data_range}}{Value range.}
+
+\item{\code{cat_range}}{Category range.}
+
+\item{\code{type}}{Chart type.}
+
+\item{\code{fill_color}}{Hex or "auto".}
+
+\item{\code{line_color}}{Hex.}
+
+\item{\code{line_width}}{Numeric.}
+
+\item{\code{subtotals}}{Numeric vector of indices for Waterfall.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-render"></a>}}
@@ -249,6 +399,13 @@ Render the internal XML for writing to a file.
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$render(id_start = 1)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{id_start}}{Numeric starting ID (defaults to 1).}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-clone"></a>}}

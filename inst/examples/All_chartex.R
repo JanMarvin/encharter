@@ -7,7 +7,7 @@ library(encharter)
 # waterfall
 my_wf <- ChartEx$new()
 my_wf$set_chart_title("Waterfall")$
-  add_series("Data!$A$1", "Data!$A$2:$A$10", type = "waterfall")
+  add_series("Data!$A$1", "Data!$A$2:$A$10", type = "waterfall", subtotals = FALSE)
 
 # histogram
 my_hist <- ChartEx$new()

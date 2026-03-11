@@ -48,6 +48,13 @@ Chart <- R6::R6Class(
     chart_style = list(fill = "FFFFFF", line = NULL, line_width = 1),
     #' @field plot_style List for the inner plot area styling.
     plot_style  = list(fill = NULL, line = NULL, line_width = 1),
+    #' @field axis_params Internal list for scaling, units, and formatting.
+    axis_params = list(
+      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL),
+      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL),
+      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL),
+      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL)
+    ),
 
     #' @description Initialize a new Chart object.
     #' @param type Initial chart type (e.g., "lineChart", "barChart", "pieChart").
@@ -89,14 +96,73 @@ Chart <- R6::R6Class(
     #' @param ... Style arguments.
     set_y2_title     = function(text, ...) { self$y2_title     <- list(text = text, style = list(...)); invisible(self) },
 
+    #' @description Set Primary X-axis scaling, units, and format.
+    #' @param min Minimum value for the axis.
+    #' @param max Maximum value for the axis.
+    #' @param major Numeric value for major unit interval.
+    #' @param minor Numeric value for minor unit interval.
+    #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
+    #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param base_time Base time unit for date axes ("days", "months", "years").
+    #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param log_base Base for logarithmic scaling (e.g., 10).
+    set_x_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
+                          major_time = NULL, minor_time = NULL, base_time = NULL,
+                          format = NULL, log_base = NULL) {
+      params <- list(min = min, max = max, major = major, minor = minor,
+                     major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     format = format, log_base = log_base)
+      self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
+      invisible(self)
+    },
+
+    #' @description Set Primary Y-axis scaling, units, and format.
+    #' @param min Minimum value for the axis.
+    #' @param max Maximum value for the axis.
+    #' @param major Numeric value for major unit interval.
+    #' @param minor Numeric value for minor unit interval.
+    #' @param format Excel number format string.
+    #' @param log_base Base for logarithmic scaling.
+    set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL) {
+      params <- list(min = min, max = max, major = major, minor = minor, format = format, log_base = log_base)
+      self$axis_params$y <- modifyList(self$axis_params$y, Filter(Negate(is.null), params))
+      invisible(self)
+    },
+
+    #' @description Set Secondary Y-axis scaling, units, and format.
+    #' @param min Minimum value for the axis.
+    #' @param max Maximum value for the axis.
+    #' @param major Numeric value for major unit interval.
+    #' @param minor Numeric value for minor unit interval.
+    #' @param format Excel number format string.
+    #' @param log_base Base for logarithmic scaling.
+    set_y2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL) {
+      params <- list(min = min, max = max, major = major, minor = minor, format = format, log_base = log_base)
+      self$axis_params$y2 <- modifyList(self$axis_params$y2, Filter(Negate(is.null), params))
+      invisible(self)
+    },
+
+    #' @description Set Secondary X-axis scaling, units, and format.
+    #' @param min Minimum value for the axis.
+    #' @param max Maximum value for the axis.
+    #' @param major Numeric value for major unit interval.
+    #' @param minor Numeric value for minor unit interval.
+    #' @param format Excel number format string.
+    #' @param log_base Base for logarithmic scaling.
+    set_x2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL, format = NULL, log_base = NULL) {
+      params <- list(min = min, max = max, major = major, minor = minor, format = format, log_base = log_base)
+      self$axis_params$x2 <- modifyList(self$axis_params$x2, Filter(Negate(is.null), params))
+      invisible(self)
+    },
+
     #' @description Set the doughnut hole size.
     #' @param val Integer 0 to 90.
     set_hole_size    = function(val) { self$hole_size <- val; invisible(self) },
 
     #' @description Configure the chart legend.
-    #' @param pos Legend position: 'r', 'l', 't', 'b', 'tr'.
+    #' @param pos Legend position: 'r' (right), 'l' (left), 't' (top), 'b' (bottom), 'tr' (top right).
     #' @param overlay Logical. Whether the legend overlays the plot area.
-    #' @param ... Font styling for legend text.
+    #' @param ... Font styling for legend text (e.g., color, sz).
     set_legend_style = function(pos = "r", overlay = FALSE, ...) {
       self$legend_params <- list(pos = pos, overlay = ifelse(overlay, "1", "0"), style = list(...))
       invisible(self)
@@ -106,7 +172,7 @@ Chart <- R6::R6Class(
     #' @param show_val Logical. Show numeric values.
     #' @param show_cat Logical. Show category names.
     #' @param show_legend_key Logical. Show legend key next to label.
-    #' @param pos Label position (e.g., 't', 'b', 'ctr').
+    #' @param pos Label position (e.g., 't', 'b', 'ctr', 'l', 'r').
     #' @param ... Font styling for labels.
     set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", ...) {
       self$label_params <- list(show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key, pos = pos, style = list(...))
@@ -130,28 +196,33 @@ Chart <- R6::R6Class(
     },
 
     #' @description Style axis lines and gridlines.
-    #' @param color Hex color for the axis.
-    #' @param grid_color Hex color for the gridlines.
-    #' @param gridlines Logical. Show or hide gridlines.
+    #' @param color Hex color for the axis lines.
+    #' @param grid_color Hex color for the major gridlines.
+    #' @param gridlines Logical. Show or hide major gridlines.
     set_axis_style = function(color = "000000", grid_color = "D9D9D9", gridlines = TRUE) {
       self$axis_color <- color; self$grid_color <- grid_color; self$show_gridlines <- gridlines
       invisible(self)
     },
 
     #' @description Add a data series to the chart.
-    #' @param header cell range or string for series name (e.g., "Sheet1!$B$1").
-    #' @param data cell range for series values (e.g., "Sheet1!$B$2:$B$10").
-    #' @param cat cell range for category labels.
-    #' @param z_data cell range for bubble sizes (bubbleChart only).
+    #' @param header Cell range or string for series name (e.g., "Sheet1!$B$1").
+    #' @param data Cell range for series values (e.g., "Sheet1!$B$2:$B$10").
+    #' @param cat Cell range for category labels.
+    #' @param z_data Cell range for bubble sizes (bubbleChart only).
     #' @param color Hex color for the series.
     #' @param type Chart type for this specific series (for combo charts).
     #' @param secondary Logical. Set to TRUE to move series to secondary axis.
     #' @param dir Bar direction ("col" or "bar").
     #' @param grouping Chart grouping ("standard", "stacked", "percentStacked").
     #' @param smooth Logical. Enable line smoothing.
-    #' @param marker Marker type ("none", "circle", "square", etc.).
-    #' @param marker_size,marker_line,marker_fill,marker_line_width Marker attributes
-    #' @param ... Additional style parameters.
+    #' @param show_line Logical. Show the line connecting points.
+    #' @param marker Marker type ("none", "circle", "square", "diamond", "triangle").
+    #' @param marker_size Integer size of marker.
+    #' @param marker_fill Hex color for marker fill.
+    #' @param marker_line Hex color for marker border.
+    #' @param marker_line_width Numeric width of marker border.
+    #' @param show_val Logical. Override global label settings for this series (show value).
+    #' @param show_cat Logical. Override global label settings for this series (show category).
     add_series = function(header, data, cat = NULL, z_data = NULL, color = "4472C4", type = NULL,
                           secondary = FALSE, dir = "col", grouping = "standard",
                           smooth = FALSE, show_line = TRUE,
@@ -213,14 +284,14 @@ Chart <- R6::R6Class(
 
       if (has_axes) {
         if (self$type %in% c("scatterChart", "bubbleChart")) {
-          private$render_val_ax(plot_area, id_prim_cat, id_prim_val, "b", grid = FALSE, title_obj = self$x_title)
+          private$render_val_ax(plot_area, id_prim_cat, id_prim_val, "b", grid = FALSE, title_obj = self$x_title, params = self$axis_params$x)
         } else {
-          private$render_cat_ax(plot_area, id_prim_cat, id_prim_val, "b", delete = "0", title_obj = self$x_title)
+          private$render_cat_ax(plot_area, id_prim_cat, id_prim_val, "b", delete = "0", title_obj = self$x_title, params = self$axis_params$x)
         }
-        private$render_val_ax(plot_area, id_prim_val, id_prim_cat, "l", grid = self$show_gridlines, title_obj = self$y_title)
+        private$render_val_ax(plot_area, id_prim_val, id_prim_cat, "l", grid = self$show_gridlines, title_obj = self$y_title, params = self$axis_params$y)
 
         if (!is.null(self$y2_title$text) || any(vapply(self$series_data, function(x) x$sec_type %in% c("y", "xy"), logical(1)))) {
-          private$render_val_ax(plot_area, id_sec_val, id_prim_cat, "r", grid = FALSE, title_obj = self$y2_title, crosses = "max")
+          private$render_val_ax(plot_area, id_sec_val, id_prim_cat, "r", grid = FALSE, title_obj = self$y2_title, crosses = "max", params = self$axis_params$y2)
         }
       }
 
@@ -380,11 +451,28 @@ Chart <- R6::R6Class(
       xml2::xml_add_child(r, "a:t", text)
     },
 
-    render_cat_ax = function(parent, id, cross_id, pos, delete = "0", title_obj = NULL) {
-      ax <- xml2::xml_add_child(parent, "c:catAx")
+    render_cat_ax = function(parent, id, cross_id, pos, delete = "0", title_obj = NULL, params = NULL) {
+      is_date <- !is.null(params$major_time)
+      node_name <- if (is_date) "c:dateAx" else "c:catAx"
+      ax <- xml2::xml_add_child(parent, node_name)
       xml2::xml_add_child(ax, "c:axId", val = id)
-      xml2::xml_add_child(xml2::xml_add_child(ax, "c:scaling"), "c:orientation", val = "minMax")
+      scaling <- xml2::xml_add_child(ax, "c:scaling")
+      xml2::xml_add_child(scaling, "c:orientation", val = "minMax")
+      if (!is.null(params$max)) xml2::xml_add_child(scaling, "c:max", val = as.character(params$max))
+      if (!is.null(params$min)) xml2::xml_add_child(scaling, "c:min", val = as.character(params$min))
+      if (!is.null(params$log_base)) xml2::xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
+
       xml2::xml_add_child(ax, "c:delete", val = delete); xml2::xml_add_child(ax, "c:axPos", val = pos)
+      if (!is.null(params$format)) xml2::xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
+
+      if (is_date) {
+        if (!is.null(params$base_time)) xml2::xml_add_child(ax, "c:baseTimeUnit", val = params$base_time)
+        if (!is.null(params$major)) xml2::xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
+        if (!is.null(params$major_time)) xml2::xml_add_child(ax, "c:majorTimeUnit", val = params$major_time)
+        if (!is.null(params$minor)) xml2::xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
+        if (!is.null(params$minor_time)) xml2::xml_add_child(ax, "c:minorTimeUnit", val = params$minor_time)
+      }
+
       if (!is.null(title_obj$text) && delete == "0") {
         t_node <- xml2::xml_add_child(ax, "c:title")
         private$add_title_content(t_node, title_obj$text, title_obj$style)
@@ -395,11 +483,21 @@ Chart <- R6::R6Class(
       xml2::xml_add_child(ax, "c:crossAx", val = cross_id); xml2::xml_add_child(ax, "c:lblOffset", val = "100")
     },
 
-    render_val_ax = function(parent, id, cross_id, pos, grid, title_obj = NULL, crosses = "autoZero") {
+    render_val_ax = function(parent, id, cross_id, pos, grid, title_obj = NULL, crosses = "autoZero", params = NULL) {
       ax <- xml2::xml_add_child(parent, "c:valAx")
       xml2::xml_add_child(ax, "c:axId", val = id)
-      xml2::xml_add_child(xml2::xml_add_child(ax, "c:scaling"), "c:orientation", val = "minMax")
+      scaling <- xml2::xml_add_child(ax, "c:scaling")
+      xml2::xml_add_child(scaling, "c:orientation", val = "minMax")
+      if (!is.null(params$max)) xml2::xml_add_child(scaling, "c:max", val = as.character(params$max))
+      if (!is.null(params$min)) xml2::xml_add_child(scaling, "c:min", val = as.character(params$min))
+      if (!is.null(params$log_base)) xml2::xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
+
       xml2::xml_add_child(ax, "c:delete", val = "0"); xml2::xml_add_child(ax, "c:axPos", val = pos)
+      if (!is.null(params$format)) xml2::xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
+
+      if (!is.null(params$major)) xml2::xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
+      if (!is.null(params$minor)) xml2::xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
+
       if (grid) {
         g <- xml2::xml_add_child(ax, "c:majorGridlines")
         private$render_fill(xml2::xml_add_child(xml2::xml_add_child(xml2::xml_add_child(g, "c:spPr"), "a:ln"), "a:solidFill"), self$grid_color)

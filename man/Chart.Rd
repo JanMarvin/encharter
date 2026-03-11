@@ -45,6 +45,8 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item{\code{chart_style}}{List for the outer chart area styling.}
 
 \item{\code{plot_style}}{List for the inner plot area styling.}
+
+\item{\code{axis_params}}{Internal list for scaling, units, and formatting.}
 }
 \if{html}{\out{</div>}}
 }
@@ -56,6 +58,10 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item \href{#method-Chart-set_x_title}{\code{Chart$set_x_title()}}
 \item \href{#method-Chart-set_y_title}{\code{Chart$set_y_title()}}
 \item \href{#method-Chart-set_y2_title}{\code{Chart$set_y2_title()}}
+\item \href{#method-Chart-set_x_axis}{\code{Chart$set_x_axis()}}
+\item \href{#method-Chart-set_y_axis}{\code{Chart$set_y_axis()}}
+\item \href{#method-Chart-set_y2_axis}{\code{Chart$set_y2_axis()}}
+\item \href{#method-Chart-set_x2_axis}{\code{Chart$set_x2_axis()}}
 \item \href{#method-Chart-set_hole_size}{\code{Chart$set_hole_size()}}
 \item \href{#method-Chart-set_legend_style}{\code{Chart$set_legend_style()}}
 \item \href{#method-Chart-set_data_label_style}{\code{Chart$set_data_label_style()}}
@@ -161,6 +167,151 @@ Set the secondary Y-axis title.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_x_axis"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_x_axis}{}}}
+\subsection{Method \code{set_x_axis()}}{
+Set Primary X-axis scaling, units, and format.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_x_axis(
+  min = NULL,
+  max = NULL,
+  major = NULL,
+  minor = NULL,
+  major_time = NULL,
+  minor_time = NULL,
+  base_time = NULL,
+  format = NULL,
+  log_base = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{min}}{Minimum value for the axis.}
+
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_y_axis"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_y_axis}{}}}
+\subsection{Method \code{set_y_axis()}}{
+Set Primary Y-axis scaling, units, and format.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_y_axis(
+  min = NULL,
+  max = NULL,
+  major = NULL,
+  minor = NULL,
+  format = NULL,
+  log_base = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{min}}{Minimum value for the axis.}
+
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{format}}{Excel number format string.}
+
+\item{\code{log_base}}{Base for logarithmic scaling.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_y2_axis"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_y2_axis}{}}}
+\subsection{Method \code{set_y2_axis()}}{
+Set Secondary Y-axis scaling, units, and format.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_y2_axis(
+  min = NULL,
+  max = NULL,
+  major = NULL,
+  minor = NULL,
+  format = NULL,
+  log_base = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{min}}{Minimum value for the axis.}
+
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{format}}{Excel number format string.}
+
+\item{\code{log_base}}{Base for logarithmic scaling.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_x2_axis"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_x2_axis}{}}}
+\subsection{Method \code{set_x2_axis()}}{
+Set Secondary X-axis scaling, units, and format.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_x2_axis(
+  min = NULL,
+  max = NULL,
+  major = NULL,
+  minor = NULL,
+  format = NULL,
+  log_base = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{min}}{Minimum value for the axis.}
+
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{format}}{Excel number format string.}
+
+\item{\code{log_base}}{Base for logarithmic scaling.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_hole_size"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_hole_size}{}}}
 \subsection{Method \code{set_hole_size()}}{
@@ -189,11 +340,11 @@ Configure the chart legend.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{pos}}{Legend position: 'r', 'l', 't', 'b', 'tr'.}
+\item{\code{pos}}{Legend position: 'r' (right), 'l' (left), 't' (top), 'b' (bottom), 'tr' (top right).}
 
 \item{\code{overlay}}{Logical. Whether the legend overlays the plot area.}
 
-\item{\code{...}}{Font styling for legend text.}
+\item{\code{...}}{Font styling for legend text (e.g., color, sz).}
 }
 \if{html}{\out{</div>}}
 }
@@ -222,7 +373,7 @@ Configure global data label settings.
 
 \item{\code{show_legend_key}}{Logical. Show legend key next to label.}
 
-\item{\code{pos}}{Label position (e.g., 't', 'b', 'ctr').}
+\item{\code{pos}}{Label position (e.g., 't', 'b', 'ctr', 'l', 'r').}
 
 \item{\code{...}}{Font styling for labels.}
 }
@@ -283,11 +434,11 @@ Style axis lines and gridlines.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{color}}{Hex color for the axis.}
+\item{\code{color}}{Hex color for the axis lines.}
 
-\item{\code{grid_color}}{Hex color for the gridlines.}
+\item{\code{grid_color}}{Hex color for the major gridlines.}
 
-\item{\code{gridlines}}{Logical. Show or hide gridlines.}
+\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -323,13 +474,13 @@ Add a data series to the chart.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{header}}{cell range or string for series name (e.g., "Sheet1!$B$1").}
+\item{\code{header}}{Cell range or string for series name (e.g., "Sheet1!$B$1").}
 
-\item{\code{data}}{cell range for series values (e.g., "Sheet1!$B$2:$B$10").}
+\item{\code{data}}{Cell range for series values (e.g., "Sheet1!$B$2:$B$10").}
 
-\item{\code{cat}}{cell range for category labels.}
+\item{\code{cat}}{Cell range for category labels.}
 
-\item{\code{z_data}}{cell range for bubble sizes (bubbleChart only).}
+\item{\code{z_data}}{Cell range for bubble sizes (bubbleChart only).}
 
 \item{\code{color}}{Hex color for the series.}
 
@@ -343,11 +494,21 @@ Add a data series to the chart.
 
 \item{\code{smooth}}{Logical. Enable line smoothing.}
 
-\item{\code{marker}}{Marker type ("none", "circle", "square", etc.).}
+\item{\code{show_line}}{Logical. Show the line connecting points.}
 
-\item{\code{marker_size, marker_line, marker_fill, marker_line_width}}{Marker attributes}
+\item{\code{marker}}{Marker type ("none", "circle", "square", "diamond", "triangle").}
 
-\item{\code{...}}{Additional style parameters.}
+\item{\code{marker_size}}{Integer size of marker.}
+
+\item{\code{marker_fill}}{Hex color for marker fill.}
+
+\item{\code{marker_line}}{Hex color for marker border.}
+
+\item{\code{marker_line_width}}{Numeric width of marker border.}
+
+\item{\code{show_val}}{Logical. Override global label settings for this series (show value).}
+
+\item{\code{show_cat}}{Logical. Override global label settings for this series (show category).}
 }
 \if{html}{\out{</div>}}
 }
