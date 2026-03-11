@@ -15,7 +15,7 @@ scatter_data <- data.frame(
 scatter_plot <- Chart$new("scatterChart")
 
 scatter_plot$add_series(
-  header = "Sheet1!$B$1",   # "Conversions"
+  header = "Conversions!",   # "Conversions"
   cat    = "Sheet1!$A$2:$A$6", # X-Axis (Ad Spend)
   data   = "Sheet1!$B$2:$B$6", # Y-Axis (Conversions)
   color  = wb_color(hex = "FF0000"),           # Red line/points

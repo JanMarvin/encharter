@@ -316,6 +316,12 @@ Chart <- R6::R6Class(
   private = list(
     current_idx = 0,
 
+    is_ref = function(x) {
+      if (is.null(x) || x == "") return(FALSE)
+      # Check if '!' exists and is not at the very end (i.e., has a cell ref after it)
+      grepl("!.+", x)
+    },
+
     apply_sp_pr = function(node, style) {
       if (is.null(style$fill) && is.null(style$line)) return()
       spPr <- xml2::xml_add_child(node, "c:spPr")
@@ -348,8 +354,11 @@ Chart <- R6::R6Class(
         private$current_idx <- private$current_idx + 1
 
         tx <- xml2::xml_add_child(ser, "c:tx")
-        if (grepl("!", s$header)) xml2::xml_add_child(xml2::xml_add_child(tx, "c:strRef"), "c:f", s$header)
-        else xml2::xml_add_child(tx, "c:v", s$header)
+        if (private$is_ref(s$header)) {
+          xml2::xml_add_child(xml2::xml_add_child(tx, "c:strRef"), "c:f", s$header)
+        } else {
+          xml2::xml_add_child(tx, "c:v", as.character(s$header))
+        }
 
         if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
           palette <- c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47", "264478", "9E480E")

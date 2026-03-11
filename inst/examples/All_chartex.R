@@ -51,7 +51,7 @@ my_bw$
   set_x_axis(sz = 10, font_name = "Arial", bold = TRUE)$
   set_y_axis(sz = 12, font_name = "Times New Roman", italic = TRUE, color = "000000", numfmt = "0.0")$
   add_series(
-    header = "Data!$A$1",
+    header = '"Super Duper MPG"!',
     data   = "Data!$A$2:$A$33",
     cat    = "Data!$B$2:$B$33",
     fill_color=wb_color("magenta"), line_color=wb_color("black"), type = "boxWhisker")$

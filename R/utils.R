@@ -76,7 +76,12 @@ wb_add_chartx <- function(wb, sheet = openxlsx2::current_sheet(), dims = "E2", c
 
   for (i in seq_along(all_refs)) {
     ref <- all_refs[i]
-    if (is.na(ref) || ref == "") next
+
+    # Check: Must contain '!' and have at least one character after it
+    # This prevents literal strings (e.g. "Total!") from being treated as ranges
+    is_valid_ref <- !is.na(ref) && ref != "" && grepl("!.+", ref)
+    if (!is_valid_ref) next
+
     sheet_part <- gsub("^'?(.*?)'?!.*$", "\\1", ref)
     range_part <- gsub("^.*!", "", ref)
     wb$add_named_region(sheet = sheet_part, dims = range_part, name = names(all_refs)[i], hidden = "1")

@@ -171,9 +171,12 @@ ChartEx <- R6::R6Class(
                           line_color = NULL, line_width = 1, subtotals = NULL) {
       fix_quote = function(x) {
         if (is.null(x)) return(NULL)
-        if (grepl("!", x) && !grepl("^'", x)) {
+        if (grepl(".+!.+", x) && !grepl("^'", x)) {
           parts <- strsplit(x, "!", fixed = TRUE)[[1]]
-          return(paste0("'", parts[1], "'!", parts[2]))
+          # Ensure we actually have two parts before joining
+          if (length(parts) >= 2) {
+            return(paste0("'", parts[1], "'!", parts[2]))
+          }
         }
         return(x)
       }
@@ -232,7 +235,16 @@ ChartEx <- R6::R6Class(
         xml2::xml_add_child(num_dim, "cx:f", d_id); xml2::xml_add_child(num_dim, "cx:nf", nf_id)
 
         ser <- xml2::xml_add_child(plot_region_node, "cx:series", layoutId = s$type, uniqueId = openxlsx2:::st_guid())
-        xml2::xml_add_child(xml2::xml_add_child(xml2::xml_add_child(ser, "cx:tx"), "cx:txData"), "cx:f", h_id)
+        tx_node <- xml2::xml_add_child(xml2::xml_add_child(ser, "cx:tx"), "cx:txData")
+
+        if (private$is_ref(s$header)) {
+          # It's a range reference like Sheet1!$A$1
+          xml2::xml_add_child(tx_node, "cx:f", h_id)
+          head_attrs[h_id] <- s$header
+        } else {
+          # It's a literal string like "Foo Bar"
+          xml2::xml_add_child(tx_node, "cx:v", as.character(s$header))
+        }
 
         if ((length(s$fill_color) == 1 && s$fill_color != "auto") || !is.null(s$line_color)) {
           spPr_ser <- xml2::xml_add_child(ser, "cx:spPr")
@@ -305,6 +317,13 @@ ChartEx <- R6::R6Class(
     }
   ),
   private = list(
+
+    is_ref = function(x) {
+      if (is.null(x) || x == "") return(FALSE)
+      # Check if '!' exists and is not at the very end (i.e., has a cell ref after it)
+      grepl("!.+", x)
+    },
+
     apply_label_style = function(node, s) {
       txPr <- xml2::xml_add_child(node, "cx:txPr")
       xml2::xml_add_child(txPr, "a:bodyPr", lIns="0", tIns="0", rIns="0", bIns="0")
