@@ -7,7 +7,12 @@ library(encharter)
 chart <- Chart$new("lineChart")
 chart$
   set_chart_title("Custom Styled Chart")$
-  set_axis_style(
+  set_x_axis(
+    color = wb_color("red"),        # Axis line color
+    grid_color = wb_color("gray"), # Gridline color
+    gridlines = TRUE
+  )$
+  set_y_axis(
     color = wb_color("red"),        # Axis line color
     grid_color = wb_color("gray"), # Gridline color
     gridlines = TRUE
