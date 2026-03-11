@@ -190,7 +190,7 @@ Set legend properties.
   align = "ctr",
   overlay = FALSE,
   sz = NULL,
-  font_name = NULL,
+  name = NULL,
   bold = NULL,
   italic = NULL,
   color = NULL
@@ -208,7 +208,7 @@ Set legend properties.
 
 \item{\code{sz}}{Size of font.}
 
-\item{\code{font_name}}{Name of font.}
+\item{\code{name}}{Name of font.}
 
 \item{\code{bold}}{Logical.}
 
@@ -229,7 +229,7 @@ Set data label properties.
   show = TRUE,
   pos = "outEnd",
   sz = NULL,
-  font_name = NULL,
+  name = NULL,
   bold = NULL,
   italic = NULL,
   color = NULL,
@@ -246,7 +246,7 @@ Set data label properties.
 
 \item{\code{sz}}{Font size.}
 
-\item{\code{font_name}}{Font name.}
+\item{\code{name}}{Font name.}
 
 \item{\code{bold}}{Logical.}
 

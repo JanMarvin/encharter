@@ -26,6 +26,8 @@ the underlying XML required for the \code{add_chart_xml} method.
 
 \item{\code{x_title}}{List containing text and style for the X-axis.}
 
+\item{\code{x2_title}}{List containing text and style for the secondary X-axis.}
+
 \item{\code{y_title}}{List containing text and style for the primary Y-axis.}
 
 \item{\code{y2_title}}{List containing text and style for the secondary Y-axis.}
@@ -35,12 +37,6 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item{\code{legend_params}}{List of legend configuration settings.}
 
 \item{\code{label_params}}{List of global data label configuration settings.}
-
-\item{\code{show_gridlines}}{Logical. Toggle for major gridlines.}
-
-\item{\code{axis_color}}{Hex string for axis lines.}
-
-\item{\code{grid_color}}{Hex string for gridlines.}
 
 \item{\code{chart_style}}{List for the outer chart area styling.}
 
@@ -56,6 +52,7 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item \href{#method-Chart-new}{\code{Chart$new()}}
 \item \href{#method-Chart-set_chart_title}{\code{Chart$set_chart_title()}}
 \item \href{#method-Chart-set_x_title}{\code{Chart$set_x_title()}}
+\item \href{#method-Chart-set_x2_title}{\code{Chart$set_x2_title()}}
 \item \href{#method-Chart-set_y_title}{\code{Chart$set_y_title()}}
 \item \href{#method-Chart-set_y2_title}{\code{Chart$set_y2_title()}}
 \item \href{#method-Chart-set_x_axis}{\code{Chart$set_x_axis()}}
@@ -67,7 +64,6 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item \href{#method-Chart-set_data_label_style}{\code{Chart$set_data_label_style()}}
 \item \href{#method-Chart-set_chart_style}{\code{Chart$set_chart_style()}}
 \item \href{#method-Chart-set_plot_style}{\code{Chart$set_plot_style()}}
-\item \href{#method-Chart-set_axis_style}{\code{Chart$set_axis_style()}}
 \item \href{#method-Chart-add_series}{\code{Chart$add_series()}}
 \item \href{#method-Chart-render}{\code{Chart$render()}}
 \item \href{#method-Chart-clone}{\code{Chart$clone()}}
@@ -104,7 +100,7 @@ Set the chart's main title.
 \describe{
 \item{\code{text}}{Title text string.}
 
-\item{\code{...}}{Style arguments like `sz` (font size), `bold` (TRUE/FALSE), and `color`.}
+\item{\code{...}}{Style arguments like `sz` (font size), `bold` (TRUE/FALSE), `color`, and `name` (font name).}
 }
 \if{html}{\out{</div>}}
 }
@@ -116,6 +112,25 @@ Set the chart's main title.
 Set the X-axis title.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Chart$set_x_title(text, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{text}}{Title text string.}
+
+\item{\code{...}}{Style arguments.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_x2_title"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_x2_title}{}}}
+\subsection{Method \code{set_x2_title()}}{
+Set the secondary X-axis title.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_x2_title(text, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -181,7 +196,10 @@ Set Primary X-axis scaling, units, and format.
   minor_time = NULL,
   base_time = NULL,
   format = NULL,
-  log_base = NULL
+  log_base = NULL,
+  color = NULL,
+  grid_color = NULL,
+  gridlines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -205,6 +223,12 @@ Set Primary X-axis scaling, units, and format.
 \item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color}}{Hex color for the axis lines.}
+
+\item{\code{grid_color}}{Hex color for the major gridlines.}
+
+\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -221,7 +245,10 @@ Set Primary Y-axis scaling, units, and format.
   major = NULL,
   minor = NULL,
   format = NULL,
-  log_base = NULL
+  log_base = NULL,
+  color = NULL,
+  grid_color = NULL,
+  gridlines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -239,6 +266,12 @@ Set Primary Y-axis scaling, units, and format.
 \item{\code{format}}{Excel number format string.}
 
 \item{\code{log_base}}{Base for logarithmic scaling.}
+
+\item{\code{color}}{Hex color for the axis lines.}
+
+\item{\code{grid_color}}{Hex color for the major gridlines.}
+
+\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -255,7 +288,10 @@ Set Secondary Y-axis scaling, units, and format.
   major = NULL,
   minor = NULL,
   format = NULL,
-  log_base = NULL
+  log_base = NULL,
+  color = NULL,
+  grid_color = NULL,
+  gridlines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -273,6 +309,12 @@ Set Secondary Y-axis scaling, units, and format.
 \item{\code{format}}{Excel number format string.}
 
 \item{\code{log_base}}{Base for logarithmic scaling.}
+
+\item{\code{color}}{Hex color for the axis lines.}
+
+\item{\code{grid_color}}{Hex color for the major gridlines.}
+
+\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -289,7 +331,10 @@ Set Secondary X-axis scaling, units, and format.
   major = NULL,
   minor = NULL,
   format = NULL,
-  log_base = NULL
+  log_base = NULL,
+  color = NULL,
+  grid_color = NULL,
+  gridlines = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -307,6 +352,12 @@ Set Secondary X-axis scaling, units, and format.
 \item{\code{format}}{Excel number format string.}
 
 \item{\code{log_base}}{Base for logarithmic scaling.}
+
+\item{\code{color}}{Hex color for the axis lines.}
+
+\item{\code{grid_color}}{Hex color for the major gridlines.}
+
+\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
 }
 \if{html}{\out{</div>}}
 }
@@ -344,7 +395,7 @@ Configure the chart legend.
 
 \item{\code{overlay}}{Logical. Whether the legend overlays the plot area.}
 
-\item{\code{...}}{Font styling for legend text (e.g., color, sz).}
+\item{\code{...}}{Font styling for legend text (e.g., color, sz, name).}
 }
 \if{html}{\out{</div>}}
 }
@@ -375,7 +426,7 @@ Configure global data label settings.
 
 \item{\code{pos}}{Label position (e.g., 't', 'b', 'ctr', 'l', 'r').}
 
-\item{\code{...}}{Font styling for labels.}
+\item{\code{...}}{Font styling for labels (e.g., color, sz, name).}
 }
 \if{html}{\out{</div>}}
 }
@@ -423,27 +474,6 @@ Style the inner plot area background.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Chart-set_axis_style"></a>}}
-\if{latex}{\out{\hypertarget{method-Chart-set_axis_style}{}}}
-\subsection{Method \code{set_axis_style()}}{
-Style axis lines and gridlines.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Chart$set_axis_style(color = "000000", grid_color = "D9D9D9", gridlines = TRUE)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{color}}{Hex color for the axis lines.}
-
-\item{\code{grid_color}}{Hex color for the major gridlines.}
-
-\item{\code{gridlines}}{Logical. Show or hide major gridlines.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-add_series"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-add_series}{}}}
 \subsection{Method \code{add_series()}}{
@@ -474,9 +504,9 @@ Add a data series to the chart.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{header}}{Cell range or string for series name (e.g., "Sheet1!$B$1").}
+\item{\code{header}}{Cell range or string for series name.}
 
-\item{\code{data}}{Cell range for series values (e.g., "Sheet1!$B$2:$B$10").}
+\item{\code{data}}{Cell range for series values.}
 
 \item{\code{cat}}{Cell range for category labels.}
 

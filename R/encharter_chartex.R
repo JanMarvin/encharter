@@ -114,13 +114,13 @@ ChartEx <- R6::R6Class(
     #' @param align Alignment (ctr, min, max).
     #' @param overlay Logical; overlay legend on chart.
     #' @param sz Size of font.
-    #' @param font_name Name of font.
+    #' @param name Name of font.
     #' @param bold Logical.
     #' @param italic Logical.
     #' @param color Hex color.
-    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, sz = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
+    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL) {
       self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
-                                 style = list(sz = sz, font = font_name, b = bold, i = italic, color = color))
+                                 style = list(sz = sz, font = name, b = bold, i = italic, color = color))
       invisible(self)
     },
 
@@ -128,14 +128,14 @@ ChartEx <- R6::R6Class(
     #' @param show Logical.
     #' @param pos Position (outEnd, inEnd, ctr, etc).
     #' @param sz Font size.
-    #' @param font_name Font name.
+    #' @param name Font name.
     #' @param bold Logical.
     #' @param italic Logical.
     #' @param color Hex color.
     #' @param numfmt Excel number format string.
-    set_data_label_style = function(show = TRUE, pos = "outEnd", sz = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL, numfmt = NULL) {
+    set_data_label_style = function(show = TRUE, pos = "outEnd", sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL, numfmt = NULL) {
       self$data_label_params <- list(show = show, pos = pos,
-                                     style = list(sz = sz, font = font_name, b = bold, i = italic, color = color),
+                                     style = list(sz = sz, font = name, b = bold, i = italic, color = color),
                                      numfmt = numfmt)
       invisible(self)
     },
