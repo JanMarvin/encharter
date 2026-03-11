@@ -326,7 +326,11 @@ ChartEx <- R6::R6Class(
 
     apply_label_style = function(node, s) {
       txPr <- xml2::xml_add_child(node, "cx:txPr")
-      xml2::xml_add_child(txPr, "a:bodyPr", lIns="0", tIns="0", rIns="0", bIns="0")
+      bodyPr <- xml2::xml_add_child(txPr, "a:bodyPr", lIns="0", tIns="0", rIns="0", bIns="0")
+      if (!is.null(s$rot)) {
+        xml2::xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
+        xml2::xml_set_attr(bodyPr, "vert", "horz")
+      }
       xml2::xml_add_child(txPr, "a:lstStyle")
       p <- xml2::xml_add_child(txPr, "a:p")
       pPr <- xml2::xml_add_child(p, "a:pPr")
@@ -355,18 +359,40 @@ ChartEx <- R6::R6Class(
       if (!is_x) {
         if (!is.null(s$min)) xml2::xml_set_attr(scaling, "min", as.character(s$min))
         if (!is.null(s$max)) xml2::xml_set_attr(scaling, "max", as.character(s$max))
+        if (!is.null(s$major)) xml2::xml_set_attr(scaling, "majorUnit", as.character(s$major))
+        if (!is.null(s$minor)) xml2::xml_set_attr(scaling, "minorUnit", as.character(s$minor))
       }
+
       if (!is.null(title)) private$add_rich_text(xml2::xml_add_child(node, "cx:title"), title, title_style)
-      if (!is.null(s$grid_color) || (!is_x && identical(s$major_gridlines, TRUE))) {
-        grid <- xml2::xml_add_child(node, "cx:majorGridlines")
-        if (!is.null(s$grid_color)) {
-          spPr <- xml2::xml_add_child(grid, "cx:spPr")
-          ln <- xml2::xml_add_child(spPr, "a:ln", w = "9525")
-          private$render_color_core(ln, s$grid_color, wrap = TRUE)
+
+      if (!is.null(s$gridlines) && !isFALSE(s$gridlines)) {
+        g <- xml2::xml_add_child(node, "cx:majorGridlines")
+        ln <- xml2::xml_add_child(xml2::xml_add_child(g, "cx:spPr"), "a:ln", w = "9525")
+        private$render_color_core(ln, s$grid_color %||% "D9D9D9", wrap = TRUE)
+        # Apply dash styles (dashed, dotted, etc.)
+        if (is.character(s$gridlines)) {
+          xml2::xml_add_child(ln, "a:prstDash", val = switch(s$gridlines,
+                                                             "dashed" = "dash",
+                                                             "dotted" = "dot",
+                                                             s$gridlines))
         }
       }
+
+      if (!is.null(s$minor_gridlines) && !isFALSE(s$minor_gridlines)) {
+        mg <- xml2::xml_add_child(node, "cx:minorGridlines")
+        ln_m <- xml2::xml_add_child(xml2::xml_add_child(mg, "cx:spPr"), "a:ln", w = "9525")
+        private$render_color_core(ln_m, s$minor_grid_color %||% "F2F2F2", wrap = TRUE)
+        if (is.character(s$minor_gridlines)) {
+          xml2::xml_add_child(ln_m, "a:prstDash", val = switch(s$minor_gridlines,
+                                                               "dashed" = "dash",
+                                                               "dotted" = "dot",
+                                                               s$minor_gridlines))
+        }
+      }
+
       if (!is.null(s$major_tick)) xml2::xml_add_child(node, "cx:majorTickMarks", type = s$major_tick)
       if (!is.null(s$minor_tick)) xml2::xml_add_child(node, "cx:minorTickMarks", type = s$minor_tick)
+
       xml2::xml_add_child(node, "cx:tickLabels")
       if (!is.null(numfmt)) xml2::xml_add_child(node, "cx:numFmt", formatCode = numfmt, sourceLinked = "0")
       if (length(s) > 0) private$apply_axis_style(node, s)
@@ -429,7 +455,12 @@ ChartEx <- R6::R6Class(
         }
       }
       tx <- xml2::xml_add_child(xml2::xml_add_child(parent, "cx:tx"), "cx:rich")
-      xml2::xml_add_child(tx, "a:bodyPr"); xml2::xml_add_child(tx, "a:lstStyle")
+      bodyPr <- xml2::xml_add_child(tx, "a:bodyPr")
+      if (!is.null(s$rot)) {
+        xml2::xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
+        xml2::xml_set_attr(bodyPr, "vert", "horz")
+      }
+      xml2::xml_add_child(tx, "a:lstStyle")
       p <- xml2::xml_add_child(tx, "a:p"); r <- xml2::xml_add_child(p, "a:r")
       rPr <- xml2::xml_add_child(r, "a:rPr")
       if (!is.null(s$sz)) xml2::xml_set_attr(rPr, "sz", as.character(s$sz*100))
@@ -440,7 +471,12 @@ ChartEx <- R6::R6Class(
     },
     apply_axis_style = function(node, style) {
       pr <- xml2::xml_add_child(node, "cx:txPr")
-      xml2::xml_add_child(pr, "a:bodyPr"); xml2::xml_add_child(pr, "a:lstStyle")
+      bodyPr <- xml2::xml_add_child(pr, "a:bodyPr")
+      if (!is.null(style$rot)) {
+        xml2::xml_set_attr(bodyPr, "rot", as.character(round(style$rot * 60000)))
+        xml2::xml_set_attr(bodyPr, "vert", "horz")
+      }
+      xml2::xml_add_child(pr, "a:lstStyle")
       pPr <- xml2::xml_add_child(xml2::xml_add_child(pr, "a:p"), "a:pPr")
       defRPr <- xml2::xml_add_child(pPr, "a:defRPr")
       if (!is.null(style$sz)) xml2::xml_set_attr(defRPr, "sz", as.character(style$sz*100))

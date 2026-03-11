@@ -22,7 +22,8 @@ my_funnel$set_chart_title("Sales Funnel")$
 # paretoLine
 my_pl <- ChartEx$new()
 my_pl$set_chart_title("Pareto Line")$
-  add_series("Data!$B$1", "Data!$B$2:$B$30", type = "paretoLine")
+  add_series("Data!$B$1", "Data!$B$2:$B$30", type = "paretoLine")$
+  set_y_axis(gridlines = "dashed")
 
 # sunburst
 my_sb <- ChartEx$new()
