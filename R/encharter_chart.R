@@ -48,10 +48,10 @@ Chart <- R6::R6Class(
     show_data_table = FALSE,
     #' @field axis_params Internal list for scaling, units, and formatting.
     axis_params = list(
-      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between"),
-      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between"),
-      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between"),
-      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between")
+      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = "autoZero", crosses_at = NULL, label_pos = "nextTo"),
+      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = "autoZero", crosses_at = NULL, label_pos = "nextTo"),
+      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = "autoZero", crosses_at = NULL, label_pos = "nextTo"),
+      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = "autoZero", crosses_at = NULL, label_pos = "nextTo")
     ),
 
     #' @description Initialize a new Chart object.
@@ -113,17 +113,25 @@ Chart <- R6::R6Class(
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
+    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
+    #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_x_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
-                          minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL) {
+                          minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                          line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
+                          crosses = NULL, crosses_at = NULL, label_pos = NULL) {
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
-                     minor_gridlines = minor_gridlines, cross_between = cross_between)
+                     minor_gridlines = minor_gridlines, cross_between = cross_between,
+                     line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
+                     crosses = crosses, crosses_at = crosses_at, label_pos = label_pos)
       self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
       invisible(self)
     },
@@ -142,17 +150,25 @@ Chart <- R6::R6Class(
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
+    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
+    #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                         major_time = NULL, minor_time = NULL, base_time = NULL,
                         format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                         grid_color = NULL, gridlines = NULL,
-                        minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL) {
+                        minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                        line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
+                        crosses = NULL, crosses_at = NULL, label_pos = NULL) {
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
-                     minor_gridlines = minor_gridlines, cross_between = cross_between)
+                     minor_gridlines = minor_gridlines, cross_between = cross_between,
+                     line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
+                     crosses = crosses, crosses_at = crosses_at, label_pos = label_pos)
       self$axis_params$y <- modifyList(self$axis_params$y, Filter(Negate(is.null), params))
       invisible(self)
     },
@@ -171,17 +187,25 @@ Chart <- R6::R6Class(
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
+    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
+    #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_y2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                            major_time = NULL, minor_time = NULL, base_time = NULL,
                            format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                            grid_color = NULL, gridlines = NULL,
-                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL) {
+                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
+                           crosses = NULL, crosses_at = NULL, label_pos = NULL) {
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
-                     minor_gridlines = minor_gridlines, cross_between = cross_between)
+                     minor_gridlines = minor_gridlines, cross_between = cross_between,
+                     line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
+                     crosses = crosses, crosses_at = crosses_at, label_pos = label_pos)
       self$axis_params$y2 <- modifyList(self$axis_params$y2, Filter(Negate(is.null), params))
       invisible(self)
     },
@@ -200,17 +224,25 @@ Chart <- R6::R6Class(
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
+    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
+    #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_x2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                            major_time = NULL, minor_time = NULL, base_time = NULL,
                            format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                            grid_color = NULL, gridlines = NULL,
-                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL) {
+                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
+                           crosses = NULL, crosses_at = NULL, label_pos = NULL) {
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
-                     minor_gridlines = minor_gridlines, cross_between = cross_between)
+                     minor_gridlines = minor_gridlines, cross_between = cross_between,
+                     line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
+                     crosses = crosses, crosses_at = crosses_at)
       self$axis_params$x2 <- modifyList(self$axis_params$x2, Filter(Negate(is.null), params))
       invisible(self)
     },
@@ -274,49 +306,82 @@ Chart <- R6::R6Class(
       self$plot_style <- list(fill = fill, line = line, line_width = line_width); invisible(self)
     },
 
-    #' @description Add a data series to the chart.
+    #' @description Add a data series to the chart with independent styling.
     #' @param header Cell range or string for series name.
     #' @param data Cell range for series values.
     #' @param cat Cell range for category labels.
     #' @param z_data Cell range for bubble sizes (bubbleChart only).
-    #' @param color Hex color for the series.
+    #' @param color Primary Hex color for the series (used as default for line and markers).
     #' @param type Chart type for this specific series (for combo charts).
     #' @param secondary Logical. Set to TRUE to move series to secondary axis.
     #' @param dir Bar direction ("col" or "bar").
     #' @param grouping Chart grouping ("standard", "stacked", "percentStacked").
-    #' @param smooth Logical. Enable line smoothing.
+    #' @param smooth Logical. Enable line smoothing for line/scatter charts.
     #' @param show_line Logical. Show the line connecting points.
     #' @param marker Marker type ("none", "circle", "square", "diamond", "triangle").
     #' @param marker_size Integer size of marker.
-    #' @param marker_fill Hex color for marker fill.
-    #' @param marker_line Hex color for marker border.
-    #' @param marker_line_width Numeric width of marker border.
+    #' @param marker_fill Hex color for the interior of the marker. Defaults to `color`.
+    #' @param marker_line Hex color for the marker border. Defaults to `color`.
+    #' @param marker_line_width Numeric width of the marker border.
     #' @param show_val Logical. Override global label settings for this series (show value).
     #' @param show_cat Logical. Override global label settings for this series (show category).
-    #' @param overlap Integer between -100 and 100. Determines how much bars in the same category overlap.
-    #' @param gap_width Integer between 0 and 500. Controls the space between bar clusters.
-    add_series = function(header, data, cat = NULL, z_data = NULL, color = "4472C4", type = NULL,
+    #' @param overlap Integer between -100 and 100 for bar charts.
+    #' @param gap_width Integer between 0 and 500 for bar charts.
+    #' @param line_type Line style: "dashed", "dotted", "dashDot", or "solid".
+    #' @param line_width Numeric width of the connecting line.
+    #' @param line_color Hex color for the connecting line. Defaults to `color`.
+    #' @param filled Logical; for radar charts, fills the interior area. Default FALSE.
+    add_series = function(header, data, cat = NULL, z_data = NULL,
+                          color = "4472C4", type = NULL,
                           secondary = FALSE, dir = "col", grouping = "standard",
                           overlap = NULL, gap_width = NULL,
                           smooth = FALSE, show_line = TRUE,
-                          marker = "none", marker_size = 5, marker_fill = NULL,
-                          marker_line = NULL, marker_line_width = 0.75,
-                          show_val = NULL, show_cat = NULL) {
+                          marker = "none", marker_size = 5,
+                          marker_fill = NULL, marker_line = NULL,
+                          marker_line_width = 0.75,
+                          show_val = NULL, show_cat = NULL,
+                          line_type = NULL, line_width = 1, line_color = NULL,
+                          filled = FALSE) {
 
       sec_val <- if (isTRUE(secondary)) "y" else if (isFALSE(secondary)) "none" else as.character(secondary)
 
+      # Create the clean object
       self$series_data[[length(self$series_data) + 1]] <- list(
-        header = header, data = data, cat = cat, z_data = z_data, color = color,
-        type = type %||% self$type, sec_type = sec_val, dir = dir,
-        grouping = grouping, overlap = overlap, gap_width = gap_width,
-        smooth = smooth, show_line = show_line,
-        marker = marker, marker_size = marker_size, marker_fill = marker_fill,
-        marker_line = marker_line, marker_line_width = marker_line_width,
-        show_val = show_val %||% self$label_params$show_val,
-        show_cat = show_cat %||% self$label_params$show_cat,
-        label_pos = self$label_params$pos,
+        header    = header,
+        data      = data,
+        cat       = cat,
+        type      = type %||% self$type,
+        sec_type  = sec_val,
+        smooth    = smooth,
+        filled    = filled,
+
+        # GROUPED STYLING: Line
+        line = list(
+          color = line_color %||% color,
+          width = line_width,
+          type  = line_type,
+          show  = show_line
+        ),
+
+        # GROUPED STYLING: Marker
+        marker = list(
+          symbol = marker,
+          size   = marker_size,
+          fill   = marker_fill %||% color,
+          line   = list(
+            color = marker_line %||% color,
+            width = marker_line_width,
+            show  = TRUE
+          )
+        ),
+
+        # Other params
+        show_val    = show_val %||% self$label_params$show_val,
+        show_cat    = show_cat %||% self$label_params$show_cat,
+        label_pos   = self$label_params$pos,
         label_style = self$label_params$style
       )
+
       invisible(self)
     },
 
@@ -336,12 +401,22 @@ Chart <- R6::R6Class(
       }
       xml2::xml_add_child(chart_root, "c:autoTitleDeleted", val = if(is.null(self$chart_title$text)) "1" else "0")
 
+      if (self$type == "surfaceChart") {
+        v3d <- xml2::xml_add_child(chart_root, "c:view3D")
+        xml2::xml_add_child(v3d, "c:rotX", val = "90")
+        xml2::xml_add_child(v3d, "c:rotY", val = "0")
+        xml2::xml_add_child(v3d, "c:rAngAx", val = "0")
+        xml2::xml_add_child(v3d, "c:perspective", val = "0")
+      }
+
       plot_area <- xml2::xml_add_child(chart_root, "c:plotArea")
       xml2::xml_add_child(plot_area, "c:layout")
 
-      u_ids <- openxlsx2:::random_string(n = 4, length = 8, pattern = "[0-9]")
+      u_ids <- openxlsx2:::random_string(n = 5, length = 8, pattern = "[0-9]")
       id_prim_cat <- u_ids[1]; id_prim_val <- u_ids[2]
       id_sec_cat  <- u_ids[3]; id_sec_val  <- u_ids[4]
+      id_ser_ax   <- u_ids[5]
+
 
       private$current_idx <- 0
       combos <- unique(lapply(self$series_data, function(x) list(type = x$type, sec_type = x$sec_type)))
@@ -351,9 +426,13 @@ Chart <- R6::R6Class(
         sub_series <- Filter(function(x) x$type == combo$type && x$sec_type == combo$sec_type, self$series_data)
         cat_id <- if(combo$sec_type %in% c("x", "xy")) id_sec_cat else id_prim_cat
         val_id <- if(combo$sec_type %in% c("y", "xy")) id_sec_val else id_prim_val
+        sec_cat_id <- if(self$type == "surfaceChart") id_sec_cat
 
-        private$render_series_node(plot_area, sub_series, combo$type, cat_id, val_id)
+        private$render_series_node(plot_area, sub_series, combo$type, cat_id, val_id, id_ser_ax)
         if (!combo$type %in% c("pieChart", "doughnutChart")) has_axes <- TRUE
+        # if (self$type == "surfaceChart") {
+        #   private$render_ser_ax(plot_area, id_sec_cat, id_prim_val)
+        # }
       }
 
       if (has_axes) {
@@ -363,6 +442,11 @@ Chart <- R6::R6Class(
           private$render_cat_ax(plot_area, id_prim_cat, id_prim_val, "b", delete = "0", title_obj = self$x_title, params = self$axis_params$x)
         }
         private$render_val_ax(plot_area, id_prim_val, id_prim_cat, "l", title_obj = self$y_title, params = self$axis_params$y)
+        if (self$type == "surfaceChart") {
+          # id_ser_ax is the 3rd ID you generated with random_string
+          # id_prim_val is the crossing axis
+          private$render_ser_ax(plot_area, id_ser_ax, id_prim_val)
+        }
 
         if (!is.null(self$y2_title$text) || any(vapply(self$series_data, function(x) x$sec_type %in% c("y", "xy"), logical(1)))) {
           private$render_val_ax(plot_area, id_sec_val, id_prim_cat, "r", title_obj = self$y2_title, crosses = "max", params = self$axis_params$y2)
@@ -408,6 +492,34 @@ Chart <- R6::R6Class(
       grepl("!.+", x)
     },
 
+    # Unified Line Styler
+    render_line_style = function(node, settings) {
+      if (isFALSE(settings$show)) {
+        xml2::xml_add_child(node, "a:noFill")
+        return()
+      }
+      # Set Width (Points to EMUs)
+      w_emu <- as.character(round((settings$width %||% 1) * 12700))
+      ln <- xml2::xml_add_child(node, "a:ln", w = w_emu)
+
+      # Set Color
+      private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), settings$color %||% "000000")
+
+      # Set Dash/Line Type
+      if (!is.null(settings$type)) {
+        private$apply_line_style(ln, settings$type)
+      }
+    },
+
+    # Simplified Fill Styler
+    render_fill_style = function(node, color) {
+      if (is.null(color) || color == "none") {
+        xml2::xml_add_child(node, "a:noFill")
+      } else {
+        private$render_fill(xml2::xml_add_child(node, "a:solidFill"), color)
+      }
+    },
+
     apply_line_style = function(ln_node, style_val) {
       if (is.character(style_val)) {
         # Mapping common names to OOXML presets
@@ -433,7 +545,7 @@ Chart <- R6::R6Class(
       }
     },
 
-    render_series_node = function(plot_area, sub_series, type, cat_id, val_id) {
+    render_series_node = function(plot_area, sub_series, type, cat_id, val_id, ser_id) {
       c_node <- xml2::xml_add_child(plot_area, paste0("c:", type))
 
       # 1. INITIAL PROPERTIES (Must come before <c:ser>)
@@ -446,12 +558,24 @@ Chart <- R6::R6Class(
         xml2::xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
 
-      if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart", "barChart")) {
+      if (type == "radarChart") {
+        radar_val <- if (isTRUE(sub_series[[1]]$filled)) "filled" else "standard"
+        xml2::xml_add_child(c_node, "c:radarStyle", val = radar_val)
+      }
+
+      if (type == "surfaceChart") {
+        surface_val <- if (isTRUE(sub_series[[1]]$filled)) "1" else "0"
+        xml2::xml_add_child(c_node, "c:wireframe", val = surface_val)
+      }
+
+      if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart", "barChart", "radarChart", "surfaceChart")) {
         xml2::xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
 
-      vary_val <- if (type %in% c("pieChart", "doughnutChart")) "1" else "0"
-      xml2::xml_add_child(c_node, "c:varyColors", val = vary_val)
+      if (type != "surfaceChart") {
+        vary_val <- if (type %in% c("pieChart", "doughnutChart")) "1" else "0"
+        xml2::xml_add_child(c_node, "c:varyColors", val = vary_val)
+      }
 
       # 2. THE SERIES LOOP
       for (s in sub_series) {
@@ -472,25 +596,25 @@ Chart <- R6::R6Class(
         # spPr (Series Styling)
         sp <- xml2::xml_add_child(ser, "c:spPr")
         if (type %in% c("barChart", "areaChart", "bubbleChart", "pieChart", "doughnutChart")) {
-          private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), s$color %||% "auto")
-        } else if (type %in% c("lineChart", "scatterChart")) {
-          ln <- xml2::xml_add_child(sp, "a:ln", w = "28575")
-          if (isFALSE(s$show_line)) xml2::xml_add_child(ln, "a:noFill")
-          else private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), s$color)
+          # Prioritize the grouped line color, then series color, then auto
+          fill_color <- s$line$color %||% s$color %||% "auto"
+          private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), fill_color)
+        } else if (type %in% c("lineChart", "scatterChart")) {# Convert points to EMUs (e.g., 1pt = 12700)
+          private$render_line_style(sp, s$line)
         }
         # --- EG_SerShared End ---
 
         # 3. Marker (Must be AFTER spPr but BEFORE dPt/dLbls per CT_ScatterSer)
         if (type %in% c("lineChart", "scatterChart", "radarChart")) {
-          mkr_symbol <- if(type == "scatterChart" && (is.null(s$marker) || s$marker == "none")) "circle" else s$marker
+          mkr_symbol <- if(type == "scatterChart" && (is.null(s$marker$symbol) || s$marker$symbol == "none")) "circle" else s$marker$symbol
           mkr <- xml2::xml_add_child(ser, "c:marker")
           xml2::xml_add_child(mkr, "c:symbol", val = mkr_symbol)
           if (!is.null(mkr_symbol) && mkr_symbol != "none") {
-            xml2::xml_add_child(mkr, "c:size", val = as.character(s$marker_size %||% 5))
+            xml2::xml_add_child(mkr, "c:size", val = as.character(s$marker$size))
             m_spPr <- xml2::xml_add_child(mkr, "c:spPr")
-            private$render_fill(xml2::xml_add_child(m_spPr, "a:solidFill"), s$marker_fill %||% s$color)
-            m_ln <- xml2::xml_add_child(m_spPr, "a:ln", w = as.character(round((s$marker_line_width %||% 0.75) * 12700)))
-            private$render_fill(xml2::xml_add_child(m_ln, "a:solidFill"), s$marker_line %||% s$color)
+            # Fill and Line are now separate
+            private$render_fill_style(m_spPr, s$marker$fill)
+            private$render_line_style(m_spPr, s$marker$line)
           }
         }
 
@@ -592,9 +716,12 @@ Chart <- R6::R6Class(
       }
 
       # 4. AXIS IDS (Must be the last elements in Bar/Line/Scatter)
-      if (!type %in% c("pieChart", "doughnutChart")) {
+      if (type %in% c("lineChart", "areaChart", "barChart", "scatterChart", "radarChart", "surfaceChart")) {
         xml2::xml_add_child(c_node, "c:axId", val = as.character(cat_id))
         xml2::xml_add_child(c_node, "c:axId", val = as.character(val_id))
+        if (type == "surfaceChart") {
+          xml2::xml_add_child(c_node, "c:axId", val = as.character(ser_id))
+        }
       }
     },
 
@@ -631,8 +758,13 @@ Chart <- R6::R6Class(
       # 3. Gridlines (Must come BEFORE numFmt and title)
       if (!is.null(params$gridlines) && !isFALSE(params$gridlines)) {
         g <- xml2::xml_add_child(ax, "c:majorGridlines")
-        ln <- xml2::xml_add_child(xml2::xml_add_child(g, "c:spPr"), "a:ln")
-        private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), params$grid_color %||% "D9D9D9")
+        grid_style <- list(color = params$grid_color %||% "D9D9D9", width = params$grid_width, type = params$gridlines)
+        private$render_line_style(xml2::xml_add_child(g, "c:spPr"), grid_style)
+      }
+      if (!is.null(params$minor_gridlines) && !isFALSE(params$minor_gridlines)) {
+        mg <- xml2::xml_add_child(ax, "c:minorGridlines")
+        m_style <- list(color = params$minor_grid_color %||% "F2F2F2", width = params$minor_grid_width, type = params$minor_gridlines)
+        private$render_line_style(xml2::xml_add_child(mg, "c:spPr"), m_style)
       }
 
       # 4. Title
@@ -648,6 +780,8 @@ Chart <- R6::R6Class(
         xml2::xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
       }
 
+      xml2::xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")
+
       # 6. Visual Styles (Shape and Text)
       ln <- xml2::xml_add_child(xml2::xml_add_child(ax, "c:spPr"), "a:ln")
       private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
@@ -656,9 +790,17 @@ Chart <- R6::R6Class(
       label_style$color <- params$label_color %||% params$color %||% "000000"
       private$apply_text_style(ax, label_style)
 
-      # 7. Crossing (EG_AxShared End)
+      # 7. Crossing (EG_AxShared)
       xml2::xml_add_child(ax, "c:crossAx", val = cross_id)
-      xml2::xml_add_child(ax, "c:crosses", val = "autoZero")
+
+      if (!is.null(params$crosses_at)) {
+        # Use a specific value (e.g., cross at Y=100)
+        xml2::xml_add_child(ax, "c:crossesAt", val = as.character(params$cross_at))
+      } else {
+        # Use a preset: 'autoZero', 'min', or 'max'
+        cross_val <- params$crosses %||% "autoZero"
+        xml2::xml_add_child(ax, "c:crosses", val = cross_val)
+      }
 
       # 8. DateAx/CatAx Specific Sequence (Must come AFTER EG_AxShared)
       if (is_date) {
@@ -701,15 +843,13 @@ Chart <- R6::R6Class(
       # 3. Gridlines (MUST come here, before Title and NumFmt)
       if (!is.null(params$gridlines) && !isFALSE(params$gridlines)) {
         g <- xml2::xml_add_child(ax, "c:majorGridlines")
-        ln <- xml2::xml_add_child(xml2::xml_add_child(g, "c:spPr"), "a:ln")
-        private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), params$grid_color %||% "D9D9D9")
-        private$apply_line_style(ln, params$gridlines)
+        style <- list(color = params$grid_color %||% "D9D9D9", width = params$grid_width, type = params$gridlines)
+        private$render_line_style(xml2::xml_add_child(g, "c:spPr"), style)
       }
       if (!is.null(params$minor_gridlines) && !isFALSE(params$minor_gridlines)) {
         mg <- xml2::xml_add_child(ax, "c:minorGridlines")
-        ln_m <- xml2::xml_add_child(xml2::xml_add_child(mg, "c:spPr"), "a:ln")
-        private$render_fill(xml2::xml_add_child(ln_m, "a:solidFill"), params$minor_grid_color %||% "F2F2F2")
-        private$apply_line_style(ln_m, params$minor_gridlines)
+        m_style <- list(color = params$minor_grid_color %||% "F2F2F2", width = params$minor_grid_width, type = params$minor_gridlines)
+        private$render_line_style(xml2::xml_add_child(mg, "c:spPr"), m_style)
       }
 
       # 4. Title
@@ -725,9 +865,11 @@ Chart <- R6::R6Class(
         xml2::xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
       }
 
+      xml2::xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")
+
       # 6. Shape and Text Properties
-      ln <- xml2::xml_add_child(xml2::xml_add_child(ax, "c:spPr"), "a:ln")
-      private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
+      ax_style <- list(color = params$color %||% "000000", width = params$line_width)
+      private$render_line_style(xml2::xml_add_child(ax, "c:spPr"), ax_style)
 
       label_style <- params
       label_style$color <- params$label_color %||% params$color %||% "000000"
@@ -742,6 +884,20 @@ Chart <- R6::R6Class(
       # 8. Units (End of ValAx)
       if (!is.null(params$major)) xml2::xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
       if (!is.null(params$minor)) xml2::xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
+    },
+
+    render_ser_ax = function(parent, id, cross_id) {
+      ax <- xml2::xml_add_child(parent, "c:serAx")
+      xml2::xml_add_child(ax, "c:axId", val = as.character(id))
+
+      scaling <- xml2::xml_add_child(ax, "c:scaling")
+      xml2::xml_add_child(scaling, "c:orientation", val = "minMax")
+
+      xml2::xml_add_child(ax, "c:delete", val = "0")
+      xml2::xml_add_child(ax, "c:axPos", val = "b")
+      xml2::xml_add_child(ax, "c:tickLblPos", val = "nextTo")
+      xml2::xml_add_child(ax, "c:crossAx", val = as.character(cross_id))
+      xml2::xml_add_child(ax, "c:crosses", val = "autoZero")
     },
 
     apply_text_style = function(node, s) {
@@ -780,6 +936,10 @@ Chart <- R6::R6Class(
 
     render_fill = function(node, color_val) {
       if (length(color_val) == 0 || is.null(color_val) || color_val == "") color_val <- "000000"
+      if (tolower(color_val) == "auto") {
+        xml2::xml_add_child(node, "a:schemeClr", val = "accent1")
+        return()
+      }
       hex <- if (inherits(color_val, "wbColour")) attr(color_val, "rgb") %||% as.character(color_val) else as.character(color_val)
       clean <- toupper(gsub("^#", "", hex))
       if (nchar(clean) == 8) clean <- substr(clean, 3, 8)

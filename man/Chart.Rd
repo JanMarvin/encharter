@@ -209,7 +209,13 @@ Set Primary X-axis scaling, units, and format.
   gridlines = NULL,
   minor_grid_color = NULL,
   minor_gridlines = NULL,
-  cross_between = NULL
+  cross_between = NULL,
+  line_width = NULL,
+  grid_width = NULL,
+  minor_grid_width = NULL,
+  crosses = NULL,
+  crosses_at = NULL,
+  label_pos = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -243,6 +249,14 @@ Set Primary X-axis scaling, units, and format.
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 
 \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
 }
 \if{html}{\out{</div>}}
 }
@@ -270,7 +284,13 @@ Set Primary Y-axis scaling, units, and format.
   gridlines = NULL,
   minor_grid_color = NULL,
   minor_gridlines = NULL,
-  cross_between = NULL
+  cross_between = NULL,
+  line_width = NULL,
+  grid_width = NULL,
+  minor_grid_width = NULL,
+  crosses = NULL,
+  crosses_at = NULL,
+  label_pos = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -304,6 +324,14 @@ Set Primary Y-axis scaling, units, and format.
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 
 \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
 }
 \if{html}{\out{</div>}}
 }
@@ -331,7 +359,13 @@ Set Secondary Y-axis scaling, units, and format.
   gridlines = NULL,
   minor_grid_color = NULL,
   minor_gridlines = NULL,
-  cross_between = NULL
+  cross_between = NULL,
+  line_width = NULL,
+  grid_width = NULL,
+  minor_grid_width = NULL,
+  crosses = NULL,
+  crosses_at = NULL,
+  label_pos = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -365,6 +399,14 @@ Set Secondary Y-axis scaling, units, and format.
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 
 \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
 }
 \if{html}{\out{</div>}}
 }
@@ -392,7 +434,13 @@ Set Secondary X-axis scaling, units, and format.
   gridlines = NULL,
   minor_grid_color = NULL,
   minor_gridlines = NULL,
-  cross_between = NULL
+  cross_between = NULL,
+  line_width = NULL,
+  grid_width = NULL,
+  minor_grid_width = NULL,
+  crosses = NULL,
+  crosses_at = NULL,
+  label_pos = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -426,6 +474,14 @@ Set Secondary X-axis scaling, units, and format.
 \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
 
 \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
 }
 \if{html}{\out{</div>}}
 }
@@ -597,7 +653,7 @@ Style the inner plot area background.
 \if{html}{\out{<a id="method-Chart-add_series"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-add_series}{}}}
 \subsection{Method \code{add_series()}}{
-Add a data series to the chart.
+Add a data series to the chart with independent styling.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Chart$add_series(
   header,
@@ -619,7 +675,11 @@ Add a data series to the chart.
   marker_line = NULL,
   marker_line_width = 0.75,
   show_val = NULL,
-  show_cat = NULL
+  show_cat = NULL,
+  line_type = NULL,
+  line_width = 1,
+  line_color = NULL,
+  filled = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -634,7 +694,7 @@ Add a data series to the chart.
 
 \item{\code{z_data}}{Cell range for bubble sizes (bubbleChart only).}
 
-\item{\code{color}}{Hex color for the series.}
+\item{\code{color}}{Primary Hex color for the series (used as default for line and markers).}
 
 \item{\code{type}}{Chart type for this specific series (for combo charts).}
 
@@ -644,11 +704,11 @@ Add a data series to the chart.
 
 \item{\code{grouping}}{Chart grouping ("standard", "stacked", "percentStacked").}
 
-\item{\code{overlap}}{Integer between -100 and 100. Determines how much bars in the same category overlap.}
+\item{\code{overlap}}{Integer between -100 and 100 for bar charts.}
 
-\item{\code{gap_width}}{Integer between 0 and 500. Controls the space between bar clusters.}
+\item{\code{gap_width}}{Integer between 0 and 500 for bar charts.}
 
-\item{\code{smooth}}{Logical. Enable line smoothing.}
+\item{\code{smooth}}{Logical. Enable line smoothing for line/scatter charts.}
 
 \item{\code{show_line}}{Logical. Show the line connecting points.}
 
@@ -656,15 +716,23 @@ Add a data series to the chart.
 
 \item{\code{marker_size}}{Integer size of marker.}
 
-\item{\code{marker_fill}}{Hex color for marker fill.}
+\item{\code{marker_fill}}{Hex color for the interior of the marker. Defaults to `color`.}
 
-\item{\code{marker_line}}{Hex color for marker border.}
+\item{\code{marker_line}}{Hex color for the marker border. Defaults to `color`.}
 
-\item{\code{marker_line_width}}{Numeric width of marker border.}
+\item{\code{marker_line_width}}{Numeric width of the marker border.}
 
 \item{\code{show_val}}{Logical. Override global label settings for this series (show value).}
 
 \item{\code{show_cat}}{Logical. Override global label settings for this series (show category).}
+
+\item{\code{line_type}}{Line style: "dashed", "dotted", "dashDot", or "solid".}
+
+\item{\code{line_width}}{Numeric width of the connecting line.}
+
+\item{\code{line_color}}{Hex color for the connecting line. Defaults to `color`.}
+
+\item{\code{filled}}{Logical; for radar charts, fills the interior area. Default FALSE.}
 }
 \if{html}{\out{</div>}}
 }

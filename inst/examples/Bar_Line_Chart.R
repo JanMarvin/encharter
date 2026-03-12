@@ -29,6 +29,8 @@ my_chart$
     data   = "Sheet1!$C$2:$C$13",
     color  = "ED7D31",
     type   = "lineChart",
+    line_width = 2.5,
+    line_type  = "dashed",
     secondary = TRUE
   )
 
