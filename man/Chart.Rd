@@ -80,7 +80,7 @@ the underlying XML required for the \code{add_chart_xml} method.
 \subsection{Method \code{new()}}{
 Initialize a new Chart object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Chart$new(type = "lineChart")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Chart$new(type = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

@@ -10,7 +10,7 @@ net_income <- data.frame(
 )
 
 # 2. Setup the Chart
-my_chart <- Chart$new("barChart")
+my_chart <- Chart$new()
 
 my_chart$
   set_chart_title("Profit Analysis (Negative Values)")$
@@ -18,7 +18,8 @@ my_chart$
     header = "Profit",
     data   = "Sheet1!$B$2:$B$7",
     cat    = "Sheet1!$A$2:$A$7",
-    color  = "4472C4"
+    color  = "4472C4",
+    type   = "barChart"
   )$
   set_x_axis(
     crosses   = "autoZero",

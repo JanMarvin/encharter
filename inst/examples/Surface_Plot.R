@@ -15,7 +15,7 @@ surface_data <- data.frame(
 
 # 2. Setup the Chart
 # We use "surfaceChart" type.
-contour_plot <- Chart$new("surfaceChart")
+contour_plot <- Chart$new()
 
 for (i in 2:6) {
   contour_plot$add_series(
@@ -24,7 +24,8 @@ for (i in 2:6) {
     # Data: A single row of values (e.g., B2:F2, B3:F3...)
     data   = paste0("Sheet1!$B$", i, ":$F$", i),
     # Category: The shared X-axis labels (B1:F1)
-    cat    = "Sheet1!$B$1:$F$1"
+    cat    = "Sheet1!$B$1:$F$1",
+    type   = "surfaceChart"
   )
 }
 

@@ -13,7 +13,7 @@ skill_data <- data.frame(
 
 # 2. Setup a Standard Radar Chart
 # Note: Line width and markers work just like in Line charts
-radar_std <- Chart$new("radarChart")
+radar_std <- Chart$new()
 radar_std$
   set_chart_title("Standard Radar: Model Comparison")$
   set_legend_style(pos = "b")$
@@ -23,7 +23,8 @@ radar_std$
     data   = "Sheet1!$B$2:$B$6",
     color  = "4472C4",
     line_width = 2,
-    marker = "circle"
+    marker = "circle",
+    type = "radarChart"
   )$
   add_series(
     header = "Model Y",
@@ -31,7 +32,8 @@ radar_std$
     data   = "Sheet1!$C$2:$C$6",
     color  = "ED7D31",
     line_width = 2,
-    marker = "square"
+    marker = "square",
+    type = "radarChart"
   )
 
 # 3. Setup a Filled Radar Chart

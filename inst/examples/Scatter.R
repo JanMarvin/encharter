@@ -12,7 +12,7 @@ scatter_data <- data.frame(
 )
 
 # 2. The Chart
-scatter_plot <- Chart$new("scatterChart")
+scatter_plot <- Chart$new()
 
 scatter_plot$add_series(
   header = "Conversions!",   # "Conversions"

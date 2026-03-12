@@ -1,6 +1,8 @@
 encharter
 ================
 
+Experimental package that is still in early development.
+
 This is a lightweight R6-based engine for generating Office Open XML
 (OOXML) charts. It is designed for users who need precise control over
 chart internals—such as combining multiple chart types, mapping
@@ -21,7 +23,7 @@ df_combo <- data.frame(
 wb <- wb_add_data(wb, sheet = "Data", x = df_combo)
 
 # 2. Initialize and configure the Chart
-combo_chart <- Chart$new("barChart")
+combo_chart <- Chart$new()
 combo_chart$set_chart_title("Monthly Revenue & Growth")
 
 # Primary Axis: Revenue Bars
@@ -29,7 +31,8 @@ combo_chart$add_series(
   header = "Data!$B$1",
   cat    = "Data!$A$2:$A$13",
   data   = "Data!$B$2:$B$13",
-  color  = "4472C4"
+  color  = "4472C4",
+  type   = "barChart"
 )
 
 # Secondary Axis: Growth Line

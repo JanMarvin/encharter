@@ -12,7 +12,7 @@ sales_data <- data.frame(
 
 # 2. Setup the Chart Object
 # Note: Ensure the sheet name in the string exactly matches the wb_add_worksheet name
-my_chart <- Chart$new("barChart") # Base is Bar for Volume
+my_chart <- Chart$new() # Base is Bar for Volume
 my_chart$
   set_chart_title("Sales vs Volume")$
   set_legend_style(pos = "b", font_size = 10)$
@@ -21,7 +21,8 @@ my_chart$
     header = "Sheet1!$B$1",
     data   = "Sheet1!$B$2:$B$13",
     cat    = "Sheet1!$A$2:$A$13",
-    color  = "4472C4"
+    color  = "4472C4",
+    type   = "barChart"
   )$
   # Secondary Axis: Sales (Line)
   add_series(

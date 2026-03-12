@@ -15,7 +15,7 @@ wb$add_data(sheet = "Dashboard", x = data)
 
 # 3. Create the Chart Object
 # We start with "barChart" as the base type
-my_chart <- Chart$new(type = "barChart")
+my_chart <- Chart$new(type = )
 
 # Set Titles
 my_chart$set_chart_title("Annual Sales & Growth", bold = TRUE, sz = 16)
@@ -45,7 +45,8 @@ my_chart$add_series(
   header    = "Dashboard!$B$1",
   data      = "Dashboard!$B$2:$B$13",
   cat       = "Dashboard!$A$2:$A$13",
-  color     = "4F81BD"
+  color     = "4F81BD",
+  type      = "barChart"
 )
 
 # Series 2: Growth (Secondary Axis, Line)

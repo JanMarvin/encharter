@@ -56,7 +56,15 @@ Chart <- R6::R6Class(
 
     #' @description Initialize a new Chart object.
     #' @param type Initial chart type (e.g., "lineChart", "barChart", "pieChart").
-    initialize = function(type = "lineChart") {
+    initialize = function(type = NULL) {
+
+      private$validate_input(
+        type,
+        c("barChart", "lineChart", "areaChart", "scatterChart",
+          "pieChart", "doughnutChart", "radarChart", "bubbleChart", "surfaceChart"),
+        "series type"
+      )
+
       self$type <- type
       self$xml <- xml2::read_xml(
         '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"
@@ -125,6 +133,24 @@ Chart <- R6::R6Class(
                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                           crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+
+      crosses   <- private$validate_input(crosses, c("autoZero", "min", "max"), "crosses")
+      label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      if (is.character(gridlines)) {
+        private$validate_input(
+          gridlines,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "gridlines"
+        )
+      }
+      if (is.character(minor_gridlines)) {
+        private$validate_input(
+          minor_gridlines,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "minor_gridlines"
+        )
+      }
+
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
@@ -162,6 +188,24 @@ Chart <- R6::R6Class(
                         minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                         line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                         crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+
+      crosses   <- private$validate_input(crosses, c("autoZero", "min", "max"), "crosses")
+      label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      if (is.character(gridlines)) {
+        private$validate_input(
+          gridlines,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "gridlines"
+        )
+      }
+      if (is.character(minor_gridlines)) {
+        private$validate_input(
+          minor_gridlines,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "minor_gridlines"
+        )
+      }
+
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
@@ -199,6 +243,24 @@ Chart <- R6::R6Class(
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                            crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+
+      crosses   <- private$validate_input(crosses, c("autoZero", "min", "max"), "crosses")
+      label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      if (is.character(gridlines)) {
+        private$validate_input(
+          gridlines,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "gridlines"
+        )
+      }
+      if (is.character(minor_gridlines)) {
+        private$validate_input(
+          minor_gridlines,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "minor_gridlines"
+        )
+      }
+
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
@@ -236,6 +298,24 @@ Chart <- R6::R6Class(
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                            crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+
+      crosses   <- private$validate_input(crosses, c("autoZero", "min", "max"), "crosses")
+      label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      if (is.character(gridlines)) {
+        private$validate_input(
+          line_type,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "line_type"
+        )
+      }
+      if (is.character(minor_gridlines)) {
+        private$validate_input(
+          line_type,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "line_type"
+        )
+      }
+
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
@@ -275,6 +355,7 @@ Chart <- R6::R6Class(
     #' @param overlay Logical. Whether the legend overlays the plot area.
     #' @param ... Font styling for legend text (e.g., color, sz, name).
     set_legend_style = function(pos = "r", overlay = FALSE, ...) {
+      pos <- private$validate_input(pos, c("r", "l", "t", "b", "tr"), "pos")
       self$legend_params <- list(pos = pos, overlay = ifelse(overlay, "1", "0"), style = list(...))
       invisible(self)
     },
@@ -286,6 +367,7 @@ Chart <- R6::R6Class(
     #' @param pos Label position (e.g., 't', 'b', 'ctr', 'l', 'r').
     #' @param ... Font styling for labels (e.g., color, sz, name).
     set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", ...) {
+      pos <- private$validate_input(pos, c("t", "b", "l", "r", "ctr", "inEnd", "outEnd", "bestFit"), "pos")
       self$label_params <- list(show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key, pos = pos, style = list(...))
       invisible(self)
     },
@@ -343,17 +425,53 @@ Chart <- R6::R6Class(
                           line_type = NULL, line_width = 1, line_color = NULL,
                           filled = FALSE) {
 
+      private$validate_input(
+        type,
+        c("barChart", "lineChart", "areaChart", "scatterChart",
+          "pieChart", "doughnutChart", "radarChart", "bubbleChart", "surfaceChart"),
+        "series type"
+      )
+
+      marker <- private$validate_input(
+        marker,
+        c("none", "circle", "dash", "diamond", "dot", "plus", "square", "star", "triangle", "x"),
+        "marker"
+      )
+
+      dir <- private$validate_input(dir, c("col", "bar"), "dir")
+
+      grouping <- private$validate_input(
+        grouping,
+        c("standard", "clustered", "stacked", "percentStacked"),
+        "grouping"
+      )
+
+      # 2. Validate Line Type (Dash Style)
+      # OOXML presetDash values
+      private$validate_input(
+        line_type,
+        c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+        "line_type"
+      )
+
       sec_val <- if (isTRUE(secondary)) "y" else if (isFALSE(secondary)) "none" else as.character(secondary)
+
+      series_type <- type %||% self$type %||% "barChart"
+      self$type <- series_type
 
       # Create the clean object
       self$series_data[[length(self$series_data) + 1]] <- list(
         header    = header,
         data      = data,
         cat       = cat,
-        type      = type %||% self$type,
+        type      = series_type,
         sec_type  = sec_val,
         smooth    = smooth,
         filled    = filled,
+        dir       = dir,
+        grouping  = grouping,
+        overlap   = overlap,
+        gap_width = gap_width,
 
         # GROUPED STYLING: Line
         line = list(
@@ -430,9 +548,6 @@ Chart <- R6::R6Class(
 
         private$render_series_node(plot_area, sub_series, combo$type, cat_id, val_id, id_ser_ax)
         if (!combo$type %in% c("pieChart", "doughnutChart")) has_axes <- TRUE
-        # if (self$type == "surfaceChart") {
-        #   private$render_ser_ax(plot_area, id_sec_cat, id_prim_val)
-        # }
       }
 
       if (has_axes) {
@@ -526,7 +641,6 @@ Chart <- R6::R6Class(
         val <- switch(style_val,
                       "dashed"  = "dash",
                       "dotted"  = "dot",
-                      "dashDot" = "dashDot",
                       style_val # Fallback to literal string
         )
         xml2::xml_add_child(ln_node, "a:prstDash", val = val)
@@ -596,11 +710,16 @@ Chart <- R6::R6Class(
         # spPr (Series Styling)
         sp <- xml2::xml_add_child(ser, "c:spPr")
         if (type %in% c("barChart", "areaChart", "bubbleChart", "pieChart", "doughnutChart")) {
-          # Prioritize the grouped line color, then series color, then auto
           fill_color <- s$line$color %||% s$color %||% "auto"
           private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), fill_color)
-        } else if (type %in% c("lineChart", "scatterChart")) {# Convert points to EMUs (e.g., 1pt = 12700)
-          private$render_line_style(sp, s$line)
+        } else if (type %in% c("lineChart", "scatterChart")) {
+          # If show_line is FALSE, we must explicitly tell OOXML not to draw the line
+          if (isFALSE(s$line$show)) {
+            ln <- xml2::xml_add_child(sp, "a:ln")
+            xml2::xml_add_child(ln, "a:noFill")
+          } else {
+            private$render_line_style(sp, s$line)
+          }
         }
         # --- EG_SerShared End ---
 
@@ -684,7 +803,12 @@ Chart <- R6::R6Class(
         } else {
           if (!is.null(s$cat)) {
             cat_node <- xml2::xml_add_child(ser, "c:cat")
-            c_ref_type <- if (grepl("!", s$cat)) "c:strRef" else "c:strLit"
+            is_multi <- grepl("\\$[A-Z]+\\$.*:\\$[A-Z]+\\$", s$cat)
+            if (is_multi && grepl("!", s$cat)) {
+              c_ref_type <- "c:multiLvlStrRef"
+            } else {
+              c_ref_type <- if (grepl("!", s$cat)) "c:strRef" else "c:strLit"
+            }
             xml2::xml_add_child(xml2::xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
           }
           val_node <- xml2::xml_add_child(ser, "c:val")
@@ -823,6 +947,7 @@ Chart <- R6::R6Class(
         xml2::xml_add_child(ax, "c:auto", val = "1")
         xml2::xml_add_child(ax, "c:lblOffset", val = "100")
         if (!is.null(params$tick_lbl_skip)) xml2::xml_add_child(ax, "c:tickLblSkip", val = as.character(params$tick_lbl_skip))
+        xml2::xml_add_child(ax, "c:noMultiLvlLbl", val = "0")
       }
     },
 
@@ -944,6 +1069,18 @@ Chart <- R6::R6Class(
       clean <- toupper(gsub("^#", "", hex))
       if (nchar(clean) == 8) clean <- substr(clean, 3, 8)
       xml2::xml_add_child(node, "a:srgbClr", val = clean)
+    },
+
+    validate_input = function(val, choices, arg_name = "Argument") {
+      if (is.null(val)) return(choices[1])
+
+      # match.arg works best when choices are provided as a character vector
+      res <- try(match.arg(val, choices), silent = TRUE)
+
+      if (inherits(res, "try-error")) {
+        stop(sprintf("'%s' must be one of: %s", arg_name, paste(choices, collapse = ", ")), call. = FALSE)
+      }
+      return(res)
     }
   )
 )
