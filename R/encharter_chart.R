@@ -459,6 +459,40 @@ Chart <- R6::R6Class(
       series_type <- type %||% self$type %||% "barChart"
       self$type <- series_type
 
+      # Capture expressions for NSE support
+      h_expr <- substitute(header)
+      c_expr <- substitute(cat)
+
+      if (inherits(data, "wb_data")) {
+        wb_dims   <- attr(data, "dims")
+        wb_sheet  <- attr(data, "sheet")
+        col_names <- names(data)
+
+        # Resolve Header/Values: Handle both quoted "mpg" and unquoted mpg
+        h_name <- if (is.symbol(h_expr)) deparse1(h_expr) else header
+
+        if (!is.null(h_name) && h_name %in% col_names) {
+          col_idx <- which(col_names == h_name)
+
+          header <- sprintf("'%s'!%s", wb_sheet, wb_dims[1, col_idx])
+          data   <- sprintf("'%s'!%s:%s",
+                            wb_sheet,
+                            wb_dims[2, col_idx],
+                            wb_dims[nrow(wb_dims), col_idx])
+        }
+
+        # Resolve Categories: Handle both quoted "cyl" and unquoted cyl
+        c_name <- if (is.symbol(c_expr)) deparse1(c_expr) else cat
+
+        if (!is.null(c_name) && c_name %in% col_names) {
+          col_idx <- which(col_names == c_name)
+          cat <- sprintf("'%s'!%s:%s",
+                         wb_sheet,
+                         wb_dims[2, col_idx],
+                         wb_dims[nrow(wb_dims), col_idx])
+        }
+      }
+
       # Create the clean object
       self$series_data[[length(self$series_data) + 1]] <- list(
         header    = header,

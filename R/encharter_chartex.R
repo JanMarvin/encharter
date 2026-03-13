@@ -169,19 +169,31 @@ ChartEx <- R6::R6Class(
     #' @param subtotals Numeric vector of indices to treat as subtotals (Waterfall only).
     add_series = function(header, data, cat = NULL, type = "waterfall", fill_color = "auto",
                           line_color = NULL, line_width = 1, subtotals = NULL) {
-      fix_quote = function(x) {
-        if (is.null(x)) return(NULL)
-        if (grepl(".+!.+", x) && !grepl("^'", x)) {
-          parts <- strsplit(x, "!", fixed = TRUE)[[1]]
-          # Ensure we actually have two parts before joining
-          if (length(parts) >= 2) {
-            return(paste0("'", parts[1], "'!", parts[2]))
-          }
+
+      h_expr <- substitute(header)
+      c_expr <- substitute(cat)
+
+      if (inherits(data, "wb_data")) {
+        wb_dims   <- attr(data, "dims")
+        wb_sheet  <- attr(data, "sheet")
+        col_names <- names(data)
+
+        h_name <- if (is.symbol(h_expr)) deparse1(h_expr) else header
+        if (!is.null(h_name) && h_name %in% col_names) {
+          idx <- which(col_names == h_name)
+          header <- sprintf("'%s'!%s", wb_sheet, wb_dims[1, idx])
+          data   <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[2, idx], wb_dims[nrow(wb_dims), idx])
         }
-        return(x)
+
+        c_name <- if (is.symbol(c_expr)) deparse1(c_expr) else cat
+        if (!is.null(c_name) && c_name %in% col_names) {
+          idx <- which(col_names == c_name)
+          cat <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[2, idx], wb_dims[nrow(wb_dims), idx])
+        }
       }
+
       self$series_data[[length(self$series_data) + 1]] <- list(
-        header = fix_quote(header), data = fix_quote(data), cat = fix_quote(cat),
+        header = private$fix_quote(header), data = private$fix_quote(data), cat = private$fix_quote(cat),
         type = type, fill_color = fill_color, line_color = line_color, line_width = line_width,
         subtotals = subtotals
       )
@@ -322,6 +334,18 @@ ChartEx <- R6::R6Class(
       if (is.null(x) || x == "") return(FALSE)
       # Check if '!' exists and is not at the very end (i.e., has a cell ref after it)
       grepl("!.+", x)
+    },
+
+    fix_quote = function(x) {
+      if (is.null(x)) return(NULL)
+      if (grepl(".+!.+", x) && !grepl("^'", x)) {
+        parts <- strsplit(x, "!", fixed = TRUE)[[1]]
+        # Ensure we actually have two parts before joining
+        if (length(parts) >= 2) {
+          return(paste0("'", parts[1], "'!", parts[2]))
+        }
+      }
+      return(x)
     },
 
     apply_label_style = function(node, s) {
