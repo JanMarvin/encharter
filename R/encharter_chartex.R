@@ -278,7 +278,7 @@ ChartEx <- R6::R6Class(
           st_node <- xml2::xml_add_child(lpr, "cx:subtotals")
 
           if (is.null(s$subtotals)) {
-            coords <- dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
+            coords <- openxlsx2::dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
             last_idx <- max(length(coords$row), length(coords$col)) - 1
             xml2::xml_add_child(st_node, "cx:idx", val = "0")
             xml2::xml_add_child(st_node, "cx:idx", val = as.character(last_idx))

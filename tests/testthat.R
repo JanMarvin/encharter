@@ -8,6 +8,5 @@
 
 library(testthat)
 library(encharter)
-library(openxlsx2)
 
 test_check("encharter")

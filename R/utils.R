@@ -1,3 +1,9 @@
+#' Internal Helper: Backport of deparse1 for R < 4.0.0
+#' @noRd
+deparse1 <- function(expr, collapse = " ", width.cutoff = 500L, ...) {
+  paste(deparse(expr, width.cutoff, ...), collapse = collapse)
+}
+
 #' Internal Helper: Null Coalescing Operator
 #' @keywords internal
 #' @noRd
