@@ -46,6 +46,8 @@ integrates with `openxlsx2` for workbook generation.
 \item{\code{chart_area_style}}{Styling for the outer chart area.}
 
 \item{\code{plot_area_style}}{Styling for the inner plot area.}
+
+\item{\code{palette}}{A vector of hex colors to use for series.}
 }
 \if{html}{\out{</div>}}
 }
@@ -308,7 +310,7 @@ Add a data series to the chart.
   data,
   cat = NULL,
   type = "waterfall",
-  fill_color = "auto",
+  color = "auto",
   line_color = NULL,
   line_width = 1,
   subtotals = NULL
@@ -326,7 +328,7 @@ Add a data series to the chart.
 
 \item{\code{type}}{Type of chart (waterfall, sunburst, treemap, regionMap).}
 
-\item{\code{fill_color}}{Hex color or "auto".}
+\item{\code{color}}{Hex color or "auto".}
 
 \item{\code{line_color}}{Border color.}
 

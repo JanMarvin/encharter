@@ -45,6 +45,8 @@ ChartEx <- R6::R6Class(
     chart_area_style = list(),
     #' @field plot_area_style Styling for the inner plot area.
     plot_area_style = list(),
+    #' @field palette A vector of hex colors to use for series.
+    palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
 
     #' @description Create a new ChartEx object.
     #' @return A new `ChartEx` object.
@@ -163,12 +165,17 @@ ChartEx <- R6::R6Class(
     #' @param data Cell range for the numeric values.
     #' @param cat Cell range for the category labels.
     #' @param type Type of chart (waterfall, sunburst, treemap, regionMap).
-    #' @param fill_color Hex color or "auto".
+    #' @param color Hex color or "auto".
     #' @param line_color Border color.
     #' @param line_width Border width.
     #' @param subtotals Numeric vector of indices to treat as subtotals (Waterfall only).
-    add_series = function(header = NULL, data, cat = NULL, type = "waterfall", fill_color = "auto",
+    add_series = function(header = NULL, data, cat = NULL, type = "waterfall", color = "auto",
                       line_color = NULL, line_width = 1, subtotals = NULL) {
+
+      if (is.null(color)) {
+        color_idx <- (length(self$series_data) %% length(self$palette)) + 1
+        color <- self$palette[color_idx]
+      }
 
       h_label <- tryCatch(if (is.symbol(substitute(header))) deparse1(substitute(header)) else header, error = function(e) NULL)
       c_label <- tryCatch(if (is.symbol(substitute(cat))) deparse1(substitute(cat)) else cat, error = function(e) NULL)
@@ -215,7 +222,7 @@ ChartEx <- R6::R6Class(
 
       self$series_data[[length(self$series_data) + 1]] <- list(
         header = private$fix_quote(header), data = private$fix_quote(data), cat = private$fix_quote(cat),
-        type = type, fill_color = fill_color, line_color = line_color, line_width = line_width,
+        type = type, color = color, line_color = line_color, line_width = line_width,
         subtotals = subtotals
       )
       invisible(self)
@@ -281,10 +288,18 @@ ChartEx <- R6::R6Class(
           }
         }
 
-        if ((length(s$fill_color) == 1 && s$fill_color != "auto") || !is.null(s$line_color)) {
+        if ((length(s$color) == 1 && s$color != "auto") || !is.null(s$line_color)) {
           spPr_ser <- xml2::xml_add_child(ser, "cx:spPr")
-          if (length(s$fill_color) == 1 && s$fill_color != "auto") private$render_color(spPr_ser, s$fill_color)
+          if (length(s$color) == 1 && s$color != "auto") private$render_color(spPr_ser, s$color)
           if (!is.null(s$line_color)) private$render_color(xml2::xml_add_child(spPr_ser, "a:ln", w = as.character(round(s$line_width * 12700))), s$line_color)
+        }
+
+        if (length(s$color) > 1) {
+          for (j in seq_along(s$color)) {
+            dPt <- xml2::xml_add_child(ser, "cx:dPt", idx = as.character(j - 1))
+            spPr <- xml2::xml_add_child(dPt, "cx:spPr")
+            private$render_color_core(xml2::xml_add_child(spPr, "a:solidFill"), s$color[j])
+          }
         }
 
         if (isTRUE(self$data_label_params$show)) {
@@ -354,7 +369,7 @@ ChartEx <- R6::R6Class(
         }
       }
 
-      out <- self$xml
+      out <- openxlsx2::read_xml(as.character(self$xml), pointer = FALSE)
       attr(out, "head") <- head_attrs
       attr(out, "body") <- body_attrs
       return(out)

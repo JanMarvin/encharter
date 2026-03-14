@@ -18,5 +18,6 @@ Imports:
     xml2,
     openxlsx2
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    viridisLite
 Config/testthat/edition: 3

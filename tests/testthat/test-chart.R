@@ -75,3 +75,50 @@ test_that("Chart: Multi-level Category Grouping", {
     add_data(x = head(mtcars[1:3]), row_names = TRUE)$
     add_chart_xml(xml = xml)
 })
+
+test_that("Chart series supports Trendlines and Error Bars with correct XSD sequence", {
+
+  ch <- Chart$new()
+
+  ch$add_series(
+    header = "Monthly Revenue",
+    data = "Sheet1!$B$2:$B$7",
+    cat = "Sheet1!$A$2:$A$7",
+    type = "barChart",
+    error_bars = list(
+      type = "percentage",
+      value = 10,
+      color = "404040"
+    ),
+    trendline = list(
+      type = "linear",
+      color = "FF0000",
+      show_r2 = FALSE
+    )
+  )
+
+  xml <- ch$render()
+
+  tl_node <- xml2::xml_find_first(xml2::read_xml(xml), "//c:ser/c:trendline")
+  expect_false(is.null(tl_node))
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(tl_node, "c:trendlineType"), "val"), "linear")
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(tl_node, "c:dispRSqr"), "val"), "0")
+
+  eb_node <- xml2::xml_find_first(xml2::read_xml(xml), "//c:ser/c:errBars")
+  expect_false(is.null(eb_node))
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(eb_node, "c:errDir"), "val"), "y")
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(eb_node, "c:errValType"), "val"), "percentage")
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(eb_node, "c:val"), "val"), "10")
+
+  ser_children <- xml2::xml_name(xml2::xml_children(xml2::xml_find_first(xml2::read_xml(xml), "//c:ser")))
+
+  idx_trendline <- which(ser_children == "trendline")
+  idx_errbars   <- which(ser_children == "errBars")
+  idx_cat       <- which(ser_children == "cat")
+  idx_val       <- which(ser_children == "val")
+
+  expect_true(idx_trendline < idx_errbars)
+
+  expect_true(idx_errbars < idx_cat)
+  expect_true(idx_cat < idx_val)
+})

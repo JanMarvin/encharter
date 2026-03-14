@@ -53,6 +53,18 @@ Chart <- R6::R6Class(
       y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
       y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
     ),
+    #' @field drop_lines Logical; show lines from points to the axis.
+    drop_lines = FALSE,
+    #' @field high_low_lines Logical; show lines between max/min points.
+    high_low_lines = FALSE,
+    #' @field up_down_bars Logical; show bars between first and last series.
+    up_down_bars = FALSE,
+    #' @field palette A vector of hex colors to use for series.
+    palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
+    #' @field bubble_scale Numeric; the scale factor for bubbles (default 100).
+    bubble_scale = 100,
+    #' @field show_neg_bubbles Logical; whether to show bubbles with negative values.
+    show_neg_bubbles = FALSE,
 
     #' @description Initialize a new Chart object.
     #' @param type Initial chart type (e.g., "lineChart", "barChart", "pieChart").
@@ -158,7 +170,7 @@ Chart <- R6::R6Class(
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                           crosses = NULL, crosses_at = NULL, label_pos = NULL) {
 
-      crosses   <- private$validate_input(crosses, c("autoZero", "min", "max"), "crosses")
+      crosses   <- private$validate_input(crosses, c("min", "min", "autoZero"), "crosses")
       label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
       if (is.character(gridlines)) {
         private$validate_input(
@@ -437,6 +449,27 @@ Chart <- R6::R6Class(
     #' @param line_width Numeric width of the connecting line.
     #' @param line_color Hex color for the connecting line. Defaults to `color`.
     #' @param filled Logical; for radar charts, fills the interior area. Default FALSE.
+    #' @param error_bars A list of error bar properties:
+    #' \itemize{
+    #'   \item \code{type}: The error value type (\code{ST_ErrValType}).
+    #'     Must be one of: \code{"fixedVal"} (Fixed Value), \code{"percentage"} (Percentage),
+    #'     \code{"stdDev"} (Standard Deviation), \code{"stdErr"} (Standard Error),
+    #'     or \code{"cust"} (Custom).
+    #'   \item \code{value}: The numeric value for the error bars (e.g., 10 for 10% or 5 for fixed units).
+    #'   \item \code{direction}: Direction of bars. One of \code{"both"}, \code{"plus"}, or \code{"minus"}.
+    #'   \item \code{color}: Hex color code for the bars (e.g., "FF0000").
+    #' }
+    #' @param trendline A list of regression line properties:
+    #' \itemize{
+    #'   \item \code{type}: The regression type (\code{ST_TrendlineType}).
+    #'     Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
+    #'     \code{"log"} (Logarithmic), \code{"movingAvg"} (Moving Average),
+    #'     \code{"poly"} (Polynomial), or \code{"power"} (Power).
+    #'   \item \code{order}: Required for \code{"poly"}; an integer between 2 and 6.
+    #'   \item \code{period}: Required for \code{"movingAvg"}; an integer representing the window size.
+    #'   \item \code{color}: Hex color code for the line.
+    #'   \item \code{show_r2}: Logical; if \code{TRUE}, displays the R-squared value on the chart.
+    #' }
     add_series = function(header = NULL, data, cat = NULL, z_data = NULL,
                           color = "4472C4", type = NULL,
                           secondary = FALSE, dir = "col", grouping = "standard",
@@ -447,7 +480,7 @@ Chart <- R6::R6Class(
                           marker_line_width = 0.75,
                           show_val = NULL, show_cat = NULL,
                           line_type = NULL, line_width = 1, line_color = NULL,
-                          filled = FALSE) {
+                          filled = FALSE, error_bars = FALSE, trendline = FALSE) {
 
       private$validate_input(
         type,
@@ -487,6 +520,11 @@ Chart <- R6::R6Class(
 
       h_expr <- substitute(header)
       c_expr <- substitute(cat)
+
+      if (is.null(color)) {
+        color_idx <- (length(self$series_data) %% length(self$palette)) + 1
+        color <- self$palette[color_idx]
+      }
 
       if (inherits(data, "wb_data")) {
         wb_sheet   <- attr(data, "sheet")
@@ -552,6 +590,8 @@ Chart <- R6::R6Class(
         grouping  = grouping,
         overlap   = overlap,
         gap_width = gap_width,
+        error_bars  = error_bars,
+        trendline = trendline,
 
         # GROUPED STYLING: Line
         line = list(
@@ -715,7 +755,7 @@ Chart <- R6::R6Class(
         if (length(self$legend_params$style) > 0) private$apply_text_style(legend, self$legend_params$style)
       }
 
-      return(as.character(self$xml))
+      return(openxlsx2::read_xml(as.character(self$xml), pointer = FALSE))
     }
   ),
 
@@ -838,8 +878,8 @@ Chart <- R6::R6Class(
         # spPr (Series Styling)
         sp <- xml2::xml_add_child(ser, "c:spPr")
         if (type %in% c("barChart", "areaChart", "bubbleChart", "pieChart", "doughnutChart")) {
-          fill_color <- s$line$color %||% s$color %||% "auto"
-          private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), fill_color)
+          color <- s$line$color %||% s$color %||% "auto"
+          private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), color)
         } else if (type %in% c("lineChart", "scatterChart")) {
           # If show_line is FALSE, we must explicitly tell OOXML not to draw the line
           if (isFALSE(s$line$show)) {
@@ -867,8 +907,8 @@ Chart <- R6::R6Class(
 
         # 4. dPt (Data Points)
         if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
-          palette <- c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47", "264478", "9E480E")
-          for (i in 0:15) {
+          palette <- s$line$color %||% self$palette
+          for (i in (seq_along(palette)-1L)) {
             dPt <- xml2::xml_add_child(ser, "c:dPt")
             xml2::xml_add_child(dPt, "c:idx", val = as.character(i))
             sp_dpt <- xml2::xml_add_child(dPt, "c:spPr")
@@ -913,6 +953,63 @@ Chart <- R6::R6Class(
           xml2::xml_add_child(dLbls, "c:showBubbleSize",val = "0")
         }
 
+        if (length(s$color) > 1) {
+          # If s$color is a vector, apply colors to individual points
+          for (i in seq_along(s$color)) {
+            dPt <- xml2::xml_add_child(ser_node, "c:dPt")
+            xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
+            spPr <- xml2::xml_add_child(dPt, "c:spPr")
+            private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), s$color[i])
+          }
+        }
+
+        # 1. Trendline (Basic)
+        if (is.list(s$trendline)) {
+          tl <- xml2::xml_add_child(ser, "c:trendline")
+
+          # 1. Name (Optional)
+          if (!is.null(s$trendline$name)) {
+            xml2::xml_add_child(tl, "c:name", s$trendline$name)
+          }
+
+          # 2. spPr (STYLING) - Must come BEFORE trendlineType
+          if (!is.null(s$trendline$color)) {
+            sp_pr <- xml2::xml_add_child(tl, "c:spPr")
+            ln <- xml2::xml_add_child(sp_pr, "a:ln")
+            private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), s$trendline$color)
+          }
+
+          # 3. trendlineType (MANDATORY)
+          xml2::xml_add_child(tl, "c:trendlineType", val = s$trendline$type %||% "linear")
+
+          # 4. Polynomial Order / Moving Average Period
+          if (!is.null(s$trendline$order)) xml2::xml_add_child(tl, "c:order", val = as.character(s$trendline$order))
+          if (!is.null(s$trendline$period)) xml2::xml_add_child(tl, "c:period", val = as.character(s$trendline$period))
+
+          # 5. dispRSqr (R-Squared) - Must come AFTER trendlineType
+          if (isFALSE(s$trendline$show_r2)) {
+            xml2::xml_add_child(tl, "c:dispRSqr", val = "0")
+          }
+
+          # 6. dispEq (Equation)
+          if (isFALSE(s$trendline$show_eq)) {
+            xml2::xml_add_child(tl, "c:dispEq", val = "0")
+          }
+        }
+
+        # 2. Error Bars (Basic)
+        if (is.list(s$error_bars)) {
+          eb <- xml2::xml_add_child(ser, "c:errBars")
+
+          # Required: direction (y) and types
+          xml2::xml_add_child(eb, "c:errDir", val = "y")
+          xml2::xml_add_child(eb, "c:errBarType", val = "both")
+          xml2::xml_add_child(eb, "c:errValType", val = s$error_bars$type %||% "fixedVal")
+
+          # Required: the value itself
+          xml2::xml_add_child(eb, "c:val", val = as.character(s$error_bars$value %||% 5))
+        }
+
         # 6. Data References (xVal/yVal or cat/val)
         if (type %in% c("scatterChart", "bubbleChart")) {
           x_val_node <- xml2::xml_add_child(ser, "c:xVal")
@@ -926,8 +1023,10 @@ Chart <- R6::R6Class(
           if (type == "bubbleChart") {
             z_val_node <- xml2::xml_add_child(ser, "c:bubbleSize")
             z_ref <- s$z_data %||% s$data
-            z_ref_type <- if (grepl("!", s$z_data)) "c:numRef" else "c:numLit"
-            xml2::xml_add_child(xml2::xml_add_child(z_val_node, z_ref_type), "c:f", z_ref)
+            z_ref_type <- if (grepl("!", z_ref)) "c:numRef" else "c:numLit"
+            # Note: Wrap in c:numRef/c:numLit correctly
+            ref_node <- xml2::xml_add_child(z_val_node, z_ref_type)
+            xml2::xml_add_child(ref_node, "c:f", z_ref)
           }
         } else {
           if (!is.null(s$cat)) {
@@ -949,9 +1048,37 @@ Chart <- R6::R6Class(
         if (type %in% c("lineChart", "scatterChart")) {
           xml2::xml_add_child(ser, "c:smooth", val = if(isTRUE(s$smooth)) "1" else "0")
         }
+
+      }
+
+      # 1. Drop Lines
+      if (isTRUE(self$drop_lines)) {
+        dl <- xml2::xml_add_child(c_node, "c:dropLines")
+      }
+
+      # 2. High-Low Lines (Common in Stock/Line charts)
+      if (isTRUE(self$high_low_lines)) {
+        xml2::xml_add_child(c_node, "c:hiLowLines")
+      }
+
+      # 3. Up/Down Bars
+      if (isTRUE(self$up_down_bars)) {
+        udb <- xml2::xml_add_child(c_node, "c:upDownBars")
+        xml2::xml_add_child(udb, "c:gapWidth", val = "150") # Default gap
+
+        # Style Up Bars (typically white/green)
+        up_bars <- xml2::xml_add_child(udb, "c:upBars")
+        # Style Down Bars (typically black/red)
+        down_bars <- xml2::xml_add_child(udb, "c:downBars")
       }
 
       # 3. POST-SERIES PROPERTIES (Sequence Sensitive)
+
+      if (type == "bubbleChart") {
+        # xml2::xml_add_child(c_node, "c:bubble3D", val = "0")
+        xml2::xml_add_child(c_node, "c:bubbleScale", val = as.character(self$bubble_scale))
+        xml2::xml_add_child(c_node, "c:showNegBubbles", val = as.character(as.numeric(self$show_neg_bubbles)))
+      }
 
       # gapWidth and overlap MUST follow <c:ser> but come before <c:axId>
       if (type == "barChart") {
@@ -1190,14 +1317,29 @@ Chart <- R6::R6Class(
     },
 
     render_fill = function(node, color_val) {
-      if (length(color_val) == 0 || is.null(color_val) || color_val == "") color_val <- "000000"
-      if (tolower(color_val) == "auto") {
+      # 1. Handle NULL or empty input
+      if (is.null(color_val) || length(color_val) == 0) {
+        color_val <- "000000"
+      }
+
+      # 2. Check for "auto" - Ensure we only check the FIRST element
+      # and that we aren't passing the whole palette vector here
+      if (length(color_val) == 1 && tolower(as.character(color_val)) == "auto") {
         xml2::xml_add_child(node, "a:schemeClr", val = "accent1")
         return()
       }
-      hex <- if (inherits(color_val, "wbColour")) attr(color_val, "rgb") %||% as.character(color_val) else as.character(color_val)
+
+      # 3. Extract Hex (Handling openxlsx2 wbColour objects)
+      hex <- if (inherits(color_val, "wbColour")) {
+        attr(color_val, "rgb") %||% as.character(color_val)
+      } else {
+        # If a vector was passed by mistake, take only the first one to prevent crash
+        as.character(color_val[1])
+      }
+
       clean <- toupper(gsub("^#", "", hex))
       if (nchar(clean) == 8) clean <- substr(clean, 3, 8)
+
       xml2::xml_add_child(node, "a:srgbClr", val = clean)
     },
 

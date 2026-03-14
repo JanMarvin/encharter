@@ -55,12 +55,12 @@ my_bw$
     header = '"Super Duper MPG"', # dont use strings with a "!"
     data   = "Data!$A$2:$A$33",
     cat    = "Data!$B$2:$B$33",
-    fill_color=wb_color("magenta"), line_color=wb_color("black"), type = "boxWhisker")$
+    color=wb_color("magenta"), line_color=wb_color("black"), type = "boxWhisker")$
   add_series(
     header = "Data!$C$1",
     data   = "Data!$C$2:$C$33",
     cat    = "Data!$B$2:$B$33",
-    fill_color=wb_color(hex = "FFA500"), line_color=wb_color("black"), type = "boxWhisker")$
+    color=wb_color(hex = "FFA500"), line_color=wb_color("black"), type = "boxWhisker")$
   set_legend_style(
     pos = "r",
     sz = 15,

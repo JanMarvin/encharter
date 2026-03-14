@@ -169,19 +169,19 @@ test_that("Major and Minor gridlines are correctly rendered and visible", {
 
   # 3. XML Validation (Logic check)
   xml_str <- as.character(my_chart$render())
-  xml <- read_xml(xml_str)
+  xml <- xml2::read_xml(xml_str)
 
   # Check Major Gridlines
-  major_ln <- xml_find_first(xml, "//c:valAx/c:majorGridlines/c:spPr/a:ln")
-  expect_equal(xml_attr(major_ln, "w"), "19050") # 1.5 * 12700
-  expect_equal(xml_attr(xml_find_first(major_ln, ".//a:srgbClr"), "val"), "333333")
-  expect_equal(xml_attr(xml_find_first(major_ln, "a:prstDash"), "val"), "dash")
+  major_ln <- xml2::xml_find_first(xml, "//c:valAx/c:majorGridlines/c:spPr/a:ln")
+  expect_equal(xml2::xml_attr(major_ln, "w"), "19050") # 1.5 * 12700
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(major_ln, ".//a:srgbClr"), "val"), "333333")
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(major_ln, "a:prstDash"), "val"), "dash")
 
   # Check Minor Gridlines
-  minor_ln <- xml_find_first(xml, "//c:valAx/c:minorGridlines/c:spPr/a:ln")
-  expect_equal(xml_attr(minor_ln, "w"), "6350") # 0.5 * 12700
-  expect_equal(xml_attr(xml_find_first(minor_ln, ".//a:srgbClr"), "val"), "D9D9D9")
-  expect_equal(xml_attr(xml_find_first(minor_ln, "a:prstDash"), "val"), "dot")
+  minor_ln <- xml2::xml_find_first(xml, "//c:valAx/c:minorGridlines/c:spPr/a:ln")
+  expect_equal(xml2::xml_attr(minor_ln, "w"), "6350") # 0.5 * 12700
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(minor_ln, ".//a:srgbClr"), "val"), "D9D9D9")
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(minor_ln, "a:prstDash"), "val"), "dot")
 
   # 4. Visual Verification Workbook
   wb <- wb_workbook() |>
@@ -211,7 +211,7 @@ test_that("ChartEx renders full styling and axis properties", {
   # Apply Title styling
   ce$set_y_title("USD (Millions)", sz = 14, b = TRUE, color = "000000")
 
-  xml <- ce$render(1)
+  xml <- xml2::read_xml(ce$render(1))
 
   # 1. Verify Scaling Attributes (cx:valScaling)
   scaling_node <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:valScaling")
@@ -256,4 +256,50 @@ test_that("ChartEx renders full styling and axis properties", {
   # 5. Verify Axis Line Color
   axis_line_clr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:spPr//a:ln/a:solidFill/a:srgbClr")
   expect_equal(xml2::xml_attr(axis_line_clr, "val"), "000000")
+})
+
+test_that("Bubble chart generates valid XML and integrates with workbook", {
+
+  # 1. Setup Data
+  df <- data.frame(
+    Product = paste("Item", 1:10),
+    Sales = runif(10, 50, 100),
+    Profit = runif(10, 10, 40),
+    MarketShare = runif(10, 5, 25)
+  )
+
+  # 2. Initialize Chart
+  bc <- Chart$new()
+  bc$add_series(
+    header = "Market Performance",
+    cat    = "Sheet1!$B$2:$B$11",
+    data   = "Sheet1!$C$2:$C$11",
+    z_data = "Sheet1!$D$2:$D$11",
+    color  = viridisLite::viridis(10),
+    type   = "bubbleChart"
+  )
+
+  bc$set_bubble_options(scale = 120, show_neg = FALSE)
+  bc$set_chart_title("Market Share Analysis")
+
+  # 3. Test XML structure
+  # Render and parse back to xml2 object for easy XPath testing
+  xml_str <- bc$render()
+  xml_parsed <- xml2::read_xml(xml_str)
+
+  # Check for mandatory bubbleChart node
+  expect_true(xml2::xml_name(xml2::xml_find_first(xml_parsed, ".//c:bubbleChart")) == "bubbleChart")
+
+  # Check for bubble-specific settings
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(xml_parsed, ".//c:bubbleScale"), "val"), "120")
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(xml_parsed, ".//c:showNegBubbles"), "val"), "0")
+
+  # Check for the three data dimensions in the first series
+  expect_true(xml2::xml_length(xml2::xml_find_first(xml_parsed, ".//c:ser/c:xVal")) > 0)
+  expect_true(xml2::xml_length(xml2::xml_find_first(xml_parsed, ".//c:ser/c:yVal")) > 0)
+  expect_true(xml2::xml_length(xml2::xml_find_first(xml_parsed, ".//c:ser/c:bubbleSize")) > 0)
+
+  # Check Palette Application (dPt nodes)
+  dpts <- xml2::xml_find_all(xml_parsed, ".//c:dPt")
+  expect_gt(length(dpts), 0)
 })

@@ -45,6 +45,18 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item{\code{show_data_table}}{Logical if a data table should be added.}
 
 \item{\code{axis_params}}{Internal list for scaling, units, and formatting.}
+
+\item{\code{drop_lines}}{Logical; show lines from points to the axis.}
+
+\item{\code{high_low_lines}}{Logical; show lines between max/min points.}
+
+\item{\code{up_down_bars}}{Logical; show bars between first and last series.}
+
+\item{\code{palette}}{A vector of hex colors to use for series.}
+
+\item{\code{bubble_scale}}{Numeric; the scale factor for bubbles (default 100).}
+
+\item{\code{show_neg_bubbles}}{Logical; whether to show bubbles with negative values.}
 }
 \if{html}{\out{</div>}}
 }
@@ -679,7 +691,9 @@ Add a data series to the chart with independent styling.
   line_type = NULL,
   line_width = 1,
   line_color = NULL,
-  filled = FALSE
+  filled = FALSE,
+  error_bars = FALSE,
+  trendline = FALSE
 )}\if{html}{\out{</div>}}
 }
 
@@ -733,6 +747,29 @@ Add a data series to the chart with independent styling.
 \item{\code{line_color}}{Hex color for the connecting line. Defaults to `color`.}
 
 \item{\code{filled}}{Logical; for radar charts, fills the interior area. Default FALSE.}
+
+\item{\code{error_bars}}{A list of error bar properties:
+\itemize{
+  \item \code{type}: The error value type (\code{ST_ErrValType}).
+    Must be one of: \code{"fixedVal"} (Fixed Value), \code{"percentage"} (Percentage),
+    \code{"stdDev"} (Standard Deviation), \code{"stdErr"} (Standard Error),
+    or \code{"cust"} (Custom).
+  \item \code{value}: The numeric value for the error bars (e.g., 10 for 10% or 5 for fixed units).
+  \item \code{direction}: Direction of bars. One of \code{"both"}, \code{"plus"}, or \code{"minus"}.
+  \item \code{color}: Hex color code for the bars (e.g., "FF0000").
+}}
+
+\item{\code{trendline}}{A list of regression line properties:
+\itemize{
+  \item \code{type}: The regression type (\code{ST_TrendlineType}).
+    Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
+    \code{"log"} (Logarithmic), \code{"movingAvg"} (Moving Average),
+    \code{"poly"} (Polynomial), or \code{"power"} (Power).
+  \item \code{order}: Required for \code{"poly"}; an integer between 2 and 6.
+  \item \code{period}: Required for \code{"movingAvg"}; an integer representing the window size.
+  \item \code{color}: Hex color code for the line.
+  \item \code{show_r2}: Logical; if \code{TRUE}, displays the R-squared value on the chart.
+}}
 }
 \if{html}{\out{</div>}}
 }
