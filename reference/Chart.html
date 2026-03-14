@@ -117,6 +117,30 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 <dd><p>Internal list for scaling, units, and formatting.</p></dd>
 
 
+<dt><code>drop_lines</code></dt>
+<dd><p>Logical; show lines from points to the axis.</p></dd>
+
+
+<dt><code>high_low_lines</code></dt>
+<dd><p>Logical; show lines between max/min points.</p></dd>
+
+
+<dt><code>up_down_bars</code></dt>
+<dd><p>Logical; show bars between first and last series.</p></dd>
+
+
+<dt><code>palette</code></dt>
+<dd><p>A vector of hex colors to use for series.</p></dd>
+
+
+<dt><code>bubble_scale</code></dt>
+<dd><p>Numeric; the scale factor for bubbles (default 100).</p></dd>
+
+
+<dt><code>show_neg_bubbles</code></dt>
+<dd><p>Logical; whether to show bubbles with negative values.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div id="methods">
@@ -903,7 +927,9 @@ This rotates the chart clockwise.</p></dd>
 <span>  line_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  line_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  filled <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  filled <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  error_bars <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  trendline <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -1003,6 +1029,29 @@ This rotates the chart clockwise.</p></dd>
 
 <dt><code>filled</code></dt>
 <dd><p>Logical; for radar charts, fills the interior area. Default FALSE.</p></dd>
+
+
+<dt><code>error_bars</code></dt>
+<dd><p>A list of error bar properties:</p><ul><li><p><code>type</code>: The error value type (<code>ST_ErrValType</code>).
+    Must be one of: <code>"fixedVal"</code> (Fixed Value), <code>"percentage"</code> (Percentage),
+    <code>"stdDev"</code> (Standard Deviation), <code>"stdErr"</code> (Standard Error),
+    or <code>"cust"</code> (Custom).</p></li>
+<li><p><code>value</code>: The numeric value for the error bars (e.g., 10 for 10<!-- % or 5 for fixed units). --></p></li>
+<li><p><code>direction</code>: Direction of bars. One of <code>"both"</code>, <code>"plus"</code>, or <code>"minus"</code>.</p></li>
+<li><p><code>color</code>: Hex color code for the bars (e.g., "FF0000").</p></li>
+</ul></dd>
+
+
+<dt><code>trendline</code></dt>
+<dd><p>A list of regression line properties:</p><ul><li><p><code>type</code>: The regression type (<code>ST_TrendlineType</code>).
+    Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential),
+    <code>"log"</code> (Logarithmic), <code>"movingAvg"</code> (Moving Average),
+    <code>"poly"</code> (Polynomial), or <code>"power"</code> (Power).</p></li>
+<li><p><code>order</code>: Required for <code>"poly"</code>; an integer between 2 and 6.</p></li>
+<li><p><code>period</code>: Required for <code>"movingAvg"</code>; an integer representing the window size.</p></li>
+<li><p><code>color</code>: Hex color code for the line.</p></li>
+<li><p><code>show_r2</code>: Logical; if <code>TRUE</code>, displays the R-squared value on the chart.</p></li>
+</ul></dd>
 
 
 </dl><p></p></div>
