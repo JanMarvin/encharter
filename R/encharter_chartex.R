@@ -315,6 +315,22 @@ ChartEx <- R6::R6Class(
         head_attrs[h_id] <- s$header; body_attrs[d_id] <- s$data; body_attrs[nf_id] <- s$data
       }
 
+      # --- 3. Axes ---
+      if (!is_hierarchical) {
+        # Find the plotArea container
+        plot_area_node <- xml2::xml_find_first(self$xml, "//cx:plotArea")
+
+        # Wipe existing axes to prevent duplication/nesting
+        xml2::xml_find_all(plot_area_node, "cx:axis") |> xml2::xml_remove()
+
+        # Build siblings by passing the same plot_area_node as parent
+        private$render_axis_full(plot_area_node, self$x_axis_style, self$x_title,
+                                 self$x_title_style, self$x_numfmt, type = "cat")
+
+        private$render_axis_full(plot_area_node, self$y_axis_style, self$y_title,
+                                 self$y_title_style, self$y_numfmt, type = "val")
+      }
+
       # 2. Legends & Titles
       legend_node <- xml2::xml_find_first(self$xml, "//cx:legend")
       l_pos <- self$legend_params$pos %||% "t"
@@ -326,13 +342,6 @@ ChartEx <- R6::R6Class(
       }
 
       if (!is.null(self$chart_title)) private$add_rich_text(xml2::xml_find_first(self$xml, "//cx:chart/cx:title"), self$chart_title, self$chart_title_style)
-
-      # 3. Axes
-      if (!is_hierarchical) {
-        axes <- xml2::xml_find_all(self$xml, "//cx:axis")
-        private$apply_axis_full(axes[[1]], self$x_axis_style, self$x_title, self$x_title_style, self$x_numfmt, TRUE)
-        private$apply_axis_full(axes[[2]], self$y_axis_style, self$y_title, self$y_title_style, self$y_numfmt, FALSE)
-      }
 
       # 4. Chart Area Styling
       xml2::xml_find_all(self$xml, "/cx:chartSpace/cx:spPr") |> xml2::xml_remove()
@@ -371,6 +380,67 @@ ChartEx <- R6::R6Class(
       return(x)
     },
 
+    # Renders gridlines for modern charts
+    render_gridlines = function(axis_node, type, params) {
+      # type is "majorGridlines" or "minorGridlines"
+      prefix <- if(type == "majorGridlines") "" else "minor_"
+      style_val <- params[[paste0(prefix, "gridlines")]]
+
+      if (is.null(style_val) || isFALSE(style_val)) return()
+
+      grid_node <- xml2::xml_add_child(axis_node, paste0("cx:", type))
+      sp_pr <- xml2::xml_add_child(grid_node, "cx:spPr")
+
+      # Use your existing render_color logic from ChartEx
+      width <- params[[paste0(prefix, "grid_width")]] %||% 1
+      color <- params[[paste0(prefix, "grid_color")]] %||% "D9D9D9"
+
+      ln <- xml2::xml_add_child(sp_pr, "a:ln", w = as.character(round(width * 12700)))
+      private$render_color_core(ln, color)
+
+      # Dash type support
+      dash <- switch(as.character(style_val), "dotted" = "dot", "dash" = "dash", NULL)
+      if (!is.null(dash)) xml2::xml_add_child(ln, "a:prstDash", val = dash)
+    },
+
+    render_axis = function(plot_area, style, type = "val") {
+      axis_node <- xml2::xml_add_child(plot_area, "cx:axis", type = type)
+
+      # 1. Units (ST_AxisUnit) MUST COME FIRST
+      if (!is.null(style$major)) {
+        u <- xml2::xml_add_child(axis_node, "cx:majorUnit")
+        xml2::xml_set_attr(u, "val", as.character(style$major))
+      }
+      if (!is.null(style$minor)) {
+        u <- xml2::xml_add_child(axis_node, "cx:minorUnit")
+        xml2::xml_set_attr(u, "val", as.character(style$minor))
+      }
+
+      # 2. Gridlines MUST COME SECOND
+      if (!is.null(style$gridlines)) {
+        major_grid <- xml2::xml_add_child(axis_node, "cx:majorGridlines")
+        sp_pr <- xml2::xml_add_child(major_grid, "cx:spPr")
+        ln <- xml2::xml_add_child(sp_pr, "a:ln", w = as.character(round((style$grid_width %||% 1) * 12700)))
+
+        solid_fill <- xml2::xml_add_child(ln, "a:solidFill")
+        private$render_color_core(solid_fill, style$grid_color %||% "D9D9D9")
+
+        dash <- switch(as.character(style$gridlines), "dotted" = "dot", "dash" = "dash", NULL)
+        if (!is.null(dash)) xml2::xml_add_child(ln, "a:prstDash", val = dash)
+      }
+
+      # 3. Text Properties and Titles MUST COME LAST
+      # This is why we call apply_axis_style AFTER the units and grids
+      private$apply_axis_style(axis_node, style)
+
+      # Add the Title if it exists (Title must be the very last element in cx:axis)
+      title_text <- if(type == "cat") self$x_title else self$y_title
+      title_style <- if(type == "cat") self$x_title_style else self$y_title_style
+      if (!is.null(title_text)) {
+        private$add_rich_text(xml2::xml_add_child(axis_node, "cx:title"), title_text, title_style)
+      }
+    },
+
     apply_label_style = function(node, s) {
       txPr <- xml2::xml_add_child(node, "cx:txPr")
       bodyPr <- xml2::xml_add_child(txPr, "a:bodyPr", lIns="0", tIns="0", rIns="0", bIns="0")
@@ -394,15 +464,18 @@ ChartEx <- R6::R6Class(
       if (!is.null(s$color)) private$render_color(endRPr, s$color)
       if (!is.null(s$font)) xml2::xml_add_child(endRPr, "a:latin", typeface = s$font)
     },
-    apply_axis_full = function(node, s, title, title_style, numfmt, is_x) {
-      if (length(node) == 0) return()
-      axis_id <- xml2::xml_attr(node, "id")
-      xml2::xml_children(node) |> xml2::xml_remove()
-      xml2::xml_set_attr(node, "id", axis_id)
 
+    render_axis_full = function(plot_area, s, title, title_style, numfmt, type = "val") {
+      # 1. Create Axis
+      ax <- xml2::xml_add_child(plot_area, "cx:axis", id = if(type == "cat") "0" else "1")
+      is_x <- (type == "cat")
+
+      # 2. Scaling - Apply major/minor units as ATTRIBUTES here
       scaling_tag <- if(is_x) "cx:catScaling" else "cx:valScaling"
-      scaling <- xml2::xml_add_child(node, scaling_tag)
+      scaling <- xml2::xml_add_child(ax, scaling_tag)
+
       if (is_x && !is.null(s$gap_width)) xml2::xml_set_attr(scaling, "gapWidth", as.character(s$gap_width))
+
       if (!is_x) {
         if (!is.null(s$min)) xml2::xml_set_attr(scaling, "min", as.character(s$min))
         if (!is.null(s$max)) xml2::xml_set_attr(scaling, "max", as.character(s$max))
@@ -410,40 +483,45 @@ ChartEx <- R6::R6Class(
         if (!is.null(s$minor)) xml2::xml_set_attr(scaling, "minorUnit", as.character(s$minor))
       }
 
-      if (!is.null(title)) private$add_rich_text(xml2::xml_add_child(node, "cx:title"), title, title_style)
+      # 3. Title (Sequence position #2)
+      if (!is.null(title)) {
+        private$add_rich_text(xml2::xml_add_child(ax, "cx:title"), title, title_style)
+      }
 
+      # --- Axis Line Style ---
+      axSpPr <- xml2::xml_add_child(ax, "cx:spPr")
+
+      # Use line_width if provided (converted to EMUs), else default 0.75pt
+      w_val <- if(!is.null(s$line_width)) as.character(round(s$line_width * 12700)) else "9525"
+      ln <- xml2::xml_add_child(axSpPr, "a:ln", w = w_val)
+
+      # Wrap color in solidFill to prevent XML errors
+      ln_fill <- xml2::xml_add_child(ln, "a:solidFill")
+      private$render_color_core(ln_fill, s$color %||% "000000")
+
+      # 4. Gridlines (Fixed Dash mapping)
       if (!is.null(s$gridlines) && !isFALSE(s$gridlines)) {
-        g <- xml2::xml_add_child(node, "cx:majorGridlines")
-        ln <- xml2::xml_add_child(xml2::xml_add_child(g, "cx:spPr"), "a:ln", w = "9525")
-        private$render_color_core(ln, s$grid_color %||% "D9D9D9", wrap = TRUE)
-        # Apply dash styles (dashed, dotted, etc.)
-        if (is.character(s$gridlines)) {
-          xml2::xml_add_child(ln, "a:prstDash", val = switch(s$gridlines,
-                                                             "dashed" = "dash",
-                                                             "dotted" = "dot",
-                                                             s$gridlines))
-        }
+        g <- xml2::xml_add_child(ax, "cx:majorGridlines")
+        sp <- xml2::xml_add_child(g, "cx:spPr")
+        ln <- xml2::xml_add_child(sp, "a:ln", w = as.character(round((s$grid_width %||% 0.75) * 12700)))
+        private$render_color_core(xml2::xml_add_child(ln, "a:solidFill"), s$grid_color %||% "D9D9D9")
+
+        # dash/dot logic
+        dash_val <- switch(as.character(s$gridlines),
+                           "dashed" = "dash", "dash" = "dash",
+                           "dotted" = "dot", "dot" = "dot", NULL)
+        if (!is.null(dash_val)) xml2::xml_add_child(ln, "a:prstDash", val = dash_val)
       }
 
-      if (!is.null(s$minor_gridlines) && !isFALSE(s$minor_gridlines)) {
-        mg <- xml2::xml_add_child(node, "cx:minorGridlines")
-        ln_m <- xml2::xml_add_child(xml2::xml_add_child(mg, "cx:spPr"), "a:ln", w = "9525")
-        private$render_color_core(ln_m, s$minor_grid_color %||% "F2F2F2", wrap = TRUE)
-        if (is.character(s$minor_gridlines)) {
-          xml2::xml_add_child(ln_m, "a:prstDash", val = switch(s$minor_gridlines,
-                                                               "dashed" = "dash",
-                                                               "dotted" = "dot",
-                                                               s$minor_gridlines))
-        }
-      }
+      # 5. Ticks and Labels
+      if (!is.null(s$major_tick)) xml2::xml_add_child(ax, "cx:majorTickMarks", type = s$major_tick)
+      xml2::xml_add_child(ax, "cx:tickLabels")
+      if (!is.null(numfmt)) xml2::xml_add_child(ax, "cx:numFmt", formatCode = numfmt, sourceLinked = "0")
 
-      if (!is.null(s$major_tick)) xml2::xml_add_child(node, "cx:majorTickMarks", type = s$major_tick)
-      if (!is.null(s$minor_tick)) xml2::xml_add_child(node, "cx:minorTickMarks", type = s$minor_tick)
-
-      xml2::xml_add_child(node, "cx:tickLabels")
-      if (!is.null(numfmt)) xml2::xml_add_child(node, "cx:numFmt", formatCode = numfmt, sourceLinked = "0")
-      if (length(s) > 0) private$apply_axis_style(node, s)
-    },
+      # 6. Styling (txPr) - MUST BE LAST
+      private$apply_axis_style(ax, s)
+    }
+    ,
     apply_legend_text_style = function(node, s) {
       xml2::xml_find_all(node, "cx:txPr") |> xml2::xml_remove()
       txPr <- xml2::xml_add_child(node, "cx:txPr")
@@ -493,44 +571,80 @@ ChartEx <- R6::R6Class(
     },
     add_rich_text = function(parent, text, s) {
       xml2::xml_children(parent) |> xml2::xml_remove()
+
+      # 1. Shape properties for the title background/border
       if (!is.null(s$fill) || !is.null(s$line)) {
         spPr <- xml2::xml_add_child(parent, "cx:spPr")
         if (!is.null(s$fill)) private$render_color(spPr, s$fill)
         if (!is.null(s$line)) {
           ln <- xml2::xml_add_child(spPr, "a:ln", w = "12700")
-          private$render_color_core(ln, s$line)
+          private$render_color_core(xml2::xml_add_child(ln, "a:solidFill"), s$line)
         }
       }
+
+      # 2. Text Content
       tx <- xml2::xml_add_child(xml2::xml_add_child(parent, "cx:tx"), "cx:rich")
       bodyPr <- xml2::xml_add_child(tx, "a:bodyPr")
       if (!is.null(s$rot)) {
         xml2::xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
         xml2::xml_set_attr(bodyPr, "vert", "horz")
       }
+
       xml2::xml_add_child(tx, "a:lstStyle")
-      p <- xml2::xml_add_child(tx, "a:p"); r <- xml2::xml_add_child(p, "a:r")
+      p <- xml2::xml_add_child(tx, "a:p")
+      r <- xml2::xml_add_child(p, "a:r")
       rPr <- xml2::xml_add_child(r, "a:rPr")
+
+      # --- FONT COLOR FIX ---
+      # Color MUST be inside a:solidFill
+      # If s$color is NULL, we default to black "000000"
+      font_color <- s$color %||% "000000"
+      fill_node <- xml2::xml_add_child(rPr, "a:solidFill")
+      private$render_color_core(fill_node, font_color)
+
+      # Font Styling
       if (!is.null(s$sz)) xml2::xml_set_attr(rPr, "sz", as.character(s$sz*100))
       if (!is.null(s$b)) xml2::xml_set_attr(rPr, "b", ifelse(isTRUE(s$b), "1", "0"))
-      if (!is.null(s$color)) private$render_color_core(rPr, s$color)
       if (!is.null(s$font)) xml2::xml_add_child(rPr, "a:latin", typeface = s$font)
+
       xml2::xml_add_child(r, "a:t", text)
     },
     apply_axis_style = function(node, style) {
       pr <- xml2::xml_add_child(node, "cx:txPr")
-      bodyPr <- xml2::xml_add_child(pr, "a:bodyPr")
-      if (!is.null(style$rot)) {
-        xml2::xml_set_attr(bodyPr, "rot", as.character(round(style$rot * 60000)))
-        xml2::xml_set_attr(bodyPr, "vert", "horz")
-      }
+      xml2::xml_add_child(pr, "a:bodyPr", lIns="0", tIns="0", rIns="0", bIns="0")
       xml2::xml_add_child(pr, "a:lstStyle")
-      pPr <- xml2::xml_add_child(xml2::xml_add_child(pr, "a:p"), "a:pPr")
+
+      p <- xml2::xml_add_child(pr, "a:p")
+      pPr <- xml2::xml_add_child(p, "a:pPr")
+
+      # defRPr: where font size and color live
       defRPr <- xml2::xml_add_child(pPr, "a:defRPr")
-      if (!is.null(style$sz)) xml2::xml_set_attr(defRPr, "sz", as.character(style$sz*100))
-      if (!is.null(style$b)) xml2::xml_set_attr(defRPr, "b", ifelse(isTRUE(style$b), "1", "0"))
-      if (!is.null(style$i)) xml2::xml_set_attr(defRPr, "i", ifelse(isTRUE(style$i), "1", "0"))
-      if (!is.null(style$color)) private$render_color(defRPr, style$color)
+
+      # FIX: Use srgbClr to avoid the washed-out schemeClr
+      f_color <- style$label_color %||% style$color %||% "000000"
+      fill <- xml2::xml_add_child(defRPr, "a:solidFill")
+      private$render_color_core(fill, f_color)
+
+      # sz is 1/100 points
+      sz_val <- if(!is.null(style$sz)) as.character(style$sz * 100) else "1000"
+      xml2::xml_set_attr(defRPr, "sz", sz_val)
+      if (isTRUE(style$b)) xml2::xml_set_attr(defRPr, "b", "1")
+      if (isTRUE(style$i)) xml2::xml_set_attr(defRPr, "i", "1")
+
       if (!is.null(style$font)) xml2::xml_add_child(defRPr, "a:latin", typeface = style$font)
+
+      # The final node in the Excel paragraph
+      end_pr <- xml2::xml_add_child(p, "a:endParaRPr", sz = sz_val)
+      if (isTRUE(style$b)) xml2::xml_set_attr(end_pr, "b", "1")
+      if (isTRUE(style$i)) xml2::xml_set_attr(end_pr, "i", "1")
+
+      # Color wrap
+      private$render_color_core(xml2::xml_add_child(end_pr, "a:solidFill"), f_color)
+
+      # Font typeface sync
+      if (!is.null(style$font)) {
+        xml2::xml_add_child(end_pr, "a:latin", typeface = style$font)
+      }
     }
   )
 )

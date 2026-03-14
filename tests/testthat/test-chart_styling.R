@@ -138,3 +138,122 @@ test_that("ChartEx chart and plot styling works", {
   plot_ln <- xml2::xml_find_first(plot_sp_pr, "a:ln")
   expect_equal(xml2::xml_attr(plot_ln, "w"), "12700")
 })
+
+test_that("Major and Minor gridlines are correctly rendered and visible", {
+
+  # 1. Create the dataset
+  sales_data <- data.frame(
+    Month = month.abb,
+    Volume = c(1200, 1150, 1300, 1250, 1400, 1350, 1100, 1050, 1200, 1500, 1800, 2000),
+    Sales = c(12000, 11500, 13000, 12500, 14000, 13500, 13200, 12600, 14400, 18000, 21600, 24000)
+  )
+
+  # 2. Setup the Chart Object
+  my_chart <- Chart$new("barChart")
+
+  my_chart$add_series(
+    header = "Sheet1!$B$1",
+    data   = "Sheet1!$B$2:$B$13",
+    cat    = "Sheet1!$A$2:$A$13",
+    color  = "4472C4"
+  )$set_y_axis(
+    # Major: Dashed, 1.5pt, Dark Grey
+    gridlines        = "dash",
+    grid_width       = 1.5,
+    grid_color       = "333333",
+    # Minor: Dotted, 0.5pt, Light Grey
+    minor_gridlines  = "dotted",
+    minor_grid_width = 0.5,
+    minor_grid_color = "D9D9D9"
+  )
+
+  # 3. XML Validation (Logic check)
+  xml_str <- as.character(my_chart$render())
+  xml <- read_xml(xml_str)
+
+  # Check Major Gridlines
+  major_ln <- xml_find_first(xml, "//c:valAx/c:majorGridlines/c:spPr/a:ln")
+  expect_equal(xml_attr(major_ln, "w"), "19050") # 1.5 * 12700
+  expect_equal(xml_attr(xml_find_first(major_ln, ".//a:srgbClr"), "val"), "333333")
+  expect_equal(xml_attr(xml_find_first(major_ln, "a:prstDash"), "val"), "dash")
+
+  # Check Minor Gridlines
+  minor_ln <- xml_find_first(xml, "//c:valAx/c:minorGridlines/c:spPr/a:ln")
+  expect_equal(xml_attr(minor_ln, "w"), "6350") # 0.5 * 12700
+  expect_equal(xml_attr(xml_find_first(minor_ln, ".//a:srgbClr"), "val"), "D9D9D9")
+  expect_equal(xml_attr(xml_find_first(minor_ln, "a:prstDash"), "val"), "dot")
+
+  # 4. Visual Verification Workbook
+  wb <- wb_workbook() |>
+    wb_add_worksheet("Sheet1") |>
+    wb_add_data(x = sales_data) |>
+    wb_add_chart(dims = "E2:M25", chart_obj = my_chart)
+})
+
+test_that("ChartEx renders full styling and axis properties", {
+  ce <- ChartEx$new()
+
+  # Apply comprehensive Y-axis styling
+  ce$set_y_axis(
+    min = 50,
+    max = 500,
+    major = 100,
+    minor = 50,
+    gridlines = "dash",
+    grid_color = "FF0000",
+    color = "000000",      # Black axis line
+    sz = 12,               # 12pt font
+    bold = TRUE,
+    italic = TRUE,
+    numfmt = "#,##0"
+  )
+
+  # Apply Title styling
+  ce$set_y_title("USD (Millions)", sz = 14, b = TRUE, color = "000000")
+
+  xml <- ce$render(1)
+
+  # 1. Verify Scaling Attributes (cx:valScaling)
+  scaling_node <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:valScaling")
+  expect_equal(xml2::xml_attr(scaling_node, "min"), "50")
+  expect_equal(xml2::xml_attr(scaling_node, "max"), "500")
+  expect_equal(xml2::xml_attr(scaling_node, "majorUnit"), "100")
+  expect_equal(xml2::xml_attr(scaling_node, "minorUnit"), "50")
+
+  # 2. Verify Axis Title Styling (cx:rich)
+  # Titles use a:rPr for styling
+  title_rpr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:title//a:rPr")
+  expect_equal(xml2::xml_attr(title_rpr, "sz"), "1400")
+  expect_equal(xml2::xml_attr(title_rpr, "b"), "1")
+  expect_true(xml2::xml_has_attr(xml2::xml_find_first(title_rpr, ".//a:srgbClr"), "val"))
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(title_rpr, ".//a:srgbClr"), "val"), "000000")
+
+  # 3. Verify Axis Label Styling (txPr)
+  # Check BOTH defRPr (start) and endParaRPr (the fix for washed-out colors)
+  tx_pr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:txPr")
+
+  # Start Properties
+  def_rpr <- xml2::xml_find_first(tx_pr, ".//a:defRPr")
+  expect_equal(xml2::xml_attr(def_rpr, "sz"), "1200")
+  expect_equal(xml2::xml_attr(def_rpr, "b"), "1")
+  expect_equal(xml2::xml_attr(def_rpr, "i"), "1")
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(def_rpr, ".//a:srgbClr"), "val"), "000000")
+
+  # End Properties (CRITICAL FIX)
+  end_rpr <- xml2::xml_find_first(tx_pr, ".//a:endParaRPr")
+  expect_equal(xml2::xml_attr(end_rpr, "sz"), "1200")
+  expect_equal(xml2::xml_attr(end_rpr, "b"), "1")
+  expect_equal(xml2::xml_attr(end_rpr, "i"), "1")
+  expect_equal(xml2::xml_attr(xml2::xml_find_first(end_rpr, ".//a:solidFill/a:srgbClr"), "val"), "000000")
+
+  # 4. Verify Gridlines
+  dash_node <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:majorGridlines//a:prstDash")
+  expect_equal(xml2::xml_attr(dash_node, "val"), "dash")
+
+  grid_clr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:majorGridlines//a:srgbClr")
+  expect_equal(xml2::xml_attr(grid_clr, "val"), "FF0000")
+
+  # 5. Verify Axis Line Color
+  axis_line_clr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:spPr//a:ln/a:solidFill/a:srgbClr")
+  expect_equal(xml2::xml_attr(axis_line_clr, "val"), "000000")
+})
