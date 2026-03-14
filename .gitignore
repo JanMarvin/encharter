@@ -1,4 +1,43 @@
+# R specific files
 .Rproj.user
 .Rhistory
 .RData
-.Ruserdata
+.Rcheck
+Rprof.out
+
+# macOS specific files
+.DS_Store
+
+# Visual Studio Code specific files
+.vscode/*
+
+# Compiled source files
+src/*.o
+src/*.so
+src/*.dll
+src-i386/*.o
+src-i386/*.so
+src-i386/*.dll
+src-i386/*.cpp
+src-x64/*.o
+src-x64/*.so
+src-x64/*.dll
+src-x64/*.cpp
+
+# Documentation files
+docs/
+docs/reference/*.html
+
+# Temporary files
+~$*
+
+# Package related files
+*.tar.gz
+
+# Test files
+tests/testthat/_snaps
+tests/testthat/testfiles
+
+# Vignettes
+vignettes/*.R
+vignettes/*.html
