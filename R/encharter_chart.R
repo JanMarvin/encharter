@@ -413,7 +413,7 @@ Chart <- R6::R6Class(
     #' @param line_width Numeric width of the connecting line.
     #' @param line_color Hex color for the connecting line. Defaults to `color`.
     #' @param filled Logical; for radar charts, fills the interior area. Default FALSE.
-    add_series = function(header, data, cat = NULL, z_data = NULL,
+    add_series = function(header = NULL, data, cat = NULL, z_data = NULL,
                           color = "4472C4", type = NULL,
                           secondary = FALSE, dir = "col", grouping = "standard",
                           overlap = NULL, gap_width = NULL,
@@ -463,33 +463,53 @@ Chart <- R6::R6Class(
       c_expr <- substitute(cat)
 
       if (inherits(data, "wb_data")) {
-        wb_dims   <- attr(data, "dims")
-        wb_sheet  <- attr(data, "sheet")
-        col_names <- names(data)
+        wb_sheet   <- attr(data, "sheet")
+        dims_mat   <- attr(data, "dims")
+        col_names  <- names(data)
 
-        # Resolve Header/Values
-        # If it's a symbol (unquoted), deparse it. If it's already a string, use it.
-        h_label <- if (is.symbol(h_expr)) deparse1(h_expr) else header
+        # Deterministic header detection based on row counts
+        has_header <- nrow(dims_mat) > length(attr(data, "row.names"))
 
-        if (!is.null(h_label) && h_label %in% col_names) {
-          col_idx <- which(col_names == h_label)
-          header <- sprintf("'%s'!%s", wb_sheet, wb_dims[1, col_idx])
-          data   <- sprintf("'%s'!%s:%s",
-                            wb_sheet,
-                            wb_dims[2, col_idx],
-                            wb_dims[nrow(wb_dims), col_idx])
+        h_label <- tryCatch(if (is.symbol(h_expr)) deparse1(h_expr) else header, error = function(e) NULL)
+        c_label <- tryCatch(if (is.symbol(c_expr)) deparse1(c_expr) else cat, error = function(e) NULL)
+
+        # For z_data, we handle the NSE expression locally
+        z_expr  <- substitute(z_data)
+        z_label <- tryCatch(if (is.symbol(z_expr)) deparse1(z_expr) else z_data, error = function(e) NULL)
+
+        start_row <- if (has_header) 2 else 1
+
+        # 1. Resolve Column Index for Y-Data and Header
+        col_idx <- which(col_names == h_label)
+        if (length(col_idx) > 0) {
+          col_idx <- col_idx[1]
+          header  <- if (has_header) sprintf("'%s'!%s", wb_sheet, dims_mat[1, col_idx]) else NULL
+          data    <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, col_idx], dims_mat[nrow(dims_mat), col_idx])
         }
 
-        # Resolve Categories
-        c_label <- if (is.symbol(c_expr)) deparse1(c_expr) else cat
-
-        if (!is.null(c_label) && c_label %in% col_names) {
-          col_idx <- which(col_names == c_label)
-          cat <- sprintf("'%s'!%s:%s",
-                         wb_sheet,
-                         wb_dims[2, col_idx],
-                         wb_dims[nrow(wb_dims), col_idx])
+        # 2. Resolve Category (cat / X-Axis)
+        cat_idx <- which(col_names == c_label)
+        if (length(cat_idx) > 0) {
+          cat_idx <- cat_idx[1]
+          cat     <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, cat_idx], dims_mat[nrow(dims_mat), cat_idx])
         }
+
+        # 3. Resolve Z-Data (Bubble Size)
+        z_idx <- which(col_names == z_label)
+        if (length(z_idx) > 0) {
+          z_idx  <- z_idx[1]
+          z_data <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, z_idx], dims_mat[nrow(dims_mat), z_idx])
+        }
+      }
+
+      # Apply absolute reference wrapper to all potential range strings
+      header <- to_abs_ref(header)
+      data   <- to_abs_ref(data)
+      cat    <- to_abs_ref(cat)
+      z_data <- to_abs_ref(z_data)
+
+      if (!is.null(data) && !grepl("!", data)) {
+        stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
       }
 
       # Create the clean object
@@ -497,6 +517,7 @@ Chart <- R6::R6Class(
         header    = header,
         data      = data,
         cat       = cat,
+        z_data    = z_data,
         type      = series_type,
         sec_type  = sec_val,
         smooth    = smooth,
@@ -539,6 +560,15 @@ Chart <- R6::R6Class(
     #' @description Generate the final XML string for the chart.
     #' @return A character string containing the OOXML chart definition.
     render = function() {
+
+      if (length(self$series_data) == 0) {
+        stop(
+          "The chart contains no data. You must add at least one series using $add_series() before rendering.",
+          call. = FALSE
+        )
+      }
+
+      self$type <- self$type %||% "barChart"
       xml2::xml_find_all(self$xml, "c:spPr") |> xml2::xml_remove()
       private$apply_sp_pr(self$xml, self$chart_style)
 
@@ -726,6 +756,7 @@ Chart <- R6::R6Class(
 
       # 2. THE SERIES LOOP
       for (s in sub_series) {
+
         ser <- xml2::xml_add_child(c_node, "c:ser")
         xml2::xml_add_child(ser, "c:idx", val = as.character(private$current_idx))
         xml2::xml_add_child(ser, "c:order", val = as.character(private$current_idx))
@@ -733,11 +764,17 @@ Chart <- R6::R6Class(
 
         # --- EG_SerShared Start ---
         # tx (Title)
-        tx <- xml2::xml_add_child(ser, "c:tx")
-        if (private$is_ref(s$header)) {
-          xml2::xml_add_child(xml2::xml_add_child(tx, "c:strRef"), "c:f", s$header)
-        } else {
-          xml2::xml_add_child(tx, "c:v", as.character(s$header))
+        if (!is.null(s$header) && length(s$header) > 0) {
+          tx <- xml2::xml_add_child(ser, "c:tx")
+
+          if (private$is_ref(s$header)) {
+            # It's a range reference like Sheet1!$A$1
+            strRef <- xml2::xml_add_child(tx, "c:strRef")
+            xml2::xml_add_child(strRef, "c:f", s$header)
+          } else {
+            # It's a literal string
+            xml2::xml_add_child(tx, "c:v", as.character(s$header))
+          }
         }
 
         # spPr (Series Styling)
@@ -828,10 +865,11 @@ Chart <- R6::R6Class(
           y_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
           xml2::xml_add_child(xml2::xml_add_child(y_val_node, y_ref_type), "c:f", s$data)
 
-          if (type == "bubbleChart" && !is.null(s$z_data)) {
+          if (type == "bubbleChart") {
             z_val_node <- xml2::xml_add_child(ser, "c:bubbleSize")
+            z_ref <- s$z_data %||% s$data
             z_ref_type <- if (grepl("!", s$z_data)) "c:numRef" else "c:numLit"
-            xml2::xml_add_child(xml2::xml_add_child(z_val_node, z_ref_type), "c:f", s$z_data)
+            xml2::xml_add_child(xml2::xml_add_child(z_val_node, z_ref_type), "c:f", z_ref)
           }
         } else {
           if (!is.null(s$cat)) {
@@ -873,7 +911,7 @@ Chart <- R6::R6Class(
       }
 
       # 4. AXIS IDS (Must be the last elements in Bar/Line/Scatter)
-      if (type %in% c("lineChart", "areaChart", "barChart", "scatterChart", "radarChart", "surfaceChart")) {
+      if (type %in% c("bubbleChart", "lineChart", "areaChart", "barChart", "scatterChart", "radarChart", "surfaceChart")) {
         xml2::xml_add_child(c_node, "c:axId", val = as.character(cat_id))
         xml2::xml_add_child(c_node, "c:axId", val = as.character(val_id))
         if (type == "surfaceChart") {

@@ -304,7 +304,7 @@ Set Y-axis tick label style, number format, and parameters.
 Add a data series to the chart.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$add_series(
-  header,
+  header = NULL,
   data,
   cat = NULL,
   type = "waterfall",

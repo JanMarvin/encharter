@@ -9,6 +9,28 @@ deparse1 <- function(expr, collapse = " ", width.cutoff = 500L, ...) {
 #' @noRd
 `%||%` <- function(a, b) if (!is.null(a)) a else b
 
+to_abs_ref <- function(x) {
+  # If it's NULL, length 0, or doesn't look like a reference (no !), return as-is
+  if (is.null(x) || length(x) == 0 || !any(grepl("!", x))) {
+    return(x)
+  }
+
+  sapply(x, function(ref) {
+    if (!is.character(ref) || !grepl("!", ref)) return(ref)
+
+    # Split to keep sheet name separate from coordinates
+    parts <- strsplit(ref, "!", fixed = TRUE)[[1]]
+    sheet <- gsub("^'|'$", "", parts[1]) # Clean existing quotes
+    range <- parts[2]
+
+    # Only add $ to coordinates, not the sheet name
+    # Regex: find letters/numbers not preceded by $
+    fixed_range <- gsub("(?<!\\$)([A-Z]+)(?<!\\$)([0-9]+)", "$\\1$\\2", range, perl = TRUE)
+
+    return(sprintf("'%s'!%s", sheet, fixed_range))
+  }, USE.NAMES = FALSE)
+}
+
 ## these shall be moved to openxlsx2
 
 #' Add a Chart object to a workbook sheet

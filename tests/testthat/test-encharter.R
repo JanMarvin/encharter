@@ -11,12 +11,12 @@ test_that("Chart supports unquoted column names (NSE)", {
   chart$add_series(data = dat, header = mpg, cat = cyl)
 
   # Verify resolution
-  expect_equal(chart$series_data[[1]]$header, "'Sheet 1'!A1")
-  expect_equal(chart$series_data[[1]]$cat,    "'Sheet 1'!B2:B4")
+  expect_equal(chart$series_data[[1]]$header, "'Sheet 1'!$A$1")
+  expect_equal(chart$series_data[[1]]$cat,    "'Sheet 1'!$B$2:$B$4")
 
   # Verify standard string input still works (Backward compatibility)
   chart$add_series(data = dat, header = "cyl", cat = "mpg")
-  expect_equal(chart$series_data[[2]]$header, "'Sheet 1'!B1")
+  expect_equal(chart$series_data[[2]]$header, "'Sheet 1'!$B$1")
 
 
   expect_error(chart$add_series(data = dat, header = mpg, cat = foo), "object 'foo' not found")
@@ -35,8 +35,8 @@ test_that("ChartEx handles unquoted names for Waterfall", {
   # Unquoted names
   chart$add_series(data = dat, header = Value, cat = Category, type = "waterfall")
 
-  expect_equal(chart$series_data[[1]]$header, "'Sheet 1'!B1")
-  expect_equal(chart$series_data[[1]]$cat,    "'Sheet 1'!A2:A3")
+  expect_equal(chart$series_data[[1]]$header, "'Sheet 1'!$B$1")
+  expect_equal(chart$series_data[[1]]$cat,    "'Sheet 1'!$A$2:$A$3")
 
   expect_error(chart$add_series(data = dat, header = Value, cat = foo), "object 'foo' not found")
 

@@ -167,30 +167,51 @@ ChartEx <- R6::R6Class(
     #' @param line_color Border color.
     #' @param line_width Border width.
     #' @param subtotals Numeric vector of indices to treat as subtotals (Waterfall only).
-    add_series = function(header, data, cat = NULL, type = "waterfall", fill_color = "auto",
-                          line_color = NULL, line_width = 1, subtotals = NULL) {
+    add_series = function(header = NULL, data, cat = NULL, type = "waterfall", fill_color = "auto",
+                      line_color = NULL, line_width = 1, subtotals = NULL) {
 
-      h_expr <- substitute(header)
-      c_expr <- substitute(cat)
+      h_label <- tryCatch(if (is.symbol(substitute(header))) deparse1(substitute(header)) else header, error = function(e) NULL)
+      c_label <- tryCatch(if (is.symbol(substitute(cat))) deparse1(substitute(cat)) else cat, error = function(e) NULL)
 
       if (inherits(data, "wb_data")) {
-        wb_dims   <- attr(data, "dims")
-        wb_sheet  <- attr(data, "sheet")
-        col_names <- names(data)
+        wb_dims    <- attr(data, "dims")
+        wb_sheet   <- attr(data, "sheet")
+        col_names  <- names(data)
 
-        h_name <- if (is.symbol(h_expr)) deparse1(h_expr) else header
-        if (!is.null(h_name) && h_name %in% col_names) {
-          idx <- which(col_names == h_name)
-          header <- sprintf("'%s'!%s", wb_sheet, wb_dims[1, idx])
-          data   <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[2, idx], wb_dims[nrow(wb_dims), idx])
+        has_header <- nrow(wb_dims) > length(attr(data, "row.names"))
+        start_row  <- if (has_header) 2 else 1
+
+        # 2. Resolve Series Data and Header
+        h_idx <- which(col_names == h_label)
+        if (length(h_idx) > 0) {
+          h_idx  <- h_idx[1]
+          header <- if (has_header) sprintf("'%s'!%s", wb_sheet, wb_dims[1, h_idx]) else NULL
+          data   <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[start_row, h_idx], wb_dims[nrow(wb_dims), h_idx])
         }
 
-        c_name <- if (is.symbol(c_expr)) deparse1(c_expr) else cat
-        if (!is.null(c_name) && c_name %in% col_names) {
-          idx <- which(col_names == c_name)
-          cat <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[2, idx], wb_dims[nrow(wb_dims), idx])
+        # 3. Resolve Category (cat)
+        c_idx <- which(col_names == c_label)
+        if (length(c_idx) > 0) {
+          c_idx <- c_idx[1]
+          cat   <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[start_row, c_idx], wb_dims[nrow(wb_dims), c_idx])
         }
       }
+
+      # 4. Clean and Store
+      header <- to_abs_ref(header)
+      data   <- to_abs_ref(data)
+      cat    <- to_abs_ref(cat)
+
+      if (!is.null(data) && !grepl("!", data)) {
+        stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
+      }
+
+      if (is.logical(subtotals) && subtotals) {
+        subtotals <- 0 # avoid bailing
+      }
+
+      header <- if (is.null(header)) NA_character_ else header
+      cat    <- if (is.null(cat))    NA_character_ else cat
 
       self$series_data[[length(self$series_data) + 1]] <- list(
         header = private$fix_quote(header), data = private$fix_quote(data), cat = private$fix_quote(cat),
@@ -249,13 +270,15 @@ ChartEx <- R6::R6Class(
         ser <- xml2::xml_add_child(plot_region_node, "cx:series", layoutId = s$type, uniqueId = openxlsx2:::st_guid())
         tx_node <- xml2::xml_add_child(xml2::xml_add_child(ser, "cx:tx"), "cx:txData")
 
-        if (private$is_ref(s$header)) {
-          # It's a range reference like Sheet1!$A$1
-          xml2::xml_add_child(tx_node, "cx:f", h_id)
-          head_attrs[h_id] <- s$header
-        } else {
-          # It's a literal string like "Foo Bar"
-          xml2::xml_add_child(tx_node, "cx:v", as.character(s$header))
+        if (!is.na(s$header)) {
+          if (private$is_ref(s$header)) {
+            # It's a range reference like Sheet1!$A$1
+            xml2::xml_add_child(tx_node, "cx:f", h_id)
+            head_attrs[h_id] <- s$header
+          } else {
+            # It's a literal string like "Foo Bar"
+            xml2::xml_add_child(tx_node, "cx:v", as.character(s$header))
+          }
         }
 
         if ((length(s$fill_color) == 1 && s$fill_color != "auto") || !is.null(s$line_color)) {
@@ -331,7 +354,7 @@ ChartEx <- R6::R6Class(
   private = list(
 
     is_ref = function(x) {
-      if (is.null(x) || x == "") return(FALSE)
+      if (is.null(x) || is.na(x) || x == "") return(FALSE)
       # Check if '!' exists and is not at the very end (i.e., has a cell ref after it)
       grepl("!.+", x)
     },

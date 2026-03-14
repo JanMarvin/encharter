@@ -656,7 +656,7 @@ Style the inner plot area background.
 Add a data series to the chart with independent styling.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Chart$add_series(
-  header,
+  header = NULL,
   data,
   cat = NULL,
   z_data = NULL,
