@@ -13,12 +13,32 @@ test_that("Chart: Date Axes and Axis Units", {
     format = "mmm-yy", label_pos = "low"
   )
 
+  chart$set_x_title("Foo", sz = 14, bold = TRUE)
+  expect_warning(chart$set_x2_title("Bar", sz = 14, bold = TRUE), "Secondary axis title ignored.")
+  chart$set_y_title("Baz", sz = 14, bold = TRUE)
+  expect_warning(chart$set_y2_title("Bam", sz = 14, bold = TRUE), "Secondary axis title ignored.")
+
   xml <- as.character(chart$render())
 
   expect_match(xml, "<c:majorUnit val=\"2\"/>")
   expect_match(xml, "<c:majorTimeUnit val=\"months\"/>")
   expect_match(xml, "<c:numFmt formatCode=\"mmm-yy\"")
   expect_match(xml, "<c:lblOffset val=\"100\"/>")
+
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)$
+    add_chart_xml(xml = xml)
+
+  chart$add_series(
+    header = "S1!C$1", data = "S1!$C$2:$C$5", secondary = TRUE # "y"
+  )
+  chart$set_y2_title("Bam", sz = 14, bold = TRUE)
+  xml <- as.character(chart$render())
+
+  chart$add_series(
+    header = "S1!C$1", data = "S1!$C$2:$C$5", secondary = "x"
+  )
+  chart$set_x2_title("Bar", sz = 14, bold = TRUE)
+  xml <- as.character(chart$render())
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)$
     add_chart_xml(xml = xml)

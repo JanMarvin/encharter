@@ -17,28 +17,6 @@ wb$add_data(sheet = "Dashboard", x = data)
 # We start with "barChart" as the base type
 my_chart <- Chart$new(type = )
 
-# Set Titles
-my_chart$set_chart_title("Annual Sales & Growth", bold = TRUE, sz = 16)
-my_chart$set_x_title("Reporting Month")
-my_chart$set_y_title("Revenue (k)")
-my_chart$set_y2_title("Growth Rate (%)")
-
-# 4. Configure the X-Axis (Dates)
-# Major units: 2 Months, Minor units: 1 Month
-my_chart$set_x_axis(
-  major      = 2,
-  major_time = "months",
-  minor      = 1,
-  minor_time = "months",
-  format     = "mmm-yy"
-)
-
-# 5. Configure the Y-Axes
-# Primary Y: Steps of 100
-my_chart$set_y_axis(major = 100, min = 0, format = "#,##0")
-# Secondary Y: Percentages with steps of 5%
-my_chart$set_y2_axis(major = 0.05, min = -0.10, max = 0.30, format = "0%")
-
 # 6. Add Data Series
 # Series 1: Sales (Primary Axis, Bar)
 my_chart$add_series(
@@ -60,6 +38,29 @@ my_chart$add_series(
   marker    = "circle",
   smooth    = TRUE
 )
+
+
+# Set Titles
+my_chart$set_chart_title("Annual Sales & Growth", bold = TRUE, sz = 16)
+my_chart$set_x_title("Reporting Month")
+my_chart$set_y_title("Revenue (k)")
+my_chart$set_y2_title("Growth Rate (%)")
+
+# 4. Configure the X-Axis (Dates)
+# Major units: 2 Months, Minor units: 1 Month
+my_chart$set_x_axis(
+  major      = 2,
+  major_time = "months",
+  minor      = 1,
+  minor_time = "months",
+  format     = "mmm-yy"
+)
+
+# 5. Configure the Y-Axes
+# Primary Y: Steps of 100
+my_chart$set_y_axis(major = 100, min = 0, format = "#,##0")
+# Secondary Y: Percentages with steps of 5%
+my_chart$set_y2_axis(major = 0.05, min = -0.10, max = 0.30, format = "0%")
 
 my_chart$set_data_table(TRUE)
 my_chart$set_legend_style(pos = "none")

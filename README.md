@@ -1,6 +1,12 @@
 encharter
 ================
 
+<!-- badges: start -->
+
+[![R-CMD-check.yaml](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/JanMarvin/openxlsx2/actions/workflows/check-standard.yaml)
+[![codecov](https://codecov.io/gh/JanMarvin/encharter/graph/badge.svg?token=JMMBBBHPTG)](https://codecov.io/gh/JanMarvin/encharter)
+<!-- badges: end -->
+
 Experimental package that is still in early development.
 
 This is a lightweight R6-based engine for generating Office Open XML
