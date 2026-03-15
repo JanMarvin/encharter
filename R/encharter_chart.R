@@ -652,7 +652,7 @@ Chart <- R6::R6Class(
       }
 
       self$type <- self$type %||% "barChart"
-      xml2::xml_find_all(self$xml, "c:spPr") |> xml2::xml_remove()
+      xml2::xml_remove(xml2::xml_find_all(self$xml, "c:spPr"))
       private$apply_sp_pr(self$xml, self$chart_style)
 
       chart_root <- xml2::xml_find_first(self$xml, "//c:chart")

@@ -236,11 +236,11 @@ ChartEx <- R6::R6Class(
       plot_area_node <- xml2::xml_find_first(self$xml, "//cx:plotArea")
       plot_region_node <- xml2::xml_find_first(self$xml, "//cx:plotAreaRegion")
 
-      xml2::xml_children(chart_data_node) |> xml2::xml_remove()
-      xml2::xml_find_all(plot_region_node, "cx:series") |> xml2::xml_remove()
+      xml2::xml_remove(xml2::xml_children(chart_data_node))
+      xml2::xml_remove(xml2::xml_find_all(plot_region_node, "cx:series"))
 
       # 1. Plot Area Background (plotSurface)
-      xml2::xml_find_all(plot_region_node, "cx:plotSurface") |> xml2::xml_remove()
+      xml2::xml_remove(xml2::xml_find_all(plot_region_node, "cx:plotSurface"))
       if (length(self$plot_area_style) > 0) {
         surf <- xml2::xml_add_child(plot_region_node, "cx:plotSurface", .where = 0)
         spPr <- xml2::xml_add_child(surf, "cx:spPr")
@@ -346,7 +346,7 @@ ChartEx <- R6::R6Class(
         plot_area_node <- xml2::xml_find_first(self$xml, "//cx:plotArea")
 
         # Wipe existing axes to prevent duplication/nesting
-        xml2::xml_find_all(plot_area_node, "cx:axis") |> xml2::xml_remove()
+        xml2::xml_remove(xml2::xml_find_all(plot_area_node, "cx:axis"))
 
         # Build siblings by passing the same plot_area_node as parent
         private$render_axis_full(plot_area_node, self$x_axis_style, self$x_title,
@@ -371,7 +371,7 @@ ChartEx <- R6::R6Class(
       if (!is.null(self$chart_title)) private$add_rich_text(xml2::xml_find_first(self$xml, "//cx:chart/cx:title"), self$chart_title, self$chart_title_style)
 
       # 4. Chart Area Styling
-      xml2::xml_find_all(self$xml, "/cx:chartSpace/cx:spPr") |> xml2::xml_remove()
+      xml2::xml_remove(xml2::xml_find_all(self$xml, "/cx:chartSpace/cx:spPr"))
       if (length(self$chart_area_style) > 0) {
         spPr_chart <- xml2::xml_add_child(self$xml, "cx:spPr")
         if (!is.null(self$chart_area_style$fill)) private$render_color(spPr_chart, self$chart_area_style$fill)
@@ -550,7 +550,7 @@ ChartEx <- R6::R6Class(
     }
     ,
     apply_legend_text_style = function(node, s) {
-      xml2::xml_find_all(node, "cx:txPr") |> xml2::xml_remove()
+      xml2::xml_remove(xml2::xml_find_all(node, "cx:txPr"))
       txPr <- xml2::xml_add_child(node, "cx:txPr")
       xml2::xml_add_child(txPr, "a:bodyPr", lIns = "0", tIns = "0", rIns = "0", bIns = "0", anchor = "ctr", anchorCtr = "1")
       xml2::xml_add_child(txPr, "a:lstStyle")
@@ -598,7 +598,7 @@ ChartEx <- R6::R6Class(
       if (grepl("^[0-9A-F]{6}$", hex)) xml2::xml_add_child(dest_node, "a:srgbClr", val = hex)
     },
     add_rich_text = function(parent, text, s) {
-      xml2::xml_children(parent) |> xml2::xml_remove()
+      xml2::xml_remove(xml2::xml_children(parent))
 
       # 1. Shape properties for the title background/border
       if (!is.null(s$fill) || !is.null(s$line)) {
