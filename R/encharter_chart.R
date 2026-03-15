@@ -1057,6 +1057,13 @@ Chart <- R6::R6Class(
 
           # Required: the value itself
           xml2::xml_add_child(eb, "c:val", val = as.character(s$error_bars$value %||% 5))
+
+          # Add Color Styling
+          if (!is.null(s$error_bars$color)) {
+            sp_pr <- xml2::xml_add_child(eb, "c:spPr")
+            ln <- xml2::xml_add_child(sp_pr, "a:ln")
+            private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), s$error_bars$color)
+          }
         }
 
         # 6. Data References (xVal/yVal or cat/val)

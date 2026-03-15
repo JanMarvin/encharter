@@ -122,3 +122,80 @@ test_that("Chart series supports Trendlines and Error Bars with correct XSD sequ
   expect_true(idx_errbars < idx_cat)
   expect_true(idx_cat < idx_val)
 })
+
+test_that("surfaceChart rendering works", {
+  # 1. Minimal setup
+  surface_data <- data.frame(
+    Y = paste0("Y", 1:3),
+    X1 = c(10, 20, 10),
+    X2 = c(20, 40, 20),
+    X3 = c(10, 20, 10)
+  )
+
+  # 2. Initialize Chart and add series
+  chart <- Chart$new()
+  for (i in 2:4) {
+    chart$add_series(
+      header = paste0("Sheet1!$A$", i),
+      data   = paste0("Sheet1!$B$", i, ":$D$", i),
+      cat    = "Sheet1!$B$1:$D$1",
+      type   = "surfaceChart"
+    )
+  }
+
+  # 3. Build workbook and get XML
+  wb <- wb_workbook() |>
+    wb_add_worksheet("Sheet1") |>
+    wb_add_data(x = surface_data) |>
+    wb_add_chart(chart_obj = chart)
+
+  xml_content <- xml2::read_xml(chart$render())
+
+  # 4. Assertions
+  expect_s3_class(chart, "Chart")
+  # Verify the specific OOXML tag for surface charts exists
+  expect_true(any(grepl("surfaceChart", as.character(xml_content))))
+  # Verify we have the correct number of series nodes
+  expect_equal(length(xml2::xml_find_all(xml_content, ".//c:ser")), 3)
+})
+
+test_that("radarChart rendering works for both standard and filled styles", {
+  # 1. Minimal setup
+  skill_data <- data.frame(
+    Metric = c("A", "B", "C"),
+    Val = c(10, 20, 30)
+  )
+
+  # 2. Test Standard Radar (Line)
+  radar_std <- Chart$new()
+  radar_std$add_series(
+    header = "Std",
+    cat    = "Sheet1!$A$2:$A$4",
+    data   = "Sheet1!$B$2:$B$4",
+    type   = "radarChart"
+  )
+
+  xml_std <- xml2::read_xml(radar_std$render())
+
+  # Assert standard radarStyle is "radar" (default line)
+  expect_true(any(grepl('radarStyle val="standard"', as.character(xml_std))))
+
+  # 3. Test Filled Radar
+  radar_filled <- Chart$new()
+  radar_filled$add_series(
+    header = "Fill",
+    cat    = "Sheet1!$A$2:$A$4",
+    data   = "Sheet1!$B$2:$B$4",
+    type   = "radarChart",
+    filled = TRUE
+  )
+
+  xml_filled <- xml2::read_xml(radar_filled$render())
+
+  # Assert filled radarStyle is "filled"
+  expect_true(any(grepl('radarStyle val="filled"', as.character(xml_filled))))
+
+  # 4. General structure check
+  expect_s3_class(radar_std, "Chart")
+  expect_equal(length(xml2::xml_find_all(xml_std, ".//c:radarChart")), 1)
+})

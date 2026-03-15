@@ -303,3 +303,127 @@ test_that("Bubble chart generates valid XML and integrates with workbook", {
   dpts <- xml2::xml_find_all(xml_parsed, ".//c:dPt")
   expect_gt(length(dpts), 0)
 })
+
+test_that("set_data_table correctly adds dTable node to XML", {
+  # 1. Minimal setup
+  chart <- Chart$new(type = "barChart")
+  chart$add_series(header = "H1", data = "Sheet1!A1:A5", cat = "Sheet1!B1:B5")
+
+  # 2. Enable data table
+  chart$set_data_table(TRUE)
+
+  # 3. Render and parse XML
+  xml_res <- xml2::read_xml(chart$render())
+
+  # 4. Assertions
+  # Check if the dTable tag exists
+  dtable_node <- xml2::xml_find_first(xml_res, ".//c:dTable")
+  expect_false(xml2::xml_type(dtable_node) == "element_absent")
+
+  # Optional: check for specific data table attributes (keys, borders, etc.)
+  expect_true(any(grepl("showKeys", as.character(xml_res))))
+})
+
+test_that("drop_lines, high_low_lines, and up_down_bars render correctly", {
+  # 1. Setup a basic line chart with two series
+  ch <- Chart$new(type = "lineChart")
+  ch$add_series(header = "S1", data = "AA!A2:A5", cat = "AA!B2:B5")
+  ch$add_series(header = "S2", data = "AA!C2:C5")
+
+  # 2. Enable features
+  ch$drop_lines     <- TRUE
+  ch$high_low_lines <- TRUE
+  ch$up_down_bars   <- TRUE
+
+  # 3. Render and parse XML
+  xml_res <- xml2::read_xml(ch$render())
+
+  # 4. Assertions for specialized OOXML nodes
+  # Drop Lines: <c:dropLines>
+  expect_false(xml2::xml_type(xml2::xml_find_first(xml_res, ".//c:dropLines")) == "element_absent")
+
+  # High-Low Lines: <c:hiLowLines>
+  expect_false(xml2::xml_type(xml2::xml_find_first(xml_res, ".//c:hiLowLines")) == "element_absent")
+
+  # Up-Down Bars: <c:upDownBars>
+  expect_false(xml2::xml_type(xml2::xml_find_first(xml_res, ".//c:upDownBars")) == "element_absent")
+
+  # Verify they are nested within the lineChart node
+  expect_equal(length(xml2::xml_find_all(xml_res, ".//c:lineChart/c:dropLines")), 1)
+})
+
+test_that("barChart with theme colors and stacked grouping renders correctly", {
+  # 1. Minimal Setup
+  ch <- Chart$new()
+  ch$add_series(
+    header    = "Sheet1!$B$1",
+    data      = "Sheet1!$B$2:$B$4",
+    cat       = "Sheet1!$A$2:$A$4",
+    color     = wb_color(theme = 5),
+    grouping  = "percentStacked",
+    dir       = "bar",
+    type      = "barChart"
+  )
+
+  # 2. Render XML
+  xml_res <- ch$render()
+
+  # 3. Assertions
+  # Check Bar Direction (Horizontal 'bar' vs Vertical 'col')
+  expect_true(any(grepl('<c:barDir val="bar"/>', as.character(xml_res))))
+
+  # Check Stacked Grouping
+  expect_true(any(grepl('<c:grouping val="percentStacked"/>', as.character(xml_res))))
+
+  # Check Theme Color: Looking for theme="5" in the fill properties
+  # Standard path: c:ser -> c:spPr -> a:solidFill -> a:schemeClr
+  expect_true(any(grepl('val="accent2"', as.character(xml_res))))
+
+  # Verify titles and styling
+  ch$set_chart_title("Test Title", color = "0D6797")
+  xml_titled <- ch$render()
+  expect_true(any(grepl("0D6797", as.character(xml_titled))))
+})
+
+test_that("trendlines and error bars render correctly in a series", {
+  # 1. Setup a basic chart
+  ch <- Chart$new(type = "barChart")
+  ch$add_series(
+    header = "Revenue",
+    data = "Sheet1!$B$2:$B$4",
+    cat = "Sheet1!$A$2:$A$4",
+    # Add Trendline configuration
+    trendline = list(
+      type = "linear",
+      color = "FF0000",
+      show_r2 = FALSE
+    ),
+    # Add Error Bar configuration
+    error_bars = list(
+      type = "percentage",
+      value = 10,
+      color = "404040"
+    )
+  )
+
+  # 2. Render XML
+  xml_res <- xml2::read_xml(ch$render())
+
+  # 3. Assertions for Trendlines
+  # OOXML node for trendline is <c:trendline>
+  trend_node <- xml2::xml_find_first(xml_res, ".//c:ser/c:trendline")
+  expect_false(xml2::xml_type(trend_node) == "element_absent")
+  expect_true(any(grepl('trendlineType val="linear"', as.character(xml_res))))
+  expect_true(any(grepl('dispRSqr val="0"', as.character(xml_res))))
+
+  # 4. Assertions for Error Bars
+  # OOXML node for error bars is <c:errBars>
+  err_node <- xml2::xml_find_first(xml_res, ".//c:ser/c:errBars")
+  expect_false(xml2::xml_type(err_node) == "element_absent")
+  expect_true(any(grepl('errBarType val="both"', as.character(xml_res)))) # Default behavior
+  expect_true(any(grepl('errValType val="percentage"', as.character(xml_res))))
+
+  # 5. Check colors (Solid Fill inside spPr of these nodes)
+  expect_true(any(grepl("FF0000", as.character(xml_res)))) # Trendline color
+  expect_true(any(grepl("404040", as.character(xml_res)))) # Error bar color
+})
