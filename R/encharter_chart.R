@@ -48,10 +48,10 @@ Chart <- R6::R6Class(
     show_data_table = FALSE,
     #' @field axis_params Internal list for scaling, units, and formatting.
     axis_params = list(
-      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
+      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
     ),
     #' @field drop_lines Logical; show lines from points to the axis.
     drop_lines = FALSE,
@@ -159,6 +159,7 @@ Chart <- R6::R6Class(
     #' @param minor Numeric value for minor unit interval.
     #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
     #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
@@ -173,6 +174,7 @@ Chart <- R6::R6Class(
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_x_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                           major_time = NULL, minor_time = NULL, base_time = NULL,
+                          major_tick = NULL, minor_tick = NULL,
                           format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -181,6 +183,8 @@ Chart <- R6::R6Class(
 
       crosses   <- private$validate_input(crosses, c("min", "min", "autoZero"), "crosses")
       label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
+      minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
       if (is.character(gridlines)) {
         private$validate_input(
           gridlines,
@@ -198,6 +202,7 @@ Chart <- R6::R6Class(
 
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -214,6 +219,7 @@ Chart <- R6::R6Class(
     #' @param minor Numeric value for minor unit interval.
     #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
     #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
@@ -228,6 +234,7 @@ Chart <- R6::R6Class(
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                         major_time = NULL, minor_time = NULL, base_time = NULL,
+                        major_tick = NULL, minor_tick = NULL,
                         format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                         grid_color = NULL, gridlines = NULL,
                         minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -236,6 +243,8 @@ Chart <- R6::R6Class(
 
       crosses   <- private$validate_input(crosses, c("autoZero", "min", "max"), "crosses")
       label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
+      minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
       if (is.character(gridlines)) {
         private$validate_input(
           gridlines,
@@ -253,6 +262,7 @@ Chart <- R6::R6Class(
 
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -269,6 +279,7 @@ Chart <- R6::R6Class(
     #' @param minor Numeric value for minor unit interval.
     #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
     #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
@@ -283,6 +294,7 @@ Chart <- R6::R6Class(
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_y2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                            major_time = NULL, minor_time = NULL, base_time = NULL,
+                           major_tick = NULL, minor_tick = NULL,
                            format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                            grid_color = NULL, gridlines = NULL,
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -291,6 +303,8 @@ Chart <- R6::R6Class(
 
       crosses   <- private$validate_input(crosses, c("max", "min", "autoZero"), "crosses")
       label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
+      minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
       if (is.character(gridlines)) {
         private$validate_input(
           gridlines,
@@ -308,6 +322,7 @@ Chart <- R6::R6Class(
 
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -324,6 +339,7 @@ Chart <- R6::R6Class(
     #' @param minor Numeric value for minor unit interval.
     #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
     #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
@@ -338,6 +354,7 @@ Chart <- R6::R6Class(
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_x2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                            major_time = NULL, minor_time = NULL, base_time = NULL,
+                           major_tick = NULL, minor_tick = NULL,
                            format = NULL, log_base = NULL, color = NULL, label_color = NULL, rot = NULL,
                            grid_color = NULL, gridlines = NULL,
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -346,6 +363,8 @@ Chart <- R6::R6Class(
 
       crosses   <- private$validate_input(crosses, c("max", "min", "autoZero"), "crosses")
       label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
+      minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
       if (is.character(gridlines)) {
         private$validate_input(
           line_type,
@@ -363,6 +382,7 @@ Chart <- R6::R6Class(
 
       params <- list(min = min, max = max, major = major, minor = minor,
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color, label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -1180,6 +1200,12 @@ Chart <- R6::R6Class(
       if (!is.null(params$format)) {
         xml2::xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
       }
+      if (!is.null(params$major_tick)) {
+        xml2::xml_add_child(ax, "c:majorTickMark", val = params$major_tick)
+      }
+      if (!is.null(params$minor_tick)) {
+        xml2::xml_add_child(ax, "c:minorTickMark", val = params$minor_tick)
+      }
       xml2::xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")
 
       # 6. Visual Styles
@@ -1265,6 +1291,12 @@ Chart <- R6::R6Class(
       # 5. Number Format
       if (!is.null(params$format)) {
         xml2::xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
+      }
+      if (!is.null(params$major_tick)) {
+        xml2::xml_add_child(ax, "c:majorTickMark", val = params$major_tick)
+      }
+      if (!is.null(params$minor_tick)) {
+        xml2::xml_add_child(ax, "c:minorTickMark", val = params$minor_tick)
       }
 
       xml2::xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")

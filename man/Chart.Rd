@@ -212,6 +212,8 @@ Set Primary X-axis scaling, units, and format.
   major_time = NULL,
   minor_time = NULL,
   base_time = NULL,
+  major_tick = NULL,
+  minor_tick = NULL,
   format = NULL,
   log_base = NULL,
   color = NULL,
@@ -247,6 +249,8 @@ Set Primary X-axis scaling, units, and format.
 \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
 
 \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
 
 \item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
@@ -287,6 +291,8 @@ Set Primary Y-axis scaling, units, and format.
   major_time = NULL,
   minor_time = NULL,
   base_time = NULL,
+  major_tick = NULL,
+  minor_tick = NULL,
   format = NULL,
   log_base = NULL,
   color = NULL,
@@ -322,6 +328,8 @@ Set Primary Y-axis scaling, units, and format.
 \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
 
 \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
 
 \item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
@@ -362,6 +370,8 @@ Set Secondary Y-axis scaling, units, and format.
   major_time = NULL,
   minor_time = NULL,
   base_time = NULL,
+  major_tick = NULL,
+  minor_tick = NULL,
   format = NULL,
   log_base = NULL,
   color = NULL,
@@ -397,6 +407,8 @@ Set Secondary Y-axis scaling, units, and format.
 \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
 
 \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
 
 \item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
@@ -437,6 +449,8 @@ Set Secondary X-axis scaling, units, and format.
   major_time = NULL,
   minor_time = NULL,
   base_time = NULL,
+  major_tick = NULL,
+  minor_tick = NULL,
   format = NULL,
   log_base = NULL,
   color = NULL,
@@ -472,6 +486,8 @@ Set Secondary X-axis scaling, units, and format.
 \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
 
 \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
 
 \item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
