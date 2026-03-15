@@ -2,7 +2,7 @@ library(openxlsx2)
 library(encharter)
 
 # 1. Prepare Data
-# Note: For Excel to group them nicely, only the first row
+# Note: For spreadsheet software to group them nicely, only the first row
 # of each category should have the label (e.g., "Smoker").
 plot_data <- data.frame(
   Status = c("Smoker", "", "Non-Smoker", ""),

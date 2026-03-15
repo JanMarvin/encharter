@@ -4,7 +4,7 @@
 \alias{ChartEx}
 \title{ChartEx R6 Class for Extended Spreadsheet Charts}
 \description{
-An R6 class to create and manipulate Excel Extended Charts (ChartEx),
+An R6 class to create and manipulate Office OpenXML (OOXML) Extended Charts (ChartEx),
 including Waterfall, Sunburst, Treemap, and Region Maps, which are not
 supported by standard Office Open XML chart types.
 }
@@ -256,7 +256,7 @@ Set data label properties.
 
 \item{\code{color}}{Hex color.}
 
-\item{\code{numfmt}}{Excel number format string.}
+\item{\code{numfmt}}{A number format string.}
 }
 \if{html}{\out{</div>}}
 }
@@ -273,7 +273,7 @@ Set X-axis tick label style, number format, and parameters.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{numfmt}}{Excel number format.}
+\item{\code{numfmt}}{A number format.}
 
 \item{\code{...}}{Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).}
 }
@@ -292,7 +292,7 @@ Set Y-axis tick label style, number format, and parameters.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{numfmt}}{Excel number format.}
+\item{\code{numfmt}}{A number format.}
 
 \item{\code{...}}{Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).}
 }

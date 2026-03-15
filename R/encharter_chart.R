@@ -163,7 +163,7 @@ Chart <- R6::R6Class(
     #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
     #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
     #' @param base_time Base time unit for date axes ("days", "months", "years").
-    #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
     #' @param rot Rotation in degrees.
@@ -223,7 +223,7 @@ Chart <- R6::R6Class(
     #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
     #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
     #' @param base_time Base time unit for date axes ("days", "months", "years").
-    #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
     #' @param rot Rotation in degrees.
@@ -283,7 +283,7 @@ Chart <- R6::R6Class(
     #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
     #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
     #' @param base_time Base time unit for date axes ("days", "months", "years").
-    #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
     #' @param rot Rotation in degrees.
@@ -343,7 +343,7 @@ Chart <- R6::R6Class(
     #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
     #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
     #' @param base_time Base time unit for date axes ("days", "months", "years").
-    #' @param format Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
     #' @param rot Rotation in degrees.
@@ -1371,7 +1371,7 @@ Chart <- R6::R6Class(
       pPr    <- xml2::xml_add_child(p, "a:pPr")
       defRPr <- xml2::xml_add_child(pPr, "a:defRPr")
 
-      # Apply font size (Excel uses 1/100th of a point)
+      # Apply font size (OOXML uses 1/100th of a point)
       sz <- if (!is.null(s$sz)) s$sz * 100 else 900
       xml2::xml_set_attr(defRPr, "sz", as.character(sz))
 

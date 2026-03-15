@@ -255,7 +255,7 @@ Set Primary X-axis scaling, units, and format.
 
 \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
 
-\item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 
@@ -334,7 +334,7 @@ Set Primary Y-axis scaling, units, and format.
 
 \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
 
-\item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 
@@ -413,7 +413,7 @@ Set Secondary Y-axis scaling, units, and format.
 
 \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
 
-\item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 
@@ -492,7 +492,7 @@ Set Secondary X-axis scaling, units, and format.
 
 \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
 
-\item{\code{format}}{Excel number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
 
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 

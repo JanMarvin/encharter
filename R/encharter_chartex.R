@@ -1,7 +1,7 @@
 #' ChartEx R6 Class for Extended Spreadsheet Charts
 #'
 #' @description
-#' An R6 class to create and manipulate Excel Extended Charts (ChartEx),
+#' An R6 class to create and manipulate Office OpenXML (OOXML) Extended Charts (ChartEx),
 #' including Waterfall, Sunburst, Treemap, and Region Maps, which are not
 #' supported by standard Office Open XML chart types.
 #'
@@ -134,7 +134,7 @@ ChartEx <- R6::R6Class(
     #' @param bold Logical.
     #' @param italic Logical.
     #' @param color Hex color.
-    #' @param numfmt Excel number format string.
+    #' @param numfmt A number format string.
     set_data_label_style = function(show = TRUE, pos = "outEnd", sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL, numfmt = NULL) {
       self$data_label_params <- list(show = show, pos = pos,
                                      style = list(sz = sz, font = name, b = bold, i = italic, color = color),
@@ -143,7 +143,7 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set X-axis tick label style, number format, and parameters.
-    #' @param numfmt Excel number format.
+    #' @param numfmt A number format.
     #' @param ... Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).
     set_x_axis = function(numfmt = NULL, ...) {
       if (!is.null(numfmt)) self$x_numfmt <- numfmt
@@ -152,7 +152,7 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set Y-axis tick label style, number format, and parameters.
-    #' @param numfmt Excel number format.
+    #' @param numfmt A number format.
     #' @param ... Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).
     set_y_axis = function(numfmt = NULL, ...) {
       if (!is.null(numfmt)) self$y_numfmt <- numfmt
@@ -662,7 +662,7 @@ ChartEx <- R6::R6Class(
 
       if (!is.null(style$font)) xml2::xml_add_child(defRPr, "a:latin", typeface = style$font)
 
-      # The final node in the Excel paragraph
+      # The final node in the OOXML paragraph
       end_pr <- xml2::xml_add_child(p, "a:endParaRPr", sz = sz_val)
       if (isTRUE(style$b)) xml2::xml_set_attr(end_pr, "b", "1")
       if (isTRUE(style$i)) xml2::xml_set_attr(end_pr, "i", "1")

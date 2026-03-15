@@ -8,7 +8,7 @@ library(encharter)
 combo_chart <- Chart$new("areaChart")
 
 # 2. Add two series for the "Clustered" effect
-# These use 'barChart' which renders as Columns by default in Excel XML
+# These use 'barChart' which renders as Columns by default in OOXML XML
 combo_chart$
   add_series(
     header = "Sheet1!$B$1",
@@ -62,5 +62,5 @@ wb <- wb_workbook() |>
 wb <- wb |>
   wb_add_chart(dims = "E2:M20", chart_obj = combo_chart)
 
-# Open in Excel
+# Open in spreadsheet software
 wb$open()
