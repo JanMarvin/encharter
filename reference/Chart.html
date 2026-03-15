@@ -141,6 +141,10 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 <dd><p>Logical; whether to show bubbles with negative values.</p></dd>
 
 
+<dt><code>disp_blanks_as</code></dt>
+<dd><p>Character; "gap", "span", or "zero".</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div id="methods">
@@ -167,6 +171,7 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 <li><p><a href="#method-Chart-set_data_label_style"><code>Chart$set_data_label_style()</code></a></p></li>
 <li><p><a href="#method-Chart-set_chart_style"><code>Chart$set_chart_style()</code></a></p></li>
 <li><p><a href="#method-Chart-set_plot_style"><code>Chart$set_plot_style()</code></a></p></li>
+<li><p><a href="#method-Chart-set_disp_blanks"><code>Chart$set_disp_blanks()</code></a></p></li>
 <li><p><a href="#method-Chart-add_series"><code>Chart$add_series()</code></a></p></li>
 <li><p><a href="#method-Chart-render"><code>Chart$render()</code></a></p></li>
 <li><p><a href="#method-Chart-clone"><code>Chart$clone()</code></a></p></li>
@@ -298,6 +303,8 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 <span>  major_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minor_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  base_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  major_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minor_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_base <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -345,6 +352,10 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 
 <dt><code>base_time</code></dt>
 <dd><p>Base time unit for date axes ("days", "months", "years").</p></dd>
+
+
+<dt><code>major_tick, minor_tick</code></dt>
+<dd><p>Tick marks for major and minor ("cross", "in", "none", "out").</p></dd>
 
 
 <dt><code>format</code></dt>
@@ -406,6 +417,8 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 <span>  major_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minor_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  base_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  major_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minor_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_base <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -453,6 +466,10 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 
 <dt><code>base_time</code></dt>
 <dd><p>Base time unit for date axes ("days", "months", "years").</p></dd>
+
+
+<dt><code>major_tick, minor_tick</code></dt>
+<dd><p>Tick marks for major and minor ("cross", "in", "none", "out").</p></dd>
 
 
 <dt><code>format</code></dt>
@@ -514,6 +531,8 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 <span>  major_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minor_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  base_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  major_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minor_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_base <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -561,6 +580,10 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 
 <dt><code>base_time</code></dt>
 <dd><p>Base time unit for date axes ("days", "months", "years").</p></dd>
+
+
+<dt><code>major_tick, minor_tick</code></dt>
+<dd><p>Tick marks for major and minor ("cross", "in", "none", "out").</p></dd>
 
 
 <dt><code>format</code></dt>
@@ -622,6 +645,8 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 <span>  major_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minor_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  base_time <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  major_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minor_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_base <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -669,6 +694,10 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 
 <dt><code>base_time</code></dt>
 <dd><p>Base time unit for date axes ("days", "months", "years").</p></dd>
+
+
+<dt><code>major_tick, minor_tick</code></dt>
+<dd><p>Tick marks for major and minor ("cross", "in", "none", "out").</p></dd>
 
 
 <dt><code>format</code></dt>
@@ -899,10 +928,26 @@ This rotates the chart clockwise.</p></dd>
 </dl><p></p></div>
 </div>
 
+</div><p></p><hr><a id="method-Chart-set_disp_blanks"></a><div class="section">
+<h3 id="method-set-disp-blanks-">Method <code>set_disp_blanks()</code><a class="anchor" aria-label="anchor" href="#method-set-disp-blanks-"></a></h3>
+<p>Set missing value behavior ("gap", "span", "zero").</p><div class="section">
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_disp_blanks</span><span class="op">(</span>val <span class="op">=</span> <span class="st">"gap"</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>val</code></dt>
+<dd><p>Character. One of "gap" (break), "span" (continue), or "zero" (drop).</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
 </div><p></p><hr><a id="method-Chart-add_series"></a><div class="section">
 <h3 id="method-add-series-">Method <code>add_series()</code><a class="anchor" aria-label="anchor" href="#method-add-series-"></a></h3>
 <p>Add a data series to the chart with independent styling.</p><div class="section">
-<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
 <span>  header <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
@@ -934,7 +979,7 @@ This rotates the chart clockwise.</p></dd>
 </div>
 
 <div class="section">
-<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
+<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>header</code></dt>
 <dd><p>Cell range or string for series name.</p></dd>
 
@@ -1060,7 +1105,7 @@ This rotates the chart clockwise.</p></dd>
 </div><p></p><hr><a id="method-Chart-render"></a><div class="section">
 <h3 id="method-render-">Method <code>render()</code><a class="anchor" aria-label="anchor" href="#method-render-"></a></h3>
 <p>Generate the final XML string for the chart.</p><div class="section">
-<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
+<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">render</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -1072,12 +1117,12 @@ This rotates the chart clockwise.</p></dd>
 </div><p></p><hr><a id="method-Chart-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
+<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
+<h4 id="arguments-20">Arguments<a class="anchor" aria-label="anchor" href="#arguments-20"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
