@@ -28,7 +28,8 @@ my_pl$set_chart_title("Pareto Line")$
 # sunburst
 my_sb <- ChartEx$new()
 my_sb$set_chart_title("Sunburst")$
-  add_series("Data!$C$1", "Data!$C$2:$C$30", "Data!$B$2:$B$30", type = "sunburst")
+  add_series("Data!$C$1", "Data!$C$2:$C$30", "Data!$A$2:$B$30", type = "sunburst", line_color = wb_color("white"))
+
 
 # treemap
 my_tm <- ChartEx$new()

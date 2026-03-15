@@ -65,6 +65,8 @@ Chart <- R6::R6Class(
     bubble_scale = 100,
     #' @field show_neg_bubbles Logical; whether to show bubbles with negative values.
     show_neg_bubbles = FALSE,
+    #' @field disp_blanks_as Character; "gap", "span", or "zero".
+    disp_blanks_as = "gap",
 
     #' @description Initialize a new Chart object.
     #' @param type Initial chart type (e.g., "lineChart", "barChart", "pieChart").
@@ -461,6 +463,13 @@ Chart <- R6::R6Class(
       invisible(self)
     },
 
+    #' @description Set missing value behavior ("gap", "span", "zero").
+    #' @param val Character. One of "gap" (break), "span" (continue), or "zero" (drop).
+    set_disp_blanks = function(val = "gap") {
+      self$disp_blanks_as <- private$validate_input(val, c("gap", "span", "zero"), "disp_blanks_as")
+      invisible(self)
+    },
+
     #' @description Add a data series to the chart with independent styling.
     #' @param header Cell range or string for series name.
     #' @param data Cell range for series values.
@@ -793,6 +802,7 @@ Chart <- R6::R6Class(
         xml2::xml_add_child(legend, "c:overlay", val = self$legend_params$overlay)
         if (length(self$legend_params$style) > 0) private$apply_text_style(legend, self$legend_params$style)
       }
+      xml2::xml_add_child(chart_root, "c:dispBlanksAs", val = self$disp_blanks_as)
 
       openxlsx2::read_xml(as.character(self$xml), pointer = FALSE)
     }
@@ -1376,23 +1386,56 @@ Chart <- R6::R6Class(
         color_val <- "000000"
       }
 
-      # 2. Check for "auto" - Ensure we only check the FIRST element
-      # and that we aren't passing the whole palette vector here
+      # 2. Check for "auto"
       if (length(color_val) == 1 && tolower(as.character(color_val)) == "auto") {
         xml2::xml_add_child(node, "a:schemeClr", val = "accent1")
         return()
       }
 
-      # 3. Extract Hex (Handling openxlsx2 wbColour objects)
-      hex <- if (inherits(color_val, "wbColour")) {
-        attr(color_val, "rgb") %||% as.character(color_val)
+      type <- names(color_val)
+
+      # 3. Handle wb_color objects (Hex vs Theme)
+      if (inherits(color_val, "wbColour")) {
+        # TODO add tint and indexed
+
+        # If it's a theme color, use schemeClr
+        if (type == "auto") {
+          xml2::xml_add_child(node, "a:schemeClr", val = "accent1")
+          return()
+        }
+        if (type == "theme") {
+
+          theme_map <- st_scheme_color_val <- c(
+            "bg1", "tx1", "bg2", "tx2",
+            "accent1", "accent2", "accent3", "accent4", "accent5", "accent6",
+            "hlink", "folHlink", "phClr",
+            "dk1", "lt1", "dk2", "lt2"
+          )
+
+          if (color_val %in% theme_map) {
+            val_name <- as.character(color_val)
+          } else {
+            # Map openxlsx2 theme integers to DrawingML scheme names
+            # Ensure index is within bounds (0-indexed to 1-indexed)
+            theme_idx <- as.integer(color_val)
+            val_name <- theme_map[as.numeric(theme_idx) + 1]
+          }
+          xml2::xml_add_child(node, "a:schemeClr", val = val_name)
+          return()
+        }
+
+        # Otherwise, get the hex from the rgb attribute
+        hex <- if (type == "rgb") as.character(color_val)
       } else {
-        # If a vector was passed by mistake, take only the first one to prevent crash
-        as.character(color_val[1])
+        hex <- as.character(color_val[1])
       }
 
+      # 4. Clean and add as RGB
       clean <- toupper(gsub("^#", "", hex))
       if (nchar(clean) == 8) clean <- substr(clean, 3, 8)
+
+      # Final safety check: if 'clean' is empty/invalid, default to black
+      if (nchar(clean) != 6) clean <- "000000"
 
       xml2::xml_add_child(node, "a:srgbClr", val = clean)
     },

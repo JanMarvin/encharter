@@ -57,6 +57,8 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item{\code{bubble_scale}}{Numeric; the scale factor for bubbles (default 100).}
 
 \item{\code{show_neg_bubbles}}{Logical; whether to show bubbles with negative values.}
+
+\item{\code{disp_blanks_as}}{Character; "gap", "span", or "zero".}
 }
 \if{html}{\out{</div>}}
 }
@@ -81,6 +83,7 @@ the underlying XML required for the \code{add_chart_xml} method.
 \item \href{#method-Chart-set_data_label_style}{\code{Chart$set_data_label_style()}}
 \item \href{#method-Chart-set_chart_style}{\code{Chart$set_chart_style()}}
 \item \href{#method-Chart-set_plot_style}{\code{Chart$set_plot_style()}}
+\item \href{#method-Chart-set_disp_blanks}{\code{Chart$set_disp_blanks()}}
 \item \href{#method-Chart-add_series}{\code{Chart$add_series()}}
 \item \href{#method-Chart-render}{\code{Chart$render()}}
 \item \href{#method-Chart-clone}{\code{Chart$clone()}}
@@ -673,6 +676,23 @@ Style the inner plot area background.
 \item{\code{line}}{Hex color for border line.}
 
 \item{\code{line_width}}{Numeric width of border line.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_disp_blanks"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_disp_blanks}{}}}
+\subsection{Method \code{set_disp_blanks()}}{
+Set missing value behavior ("gap", "span", "zero").
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_disp_blanks(val = "gap")}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{val}}{Character. One of "gap" (break), "span" (continue), or "zero" (drop).}
 }
 \if{html}{\out{</div>}}
 }
