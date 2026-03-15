@@ -52,7 +52,7 @@ my_chart <- Chart$new("lineChart")$
 # Primary axis series
 my_chart$add_series("Sales", "Sheet1!$B$2:$B$10")
 # Secondary axis series (Bars)
-my_chart$add_series("Volume", "Sheet1!$D$2:$D$10", color = "ED7D31", type = "barChart", secondary = T)
+my_chart$add_series("Volume", "Sheet1!$D$2:$D$10", color = "ED7D31", type = "barChart", secondary = TRUE)
 
 # Build workbook
 wb <- wb_workbook() |>

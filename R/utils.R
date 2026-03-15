@@ -27,7 +27,7 @@ to_abs_ref <- function(x) {
     # Regex: find letters/numbers not preceded by $
     fixed_range <- gsub("(?<!\\$)([A-Z]+)(?<!\\$)([0-9]+)", "$\\1$\\2", range, perl = TRUE)
 
-    return(sprintf("'%s'!%s", sheet, fixed_range))
+    sprintf("'%s'!%s", sheet, fixed_range)
   }, USE.NAMES = FALSE)
 }
 
@@ -78,7 +78,9 @@ wb_add_chartx <- function(wb, sheet = openxlsx2::current_sheet(), dims = "E2", c
   drw_rel_id <- wb$worksheets[[target_sheet]]$relships$drawing
   next_rid <- if (length(drw_rel_id)) {
     openxlsx2:::get_next_id(wb$drawings_rels[[drw_rel_id]])
-  } else { "rId1" }
+  } else {
+    "rId1"
+  }
 
   drawing_xml <- sprintf("<xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><xdr:absoluteAnchor><xdr:pos x=\"0\" y=\"0\"/><xdr:ext cx=\"4572000\" cy=\"2926080\"/><xdr:graphicFrame macro=\"\"><xdr:nvGraphicFramePr><xdr:cNvPr id=\"2\" name=\"Chart 1\"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"4572000\" cy=\"2926080\"/></xdr:xfrm><a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2014/chartex\"><cx:chart xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%s\"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:absoluteAnchor></xdr:wsDr>", next_rid)
 
@@ -115,5 +117,5 @@ wb_add_chartx <- function(wb, sheet = openxlsx2::current_sheet(), dims = "E2", c
     wb$add_named_region(sheet = sheet_part, dims = range_part, name = names(all_refs)[i], hidden = "1")
   }
 
-  return(wb)
+  invisible(wb)
 }

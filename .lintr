@@ -1,0 +1,6 @@
+linters: linters_with_defaults(
+  line_length_linter = NULL,               # many long lines
+  commented_code_linter = NULL,            # some wb_save() etc
+  object_name_linter = NULL,               # camelCase
+  indentation_linter = NULL                # do not care
+  )

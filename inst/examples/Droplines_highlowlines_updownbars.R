@@ -33,9 +33,9 @@ ch$high_low_lines <- TRUE   # Vertical lines between the two series at each poin
 ch$up_down_bars   <- TRUE   # Shaded bars between the two series
 
 # 4. Finalize the Workbook
-wb <- wb_workbook() %>%
-  wb_add_worksheet("Sheet1") %>%
-  wb_add_data(x = df) %>%
+wb <- wb_workbook() |>
+  wb_add_worksheet("Sheet1") |>
+  wb_add_data(x = df) |>
   # Dimensions define where the chart sits in the Excel sheet
   wb_add_chart(dims = "E2:M20", chart_obj = ch)
 

@@ -97,12 +97,18 @@ Chart <- R6::R6Class(
     #' @description Set the chart's main title.
     #' @param text Title text string.
     #' @param ... Style arguments like `sz` (font size), `bold` (TRUE/FALSE), `color`, and `name` (font name).
-    set_chart_title = function(text, ...) { self$chart_title <- list(text = text, style = list(...)); invisible(self) },
+    set_chart_title = function(text, ...) {
+      self$chart_title <- list(text = text, style = list(...))
+      invisible(self)
+    },
 
     #' @description Set the X-axis title.
     #' @param text Title text string.
     #' @param ... Style arguments.
-    set_x_title      = function(text, ...) { self$x_title      <- list(text = text, style = list(...)); invisible(self) },
+    set_x_title      = function(text, ...) {
+      self$x_title      <- list(text = text, style = list(...))
+      invisible(self)
+    },
 
     #' @description Set the secondary X-axis title.
     #' @param text Title text string.
@@ -124,7 +130,10 @@ Chart <- R6::R6Class(
     #' @description Set the primary Y-axis title.
     #' @param text Title text string.
     #' @param ... Style arguments.
-    set_y_title      = function(text, ...) { self$y_title      <- list(text = text, style = list(...)); invisible(self) },
+    set_y_title      = function(text, ...) {
+      self$y_title      <- list(text = text, style = list(...))
+      invisible(self)
+    },
 
     #' @description Set the secondary Y-axis title.
     #' @param text Title text string.
@@ -372,11 +381,17 @@ Chart <- R6::R6Class(
 
     #' @description Set the doughnut hole size.
     #' @param val Integer 0 to 90.
-    set_hole_size    = function(val) { self$hole_size <- val; invisible(self) },
+    set_hole_size    = function(val) {
+      self$hole_size <- val
+      invisible(self)
+    },
 
     #' @param ang The angle of the first slice in degrees, from 0 to 360.
     #' This rotates the chart clockwise.
-    set_pie_options  = function(ang = 0) { self$first_slice_ang <- ang; invisible(self) },
+    set_pie_options  = function(ang = 0) {
+      self$first_slice_ang <- ang
+      invisible(self)
+    },
 
     #' @param scale The scale factor for bubbles, from 0 to 300 (expressed as a percentage).
     #' @param show_neg Logical; if `TRUE`, bubbles with negative values will be displayed on the chart.
@@ -413,7 +428,8 @@ Chart <- R6::R6Class(
     #' @param line Hex color for border line.
     #' @param line_width Numeric width of border line.
     set_chart_style = function(fill = "FFFFFF", line = NULL, line_width = 1) {
-      self$chart_style <- list(fill = fill, line = line, line_width = line_width); invisible(self)
+      self$chart_style <- list(fill = fill, line = line, line_width = line_width)
+      invisible(self)
     },
 
     #' @description Style the inner plot area background.
@@ -421,7 +437,8 @@ Chart <- R6::R6Class(
     #' @param line Hex color for border line.
     #' @param line_width Numeric width of border line.
     set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
-      self$plot_style <- list(fill = fill, line = line, line_width = line_width); invisible(self)
+      self$plot_style <- list(fill = fill, line = line, line_width = line_width)
+      invisible(self)
     },
 
     #' @description Add a data series to the chart with independent styling.
@@ -646,7 +663,7 @@ Chart <- R6::R6Class(
         private$add_title_content(t_node, self$chart_title$text, self$chart_title$style, default_sz = 1400)
         xml2::xml_add_child(t_node, "c:overlay", val = "0")
       }
-      xml2::xml_add_child(chart_root, "c:autoTitleDeleted", val = if(is.null(self$chart_title$text)) "1" else "0")
+      xml2::xml_add_child(chart_root, "c:autoTitleDeleted", val = if (is.null(self$chart_title$text)) "1" else "0")
 
       if (self$type == "surfaceChart") {
         v3d <- xml2::xml_add_child(chart_root, "c:view3D")
@@ -660,8 +677,10 @@ Chart <- R6::R6Class(
       xml2::xml_add_child(plot_area, "c:layout")
 
       u_ids <- openxlsx2:::random_string(n = 5, length = 8, pattern = "[0-9]")
-      id_prim_cat <- u_ids[1]; id_prim_val <- u_ids[2]
-      id_sec_cat  <- u_ids[3]; id_sec_val  <- u_ids[4]
+      id_prim_cat <- u_ids[1]
+      id_prim_val <- u_ids[2]
+      id_sec_cat  <- u_ids[3]
+      id_sec_val  <- u_ids[4]
       id_ser_ax   <- u_ids[5]
 
 
@@ -673,14 +692,14 @@ Chart <- R6::R6Class(
         sub_series <- Filter(function(x) x$type == combo$type && x$sec_type == combo$sec_type, self$series_data)
 
         # CASE: "x" or "xy" triggers the Secondary X-Axis (Top)
-        cat_id <- if(combo$sec_type %in% c("x", "xy")) id_sec_cat else id_prim_cat
+        cat_id <- if (combo$sec_type %in% c("x", "xy")) id_sec_cat else id_prim_cat
 
         # CASE: "y" or "xy" triggers the Secondary Y-Axis (Right)
         # Note: sec_type is "none" or "y"/"x"/"xy" based on your add_series logic
-        val_id <- if(combo$sec_type %in% c("y", "xy")) id_sec_val else id_prim_val
+        val_id <- if (combo$sec_type %in% c("y", "xy")) id_sec_val else id_prim_val
 
         # Keep your surface logic
-        ser_ax_id <- if(self$type == "surfaceChart") id_ser_ax else NULL
+        ser_ax_id <- if (self$type == "surfaceChart") id_ser_ax else NULL
 
         private$render_series_node(plot_area, sub_series, combo$type, cat_id, val_id, ser_ax_id)
 
@@ -755,7 +774,7 @@ Chart <- R6::R6Class(
         if (length(self$legend_params$style) > 0) private$apply_text_style(legend, self$legend_params$style)
       }
 
-      return(openxlsx2::read_xml(as.character(self$xml), pointer = FALSE))
+      openxlsx2::read_xml(as.character(self$xml), pointer = FALSE)
     }
   ),
 
@@ -893,7 +912,7 @@ Chart <- R6::R6Class(
 
         # 3. Marker (Must be AFTER spPr but BEFORE dPt/dLbls per CT_ScatterSer)
         if (type %in% c("lineChart", "scatterChart", "radarChart")) {
-          mkr_symbol <- if(type == "scatterChart" && (is.null(s$marker$symbol) || s$marker$symbol == "none")) "circle" else s$marker$symbol
+          mkr_symbol <- if (type == "scatterChart" && (is.null(s$marker$symbol) || s$marker$symbol == "none")) "circle" else s$marker$symbol
           mkr <- xml2::xml_add_child(ser, "c:marker")
           xml2::xml_add_child(mkr, "c:symbol", val = mkr_symbol)
           if (!is.null(mkr_symbol) && mkr_symbol != "none") {
@@ -908,7 +927,7 @@ Chart <- R6::R6Class(
         # 4. dPt (Data Points)
         if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
           palette <- s$line$color %||% self$palette
-          for (i in (seq_along(palette)-1L)) {
+          for (i in (seq_along(palette) - 1L)) {
             dPt <- xml2::xml_add_child(ser, "c:dPt")
             xml2::xml_add_child(dPt, "c:idx", val = as.character(i))
             sp_dpt <- xml2::xml_add_child(dPt, "c:spPr")
@@ -945,12 +964,12 @@ Chart <- R6::R6Class(
           }
 
           # C. show flags
-          xml2::xml_add_child(dLbls, "c:showLegendKey", val = if(isTRUE(lp$show_legend_key)) "1" else "0")
-          xml2::xml_add_child(dLbls, "c:showVal",       val = if(isTRUE(lp$show_val)) "1" else "0")
-          xml2::xml_add_child(dLbls, "c:showCatName",   val = if(isTRUE(lp$show_cat)) "1" else "0")
-          xml2::xml_add_child(dLbls, "c:showSerName",   val = "0")
-          xml2::xml_add_child(dLbls, "c:showPercent",   val = "0")
-          xml2::xml_add_child(dLbls, "c:showBubbleSize",val = "0")
+          xml2::xml_add_child(dLbls, "c:showLegendKey",  val = if (isTRUE(lp$show_legend_key)) "1" else "0")
+          xml2::xml_add_child(dLbls, "c:showVal",        val = if (isTRUE(lp$show_val)) "1" else "0")
+          xml2::xml_add_child(dLbls, "c:showCatName",    val = if (isTRUE(lp$show_cat)) "1" else "0")
+          xml2::xml_add_child(dLbls, "c:showSerName",    val = "0")
+          xml2::xml_add_child(dLbls, "c:showPercent",    val = "0")
+          xml2::xml_add_child(dLbls, "c:showBubbleSize", val = "0")
         }
 
         if (length(s$color) > 1) {
@@ -1046,7 +1065,7 @@ Chart <- R6::R6Class(
 
         # 7. Smooth (Final property for Line/Scatter)
         if (type %in% c("lineChart", "scatterChart")) {
-          xml2::xml_add_child(ser, "c:smooth", val = if(isTRUE(s$smooth)) "1" else "0")
+          xml2::xml_add_child(ser, "c:smooth", val = if (isTRUE(s$smooth)) "1" else "0")
         }
 
       }
@@ -1108,9 +1127,10 @@ Chart <- R6::R6Class(
     add_title_content = function(node, text, style = list(), default_sz = 1000) {
       tx <- xml2::xml_add_child(node, "c:tx")
       rich <- xml2::xml_add_child(tx, "c:rich")
-      xml2::xml_add_child(rich, "a:bodyPr"); xml2::xml_add_child(rich, "a:lstStyle")
+      xml2::xml_add_child(rich, "a:bodyPr")
+      xml2::xml_add_child(rich, "a:lstStyle")
       p <- xml2::xml_add_child(rich, "a:p")
-      sz <- if(!is.null(style$sz)) style$sz * 100 else default_sz
+      sz <- if (!is.null(style$sz)) style$sz * 100 else default_sz
       r <- xml2::xml_add_child(p, "a:r")
       rPr <- xml2::xml_add_child(r, "a:rPr", sz = as.character(sz))
       if (isTRUE(style$bold)) xml2::xml_set_attr(rPr, "b", "1")
@@ -1302,7 +1322,7 @@ Chart <- R6::R6Class(
       defRPr <- xml2::xml_add_child(pPr, "a:defRPr")
 
       # Apply font size (Excel uses 1/100th of a point)
-      sz <- if(!is.null(s$sz)) s$sz * 100 else 900
+      sz <- if (!is.null(s$sz)) s$sz * 100 else 900
       xml2::xml_set_attr(defRPr, "sz", as.character(sz))
 
       if (isTRUE(s$bold)) xml2::xml_set_attr(defRPr, "b", "1")
@@ -1352,7 +1372,7 @@ Chart <- R6::R6Class(
       if (inherits(res, "try-error")) {
         stop(sprintf("'%s' must be one of: %s", arg_name, paste(choices, collapse = ", ")), call. = FALSE)
       }
-      return(res)
+      res
     }
   )
 )

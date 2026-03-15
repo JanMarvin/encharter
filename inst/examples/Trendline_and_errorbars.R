@@ -30,9 +30,9 @@ ch$add_series(
 )
 
 # 4. Finalize Workbook
-wb <- wb_workbook() %>%
-  wb_add_worksheet("Sheet1") %>%
-  wb_add_data(x = df) %>%
+wb <- wb_workbook()  |>
+  wb_add_worksheet("Sheet1")  |>
+  wb_add_data(x = df)  |>
   wb_add_chart(dims = "D2:L20", chart_obj = ch)
 
 wb_open(wb)
