@@ -1134,6 +1134,7 @@ Chart <- R6::R6Class(
       r <- xml2::xml_add_child(p, "a:r")
       rPr <- xml2::xml_add_child(r, "a:rPr", sz = as.character(sz))
       if (isTRUE(style$bold)) xml2::xml_set_attr(rPr, "b", "1")
+      if (isTRUE(style$italic)) xml2::xml_set_attr(rPr, "i", "1")
       if (!is.null(style$color)) private$render_fill(xml2::xml_add_child(rPr, "a:solidFill"), style$color)
       if (!is.null(style$name)) xml2::xml_add_child(rPr, "a:latin", typeface = style$name)
       xml2::xml_add_child(r, "a:t", text)
@@ -1326,6 +1327,7 @@ Chart <- R6::R6Class(
       xml2::xml_set_attr(defRPr, "sz", as.character(sz))
 
       if (isTRUE(s$bold)) xml2::xml_set_attr(defRPr, "b", "1")
+      if (isTRUE(s$italic)) xml2::xml_set_attr(defRPr, "i", "1")
 
       if (!is.null(s$color)) {
         private$render_fill(xml2::xml_add_child(defRPr, "a:solidFill"), s$color)

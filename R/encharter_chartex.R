@@ -633,6 +633,7 @@ ChartEx <- R6::R6Class(
       # Font Styling
       if (!is.null(s$sz)) xml2::xml_set_attr(rPr, "sz", as.character(s$sz * 100))
       if (!is.null(s$b)) xml2::xml_set_attr(rPr, "b", ifelse(isTRUE(s$b), "1", "0"))
+      if (!is.null(s$b)) xml2::xml_set_attr(rPr, "i", ifelse(isTRUE(s$i), "1", "0"))
       if (!is.null(s$font)) xml2::xml_add_child(rPr, "a:latin", typeface = s$font)
 
       xml2::xml_add_child(r, "a:t", text)
