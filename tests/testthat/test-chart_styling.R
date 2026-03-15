@@ -427,3 +427,48 @@ test_that("trendlines and error bars render correctly in a series", {
   expect_true(any(grepl("FF0000", as.character(xml_res)))) # Trendline color
   expect_true(any(grepl("404040", as.character(xml_res)))) # Error bar color
 })
+
+test_that("ChartEx boxWhisker with complex styling renders correctly", {
+  # 1. Setup minimal data
+  ch <- ChartEx$new()
+
+  # 2. Apply Titles and Axis Styles
+  ch$set_chart_title("MPG Distribution", sz = 16, font_name = "Arial", bold = TRUE)
+  ch$set_x_title("by Cylinder", sz = 12, italic = TRUE)
+  ch$set_y_axis(sz = 12, font_name = "Times New Roman", italic = TRUE, color = "000000")
+
+  # 3. Add Series with Color and Line Style
+  ch$add_series(
+    header = '"Super Duper MPG"',
+    data   = "Data!$A$2:$A$5",
+    cat    = "Data!$B$2:$B$5",
+    color  = wb_color("magenta"),
+    line_color = wb_color("black"),
+    type   = "boxWhisker"
+  )
+
+  # 4. Render XML
+  xml_res <- xml2::read_xml(ch$render(1))
+
+  # --- Assertions ---
+
+  # Verify Font Names and Sizes (sz is 100x in OOXML)
+  expect_true(any(grepl('typeface="Arial"', as.character(xml_res))))
+  expect_true(any(grepl('typeface="Times New Roman"', as.character(xml_res))))
+  expect_true(any(grepl('sz="1600"', as.character(xml_res)))) # Title sz 16
+  expect_true(any(grepl('sz="1200"', as.character(xml_res)))) # Axis sz 12
+
+  # Verify Boolean Styles
+  expect_true(any(grepl(' b="1"', as.character(xml_res)))) # Bold
+  expect_true(any(grepl(' i="1"', as.character(xml_res)))) # Italic
+
+  # Verify BoxWhisker Type
+  expect_true(any(grepl('layoutId="boxWhisker"', as.character(xml_res))))
+
+  # Verify Fill and Line Colors
+  # Magenta (FF00FF) and Black (000000)
+  expect_true(any(grepl("FF00FF", as.character(xml_res), ignore.case = TRUE)))
+
+  # Verify ChartEx Axis Node presence
+  expect_false(xml2::xml_type(xml2::xml_find_first(xml_res, ".//cx:axis")) == "element_absent")
+})
