@@ -1,5 +1,3 @@
-library(testthat)
-
 test_that("Chart: Date Axes and Axis Units", {
   chart <- Chart$new("lineChart")
   chart$add_series(

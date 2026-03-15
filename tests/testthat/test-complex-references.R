@@ -1,5 +1,3 @@
-library(testthat)
-
 test_that("Chart: Multi-level labels and Bubbles", {
   # Multi-level Category (A2:B5 covers two columns)
   chart <- Chart$new()

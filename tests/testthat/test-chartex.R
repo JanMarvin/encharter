@@ -1,6 +1,3 @@
-library(testthat)
-library(openxlsx2)
-
 test_that("ChartEx: Waterfall and Subtotals", {
   ce <- ChartEx$new()
   ce$add_series(header = "Data!$B$1", data = "Data!$B$2:$B$10", type = "waterfall", subtotals = c(0, 8))

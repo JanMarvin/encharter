@@ -1,6 +1,3 @@
-library(testthat)
-library(openxlsx2)
-
 test_that("Chart: Styling, Markers, and Labels", {
   chart <- Chart$new("lineChart")
 
@@ -121,7 +118,7 @@ test_that("ChartEx chart and plot styling works", {
   xml_str <- as.character(ce$render(1))
   xml <- xml2::read_xml(xml_str)
 
-  wb <- wb_workbook()$add_worksheet("Sheet1")$add_data(x = mtcars)
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Sheet1")$add_data(x = mtcars)
   wb <- wb_add_chartx(wb, sheet = "Sheet1", dims = "A2:G12", chart_obj = ce)
 
   # 2. Test Chart Styling (cx:chart/cx:spPr)
@@ -184,9 +181,9 @@ test_that("Major and Minor gridlines are correctly rendered and visible", {
   expect_equal(xml2::xml_attr(xml2::xml_find_first(minor_ln, "a:prstDash"), "val"), "dot")
 
   # 4. Visual Verification Workbook
-  wb <- wb_workbook() |>
-    wb_add_worksheet("Sheet1") |>
-    wb_add_data(x = sales_data) |>
+  wb <- openxlsx2::wb_workbook() |>
+    openxlsx2::wb_add_worksheet("Sheet1") |>
+    openxlsx2::wb_add_data(x = sales_data) |>
     wb_add_chart(dims = "E2:M25", chart_obj = my_chart)
 })
 

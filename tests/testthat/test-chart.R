@@ -1,6 +1,3 @@
-library(testthat)
-library(openxlsx2)
-
 # Helper to remove random IDs for stable snapshots
 clean_xml <- function(xml) {
   xml_str <- as.character(xml)
@@ -144,9 +141,9 @@ test_that("surfaceChart rendering works", {
   }
 
   # 3. Build workbook and get XML
-  wb <- wb_workbook() |>
-    wb_add_worksheet("Sheet1") |>
-    wb_add_data(x = surface_data) |>
+  wb <- openxlsx2::wb_workbook() |>
+    openxlsx2::wb_add_worksheet("Sheet1") |>
+    openxlsx2::wb_add_data(x = surface_data) |>
     wb_add_chart(chart_obj = chart)
 
   xml_content <- xml2::read_xml(chart$render())

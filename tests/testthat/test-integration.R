@@ -1,8 +1,7 @@
-library(testthat)
-library(openxlsx2)
-
 test_that("Integration: wb_add_chart and wb_add_chartx", {
-  wb <- wb_workbook() |> wb_add_worksheet() |> wb_add_data(x = head(cars))
+  wb <- openxlsx2::wb_workbook() |>
+    openxlsx2::wb_add_worksheet() |>
+    openxlsx2::wb_add_data(x = head(cars))
   chart <- Chart$new()
   chart$add_series(header = "'Sheet 1'!$A$1", data = "'Sheet 1'!$A$2:$A$5", type = "barChart")
 

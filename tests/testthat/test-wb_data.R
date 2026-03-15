@@ -1,12 +1,9 @@
-library(testthat)
-library(openxlsx2)
-
 test_that("wb_data resolution and NSE support", {
-  wb <- wb_workbook() |>
-    wb_add_worksheet("DataSheet") |>
-    wb_add_data(x = data.frame(Revenue = 10:15, Month = 1:6))
+  wb <- openxlsx2::wb_workbook() |>
+    openxlsx2::wb_add_worksheet("DataSheet") |>
+    openxlsx2::wb_add_data(x = data.frame(Revenue = 10:15, Month = 1:6))
 
-  dat <- wb_data(wb, sheet = "DataSheet", col_names = TRUE)
+  dat <- openxlsx2::wb_data(wb, sheet = "DataSheet", col_names = TRUE)
 
   chart <- Chart$new("lineChart")
 
@@ -23,13 +20,12 @@ test_that("wb_data resolution and NSE support", {
   wb$add_chart_xml(xml = chart$render())
 })
 
-
 test_that("wb_data resolution and NSE support", {
-  wb <- wb_workbook() |>
-    wb_add_worksheet("DataSheet") |>
-    wb_add_data(x = data.frame(Revenue = 10:15, Month = 1:6), col_names = FALSE)
+  wb <- openxlsx2::wb_workbook() |>
+    openxlsx2::wb_add_worksheet("DataSheet") |>
+    openxlsx2::wb_add_data(x = data.frame(Revenue = 10:15, Month = 1:6), col_names = FALSE)
 
-  dat <- wb_data(wb, sheet = "DataSheet", col_names = FALSE)
+  dat <- openxlsx2::wb_data(wb, sheet = "DataSheet", col_names = FALSE)
 
   chart <- Chart$new("lineChart")
 
@@ -47,11 +43,11 @@ test_that("wb_data resolution and NSE support", {
 })
 
 test_that("ChartEx handles wb_data", {
-  wb <- wb_workbook() |>
-    wb_add_worksheet("WF") |>
-    wb_add_data(x = data.frame(Label = c("A", "B"), Val = c(10, 20)))
+  wb <- openxlsx2::wb_workbook() |>
+    openxlsx2::wb_add_worksheet("WF") |>
+    openxlsx2::wb_add_data(x = data.frame(Label = c("A", "B"), Val = c(10, 20)))
 
-  dat <- wb_data(wb, sheet = "WF")
+  dat <- openxlsx2::wb_data(wb, sheet = "WF")
   ce <- ChartEx$new()
   ce$add_series(data = dat, header = Val, cat = Label, type = "waterfall")
 
