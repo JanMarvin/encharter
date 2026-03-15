@@ -560,11 +560,12 @@ ChartEx <- R6::R6Class(
       if (!is.null(s$sz)) xml2::xml_set_attr(defRPr, "sz", as.character(s$sz * 100))
       if (!is.null(s$b)) xml2::xml_set_attr(defRPr, "b", if (isTRUE(s$b)) "1" else "0")
       if (!is.null(s$i)) xml2::xml_set_attr(defRPr, "i", if (isTRUE(s$i)) "1" else "0")
+      if (!is.null(s$color)) private$render_color_core(defRPr, s$color, wrap = TRUE)
       endRPr <- xml2::xml_add_child(p, "a:endParaRPr")
       if (!is.null(s$sz)) xml2::xml_set_attr(endRPr, "sz", as.character(s$sz * 100))
       if (!is.null(s$b)) xml2::xml_set_attr(endRPr, "b", if (isTRUE(s$b)) "1" else "0")
       if (!is.null(s$i)) xml2::xml_set_attr(endRPr, "i", if (isTRUE(s$i)) "1" else "0")
-      if (!is.null(s$color)) private$render_color_core(endRPr, s$color)
+      if (!is.null(s$color)) private$render_color_core(endRPr, s$color, wrap = TRUE)
       if (!is.null(s$font)) xml2::xml_add_child(endRPr, "a:latin", typeface = s$font)
     },
     render_color = function(parent_node, color_val) {
@@ -573,29 +574,66 @@ ChartEx <- R6::R6Class(
       private$render_color_core(fill_node, color_val)
     },
     render_color_core = function(target_node, color_val, wrap = FALSE) {
-      if (is.null(color_val) || identical(color_val, "auto")) return()
-      dest_node <- if (wrap) xml2::xml_add_child(target_node, "a:solidFill") else target_node
-      if (inherits(color_val, "wbColour")) {
-        attrs <- attributes(color_val)
-        if (!is.null(attrs$theme)) {
-          theme_map <- c("bg1", "tx1", "bg2", "tx2", "accent1", "accent2", "accent3", "accent4", "accent5", "accent6", "hlink", "folHlink")
-          clr_node <- xml2::xml_add_child(dest_node, "a:schemeClr", val = theme_map[as.numeric(attrs$theme) + 1])
-          if (!is.null(attrs$tint)) {
-            tint <- as.numeric(attrs$tint)
-            lum <- if (tint > 0) (1 - tint) * 100000 else (1 + tint) * 100000
-            xml2::xml_add_child(clr_node, "a:lumMod", val = as.character(round(lum)))
-            if (tint > 0) xml2::xml_add_child(clr_node, "a:lumOff", val = as.character(round(tint * 100000)))
-          }
-          return()
-        }
-        if (!is.null(attrs$rgb)) {
-          xml2::xml_add_child(dest_node, "a:srgbClr", val = toupper(gsub("^FF", "", attrs$rgb)))
-          return()
-        }
+      if (is.null(color_val)) return()
+
+      # Set the destination node based on the wrap argument
+      node <- if (wrap) xml2::xml_add_child(target_node, "a:solidFill") else target_node
+
+      # 1. Handle NULL or empty input (Logic as requested)
+      if (is.null(color_val) || length(color_val) == 0) {
+        color_val <- "000000"
       }
-      hex <- toupper(gsub("#", "", as.character(color_val)))
-      if (nchar(hex) == 8) hex <- substr(hex, 3, 8)
-      if (grepl("^[0-9A-F]{6}$", hex)) xml2::xml_add_child(dest_node, "a:srgbClr", val = hex)
+
+      # 2. Check for "auto"
+      if (length(color_val) == 1 && tolower(as.character(color_val)) == "auto") {
+        xml2::xml_add_child(node, "a:schemeClr", val = "accent1")
+        return()
+      }
+
+      type <- names(color_val)
+
+      # 3. Handle wb_color objects (Hex vs Theme)
+      if (inherits(color_val, "wbColour")) {
+        # TODO add tint and indexed
+
+        # If it's a theme color, use schemeClr
+        if (!is.null(type) && type == "auto") {
+          xml2::xml_add_child(node, "a:schemeClr", val = "accent1")
+          return()
+        }
+
+        if (!is.null(type) && type == "theme") {
+          theme_map <- c(
+            "bg1", "tx1", "bg2", "tx2",
+            "accent1", "accent2", "accent3", "accent4", "accent5", "accent6",
+            "hlink", "folHlink", "phClr",
+            "dk1", "lt1", "dk2", "lt2"
+          )
+
+          if (as.character(color_val) %in% theme_map) {
+            val_name <- as.character(color_val)
+          } else {
+            theme_idx <- as.integer(color_val)
+            val_name <- theme_map[as.numeric(theme_idx) + 1]
+          }
+          xml2::xml_add_child(node, "a:schemeClr", val = val_name)
+          return()
+        }
+
+        # Otherwise, get the hex from the rgb attribute
+        hex <- if (!is.null(type) && type == "rgb") as.character(color_val) else as.character(color_val[1])
+      } else {
+        hex <- as.character(color_val[1])
+      }
+
+      # 4. Clean and add as RGB
+      clean <- toupper(gsub("^#", "", hex))
+      if (nchar(clean) == 8) clean <- substr(clean, 3, 8)
+
+      # Final safety check: if 'clean' is empty/invalid, default to black
+      if (nchar(clean) != 6) clean <- "000000"
+
+      xml2::xml_add_child(node, "a:srgbClr", val = clean)
     },
     add_rich_text = function(parent, text, s) {
       xml2::xml_remove(xml2::xml_children(parent))

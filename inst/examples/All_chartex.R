@@ -66,7 +66,7 @@ my_bw$
     pos   = "r",
     sz    = 15,
     bold  = TRUE,
-    color = wb_color(theme = "5")
+    color = wb_color(theme = "4")
   )
 
 wb <- wb_workbook()$add_worksheet("Data")$add_data(x = mtcars)
