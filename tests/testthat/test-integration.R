@@ -1,4 +1,4 @@
-test_that("Integration: wb_add_chart and wb_add_chartx", {
+test_that("Integration: wb_add_chart and wb_add_chart", {
   wb <- openxlsx2::wb_workbook() |>
     openxlsx2::wb_add_worksheet() |>
     openxlsx2::wb_add_data(x = head(cars))
@@ -11,7 +11,7 @@ test_that("Integration: wb_add_chart and wb_add_chartx", {
   # Test ChartEx addition (which involves more complex rels management)
   ce <- ChartEx$new()
   ce$add_series(header = "'Sheet 1'!B1", data = "'Sheet 1'!B2:B5", type = "waterfall")
-  expect_no_error(wb <- wb_add_chartx(wb, chart_obj = ce, dims = "A10:G20"))
+  expect_no_error(wb <- wb_add_chart(wb, chart_obj = ce, dims = "A10:G20"))
 
   # Verify drawing exists in workbook internal structure
   expect_true(length(wb$drawings) > 0)

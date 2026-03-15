@@ -75,7 +75,7 @@ wf_chart$add_series(
   data   = "WaterfallData!$B$2:$B$6"
 )
 
-wb <- wb_add_chartx(wb, chart_obj = wf_chart)
+wb <- wb_add_chart(wb, chart_obj = wf_chart)
 ```
 
 ```{r}

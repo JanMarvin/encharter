@@ -32,6 +32,6 @@ my_wf$add_series(
   type         = "waterfall"
 )
 
-wb <- wb_add_chartx(wb, sheet = "MonthlyFlow", chart_obj = my_wf)
+wb <- wb_add_chart(wb, sheet = "MonthlyFlow", chart_obj = my_wf)
 
 wb$open()

@@ -40,5 +40,5 @@ test_that("ChartEx handles unquoted names for Waterfall", {
 
   expect_error(chart$add_series(data = dat, header = Value, cat = foo), "object 'foo' not found")
 
-  wb <- wb_add_chartx(wb, chart_obj = chart)
+  wb <- wb_add_chart(wb, chart_obj = chart)
 })

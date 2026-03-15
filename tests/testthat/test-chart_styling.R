@@ -119,7 +119,7 @@ test_that("ChartEx chart and plot styling works", {
   xml <- xml2::read_xml(xml_str)
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("Sheet1")$add_data(x = mtcars)
-  wb <- wb_add_chartx(wb, sheet = "Sheet1", dims = "A2:G12", chart_obj = ce)
+  wb <- wb_add_chart(wb, sheet = "Sheet1", dims = "A2:G12", chart_obj = ce)
 
   # 2. Test Chart Styling (cx:chart/cx:spPr)
   chart_sp_pr <- xml2::xml_find_first(xml, "cx:spPr")

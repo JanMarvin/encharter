@@ -3,7 +3,6 @@
 export(Chart)
 export(ChartEx)
 export(wb_add_chart)
-export(wb_add_chartx)
 import(R6)
 importFrom(openxlsx2,wb_color)
 importFrom(xml2,read_xml)
