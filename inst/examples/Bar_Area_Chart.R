@@ -42,6 +42,8 @@ combo_chart$set_legend_style(pos = "b", font_size = 10) # Put legend at the bott
 combo_chart$set_x_title("Months")
 combo_chart$set_y_title("Values")
 combo_chart$set_y2_title("Also Values")
+combo_chart$set_x_axis(bold = FALSE, italic = TRUE, name = "Calibri", sz = 12)
+combo_chart$set_y_axis(bold = TRUE, italic = FALSE, name = "Arial", sz = 12)
 
 # 5. Generate XML
 chart_xml <- combo_chart$render()

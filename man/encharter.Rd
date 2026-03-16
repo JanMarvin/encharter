@@ -239,6 +239,10 @@ Set Primary X-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  name = NULL,
+  sz = NULL,
+  bold = NULL,
+  italic = NULL,
   label_color = NULL,
   rot = NULL,
   grid_color = NULL,
@@ -279,6 +283,14 @@ Set Primary X-axis scaling, units, and format.
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 
 \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
 
 \item{\code{rot}}{Rotation in degrees.}
 
@@ -318,6 +330,10 @@ Set Primary Y-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  name = NULL,
+  sz = NULL,
+  bold = NULL,
+  italic = NULL,
   label_color = NULL,
   rot = NULL,
   grid_color = NULL,
@@ -358,6 +374,14 @@ Set Primary Y-axis scaling, units, and format.
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 
 \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
 
 \item{\code{rot}}{Rotation in degrees.}
 
@@ -397,6 +421,10 @@ Set Secondary Y-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  name = NULL,
+  sz = NULL,
+  bold = NULL,
+  italic = NULL,
   label_color = NULL,
   rot = NULL,
   grid_color = NULL,
@@ -437,6 +465,14 @@ Set Secondary Y-axis scaling, units, and format.
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 
 \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
 
 \item{\code{rot}}{Rotation in degrees.}
 
@@ -476,6 +512,10 @@ Set Secondary X-axis scaling, units, and format.
   format = NULL,
   log_base = NULL,
   color = NULL,
+  name = NULL,
+  sz = NULL,
+  bold = NULL,
+  italic = NULL,
   label_color = NULL,
   rot = NULL,
   grid_color = NULL,
@@ -516,6 +556,14 @@ Set Secondary X-axis scaling, units, and format.
 \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
 
 \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
 
 \item{\code{rot}}{Rotation in degrees.}
 
@@ -881,14 +929,6 @@ The objects of this class are cloneable with this method.
 
 \item{\code{y_title_style}}{List of styling parameters for the Y-axis title.}
 
-\item{\code{x_axis_style}}{List of styling and axis parameters for the X-axis.}
-
-\item{\code{y_axis_style}}{List of styling and axis parameters for the Y-axis.}
-
-\item{\code{x_numfmt}}{Number format for X-axis.}
-
-\item{\code{y_numfmt}}{Number format for Y-axis.}
-
 \item{\code{legend_params}}{Parameters for legend positioning and style.}
 
 \item{\code{data_label_params}}{Parameters for data labels.}
@@ -898,6 +938,8 @@ The objects of this class are cloneable with this method.
 \item{\code{plot_area_style}}{Styling for the inner plot area.}
 
 \item{\code{palette}}{A vector of hex colors to use for series.}
+
+\item{\code{axis_params}}{Internal list for scaling, units, and formatting.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1092,7 +1134,7 @@ Set data label properties.
   bold = NULL,
   italic = NULL,
   color = NULL,
-  numfmt = NULL
+  format = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1113,7 +1155,7 @@ Set data label properties.
 
 \item{\code{color}}{Hex color.}
 
-\item{\code{numfmt}}{A number format string.}
+\item{\code{format}}{A number format string.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1122,17 +1164,89 @@ Set data label properties.
 \if{html}{\out{<a id="method-ChartEx-set_x_axis"></a>}}
 \if{latex}{\out{\hypertarget{method-ChartEx-set_x_axis}{}}}
 \subsection{Method \code{set_x_axis()}}{
-Set X-axis tick label style, number format, and parameters.
+Set Primary X-axis scaling, units, and format.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_x_axis(numfmt = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_x_axis(
+  min = NULL,
+  max = NULL,
+  major = NULL,
+  minor = NULL,
+  major_time = NULL,
+  minor_time = NULL,
+  base_time = NULL,
+  major_tick = NULL,
+  minor_tick = NULL,
+  sz = NULL,
+  bold = NULL,
+  italic = NULL,
+  format = NULL,
+  log_base = NULL,
+  color = NULL,
+  name = NULL,
+  label_color = NULL,
+  rot = NULL,
+  grid_color = NULL,
+  gridlines = NULL,
+  minor_grid_color = NULL,
+  minor_gridlines = NULL,
+  cross_between = NULL,
+  line_width = NULL,
+  grid_width = NULL,
+  minor_grid_width = NULL,
+  crosses = NULL,
+  crosses_at = NULL,
+  label_pos = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{numfmt}}{A number format.}
+\item{\code{min}}{Minimum value for the axis.}
 
-\item{\code{...}}{Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).}
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{rot}}{Rotation in degrees.}
+
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
 }
 \if{html}{\out{</div>}}
 }
@@ -1141,17 +1255,89 @@ Set X-axis tick label style, number format, and parameters.
 \if{html}{\out{<a id="method-ChartEx-set_y_axis"></a>}}
 \if{latex}{\out{\hypertarget{method-ChartEx-set_y_axis}{}}}
 \subsection{Method \code{set_y_axis()}}{
-Set Y-axis tick label style, number format, and parameters.
+Set Primary Y-axis scaling, units, and format.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_y_axis(numfmt = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_y_axis(
+  min = NULL,
+  max = NULL,
+  major = NULL,
+  minor = NULL,
+  major_time = NULL,
+  minor_time = NULL,
+  base_time = NULL,
+  major_tick = NULL,
+  minor_tick = NULL,
+  format = NULL,
+  log_base = NULL,
+  color = NULL,
+  name = NULL,
+  sz = NULL,
+  bold = NULL,
+  italic = NULL,
+  label_color = NULL,
+  rot = NULL,
+  grid_color = NULL,
+  gridlines = NULL,
+  minor_grid_color = NULL,
+  minor_gridlines = NULL,
+  cross_between = NULL,
+  line_width = NULL,
+  grid_width = NULL,
+  minor_grid_width = NULL,
+  crosses = NULL,
+  crosses_at = NULL,
+  label_pos = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{numfmt}}{A number format.}
+\item{\code{min}}{Minimum value for the axis.}
 
-\item{\code{...}}{Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).}
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
+
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+
+\item{\code{rot}}{Rotation in degrees.}
+
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
 }
 \if{html}{\out{</div>}}
 }
@@ -1170,6 +1356,7 @@ Add a data series to the chart.
   color = "auto",
   line_color = NULL,
   line_width = 1,
+  gap_width = NULL,
   subtotals = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -1190,6 +1377,8 @@ Add a data series to the chart.
 \item{\code{line_color}}{Border color.}
 
 \item{\code{line_width}}{Border width.}
+
+\item{\code{gap_width}}{Integer between 0 and 500.}
 
 \item{\code{subtotals}}{Numeric vector of indices to treat as subtotals (Waterfall only).}
 }

@@ -32,14 +32,6 @@ ChartEx <- R6::R6Class(
     y_title = NULL,
     #' @field y_title_style List of styling parameters for the Y-axis title.
     y_title_style = list(),
-    #' @field x_axis_style List of styling and axis parameters for the X-axis.
-    x_axis_style = list(),
-    #' @field y_axis_style List of styling and axis parameters for the Y-axis.
-    y_axis_style = list(),
-    #' @field x_numfmt Number format for X-axis.
-    x_numfmt = NULL,
-    #' @field y_numfmt Number format for Y-axis.
-    y_numfmt = NULL,
     #' @field legend_params Parameters for legend positioning and style.
     legend_params = list(),
     #' @field data_label_params Parameters for data labels.
@@ -50,6 +42,11 @@ ChartEx <- R6::R6Class(
     plot_area_style = list(),
     #' @field palette A vector of hex colors to use for series.
     palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
+    #' @field axis_params Internal list for scaling, units, and formatting.
+    axis_params = list(
+      x = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
+    ),
 
     #' @description Create a new ChartEx object.
     #' @return A new `ChartEx` object.
@@ -68,8 +65,6 @@ ChartEx <- R6::R6Class(
       )
       self$legend_params <- list(pos = "t", align = "ctr", overlay = "0", style = list())
       self$data_label_params <- list(show = FALSE)
-      self$x_axis_style <- list()
-      self$y_axis_style <- list()
     },
 
     #' @description Set chart area styling.
@@ -128,7 +123,7 @@ ChartEx <- R6::R6Class(
     #' @param color Hex color.
     set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL) {
       self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
-                                 style = list(sz = sz, font = name, b = bold, i = italic, color = color))
+                                 style = list(sz = sz, name = name, bold = bold, italic = italic, color = color))
       invisible(self)
     },
 
@@ -140,29 +135,146 @@ ChartEx <- R6::R6Class(
     #' @param bold Logical.
     #' @param italic Logical.
     #' @param color Hex color.
-    #' @param numfmt A number format string.
-    set_data_label_style = function(show = TRUE, pos = "outEnd", sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL, numfmt = NULL) {
+    #' @param format A number format string.
+    set_data_label_style = function(show = TRUE, pos = "outEnd", sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL, format = NULL) {
       self$data_label_params <- list(show = show, pos = pos,
-                                     style = list(sz = sz, font = name, b = bold, i = italic, color = color),
-                                     numfmt = numfmt)
+                                     style = list(sz = sz, name = name, bold = bold, italic = italic, color = color),
+                                     format = format)
       invisible(self)
     },
 
-    #' @description Set X-axis tick label style, number format, and parameters.
-    #' @param numfmt A number format.
-    #' @param ... Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).
-    set_x_axis = function(numfmt = NULL, ...) {
-      if (!is.null(numfmt)) self$x_numfmt <- numfmt
-      self$x_axis_style <- list(...)
+    #' @description Set Primary X-axis scaling, units, and format.
+    #' @param min Minimum value for the axis.
+    #' @param max Maximum value for the axis.
+    #' @param major Numeric value for major unit interval.
+    #' @param minor Numeric value for minor unit interval.
+    #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
+    #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
+    #' @param base_time Base time unit for date axes ("days", "months", "years").
+    #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param log_base Base for logarithmic scaling (e.g., 10).
+    #' @param color,label_color Hex color for the axis lines and label (or independent label color).
+    #' @param sz Font size for the axis labels.
+    #' @param bold Logical; if `TRUE`, axis labels will be bold.
+    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
+    #' @param name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param rot Rotation in degrees.
+    #' @param grid_color,minor_grid_color Hex color for the gridlines.
+    #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
+    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
+    #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
+    #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
+    set_x_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
+                          major_time = NULL, minor_time = NULL, base_time = NULL,
+                          major_tick = NULL, minor_tick = NULL, sz = NULL, bold = NULL, italic = NULL,
+                          format = NULL, log_base = NULL, color = NULL,
+                          name = NULL, label_color = NULL, rot = NULL,
+                          grid_color = NULL, gridlines = NULL,
+                          minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                          line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
+                          crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+
+      # crosses   <- private$validate_input(crosses, c("min", "min", "autoZero"), "crosses")
+      # label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      # major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
+      # minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
+      # if (is.character(gridlines)) {
+      #   private$validate_input(
+      #     gridlines,
+      #     c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+      #     "gridlines"
+      #   )
+      # }
+      # if (is.character(minor_gridlines)) {
+      #   private$validate_input(
+      #     minor_gridlines,
+      #     c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+      #     "minor_gridlines"
+      #   )
+      # }
+
+      params <- list(min = min, max = max, major = major, minor = minor,
+                     major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     major_tick = major_tick, minor_tick = minor_tick,
+                     format = format, log_base = log_base, color = color,
+                     name = name, sz = sz, bold = bold, italic = italic,
+                     label_color = label_color, rot = rot,
+                     grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
+                     minor_gridlines = minor_gridlines, cross_between = cross_between,
+                     line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
+                     crosses = crosses, crosses_at = crosses_at, label_pos = label_pos)
+      self$axis_params$x <- modifyList(self$axis_params$x, Filter(Negate(is.null), params))
       invisible(self)
     },
 
-    #' @description Set Y-axis tick label style, number format, and parameters.
-    #' @param numfmt A number format.
-    #' @param ... Styling parameters (sz, color, b, font) and axis parameters (gap_width, min, max, grid_color).
-    set_y_axis = function(numfmt = NULL, ...) {
-      if (!is.null(numfmt)) self$y_numfmt <- numfmt
-      self$y_axis_style <- list(...)
+    #' @description Set Primary Y-axis scaling, units, and format.
+    #' @param min Minimum value for the axis.
+    #' @param max Maximum value for the axis.
+    #' @param major Numeric value for major unit interval.
+    #' @param minor Numeric value for minor unit interval.
+    #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
+    #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
+    #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
+    #' @param base_time Base time unit for date axes ("days", "months", "years").
+    #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
+    #' @param log_base Base for logarithmic scaling (e.g., 10).
+    #' @param color,label_color Hex color for the axis lines and label (or independent label color).
+    #' @param sz Font size for the axis labels.
+    #' @param bold Logical; if `TRUE`, axis labels will be bold.
+    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
+    #' @param name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param rot Rotation in degrees.
+    #' @param grid_color,minor_grid_color Hex color for the gridlines.
+    #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
+    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
+    #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
+    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
+    #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
+    set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
+                          major_time = NULL, minor_time = NULL, base_time = NULL,
+                          major_tick = NULL, minor_tick = NULL,
+                          format = NULL, log_base = NULL, color = NULL,
+                          name = NULL, sz = NULL, bold = NULL, italic = NULL,
+                          label_color = NULL, rot = NULL,
+                          grid_color = NULL, gridlines = NULL,
+                          minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                          line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
+                          crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+
+      # crosses   <- private$validate_input(crosses, c("autoZero", "min", "max"), "crosses")
+      # label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
+      # major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
+      # minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
+      # if (is.character(gridlines)) {
+      #   private$validate_input(
+      #     gridlines,
+      #     c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+      #     "gridlines"
+      #   )
+      # }
+      # if (is.character(minor_gridlines)) {
+      #   private$validate_input(
+      #     minor_gridlines,
+      #     c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+      #     "minor_gridlines"
+      #   )
+      # }
+
+      params <- list(min = min, max = max, major = major, minor = minor,
+                     major_time = major_time, minor_time = minor_time, base_time = base_time,
+                     major_tick = major_tick, minor_tick = minor_tick,
+                     format = format, log_base = log_base, color = color,
+                     name = name, sz = sz, bold = bold, italic = italic,
+                     label_color = label_color, rot = rot,
+                     grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
+                     minor_gridlines = minor_gridlines, cross_between = cross_between,
+                     line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
+                     crosses = crosses, crosses_at = crosses_at, label_pos = label_pos)
+      self$axis_params$y <- modifyList(self$axis_params$y, Filter(Negate(is.null), params))
       invisible(self)
     },
 
@@ -174,9 +286,10 @@ ChartEx <- R6::R6Class(
     #' @param color Hex color or "auto".
     #' @param line_color Border color.
     #' @param line_width Border width.
+    #' @param gap_width Integer between 0 and 500.
     #' @param subtotals Numeric vector of indices to treat as subtotals (Waterfall only).
     add_series = function(header = NULL, data, cat = NULL, type = "waterfall", color = "auto",
-                      line_color = NULL, line_width = 1, subtotals = NULL) {
+                          line_color = NULL, line_width = 1,  gap_width = NULL, subtotals = NULL) {
 
       if (is.null(color)) {
         color_idx <- (length(self$series_data) %% length(self$palette)) + 1
@@ -229,8 +342,14 @@ ChartEx <- R6::R6Class(
       series_type <- type %||% self$type %||% "barChart"
 
       self$series_data[[length(self$series_data) + 1]] <- list(
-        header = private$fix_quote(header), data = private$fix_quote(data), cat = private$fix_quote(cat),
-        type = series_type, color = color, line_color = line_color, line_width = line_width,
+        header = private$fix_quote(header),
+        data = private$fix_quote(data),
+        cat = private$fix_quote(cat),
+        type = series_type,
+        color = color,
+        line_color = line_color,
+        line_width = line_width,
+        gap_width = gap_width,
         subtotals = subtotals
       )
       invisible(self)
@@ -320,7 +439,7 @@ ChartEx <- R6::R6Class(
 
         if (isTRUE(self$data_label_params$show)) {
           dlbls <- xml2::xml_add_child(ser, "cx:dataLabels", pos = self$data_label_params$pos %||% "outEnd")
-          if (!is.null(self$data_label_params$numfmt)) xml2::xml_add_child(dlbls, "cx:numFmt", formatCode = self$data_label_params$numfmt, sourceLinked = "0")
+          if (!is.null(self$data_label_params$format)) xml2::xml_add_child(dlbls, "cx:numFmt", formatCode = self$data_label_params$format, sourceLinked = "0")
           if (any(!vapply(self$data_label_params$style, is.null, logical(1)))) private$apply_label_style(dlbls, self$data_label_params$style)
           xml2::xml_add_child(dlbls, "cx:visibility", seriesName = "0", categoryName = "0", value = "1")
         }
@@ -357,11 +476,23 @@ ChartEx <- R6::R6Class(
         xml2::xml_remove(xml2::xml_find_all(plot_area_node, "cx:axis"))
 
         # Build siblings by passing the same plot_area_node as parent
-        private$render_axis_full(plot_area_node, self$x_axis_style, self$x_title,
-                                 self$x_title_style, self$x_numfmt, type = "cat")
+        private$render_axis_full(
+          plot_area_node,
+          s = self$axis_params$x,
+          title = self$x_title,
+          title_style = self$x_title_style,
+          gap_width = if (length(self$series_data)) self$series_data[[1]]$gap_width else NULL,
+          type = "cat"
+        )
 
-        private$render_axis_full(plot_area_node, self$y_axis_style, self$y_title,
-                                 self$y_title_style, self$y_numfmt, type = "val")
+        private$render_axis_full(
+          plot_area_node,
+          s = self$axis_params$y,
+          title = self$y_title,
+          title_style = self$y_title_style,
+          gap_width = NULL,
+          type = "val"
+        )
       }
 
       # 2. Legends & Titles
@@ -438,44 +569,6 @@ ChartEx <- R6::R6Class(
       if (!is.null(dash)) xml2::xml_add_child(ln, "a:prstDash", val = dash)
     },
 
-    render_axis = function(plot_area, style, type = "val") {
-      axis_node <- xml2::xml_add_child(plot_area, "cx:axis", type = type)
-
-      # 1. Units (ST_AxisUnit) MUST COME FIRST
-      if (!is.null(style$major)) {
-        u <- xml2::xml_add_child(axis_node, "cx:majorUnit")
-        xml2::xml_set_attr(u, "val", as.character(style$major))
-      }
-      if (!is.null(style$minor)) {
-        u <- xml2::xml_add_child(axis_node, "cx:minorUnit")
-        xml2::xml_set_attr(u, "val", as.character(style$minor))
-      }
-
-      # 2. Gridlines MUST COME SECOND
-      if (!is.null(style$gridlines)) {
-        major_grid <- xml2::xml_add_child(axis_node, "cx:majorGridlines")
-        sp_pr <- xml2::xml_add_child(major_grid, "cx:spPr")
-        ln <- xml2::xml_add_child(sp_pr, "a:ln", w = as.character(round((style$grid_width %||% 1) * 12700)))
-
-        solid_fill <- xml2::xml_add_child(ln, "a:solidFill")
-        private$render_color_core(solid_fill, style$grid_color %||% "D9D9D9")
-
-        dash <- switch(as.character(style$gridlines), "dotted" = "dot", "dash" = "dash", NULL)
-        if (!is.null(dash)) xml2::xml_add_child(ln, "a:prstDash", val = dash)
-      }
-
-      # 3. Text Properties and Titles MUST COME LAST
-      # This is why we call apply_axis_style AFTER the units and grids
-      private$apply_axis_style(axis_node, style)
-
-      # Add the Title if it exists (Title must be the very last element in cx:axis)
-      title_text <- if (type == "cat") self$x_title else self$y_title
-      title_style <- if (type == "cat") self$x_title_style else self$y_title_style
-      if (!is.null(title_text)) {
-        private$add_rich_text(xml2::xml_add_child(axis_node, "cx:title"), title_text, title_style)
-      }
-    },
-
     apply_label_style = function(node, s) {
       txPr <- xml2::xml_add_child(node, "cx:txPr")
       bodyPr <- xml2::xml_add_child(txPr, "a:bodyPr", lIns = "0", tIns = "0", rIns = "0", bIns = "0")
@@ -488,8 +581,8 @@ ChartEx <- R6::R6Class(
       pPr <- xml2::xml_add_child(p, "a:pPr")
       set_run_attrs <- function(n, st) {
         if (!is.null(st$sz)) xml2::xml_set_attr(n, "sz", as.character(st$sz * 100))
-        if (!is.null(st$b)) xml2::xml_set_attr(n, "b", if (isTRUE(st$b)) "1" else "0")
-        if (!is.null(st$i)) xml2::xml_set_attr(n, "i", if (isTRUE(st$i)) "1" else "0")
+        if (!is.null(st$bold)) xml2::xml_set_attr(n, "b", if (isTRUE(st$bold)) "1" else "0")
+        if (!is.null(st$italic)) xml2::xml_set_attr(n, "i", if (isTRUE(st$italic)) "1" else "0")
       }
       defRPr <- xml2::xml_add_child(pPr, "a:defRPr")
       set_run_attrs(defRPr, s)
@@ -497,44 +590,44 @@ ChartEx <- R6::R6Class(
       endRPr <- xml2::xml_add_child(p, "a:endParaRPr")
       set_run_attrs(endRPr, s)
       if (!is.null(s$color)) private$render_color(endRPr, s$color)
-      if (!is.null(s$font)) xml2::xml_add_child(endRPr, "a:latin", typeface = s$font)
+      if (!is.null(s$name)) xml2::xml_add_child(endRPr, "a:latin", typeface = s$name)
     },
 
-    render_axis_full = function(plot_area, s, title, title_style, numfmt, type = "val") {
-      # 1. Create Axis
+    render_axis_full = function(plot_area, s, title, title_style, gap_width = NULL, type = "val") {
+      # 1. Create Axis with correct ID (0 for X/Category, 1 for Y/Value)
       ax <- xml2::xml_add_child(plot_area, "cx:axis", id = if (type == "cat") "0" else "1")
       is_x <- (type == "cat")
 
-      # 2. Scaling - Apply major/minor units as ATTRIBUTES here
+      # 2. Scaling (ST_AxisUnit & ST_Scaling)
+      # In ChartEx, Units and Min/Max are often attributes of the scaling node
       scaling_tag <- if (is_x) "cx:catScaling" else "cx:valScaling"
       scaling <- xml2::xml_add_child(ax, scaling_tag)
 
-      if (is_x && !is.null(s$gap_width)) xml2::xml_set_attr(scaling, "gapWidth", as.character(s$gap_width))
+      if (is_x && !is.null(gap_width)) xml2::xml_set_attr(scaling, "gapWidth", as.character(gap_width))
 
       if (!is_x) {
         if (!is.null(s$min)) xml2::xml_set_attr(scaling, "min", as.character(s$min))
         if (!is.null(s$max)) xml2::xml_set_attr(scaling, "max", as.character(s$max))
+        # Standard Chart uses 'major', map it to OOXML 'majorUnit'
         if (!is.null(s$major)) xml2::xml_set_attr(scaling, "majorUnit", as.character(s$major))
         if (!is.null(s$minor)) xml2::xml_set_attr(scaling, "minorUnit", as.character(s$minor))
       }
 
-      # 3. Title (Sequence position #2)
+      # 3. Title (Must follow scaling in sequence)
       if (!is.null(title)) {
         private$add_rich_text(xml2::xml_add_child(ax, "cx:title"), title, title_style)
       }
 
-      # --- Axis Line Style ---
+      # 4. Axis Line Style (spPr)
       axSpPr <- xml2::xml_add_child(ax, "cx:spPr")
-
       # Use line_width if provided (converted to EMUs), else default 0.75pt
       w_val <- if (!is.null(s$line_width)) as.character(round(s$line_width * 12700)) else "9525"
       ln <- xml2::xml_add_child(axSpPr, "a:ln", w = w_val)
-
       # Wrap color in solidFill to prevent XML errors
       ln_fill <- xml2::xml_add_child(ln, "a:solidFill")
       private$render_color_core(ln_fill, s$color %||% "000000")
 
-      # 4. Gridlines (Fixed Dash mapping)
+      # 5. Gridlines (Aligned with Chart logic)
       if (!is.null(s$gridlines) && !isFALSE(s$gridlines)) {
         g <- xml2::xml_add_child(ax, "cx:majorGridlines")
         sp <- xml2::xml_add_child(g, "cx:spPr")
@@ -548,12 +641,17 @@ ChartEx <- R6::R6Class(
         if (!is.null(dash_val)) xml2::xml_add_child(ln, "a:prstDash", val = dash_val)
       }
 
-      # 5. Ticks and Labels
+      # 6. Ticks and Labels
       if (!is.null(s$major_tick)) xml2::xml_add_child(ax, "cx:majorTickMarks", type = s$major_tick)
       xml2::xml_add_child(ax, "cx:tickLabels")
-      if (!is.null(numfmt)) xml2::xml_add_child(ax, "cx:numFmt", formatCode = numfmt, sourceLinked = "0")
 
-      # 6. Styling (txPr) - MUST BE LAST
+      # 7. Styling (txPr) - MUST BE LAST
+      # Number Format (NEW: mapping s$format from axis_params)
+      if (!is.null(s$format)) {
+        xml2::xml_add_child(ax, "cx:numFmt", formatCode = as.character(s$format), sourceLinked = "0")
+      }
+
+      # 8. Text Styling (txPr) - MUST BE LAST
       private$apply_axis_style(ax, s)
     }
     ,
@@ -566,15 +664,15 @@ ChartEx <- R6::R6Class(
       pPr <- xml2::xml_add_child(p, "a:pPr", algn = "ctr")
       defRPr <- xml2::xml_add_child(pPr, "a:defRPr")
       if (!is.null(s$sz)) xml2::xml_set_attr(defRPr, "sz", as.character(s$sz * 100))
-      if (!is.null(s$b)) xml2::xml_set_attr(defRPr, "b", if (isTRUE(s$b)) "1" else "0")
-      if (!is.null(s$i)) xml2::xml_set_attr(defRPr, "i", if (isTRUE(s$i)) "1" else "0")
+      if (!is.null(s$bold)) xml2::xml_set_attr(defRPr, "b", if (isTRUE(s$bold)) "1" else "0")
+      if (!is.null(s$italic)) xml2::xml_set_attr(defRPr, "i", if (isTRUE(s$italic)) "1" else "0")
       if (!is.null(s$color)) private$render_color_core(defRPr, s$color, wrap = TRUE)
       endRPr <- xml2::xml_add_child(p, "a:endParaRPr")
       if (!is.null(s$sz)) xml2::xml_set_attr(endRPr, "sz", as.character(s$sz * 100))
-      if (!is.null(s$b)) xml2::xml_set_attr(endRPr, "b", if (isTRUE(s$b)) "1" else "0")
-      if (!is.null(s$i)) xml2::xml_set_attr(endRPr, "i", if (isTRUE(s$i)) "1" else "0")
+      if (!is.null(s$bold)) xml2::xml_set_attr(endRPr, "b", if (isTRUE(s$bold)) "1" else "0")
+      if (!is.null(s$italic)) xml2::xml_set_attr(endRPr, "i", if (isTRUE(s$italic)) "1" else "0")
       if (!is.null(s$color)) private$render_color_core(endRPr, s$color, wrap = TRUE)
-      if (!is.null(s$font)) xml2::xml_add_child(endRPr, "a:latin", typeface = s$font)
+      if (!is.null(s$name)) xml2::xml_add_child(endRPr, "a:latin", typeface = s$name)
     },
     render_color = function(parent_node, color_val) {
       if (is.null(color_val) || identical(color_val, "auto")) return()
@@ -669,7 +767,6 @@ ChartEx <- R6::R6Class(
       r <- xml2::xml_add_child(p, "a:r")
       rPr <- xml2::xml_add_child(r, "a:rPr")
 
-      # --- FONT COLOR FIX ---
       # Color MUST be inside a:solidFill
       # If s$color is NULL, we default to black "000000"
       font_color <- s$color %||% "000000"
@@ -678,9 +775,9 @@ ChartEx <- R6::R6Class(
 
       # Font Styling
       if (!is.null(s$sz)) xml2::xml_set_attr(rPr, "sz", as.character(s$sz * 100))
-      if (!is.null(s$b)) xml2::xml_set_attr(rPr, "b", ifelse(isTRUE(s$b), "1", "0"))
-      if (!is.null(s$b)) xml2::xml_set_attr(rPr, "i", ifelse(isTRUE(s$i), "1", "0"))
-      if (!is.null(s$font)) xml2::xml_add_child(rPr, "a:latin", typeface = s$font)
+      if (!is.null(s$bold)) xml2::xml_set_attr(rPr, "b", ifelse(isTRUE(s$bold), "1", "0"))
+      if (!is.null(s$italic)) xml2::xml_set_attr(rPr, "i", ifelse(isTRUE(s$italic), "1", "0"))
+      if (!is.null(s$name)) xml2::xml_add_child(rPr, "a:latin", typeface = s$name)
 
       xml2::xml_add_child(r, "a:t", text)
     },
@@ -703,22 +800,22 @@ ChartEx <- R6::R6Class(
       # sz is 1/100 points
       sz_val <- if (!is.null(style$sz)) as.character(style$sz * 100) else "1000"
       xml2::xml_set_attr(defRPr, "sz", sz_val)
-      if (isTRUE(style$b)) xml2::xml_set_attr(defRPr, "b", "1")
-      if (isTRUE(style$i)) xml2::xml_set_attr(defRPr, "i", "1")
+      if (isTRUE(style$bold)) xml2::xml_set_attr(defRPr, "b", "1")
+      if (isTRUE(style$italic)) xml2::xml_set_attr(defRPr, "i", "1")
 
-      if (!is.null(style$font)) xml2::xml_add_child(defRPr, "a:latin", typeface = style$font)
+      if (!is.null(style$name)) xml2::xml_add_child(defRPr, "a:latin", typeface = style$name)
 
       # The final node in the OOXML paragraph
       end_pr <- xml2::xml_add_child(p, "a:endParaRPr", sz = sz_val)
-      if (isTRUE(style$b)) xml2::xml_set_attr(end_pr, "b", "1")
-      if (isTRUE(style$i)) xml2::xml_set_attr(end_pr, "i", "1")
+      if (isTRUE(style$bold)) xml2::xml_set_attr(end_pr, "b", "1")
+      if (isTRUE(style$italic)) xml2::xml_set_attr(end_pr, "i", "1")
 
       # Color wrap
       private$render_color_core(xml2::xml_add_child(end_pr, "a:solidFill"), f_color)
 
       # Font typeface sync
-      if (!is.null(style$font)) {
-        xml2::xml_add_child(end_pr, "a:latin", typeface = style$font)
+      if (!is.null(style$name)) {
+        xml2::xml_add_child(end_pr, "a:latin", typeface = style$name)
       }
     }
   )

@@ -41,17 +41,17 @@ my_tm$set_chart_title("treemap")$
     sz = 10,
     bold = TRUE,
     color = wb_color("white"),    # White labels if you have dark bars
-    numfmt = "#,##0.0"    # Custom precision
+    format = "#,##0.0"    # Custom precision
   )
 
 # box whisker plot
 my_bw <- ChartEx$new()
 my_bw$
-  set_chart_title("MPG Distribution", sz = 16, font_name = "Arial", bold = TRUE)$
+  set_chart_title("MPG Distribution", sz = 16, name = "Arial", bold = TRUE)$
   set_x_title("by Cylinder", sz = 12, italic = TRUE)$
-  set_y_title("Miles per Gallon", sz = 12, font_name = "Calibri")$
-  set_x_axis(sz = 10, font_name = "Arial", bold = TRUE)$
-  set_y_axis(sz = 12, font_name = "Times New Roman", italic = TRUE, color = "000000", numfmt = "0.0")$
+  set_y_title("Miles per Gallon", sz = 12, name = "Calibri")$
+  set_x_axis(sz = 10, name = "Arial", bold = TRUE)$
+  set_y_axis(sz = 12, name = "Times New Roman", italic = TRUE, color = "000000", format = "0.0")$
   add_series(
     header = '"Super Duper MPG"', # dont use strings with a "!"
     data   = "Data!$A$2:$A$33",

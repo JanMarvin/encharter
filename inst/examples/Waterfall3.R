@@ -19,23 +19,23 @@ my_wf$add_series(
   cat    = "Data2!$A$2:$A$7",
   color   = wb_color(theme = "5"), # Correctly maps to accent2
   line_color   = "000000",              # Solid black border
-  type         = "waterfall"
+  type         = "waterfall",
+  gap_width = 1.5       # Controls space between waterfall bars
 )
 
 # 2. Skinning the X-Axis (Category Axis)
 my_wf$set_x_axis(
   sz = 11,
-  font_name = "Segoe UI",
+  name = "Segoe UI",
   bold = TRUE,
   color = wb_color(hex = "#444444"),
-  major_tick = "out",   # Uses the new <cx:majorTickMarks type="out" />
-  gap_width = 1.5       # Controls space between waterfall bars
+  major_tick = "out"   # Uses the new <cx:majorTickMarks type="out" />
 )
 
 # 3. Skinning the Y-Axis (Value Axis)
 my_wf$set_y_axis(
   sz = 10,
-  font_name = "Segoe UI",
+  name = "Segoe UI",
   italic = TRUE,
   grid_color = wb_color(hex = "#D9D9D9"), # Subtle gridlines using render_color_core
   gridlines = TRUE,
