@@ -22,16 +22,10 @@ ChartEx <- R6::R6Class(
     type = NULL,
     #' @field chart_title The title text.
     chart_title = NULL,
-    #' @field chart_title_style List of styling parameters for the title.
-    chart_title_style = list(),
     #' @field x_title The X-axis title text.
     x_title = NULL,
-    #' @field x_title_style List of styling parameters for the X-axis title.
-    x_title_style = list(),
     #' @field y_title The Y-axis title text.
     y_title = NULL,
-    #' @field y_title_style List of styling parameters for the Y-axis title.
-    y_title_style = list(),
     #' @field legend_params Parameters for legend positioning and style.
     legend_params = list(),
     #' @field data_label_params Parameters for data labels.
@@ -89,8 +83,7 @@ ChartEx <- R6::R6Class(
     #' @param text Title text.
     #' @param ... Styling (sz, b, color, font).
     set_chart_title = function(text, ...) {
-      self$chart_title <- text
-      self$chart_title_style <- list(...)
+      self$chart_title <- list(text = text, style = list(...))
       invisible(self)
     },
 
@@ -98,8 +91,7 @@ ChartEx <- R6::R6Class(
     #' @param text Title text.
     #' @param ... Styling (sz, b, color, font).
     set_x_title = function(text, ...) {
-      self$x_title <- text
-      self$x_title_style <- list(...)
+      self$x_title      <- list(text = text, style = list(...))
       invisible(self)
     },
 
@@ -107,8 +99,7 @@ ChartEx <- R6::R6Class(
     #' @param text Title text.
     #' @param ... Styling (sz, b, color, font).
     set_y_title = function(text, ...) {
-      self$y_title <- text
-      self$y_title_style <- list(...)
+      self$y_title      <- list(text = text, style = list(...))
       invisible(self)
     },
 
@@ -479,18 +470,18 @@ ChartEx <- R6::R6Class(
         private$render_axis_full(
           plot_area_node,
           s = self$axis_params$x,
-          title = self$x_title,
-          title_style = self$x_title_style,
           gap_width = if (length(self$series_data)) self$series_data[[1]]$gap_width else NULL,
+          title = self$x_title$text,
+          title_style = self$x_title_style$style,
           type = "cat"
         )
 
         private$render_axis_full(
           plot_area_node,
           s = self$axis_params$y,
-          title = self$y_title,
-          title_style = self$y_title_style,
           gap_width = NULL,
+          title = self$y_title$text,
+          title_style = self$y_title$style,
           type = "val"
         )
       }
@@ -507,7 +498,7 @@ ChartEx <- R6::R6Class(
         if (any(!vapply(self$legend_params$style, is.null, logical(1)))) private$apply_legend_text_style(legend_node, self$legend_params$style)
       }
 
-      if (!is.null(self$chart_title)) private$add_rich_text(xml2::xml_find_first(self$xml, "//cx:chart/cx:title"), self$chart_title, self$chart_title_style)
+      if (!is.null(self$chart_title$text)) private$add_rich_text(xml2::xml_find_first(self$xml, "//cx:chart/cx:title"), self$chart_title$text, self$chart_title$style)
 
       # 4. Chart Area Styling
       xml2::xml_remove(xml2::xml_find_all(self$xml, "/cx:chartSpace/cx:spPr"))
