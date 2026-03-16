@@ -14,7 +14,8 @@
 #' @importFrom xml2 read_xml xml_remove xml_add_child
 #'  xml_find_first xml_find_all xml_set_attr
 #' @importFrom openxlsx2 wb_color
-#' @export
+#' @rdname encharter
+#' @usage NULL
 Chart <- R6::R6Class(
   "Chart",
   public = list(

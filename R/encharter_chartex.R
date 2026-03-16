@@ -9,7 +9,8 @@
 #' This class uses `xml2` to manipulate the underlying XML structure and
 #' integrates with `openxlsx2` for workbook generation.
 #'
-#' @export
+#' @rdname encharter
+#' @usage NULL
 ChartEx <- R6::R6Class(
   "ChartEx",
   public = list(
@@ -17,6 +18,8 @@ ChartEx <- R6::R6Class(
     xml = NULL,
     #' @field series_data A list containing all added series definitions.
     series_data = list(),
+    #' @field type The default chart type for the object (e.g., "waterfall").
+    type = NULL,
     #' @field chart_title The title text.
     chart_title = NULL,
     #' @field chart_title_style List of styling parameters for the title.
@@ -50,7 +53,10 @@ ChartEx <- R6::R6Class(
 
     #' @description Create a new ChartEx object.
     #' @return A new `ChartEx` object.
-    initialize = function() {
+    #' @param type Initial chart type (e.g., "waterfall", "treemap").
+    initialize = function(type = NULL) {
+
+      self$type <- type
       self$xml <- xml2::read_xml(
         '<cx:chartSpace xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
                         xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
@@ -220,9 +226,11 @@ ChartEx <- R6::R6Class(
       header <- if (is.null(header)) NA_character_ else header
       cat    <- if (is.null(cat))    NA_character_ else cat
 
+      series_type <- type %||% self$type %||% "barChart"
+
       self$series_data[[length(self$series_data) + 1]] <- list(
         header = private$fix_quote(header), data = private$fix_quote(data), cat = private$fix_quote(cat),
-        type = type, color = color, line_color = line_color, line_width = line_width,
+        type = series_type, color = color, line_color = line_color, line_width = line_width,
         subtotals = subtotals
       )
       invisible(self)

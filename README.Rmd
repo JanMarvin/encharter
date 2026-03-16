@@ -30,7 +30,7 @@ df_combo <- data.frame(
 wb <- wb_add_data(wb, sheet = "Data", x = df_combo)
 
 # 2. Initialize and configure the Chart
-combo_chart <- Chart$new()
+combo_chart <- ec("barChart")
 combo_chart$set_chart_title("Monthly Revenue & Growth")
 
 # Primary Axis: Revenue Bars
@@ -66,7 +66,7 @@ wb <- wb_add_worksheet(wb, sheet = "WaterfallData")
 wb <- wb_add_data(wb, sheet = "WaterfallData", x = df_wf)
 
 # 2. Initialize and configure the Waterfall Chart
-wf_chart <- ChartEx$new()
+wf_chart <- ec("waterfall")
 wf_chart$set_chart_title("Net Income Bridge")
 
 wf_chart$add_series(
@@ -89,7 +89,7 @@ wb <- wb_add_worksheet(wb, sheet = "ScatterData")
 wb <- wb_add_data(wb, sheet = "ScatterData", x = df_scatter)
 
 # 2. Initialize and configure Scatter Chart
-sc_chart <- Chart$new("scatterChart")
+sc_chart <- ec("scatterChart")
 sc_chart$set_chart_title("Risk vs ROI Analysis")
 
 sc_chart$add_series(
