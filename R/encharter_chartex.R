@@ -13,19 +13,8 @@
 #' @usage NULL
 ChartEx <- R6::R6Class(
   "ChartEx",
+  inherit = EncharterBase,
   public = list(
-    #' @field xml The raw XML object for the chart space.
-    xml = NULL,
-    #' @field series_data A list containing all added series definitions.
-    series_data = list(),
-    #' @field type The default chart type for the object (e.g., "waterfall").
-    type = NULL,
-    #' @field chart_title The title text.
-    chart_title = NULL,
-    #' @field x_title The X-axis title text.
-    x_title = NULL,
-    #' @field y_title The Y-axis title text.
-    y_title = NULL,
     #' @field legend_params Parameters for legend positioning and style.
     legend_params = list(),
     #' @field data_label_params Parameters for data labels.
@@ -34,13 +23,6 @@ ChartEx <- R6::R6Class(
     chart_area_style = list(),
     #' @field plot_area_style Styling for the inner plot area.
     plot_area_style = list(),
-    #' @field palette A vector of hex colors to use for series.
-    palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
-    #' @field axis_params Internal list for scaling, units, and formatting.
-    axis_params = list(
-      x = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
-    ),
 
     #' @description Create a new ChartEx object.
     #' @return A new `ChartEx` object.
