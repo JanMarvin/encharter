@@ -1,22 +1,24 @@
 Package: encharter
 Type: Package
-Title: Enhanced OOXML Charting for openxlsx2
-Version: 0.1.1
+Title: Enhanced OOXML Charting for `openxlsx2`
+Version: 0.1.2
 Authors@R: c(
     person("Jan Marvin", "Garbuszus", email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut", "cre"))
   )
-Description: Provides a high-level R6 interface for creating complex 
-    Office OpenXML (OOXML) charts. This package allows users to build 
-    multi-series combo charts with secondary axes and granular styling 
+Description: Provides a high-level R6 interface for creating complex
+    Office OpenXML (OOXML) charts. This package allows users to build
+    multi-series combo charts with secondary axes and granular styling
     options, designed to integrate seamlessly with 'openxlsx2'.
 License: MIT + file LICENSE
+URL: https://janmarvin.github.io/encharter/, https://github.com/JanMarvin/encharter
+BugReports: https://github.com/JanMarvin/encharter/issues
 Encoding: UTF-8
 RoxygenNote: 7.3.3
-Imports: 
+Imports:
     R6,
     xml2,
     openxlsx2
-Suggests: 
+Suggests:
     testthat (>= 3.0.0),
     viridisLite
 Config/testthat/edition: 3
