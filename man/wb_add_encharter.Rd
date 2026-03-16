@@ -4,12 +4,7 @@
 \alias{wb_add_encharter}
 \title{Add a Chart object to a workbook sheet}
 \usage{
-wb_add_encharter(
-  wb,
-  sheet = openxlsx2::current_sheet(),
-  dims = NULL,
-  chart_obj
-)
+wb_add_encharter(wb, sheet = openxlsx2::current_sheet(), dims = NULL, graph)
 }
 \arguments{
 \item{wb}{An \code{openxlsx2} workbook object.}
@@ -18,7 +13,7 @@ wb_add_encharter(
 
 \item{dims}{Character string defining the cell range (e.g., "E2:M20").}
 
-\item{chart_obj}{An initialized \code{Chart} R6 object.}
+\item{graph}{An initialized \code{Chart} R6 object.}
 }
 \value{
 The workbook object, invisibly.

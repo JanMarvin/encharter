@@ -37,7 +37,7 @@ wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = df) |>
   # Dimensions define where the chart sits in the spreadsheet
-  wb_add_encharter(dims = "E2:M20", chart_obj = ch)
+  wb_add_encharter(dims = "E2:M20", graph = ch)
 
 # 5. Open to inspect
 wb_open(wb)

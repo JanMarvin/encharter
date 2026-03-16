@@ -39,7 +39,7 @@ my_chart$
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = sales_data) |>
-  wb_add_encharter(dims = "E2:M20", chart_obj = my_chart) # Pass my_chart, not chart
+  wb_add_encharter(dims = "E2:M20", graph = my_chart) # Pass my_chart, not chart
 
 wb$open()
 

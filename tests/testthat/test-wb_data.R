@@ -53,5 +53,5 @@ test_that("ChartEx handles wb_data", {
 
   expect_equal(ce$series_data[[1]]$header, "'WF'!$B$1")
 
-  wb <- wb_add_encharter(wb, chart_obj = ce)
+  wb <- wb_add_encharter(wb, graph = ce)
 })

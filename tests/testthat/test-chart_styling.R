@@ -119,7 +119,7 @@ test_that("ChartEx chart and plot styling works", {
   xml <- xml2::read_xml(xml_str)
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("Sheet1")$add_data(x = mtcars)
-  wb <- wb_add_encharter(wb, sheet = "Sheet1", dims = "A2:G12", chart_obj = ce)
+  wb <- wb_add_encharter(wb, sheet = "Sheet1", dims = "A2:G12", graph = ce)
 
   # 2. Test Chart Styling (cx:chart/cx:spPr)
   chart_sp_pr <- xml2::xml_find_first(xml, "cx:spPr")
@@ -184,7 +184,7 @@ test_that("Major and Minor gridlines are correctly rendered and visible", {
   wb <- openxlsx2::wb_workbook() |>
     openxlsx2::wb_add_worksheet("Sheet1") |>
     openxlsx2::wb_add_data(x = sales_data) |>
-    wb_add_encharter(dims = "E2:M25", chart_obj = my_chart)
+    wb_add_encharter(dims = "E2:M25", graph = my_chart)
 })
 
 test_that("ChartEx renders full styling and axis properties", {

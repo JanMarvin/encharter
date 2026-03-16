@@ -34,6 +34,6 @@ my_chart$
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = net_income) |>
-  wb_add_encharter(dims = "D2:L20", chart_obj = my_chart)
+  wb_add_encharter(dims = "D2:L20", graph = my_chart)
 
 wb$open()

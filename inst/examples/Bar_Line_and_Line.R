@@ -28,7 +28,7 @@ chart$
 wb <- wb_workbook() |>
   wb_add_worksheet() |>
   wb_add_data(x = data.frame(Label = c("A", "B", "C", "D"), Val = 1:4)) |>
-  wb_add_encharter(dims = "E2:M20", chart_obj = chart)
+  wb_add_encharter(dims = "E2:M20", graph = chart)
 
 wb$open()
 
@@ -58,6 +58,6 @@ my_chart$add_series("Volume", "Sheet1!$D$2:$D$10", color = "ED7D31", type = "bar
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = sales_data) |>
-  wb_add_encharter(dims = "E2:M20", chart_obj = my_chart)
+  wb_add_encharter(dims = "E2:M20", graph = my_chart)
 
 if (interactive()) wb$open()

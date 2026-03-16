@@ -42,19 +42,18 @@ to_abs_ref <- function(x) {
 #' @param wb An \code{openxlsx2} workbook object.
 #' @param sheet Sheet name or index where the chart will be placed.
 #' @param dims Character string defining the cell range (e.g., "E2:M20").
-#' @param chart_obj An initialized \code{Chart} R6 object.
+#' @param graph An initialized \code{Chart} R6 object.
 #'
 #' @return The workbook object, invisibly.
 #' @export
-
-wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL, chart_obj) {
+wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL, graph) {
 
   wb <- wb$clone()
 
-  if (inherits(chart_obj, "Chart")) {
-    chart_xml <- chart_obj$render()
+  if (inherits(graph, "Chart")) {
+    chart_xml <- graph$render()
     return(wb$add_chart_xml(sheet = sheet, dims = dims, xml = chart_xml))
-  } else if (inherits(chart_obj, "ChartEx")) {
+  } else if (inherits(graph, "ChartEx")) {
 
     wb <- wb$clone(deep = TRUE)
     target_sheet <- wb$validate_sheet(sheet)
@@ -68,7 +67,7 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
       id_base <- max(id_nums, na.rm = TRUE) + 1L
     }
 
-    chart_xml_rendered <- chart_obj$render(id_start = id_base)
+    chart_xml_rendered <- graph$render(id_start = id_base)
 
     # 2. Add Drawing to the TARGET sheet
     drw_rel_id <- wb$worksheets[[target_sheet]]$relships$drawing
