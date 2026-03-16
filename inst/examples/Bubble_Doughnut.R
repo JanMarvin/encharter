@@ -40,8 +40,8 @@ bb_chart$add_series(
 # 3. Add Charts to Workbook
 # We add "dummy" charts first so openxlsx2 creates the XML structure we can overwrite
 wb <- wb |>
-  wb_add_chart(dims = "B2:K12", chart_obj = dn_chart) |>
-  wb_add_chart(dims = "B13:K25", chart_obj = bb_chart)
+  wb_add_encharter(dims = "B2:K12", chart_obj = dn_chart) |>
+  wb_add_encharter(dims = "B13:K25", chart_obj = bb_chart)
 
 # 5. Save and Open
 wb$open()

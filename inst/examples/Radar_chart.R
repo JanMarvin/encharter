@@ -61,7 +61,7 @@ wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = skill_data) |>
   # Add both charts to compare styles
-  wb_add_chart(dims = "E2:L20", chart_obj = radar_std) |>
-  wb_add_chart(dims = "E22:L40", chart_obj = radar_filled)
+  wb_add_encharter(dims = "E2:L20", chart_obj = radar_std) |>
+  wb_add_encharter(dims = "E22:L40", chart_obj = radar_filled)
 
 wb$open()

@@ -60,7 +60,7 @@ wb <- wb_workbook() |>
 # 6. Add the chart to the workbook
 # Note: Ensure your wb_add_chart wrapper passes the rendered XML to the drawing
 wb <- wb |>
-  wb_add_chart(dims = "E2:M20", chart_obj = combo_chart)
+  wb_add_encharter(dims = "E2:M20", chart_obj = combo_chart)
 
 # Open in spreadsheet software
 wb$open()

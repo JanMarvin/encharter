@@ -68,6 +68,6 @@ chart_data <- data.frame(
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = chart_data) |>
-  wb_add_chart(dims = "E2:M20", chart_obj = combo_chart)
+  wb_add_encharter(dims = "E2:M20", chart_obj = combo_chart)
 
 wb$open()

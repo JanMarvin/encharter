@@ -144,7 +144,7 @@ test_that("surfaceChart rendering works", {
   wb <- openxlsx2::wb_workbook() |>
     openxlsx2::wb_add_worksheet("Sheet1") |>
     openxlsx2::wb_add_data(x = surface_data) |>
-    wb_add_chart(chart_obj = chart)
+    wb_add_encharter(chart_obj = chart)
 
   xml_content <- xml2::read_xml(chart$render())
 

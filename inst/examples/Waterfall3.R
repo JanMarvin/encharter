@@ -54,6 +54,6 @@ my_wf$set_chart_title("2024 Performance", sz = 14, bold = TRUE)$
 wb <- wb_workbook()$
   add_worksheet("Data2")$
   add_data(x = wf_dates)
-wb <- wb_add_chart(wb, sheet = "Data2", chart_obj = my_wf)
+wb <- wb_add_encharter(wb, sheet = "Data2", chart_obj = my_wf)
 
 wb$open()

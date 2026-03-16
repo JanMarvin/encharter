@@ -52,7 +52,7 @@ combo_chart$add_series(
   marker    = "circle"
 )
 
-wb <- wb_add_chart(wb, sheet = "Data", chart_obj = combo_chart)
+wb <- wb_add_encharter(wb, sheet = "Data", chart_obj = combo_chart)
 ```
 
 ``` r
@@ -74,7 +74,7 @@ wf_chart$add_series(
   data   = "WaterfallData!$B$2:$B$6"
 )
 
-wb <- wb_add_chart(wb, chart_obj = wf_chart)
+wb <- wb_add_encharter(wb, chart_obj = wf_chart)
 ```
 
 ``` r
@@ -100,5 +100,5 @@ sc_chart$add_series(
   marker_size = 8
 )
 
-wb <- wb_add_chart(wb, sheet = "ScatterData", chart_obj = sc_chart)
+wb <- wb_add_encharter(wb, sheet = "ScatterData", chart_obj = sc_chart)
 ```

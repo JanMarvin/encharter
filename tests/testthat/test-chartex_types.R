@@ -7,18 +7,18 @@ test_that("ChartEx: Specialized types and subtotals", {
   wf$add_series(header = "H", data = "dat!B2:B10", type = "waterfall", subtotals = TRUE)
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("dat")$add_data(x = mtcars)
-  wb <- wb_add_chart(wb, chart_obj = wf)
+  wb <- wb_add_encharter(wb, chart_obj = wf)
 
   # Treemap
   tm <- ChartEx$new()
   tm$add_series(header = "H", data = "dat!B2:B10", cat = "dat!A2:A10", type = "treemap")
-  wb <- wb_add_chart(wb, chart_obj = tm)
+  wb <- wb_add_encharter(wb, chart_obj = tm)
 
   # Region Map
   rm <- ChartEx$new()
   rm$add_series(header = "dat!B1", data = "dat!B2:B10", cat = "dat!A2:A10", type = "regionMap")
   wb <- openxlsx2::wb_workbook()$add_worksheet("dat")$add_data(x = USArrests, row_names = TRUE)
-  wb <- wb_add_chart(wb, chart_obj = rm)
+  wb <- wb_add_encharter(wb, chart_obj = rm)
 
   expect_match(as.character(wf$render(id_start = 1)), "waterfall")
   expect_match(as.character(tm$render(1)), "treemap")
@@ -34,8 +34,8 @@ test_that("ChartEx: BoxWhisker and Funnel", {
 
   expect_match(as.character(bw$render(1)), "boxWhisker")
   wb <- openxlsx2::wb_workbook()$add_worksheet("dat")$add_data(x = mtcars)
-  wb <- wb_add_chart(wb, chart_obj = bw)
+  wb <- wb_add_encharter(wb, chart_obj = bw)
 
   expect_match(as.character(fn$render(1)), "funnel")
-  wb <- wb_add_chart(wb, chart_obj = fn)
+  wb <- wb_add_encharter(wb, chart_obj = fn)
 })

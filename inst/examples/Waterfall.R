@@ -25,7 +25,7 @@ my_wf$add_series(
   type         = "waterfall"
 )
 
-wb <- wb_add_chart(wb, sheet = "Data2", dims = "D2:L20", chart_obj = my_wf)
+wb <- wb_add_encharter(wb, sheet = "Data2", dims = "D2:L20", chart_obj = my_wf)
 
 wb$charts$chartEx |> as_xml()
 
