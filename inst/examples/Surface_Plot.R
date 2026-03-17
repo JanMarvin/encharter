@@ -15,7 +15,7 @@ surface_data <- data.frame(
 
 # 2. Setup the Chart
 # We use "surfaceChart" type.
-contour_plot <- Chart$new()
+contour_plot <- ec("surfaceChart")
 
 for (i in 2:6) {
   contour_plot$add_series(

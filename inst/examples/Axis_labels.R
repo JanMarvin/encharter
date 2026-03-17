@@ -10,7 +10,7 @@ net_income <- data.frame(
 )
 
 # 2. Setup the Chart
-my_chart <- Chart$new()
+my_chart <- ec("barChart")
 
 my_chart$
   set_chart_title("Profit Analysis (Negative Values)")$

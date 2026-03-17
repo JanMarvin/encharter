@@ -13,7 +13,7 @@ skill_data <- data.frame(
 
 # 2. Setup a Standard Radar Chart
 # Note: Line width and markers work just like in Line charts
-radar_std <- Chart$new()
+radar_std <- ec()
 radar_std$
   set_chart_title("Standard Radar: Model Comparison")$
   set_legend_style(pos = "b")$
@@ -38,7 +38,7 @@ radar_std$
 
 # 3. Setup a Filled Radar Chart
 # We set filled = TRUE in the first series to trigger <c:radarStyle val="filled"/>
-radar_filled <- Chart$new("radarChart")
+radar_filled <- ec("radarChart")
 radar_filled$
   set_chart_title("Filled Radar: Area View")$
   add_series(

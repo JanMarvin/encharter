@@ -15,7 +15,7 @@ wb <- wb_workbook() |>
 
 data <- wb |> wb_data()
 
-chart <- Chart$new()
+chart <- ec("scatterChart")
 
 chart$add_series(
   header = "setosa",

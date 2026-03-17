@@ -4,7 +4,7 @@ library(openxlsx2)
 library(encharter)
 
 # Create chart
-chart <- Chart$new("lineChart")
+chart <- encharter("lineChart")
 chart$
   set_chart_title("Custom Styled Chart")$
   set_x_axis(
@@ -47,7 +47,7 @@ sales_data$Sales <- sales_data$Volume * sales_data$Price
 # Final look for the sheet
 df_for_sheet <- sales_data[, c("Month", "Volume", "Sales")]
 
-my_chart <- Chart$new("lineChart")$
+my_chart <- ec("lineChart")$
   set_chart_title("Custom Styled Chart")
 # Primary axis series
 my_chart$add_series("Sales", "Sheet1!$B$2:$B$10")

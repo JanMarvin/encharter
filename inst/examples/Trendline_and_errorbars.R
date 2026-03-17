@@ -8,7 +8,7 @@ df <- data.frame(
 )
 
 # 2. Initialize Standard Chart (NOT ChartEx)
-ch <- Chart$new(type = "barChart")
+ch <- encharter(type = "barChart")
 
 # 3. Add Series with Error Bars and Trendline
 

@@ -11,7 +11,7 @@ sales_data <- data.frame(
 )
 
 # 2. Setup the Chart Object
-my_chart <- Chart$new("barChart")
+my_chart <- ec("barChart")
 
 my_chart$
   set_chart_title("Advanced Style Combo Chart")$

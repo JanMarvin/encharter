@@ -5,7 +5,8 @@ ENCHARTER_STANDARD <- c(
 )
 
 ENCHARTER_EXTENDED <- c(
-  "waterfall", "sunburst", "treemap", "regionMap"
+  "waterfall", "sunburst", "treemap", "regionMap", "clusteredColumn", "funnel",
+  "paretoLine", "boxWhisker"
 )
 
 #' Create an Encharter Chart (The Factory)
@@ -13,17 +14,17 @@ ENCHARTER_EXTENDED <- c(
 #' @export
 encharter <- function(type = "lineChart") {
 
+  match.arg(as.character(type), choices = c(ENCHARTER_STANDARD, ENCHARTER_EXTENDED))
+
   if (type %in% ENCHARTER_EXTENDED) {
     # Returns the ChartEx child
-    return(ChartEx$new())
+    return(ChartEx$new(type = type))
   }
 
   if (type %in% ENCHARTER_STANDARD) {
     # Returns the Chart child
     return(Chart$new(type = type))
   }
-
-  stop(sprintf("Unknown chart type: '%s'.", type))
 }
 
 #' Alias for encharter()

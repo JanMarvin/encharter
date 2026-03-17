@@ -10,7 +10,7 @@ df <- data.frame(
 )
 
 # 2. Create the Chart Object
-ch <- Chart$new(type = "lineChart")
+ch <- encharter(type = "lineChart")
 
 # Add the "Open" series
 ch$add_series(

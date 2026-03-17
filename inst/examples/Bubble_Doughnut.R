@@ -18,7 +18,7 @@ wb <- wb_workbook() |>
   wb_add_data(x = chart_data)
 
 # --- DOUGHNUT CHART ---
-dn_chart <- Chart$new("doughnutChart")
+dn_chart <- ec("doughnutChart")
 dn_chart$set_chart_title("Budget Allocation")$set_hole_size(60)
 dn_chart$add_series(
   header = "Data!$B$1",
@@ -27,7 +27,7 @@ dn_chart$add_series(
 )
 
 # --- BUBBLE CHART ---
-bb_chart <- Chart$new("bubbleChart")
+bb_chart <- ec("bubbleChart")
 bb_chart$set_chart_title("Investment Analysis")
 bb_chart$set_x_title("Investment")$set_y_title("Profit")
 bb_chart$add_series(

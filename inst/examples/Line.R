@@ -5,7 +5,7 @@ library(encharter)
 
 
 # 1. Initialize
-chart <- Chart$new("lineChart")
+chart <- ec("lineChart")
 
 chart$set_chart_title("Line with Dots and Labels")
 

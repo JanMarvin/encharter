@@ -919,15 +919,9 @@ The objects of this class are cloneable with this method.
 
 \item{\code{chart_title}}{The title text.}
 
-\item{\code{chart_title_style}}{List of styling parameters for the title.}
-
 \item{\code{x_title}}{The X-axis title text.}
 
-\item{\code{x_title_style}}{List of styling parameters for the X-axis title.}
-
 \item{\code{y_title}}{The Y-axis title text.}
-
-\item{\code{y_title_style}}{List of styling parameters for the Y-axis title.}
 
 \item{\code{legend_params}}{Parameters for legend positioning and style.}
 
@@ -1352,7 +1346,7 @@ Add a data series to the chart.
   header = NULL,
   data,
   cat = NULL,
-  type = "waterfall",
+  type = NULL,
   color = "auto",
   line_color = NULL,
   line_width = 1,

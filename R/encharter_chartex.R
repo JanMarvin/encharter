@@ -279,7 +279,7 @@ ChartEx <- R6::R6Class(
     #' @param line_width Border width.
     #' @param gap_width Integer between 0 and 500.
     #' @param subtotals Numeric vector of indices to treat as subtotals (Waterfall only).
-    add_series = function(header = NULL, data, cat = NULL, type = "waterfall", color = "auto",
+    add_series = function(header = NULL, data, cat = NULL, type = NULL, color = "auto",
                           line_color = NULL, line_width = 1,  gap_width = NULL, subtotals = NULL) {
 
       if (is.null(color)) {
@@ -330,7 +330,7 @@ ChartEx <- R6::R6Class(
       header <- if (is.null(header)) NA_character_ else header
       cat    <- if (is.null(cat))    NA_character_ else cat
 
-      series_type <- type %||% self$type %||% "barChart"
+      series_type <- type %||% self$type %||% "waterfall"
 
       self$series_data[[length(self$series_data) + 1]] <- list(
         header = private$fix_quote(header),

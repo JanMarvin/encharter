@@ -14,7 +14,7 @@ wb <- wb_workbook()$
   add_worksheet("Data2")$
   add_data(x = waterfall_df)
 
-my_wf <- ChartEx$new()
+my_wf <- ec("waterfall")
 my_wf$set_chart_title("2024 Financial Performance")
 
 # Mapping the "Financial Bridge" data

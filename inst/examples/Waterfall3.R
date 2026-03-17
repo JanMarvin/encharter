@@ -10,7 +10,7 @@ wf_dates <- data.frame(
 )
 
 # Initialize the chart
-my_wf <- ChartEx$new()
+my_wf <- ec("waterfall")
 
 # 1. Skinning the Series (Using the core color logic)
 my_wf$add_series(

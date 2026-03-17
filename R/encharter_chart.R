@@ -61,6 +61,8 @@ Chart <- R6::R6Class(
     #' @field up_down_bars Logical; show bars between first and last series.
     up_down_bars = FALSE,
     #' @field palette A vector of hex colors to use for series.
+    # TODO this should default to the theme of the worbook
+    # maybe structure(c(theme = 4:9), class = c("wbColour", "character"))
     palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
     #' @field bubble_scale Numeric; the scale factor for bubbles (default 100).
     bubble_scale = 100,
@@ -596,6 +598,7 @@ Chart <- R6::R6Class(
 
       series_type <- type %||% self$type %||% "barChart"
       self$type <- series_type
+      if (!is.null(color) && length(color) > 1 && series_type %in% c("bubbleChart", "pieChart", "doughnutChart")) self$palette <- color
 
       h_expr <- substitute(header)
       c_expr <- substitute(cat)
@@ -1037,11 +1040,20 @@ Chart <- R6::R6Class(
 
         if (length(s$color) > 1) {
           # If s$color is a vector, apply colors to individual points
-          for (i in seq_along(s$color)) {
-            dPt <- xml2::xml_add_child(ser_node, "c:dPt")
-            xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
-            spPr <- xml2::xml_add_child(dPt, "c:spPr")
-            private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), s$color[i])
+            for (i in seq_along(s$color)) {
+              dPt <- xml2::xml_add_child(ser, "c:dPt")
+              xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
+              spPr <- xml2::xml_add_child(dPt, "c:spPr")
+              private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), s$color[i])
+            }
+        } else {
+          if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
+            for (i in seq_along(self$palette)) {
+              dPt <- xml2::xml_add_child(ser, "c:dPt")
+              xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
+              spPr <- xml2::xml_add_child(dPt, "c:spPr")
+              private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), self$palette[i])
+            }
           }
         }
 

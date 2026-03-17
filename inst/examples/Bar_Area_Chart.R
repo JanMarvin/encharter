@@ -5,7 +5,7 @@ library(encharter)
 
 
 # 1. Initialize with Area Chart as the default base
-combo_chart <- Chart$new()
+combo_chart <- ec("barChart")
 
 # 2. Add two series for the "Stacked" effect
 # Note: In OOXML, Bar/Column charts use the same 'barChart' node.

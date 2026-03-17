@@ -15,7 +15,7 @@ wb <- wb_workbook()$add_worksheet("data")$add_data(x = plot_data)
 wb$merge_cells(dims = "A2:A3;A4:A5")
 
 # 3. Build the Chart
-my_chart <- Chart$new()
+my_chart <- ec("barChart")
 my_chart$set_chart_title("Smokers by Gender", bold = TRUE)
 
 my_chart$add_series(

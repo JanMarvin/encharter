@@ -15,7 +15,7 @@ wb$add_data(sheet = "Dashboard", x = data)
 
 # 3. Create the Chart Object
 # We start with "barChart" as the base type
-my_chart <- Chart$new(type = )
+my_chart <- ec(type = "barChart")
 
 # 6. Add Data Series
 # Series 1: Sales (Primary Axis, Bar)
