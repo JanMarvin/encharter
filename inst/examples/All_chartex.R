@@ -74,9 +74,9 @@ wb <- wb_add_encharter(wb, sheet = "Data", dims = "A2:G12", graph = my_wf)
 wb <- wb_add_encharter(wb, sheet = "Data", dims = "A13:G24", graph = my_hist)
 wb <- wb_add_encharter(wb, sheet = "Data", dims = "H2:N12", graph = my_funnel)
 wb <- wb_add_encharter(wb, sheet = "Data", dims = "H13:N24", graph = my_bw)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "A25:G36", graph = my_pl)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "H25:N36", graph = my_sb)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "A37:G48", graph = my_tm)
+wb <- wb_add_encharter(wb, sheet = "Data", dims = "O2:U12", graph = my_pl)
+wb <- wb_add_encharter(wb, sheet = "Data", dims = "V2:AB12", graph = my_tm)
+wb <- wb_add_encharter(wb, sheet = "Data", dims = "O13:U24", graph = my_sb)
 
 
 map_data <- data.frame(
@@ -95,7 +95,7 @@ my_rm$set_chart_title("Region Map")$
              cat = "'Region Map'!$A$2:$A$12")
 
 wb$add_worksheet("Region Map")$add_data(x = map_data)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "H37:N48", graph = my_rm)
+wb <- wb_add_encharter(wb, sheet = "Data", dims = "V13:AB24", graph = my_rm)
 
 wb$add_chartsheet("WorldMap")
 wb <- wb_add_encharter(wb, sheet = "WorldMap", graph = my_rm)

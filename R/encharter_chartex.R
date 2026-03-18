@@ -758,6 +758,7 @@ ChartEx <- R6::R6Class(
 
       xml2::xml_add_child(tx, "a:lstStyle")
       p <- xml2::xml_add_child(tx, "a:p")
+      pPr <- xml2::xml_add_child(p, "a:pPr", algn = "ctr")
       r <- xml2::xml_add_child(p, "a:r")
       rPr <- xml2::xml_add_child(r, "a:rPr")
 
