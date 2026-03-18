@@ -82,7 +82,21 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
     wb$add_drawing(sheet = target_sheet, dims = dims, xml = drawing_xml)
 
     # 3. Handle Relationships & Chart XML
-    chart_idx <- length(wb$charts$chartEx) + 1L
+    # chart_idx <- length(wb$charts$chartEx) + 1L
+    # probably not the most elegant way to do it, but at least it should not break anything
+    # The total number of chart and chartex is not the same. not every chart needs a style
+    # or a color. Therefore we can already have a chart.
+    # Spreadsheet software counts chart and chartex starting at 1. To be fully in line, we
+    # should start counting the number of available slots in wb$charts for each of the
+    # columns, append a row if required or assign into a free slot. When cloning into another
+    # workbook, we have to collect the style and color for the chart, do the same slot assign-
+    # ment in the new workbook and re-assign the ids.
+    chart_idx <- max(
+      sum(nchar(wb$charts$chart) > 0, na.rm = TRUE) +
+      sum(nchar(wb$charts$chartEx) > 0, na.rm = TRUE),
+      0L
+    ) + 1L
+
     rel_xml <- sprintf("<Relationship Id=\"%s\" Type=\"http://schemas.microsoft.com/office/2014/relationships/chartEx\" Target=\"../charts/chartEx%s.xml\"/>", next_rid, chart_idx)
     drw_id <- wb$worksheets[[target_sheet]]$relships$drawing
     wb$drawings_rels[[drw_id]] <- if (all(wb$drawings_rels[[drw_id]] == "")) rel_xml else c(wb$drawings_rels[[drw_id]], rel_xml)
