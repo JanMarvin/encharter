@@ -5,7 +5,7 @@ test_that("Chart supports unquoted column names (NSE)", {
 
   dat <- openxlsx2::wb_data(wb, 1, dims = "A1:B4")
 
-  chart <- Chart$new("lineChart")
+  chart <- ec("lineChart")
 
   # Note: No quotation marks used for mpg or cyl
   chart$add_series(data = dat, header = mpg, cat = cyl)
@@ -31,7 +31,7 @@ test_that("ChartEx handles unquoted names for Waterfall", {
     openxlsx2::wb_add_data(x = df)
   dat <- openxlsx2::wb_data(wb)
 
-  chart <- ChartEx$new()
+  chart <- ec("waterfall")
   # Unquoted names
   chart$add_series(data = dat, header = Value, cat = Category, type = "waterfall")
 
@@ -41,4 +41,8 @@ test_that("ChartEx handles unquoted names for Waterfall", {
   expect_error(chart$add_series(data = dat, header = Value, cat = foo), "object 'foo' not found")
 
   wb <- wb_add_encharter(wb, graph = chart)
+})
+
+test_that("validates correctly", {
+  expect_error(chart <- ec("waterFall"), "should be one of")
 })

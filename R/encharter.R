@@ -18,13 +18,15 @@ encharter <- function(type = "lineChart") {
 
   if (type %in% ENCHARTER_EXTENDED) {
     # Returns the ChartEx child
-    return(ChartEx$new(type = type))
+    ec <- ChartEx$new(type = type)
   }
 
   if (type %in% ENCHARTER_STANDARD) {
     # Returns the Chart child
-    return(Chart$new(type = type))
+    ec <- Chart$new(type = type)
   }
+
+  ec
 }
 
 #' Alias for encharter()
