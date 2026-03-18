@@ -88,8 +88,11 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
     wb$drawings_rels[[drw_id]] <- if (all(wb$drawings_rels[[drw_id]] == "")) rel_xml else c(wb$drawings_rels[[drw_id]], rel_xml)
 
     wb$charts <- rbind(wb$charts, data.frame(
-      chart = "", colors = openxlsx2:::colors1_xml, style = openxlsx2:::styleplot_xml,
-      rels = "", chartEx = as.character(chart_xml_rendered),
+      chart = "",
+      colors = openxlsx2:::colors1_xml,
+      style = openxlsx2:::styleplot_xml,
+      rels = "",
+      chartEx = as.character(chart_xml_rendered),
       relsEx = sprintf("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId2\" Type=\"http://schemas.microsoft.com/office/2011/relationships/chartColorStyle\" Target=\"colors%s.xml\"/><Relationship Id=\"rId1\" Type=\"http://schemas.microsoft.com/office/2011/relationships/chartStyle\" Target=\"style%s.xml\"/></Relationships>", chart_idx, chart_idx),
       stringsAsFactors = FALSE
     ))

@@ -401,9 +401,9 @@ ChartEx <- R6::R6Class(
         xml2::xml_add_child(num_dim, "cx:nf", nf_id)
 
         ser <- xml2::xml_add_child(plot_region_node, "cx:series", layoutId = s$type, uniqueId = openxlsx2:::st_guid())
-        tx_node <- xml2::xml_add_child(xml2::xml_add_child(ser, "cx:tx"), "cx:txData")
 
         if (!is.na(s$header)) {
+          tx_node <- xml2::xml_add_child(xml2::xml_add_child(ser, "cx:tx"), "cx:txData")
           if (private$is_ref(s$header)) {
             # It's a range reference like Sheet1!$A$1
             xml2::xml_add_child(tx_node, "cx:f", h_id)
@@ -484,6 +484,9 @@ ChartEx <- R6::R6Class(
           title_style = self$y_title$style,
           type = "val"
         )
+      } else {
+        # there are no axis required for hierarchical charts
+        xml2::xml_remove(xml2::xml_find_all(self$xml, "//cx:axis"))
       }
 
       # 2. Legends & Titles
