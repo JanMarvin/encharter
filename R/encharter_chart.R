@@ -1132,7 +1132,12 @@ Chart <- R6::R6Class(
         } else {
           if (!is.null(s$cat)) {
             cat_node <- xml2::xml_add_child(ser, "c:cat")
-            is_multi <- grepl("\\$[A-Z]+\\$.*:\\$[A-Z]+\\$", s$cat)
+
+            ref_clean <- sub("^('([^']|'')+'|[^!]+)!", "", s$cat)
+            ref_clean <- gsub("\\$", "", ref_clean)
+            dims <- dim(openxlsx2::dims_to_dataframe(ref_clean))
+            is_multi <- length(dims) == 2 && min(dims) > 1
+
             if (is_multi && grepl("!", s$cat)) {
               c_ref_type <- "c:multiLvlStrRef"
             } else {
