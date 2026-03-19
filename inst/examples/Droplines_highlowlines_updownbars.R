@@ -1,5 +1,5 @@
 library(openxlsx2)
-# library(encharter) # Assuming your Chart class is loaded
+library(encharter) # Assuming your Chart class is loaded
 
 # 1. Prepare some sample data
 # High-Low Lines and Up-Down Bars are most effective with 2+ series

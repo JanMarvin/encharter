@@ -5,7 +5,7 @@ library(encharter)
 
 
 # 1. Initialize with Area Chart as the default base
-combo_chart <- Chart$new("areaChart")
+combo_chart <- ec("areaChart")
 
 # 2. Add two series for the "Clustered" effect
 # These use 'barChart' which renders as Columns by default in OOXML XML

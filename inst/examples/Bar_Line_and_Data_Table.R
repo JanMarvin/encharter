@@ -1,5 +1,5 @@
 library(openxlsx2)
-library(xml2)
+library(encharter)
 
 # 1. Create dummy data
 data <- data.frame(

@@ -961,17 +961,19 @@ Chart <- R6::R6Class(
         }
 
         # spPr (Series Styling)
-        sp <- xml2::xml_add_child(ser, "c:spPr")
-        if (type %in% c("barChart", "areaChart", "bubbleChart", "pieChart", "doughnutChart")) {
-          color <- s$line$color %||% s$color %||% "auto"
-          private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), color)
-        } else if (type %in% c("lineChart", "scatterChart")) {
-          # If show_line is FALSE, we must explicitly tell OOXML not to draw the line
-          if (isFALSE(s$line$show)) {
-            ln <- xml2::xml_add_child(sp, "a:ln")
-            xml2::xml_add_child(ln, "a:noFill")
-          } else {
-            private$render_line_style(sp, s$line)
+        if (!type %in% c("pieChart", "doughnutChart")) {
+          sp <- xml2::xml_add_child(ser, "c:spPr")
+          if (type %in% c("barChart", "areaChart", "bubbleChart")) {
+            color <- s$line$color %||% s$color %||% "auto"
+            private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), color)
+          } else if (type %in% c("lineChart", "scatterChart")) {
+            # If show_line is FALSE, we must explicitly tell OOXML not to draw the line
+            if (isFALSE(s$line$show)) {
+              ln <- xml2::xml_add_child(sp, "a:ln")
+              xml2::xml_add_child(ln, "a:noFill")
+            } else {
+              private$render_line_style(sp, s$line)
+            }
           }
         }
         # --- EG_SerShared End ---
@@ -993,13 +995,30 @@ Chart <- R6::R6Class(
         # 4. dPt (Data Points)
         if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
           palette <- s$line$color %||% self$palette
-          for (i in (seq_along(palette) - 1L)) {
+          # for (i in (seq_along(palette) - 1L)) {
+          #   dPt <- xml2::xml_add_child(ser, "c:dPt")
+          #   xml2::xml_add_child(dPt, "c:idx", val = as.character(i))
+          #   sp_dpt <- xml2::xml_add_child(dPt, "c:spPr")
+          #   private$render_fill(xml2::xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
+          #   ln_dpt <- xml2::xml_add_child(sp_dpt, "a:ln", w = "9525")
+          #   private$render_fill(xml2::xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
+          # }
+
+          for (i in seq_along(self$palette)) {
             dPt <- xml2::xml_add_child(ser, "c:dPt")
-            xml2::xml_add_child(dPt, "c:idx", val = as.character(i))
-            sp_dpt <- xml2::xml_add_child(dPt, "c:spPr")
-            private$render_fill(xml2::xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
-            ln_dpt <- xml2::xml_add_child(sp_dpt, "a:ln", w = "9525")
-            private$render_fill(xml2::xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
+            xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
+            spPr <- xml2::xml_add_child(dPt, "c:spPr")
+            private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), self$palette[i])
+          }
+        } else {
+          if (length(s$color) > 1) {
+            # If s$color is a vector, apply colors to individual points
+              for (i in seq_along(s$color)) {
+                dPt <- xml2::xml_add_child(ser, "c:dPt")
+                xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
+                spPr <- xml2::xml_add_child(dPt, "c:spPr")
+                private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), s$color[i])
+              }
           }
         }
 
@@ -1036,25 +1055,6 @@ Chart <- R6::R6Class(
           xml2::xml_add_child(dLbls, "c:showSerName",    val = "0")
           xml2::xml_add_child(dLbls, "c:showPercent",    val = "0")
           xml2::xml_add_child(dLbls, "c:showBubbleSize", val = "0")
-        }
-
-        if (length(s$color) > 1) {
-          # If s$color is a vector, apply colors to individual points
-            for (i in seq_along(s$color)) {
-              dPt <- xml2::xml_add_child(ser, "c:dPt")
-              xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
-              spPr <- xml2::xml_add_child(dPt, "c:spPr")
-              private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), s$color[i])
-            }
-        } else {
-          if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
-            for (i in seq_along(self$palette)) {
-              dPt <- xml2::xml_add_child(ser, "c:dPt")
-              xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
-              spPr <- xml2::xml_add_child(dPt, "c:spPr")
-              private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), self$palette[i])
-            }
-          }
         }
 
         # 1. Trendline (Basic)
