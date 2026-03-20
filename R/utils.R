@@ -112,7 +112,6 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
   } else if (inherits(graph, "ChartEx")) {
 
     wb <- wb$clone(deep = TRUE)
-    target_sheet <- wb$validate_sheet(sheet)
 
     # 1. Find the highest ID to prevent collisions
     existing_names <- wb$get_named_regions()$name
