@@ -162,16 +162,14 @@ normalize_encharter_string <- function(x) {
 #' @export
 wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL, graph) {
 
-  wb <- wb$clone()
+  wb <- wb$clone(deep = TRUE)
 
   if (inherits(graph, "Chart")) {
     chart_xml <- graph$render(u_ids = openxlsx2:::random_string(n = 5, length = 8, pattern = "[0-9]"))
     return(wb$add_chart_xml(sheet = sheet, dims = dims, xml = chart_xml))
   } else if (inherits(graph, "ChartEx")) {
 
-    wb <- wb$clone(deep = TRUE)
-
-    # 1. Find the highest ID to prevent collisions
+    # Find the highest ID to prevent collisions
     existing_names <- wb$get_named_regions()$name
     chart_ids <- grep("^_xlchart\\.v1\\.", existing_names, value = TRUE)
     id_base <- 1L
@@ -182,11 +180,11 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
 
     chart_xml <- graph$render(id_start = id_base, guid = openxlsx2:::st_guid())
 
-    # 4. Add Named Regions to the DATA sheet
     h_at <- attr(chart_xml, "head")
     b_at <- attr(chart_xml, "body")
     all_refs <- c(h_at, b_at)
 
+    # add named regions
     for (i in seq_along(all_refs)) {
       ref <- all_refs[i]
 
@@ -201,5 +199,11 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
     }
   }
 
-  wb$add_chart_xml(sheet = sheet, dims = dims, xml = chart_xml, color = colors1_xml, style = styleplot_xml)
+  wb$add_chart_xml(
+    sheet = sheet,
+    dims = dims,
+    xml = chart_xml,
+    color = encharter::colors1_xml,
+    style = encharter::styleplot_xml
+  )
 }
