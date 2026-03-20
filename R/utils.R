@@ -87,44 +87,8 @@ normalize_encharter_string <- function(x) {
   )
 }
 
-## these shall be moved to openxlsx2
-
-#' Add a Chart object to a workbook sheet
-#'
-#' @description
-#' Renders a \code{Chart} R6 object and injects the resulting XML into an
-#' \code{openxlsx2} workbook at the specified location.
-#'
-#' @param wb An \code{openxlsx2} workbook object.
-#' @param sheet Sheet name or index where the chart will be placed.
-#' @param dims Character string defining the cell range (e.g., "E2:M20").
-#' @param graph An initialized \code{Chart} R6 object.
-#'
-#' @return The workbook object, invisibly.
+#' a trimmed down styleplot_xml
 #' @export
-wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL, graph) {
-
-  wb <- wb$clone()
-
-  if (inherits(graph, "Chart")) {
-    chart_xml <- graph$render()
-    return(wb$add_chart_xml(sheet = sheet, dims = dims, xml = chart_xml))
-  } else if (inherits(graph, "ChartEx")) {
-
-    wb <- wb$clone(deep = TRUE)
-
-    # 1. Find the highest ID to prevent collisions
-    existing_names <- wb$get_named_regions()$name
-    chart_ids <- grep("^_xlchart\\.v1\\.", existing_names, value = TRUE)
-    id_base <- 1L
-    if (length(chart_ids) > 0) {
-      id_nums <- as.integer(gsub("_xlchart\\.v1\\.", "", chart_ids))
-      id_base <- max(id_nums, na.rm = TRUE) + 1L
-    }
-
-    chart_xml <- graph$render(id_start = id_base)
-
-    # a trimmed down styleplot_xml
     styleplot_xml <- '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cs:chartStyle xmlns:cs="http://schemas.microsoft.com/office/drawing/2012/chartStyle"
                xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" id="201">
@@ -161,6 +125,8 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
   <cs:wall><cs:lnRef idx="0"/><cs:fillRef idx="0"/><cs:effectRef idx="0"/><cs:fontRef idx="minor"><a:schemeClr val="tx1"/></cs:fontRef></cs:wall>
 </cs:chartStyle>'
 
+#' A colors xml file
+#' @export
     colors1_xml <- "<cs:colorStyle xmlns:cs=\"http://schemas.microsoft.com/office/drawing/2012/chartStyle\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" meth=\"cycle\" id=\"10\">
 <a:schemeClr val=\"accent1\"/>
 <a:schemeClr val=\"accent2\"/>
@@ -178,6 +144,43 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
 <cs:variation><a:lumMod val=\"70000\"/></cs:variation>
 <cs:variation><a:lumMod val=\"50000\"/><a:lumOff val=\"50000\"/></cs:variation>
 </cs:colorStyle>"
+
+## these shall be moved to openxlsx2
+
+#' Add a Chart object to a workbook sheet
+#'
+#' @description
+#' Renders a \code{Chart} R6 object and injects the resulting XML into an
+#' \code{openxlsx2} workbook at the specified location.
+#'
+#' @param wb An \code{openxlsx2} workbook object.
+#' @param sheet Sheet name or index where the chart will be placed.
+#' @param dims Character string defining the cell range (e.g., "E2:M20").
+#' @param graph An initialized \code{Chart} R6 object.
+#'
+#' @return The workbook object, invisibly.
+#' @export
+wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL, graph) {
+
+  wb <- wb$clone()
+
+  if (inherits(graph, "Chart")) {
+    chart_xml <- graph$render(u_ids = openxlsx2:::random_string(n = 5, length = 8, pattern = "[0-9]"))
+    return(wb$add_chart_xml(sheet = sheet, dims = dims, xml = chart_xml))
+  } else if (inherits(graph, "ChartEx")) {
+
+    wb <- wb$clone(deep = TRUE)
+
+    # 1. Find the highest ID to prevent collisions
+    existing_names <- wb$get_named_regions()$name
+    chart_ids <- grep("^_xlchart\\.v1\\.", existing_names, value = TRUE)
+    id_base <- 1L
+    if (length(chart_ids) > 0) {
+      id_nums <- as.integer(gsub("_xlchart\\.v1\\.", "", chart_ids))
+      id_base <- max(id_nums, na.rm = TRUE) + 1L
+    }
+
+    chart_xml <- graph$render(id_start = id_base, guid = openxlsx2:::st_guid())
 
     # 4. Add Named Regions to the DATA sheet
     h_at <- attr(chart_xml, "head")

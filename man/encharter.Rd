@@ -509,7 +509,14 @@ This rotates the chart clockwise.}
   Generate the final XML string for the chart.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$render()}
+    \preformatted{Chart$render(u_ids = c(1e+05, 2e+05, 3e+05, 4e+05, 5e+05))}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{u_ids}}{five unique ids}
+    }
     \if{html}{\out{</div>}}
   }
   \subsection{Returns}{
@@ -781,13 +788,14 @@ This rotates the chart clockwise.}
   Render the internal XML for writing to a file.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$render(id_start = 1)}
+    \preformatted{ChartEx$render(id_start = 1, guid = "{C59B1284-E301-0D0F-1B20-FD96A66D6E43}")}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{id_start}}{Numeric starting ID for XML data references.}
+      \item{\code{guid}}{a guid}
     }
     \if{html}{\out{</div>}}
   }
