@@ -38,7 +38,7 @@ combo_chart$add_series(
 
 # 4. Final Polish
 combo_chart$set_chart_title("Inventory vs Market Trend", name = "Times New Roman", bold = TRUE)
-combo_chart$set_legend_style(pos = "b", font_size = 10) # Put legend at the bottom
+combo_chart$set_legend_style(pos = "b", sz = 10) # Put legend at the bottom
 combo_chart$set_x_title("Months")
 combo_chart$set_y_title("Values")
 combo_chart$set_y2_title("Also Values")

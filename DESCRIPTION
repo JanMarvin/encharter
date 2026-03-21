@@ -13,7 +13,6 @@ License: MIT + file LICENSE
 URL: https://janmarvin.github.io/encharter/, https://github.com/JanMarvin/encharter
 BugReports: https://github.com/JanMarvin/encharter/issues
 Encoding: UTF-8
-RoxygenNote: 7.3.3
 Imports:
     R6,
     xml2,
@@ -22,3 +21,5 @@ Suggests:
     testthat (>= 3.0.0),
     viridisLite
 Config/testthat/edition: 3
+Config/roxygen2/version: 7.3.3.9000
+RoxygenNote: 7.3.3

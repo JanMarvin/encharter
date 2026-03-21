@@ -37,7 +37,7 @@ combo_chart$add_series(
 # 4. Final Polish - Using the refactored styling methods
 combo_chart$
   set_chart_title("Inventory vs Market Trend", bold = TRUE, sz = 14)$
-  set_legend_style(pos = "b", font_size = 10)$
+  set_legend_style(pos = "b", sz = 10)$
   set_x_title("Months")$
   set_y_title("Inventory Level")$
   set_y2_title("Market Trend Index")$

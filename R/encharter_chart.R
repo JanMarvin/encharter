@@ -10,10 +10,6 @@
 #' This class is designed to work with the `openxlsx2` package by generating
 #' the underlying XML required for the \code{add_chart_xml} method.
 #'
-#' @import R6
-#' @importFrom xml2 read_xml xml_remove xml_add_child
-#'  xml_find_first xml_find_all xml_set_attr
-#' @importFrom openxlsx2 wb_color
 #' @rdname encharter
 #' @usage NULL
 Chart <- R6::R6Class(
@@ -26,14 +22,6 @@ Chart <- R6::R6Class(
     y2_title = list(text = NULL, style = list()),
     #' @field hole_size Integer. Size of the hole for doughnut charts (0-90).
     hole_size = 75,
-    #' @field legend_params List of legend configuration settings.
-    legend_params = list(pos = "r", overlay = "0", style = list()),
-    #' @field label_params List of global data label configuration settings.
-    label_params  = list(show_val = FALSE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", style = list()),
-    #' @field chart_style List for the outer chart area styling.
-    chart_style = list(fill = "FFFFFF", line = NULL, line_width = 1),
-    #' @field plot_style List for the inner plot area styling.
-    plot_style  = list(fill = NULL, line = NULL, line_width = 1),
     #' @field show_data_table Logical if a data table should be added.
     show_data_table = FALSE,
     #' @field drop_lines Logical; show lines from points to the axis.
@@ -77,22 +65,6 @@ Chart <- R6::R6Class(
       )
     },
 
-    #' @description Set the chart's main title.
-    #' @param text Title text string.
-    #' @param ... Style arguments like `sz` (font size), `bold` (TRUE/FALSE), `color`, and `name` (font name).
-    set_chart_title = function(text, ...) {
-      self$chart_title <- list(text = text, style = list(...))
-      invisible(self)
-    },
-
-    #' @description Set the X-axis title.
-    #' @param text Title text string.
-    #' @param ... Style arguments.
-    set_x_title      = function(text, ...) {
-      self$x_title      <- list(text = text, style = list(...))
-      invisible(self)
-    },
-
     #' @description Set the secondary X-axis title.
     #' @param text Title text string.
     #' @param ... Style arguments.
@@ -107,14 +79,6 @@ Chart <- R6::R6Class(
 
       # Proceed with setting the title...
       self$x2_title <- list(text = text, style = list(...))
-      invisible(self)
-    },
-
-    #' @description Set the primary Y-axis title.
-    #' @param text Title text string.
-    #' @param ... Style arguments.
-    set_y_title      = function(text, ...) {
-      self$y_title      <- list(text = text, style = list(...))
       invisible(self)
     },
 
@@ -297,46 +261,6 @@ Chart <- R6::R6Class(
     set_bubble_options = function(scale = 100, show_neg = FALSE) {
       self$bubble_scale <- scale
       self$show_neg_bubbles <- show_neg
-      invisible(self)
-    },
-
-    #' @description Configure the chart legend.
-    #' @param pos Legend position: 'r' (right), 'l' (left), 't' (top), 'b' (bottom), 'tr' (top right).
-    #' @param overlay Logical. Whether the legend overlays the plot area.
-    #' @param ... Font styling for legend text (e.g., color, sz, name).
-    set_legend_style = function(pos = "r", overlay = FALSE, ...) {
-      pos <- private$validate_input(pos, c("r", "l", "t", "b", "tr", "none"), "pos")
-      self$legend_params <- list(pos = pos, overlay = ifelse(overlay, "1", "0"), style = list(...))
-      invisible(self)
-    },
-
-    #' @description Configure global data label settings.
-    #' @param show_val Logical. Show numeric values.
-    #' @param show_cat Logical. Show category names.
-    #' @param show_legend_key Logical. Show legend key next to label.
-    #' @param pos Label position (e.g., 't', 'b', 'ctr', 'l', 'r').
-    #' @param ... Font styling for labels (e.g., color, sz, name).
-    set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", ...) {
-      pos <- private$validate_input(pos, c("t", "b", "l", "r", "ctr", "inEnd", "outEnd", "bestFit", "none"), "pos")
-      self$label_params <- list(show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key, pos = pos, style = list(...))
-      invisible(self)
-    },
-
-    #' @description Style the outer chart background and border.
-    #' @param fill Hex color for background.
-    #' @param line Hex color for border line.
-    #' @param line_width Numeric width of border line.
-    set_chart_style = function(fill = "FFFFFF", line = NULL, line_width = 1) {
-      self$chart_style <- list(fill = fill, line = line, line_width = line_width)
-      invisible(self)
-    },
-
-    #' @description Style the inner plot area background.
-    #' @param fill Hex color for background.
-    #' @param line Hex color for border line.
-    #' @param line_width Numeric width of border line.
-    set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
-      self$plot_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },
 

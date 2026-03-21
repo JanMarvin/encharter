@@ -15,7 +15,7 @@ my_chart <- ec("barChart")
 
 my_chart$
   set_chart_title("Advanced Style Combo Chart")$
-  set_legend_style(pos = "b", font_size = 10)$
+  set_legend_style(pos = "b", sz = 10)$
 
   # --- SERIES STYLING ---
   # Primary Axis: Volume (Standard Bars)

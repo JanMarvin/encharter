@@ -3,7 +3,7 @@ test_that("Chart: Styling, Markers, and Labels", {
 
   # Test Data Label Style (from Line.R)
   chart$set_data_label_style(
-    show_val = TRUE, show_cat = FALSE, pos = "t", bold = TRUE, font_size = 9
+    show_val = TRUE, show_cat = FALSE, pos = "t", bold = TRUE, sz = 9
   )
 
   # Test Marker Styling
@@ -27,7 +27,7 @@ test_that("Chart: Styling, Markers, and Labels", {
 test_that("Chart: Legend and Title styles", {
   chart <- Chart$new()
   chart$set_chart_title("Main Title", bold = TRUE, sz = 14)
-  chart$set_legend_style(pos = "b", font_size = 10)
+  chart$set_legend_style(pos = "b", sz = 10)
   expect_error(chart$render(), "The chart contains no data. You must add at least one series")
 
   chart$add_series(

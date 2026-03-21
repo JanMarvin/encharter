@@ -34,8 +34,10 @@ encharter <- function(type = "lineChart") {
 #' @export
 ec <- encharter
 
-
 #' Encharter Base R6 Class
+#' @import R6
+#' @importFrom xml2 read_xml xml_remove xml_add_child xml_find_first xml_find_all xml_set_attr
+#' @importFrom openxlsx2 wb_color dims_to_dataframe
 EncharterBase <- R6::R6Class(
   "EncharterBase",
   public = list(
@@ -56,8 +58,16 @@ EncharterBase <- R6::R6Class(
     #' @field y_title List containing text and style for the primary Y-axis.
     y_title  = list(text = NULL, style = list()),
 
+    #' @field chart_style List for the outer chart area styling.
+    chart_style = list(fill = "FFFFFF", line = NULL, line_width = 1),
+    #' @field plot_style List for the inner plot area styling.
+    plot_style  = list(fill = NULL, line = NULL, line_width = 1),
+
+    #' @field label_params List of global data label configuration settings.
+    label_params  = list(show_val = FALSE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", style = list()),
     #' @field legend_params List of legend configuration settings.
     legend_params = list(pos = "r", overlay = "0", style = list()),
+
     #' @field axis_params Internal list for scaling, units, and formatting.
     axis_params = list(
       x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
@@ -223,6 +233,51 @@ EncharterBase <- R6::R6Class(
                      line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
                      crosses = crosses, crosses_at = crosses_at, label_pos = label_pos)
       self$axis_params$y <- modifyList(self$axis_params$y, Filter(Negate(is.null), params))
+      invisible(self)
+    },
+
+    #' @description Configure global data label settings.
+    #' @param show_val Logical. Show numeric values.
+    #' @param show_cat Logical. Show category names.
+    #' @param show_legend_key Logical. Show legend key next to label.
+    #' @param pos Label position (e.g., 't', 'b', 'ctr', 'l', 'r').
+    #' @param ... Font styling for labels (e.g., color, sz, name).
+    set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", ...) {
+      pos <- private$validate_input(pos, c("t", "b", "l", "r", "ctr", "inEnd", "outEnd", "bestFit", "none"), "pos")
+      self$label_params <- list(show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key, pos = pos, style = list(...))
+      invisible(self)
+    },
+
+    #' @description Set legend properties.
+    #' @param pos Position (t, b, l, r, none).
+    #' @param align Alignment (ctr, min, max).
+    #' @param overlay Logical; overlay legend on chart.
+    #' @param sz Size of font.
+    #' @param name Name of font.
+    #' @param bold Logical.
+    #' @param italic Logical.
+    #' @param color Hex color.
+    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL) {
+      self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
+                                 style = list(sz = sz, name = name, bold = bold, italic = italic, color = color))
+      invisible(self)
+    },
+
+    #' @description Style the outer chart background and border.
+    #' @param fill Hex color for background.
+    #' @param line Hex color for border line.
+    #' @param line_width Numeric width of border line.
+    set_chart_style = function(fill = "FFFFFF", line = NULL, line_width = 1) {
+      self$chart_style <- list(fill = fill, line = line, line_width = line_width)
+      invisible(self)
+    },
+
+    #' @description Style the inner plot area background.
+    #' @param fill Hex color for background.
+    #' @param line Hex color for border line.
+    #' @param line_width Numeric width of border line.
+    set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
+      self$plot_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     }
   ),
