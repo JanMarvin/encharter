@@ -17,7 +17,7 @@ chart$set_data_label_style(
   show_cat = FALSE,
   pos = "t",
   bold = TRUE,
-  font_size = 9
+  sz = 9
 )
 
 chart$add_series(

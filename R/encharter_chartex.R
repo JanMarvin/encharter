@@ -13,34 +13,8 @@
 #' @usage NULL
 ChartEx <- R6::R6Class(
   "ChartEx",
+  inherit = EncharterBase,
   public = list(
-    #' @field xml The raw XML object for the chart space.
-    xml = NULL,
-    #' @field series_data A list containing all added series definitions.
-    series_data = list(),
-    #' @field type The default chart type for the object (e.g., "waterfall").
-    type = NULL,
-    #' @field chart_title The title text.
-    chart_title = NULL,
-    #' @field x_title The X-axis title text.
-    x_title = NULL,
-    #' @field y_title The Y-axis title text.
-    y_title = NULL,
-    #' @field legend_params Parameters for legend positioning and style.
-    legend_params = list(),
-    #' @field data_label_params Parameters for data labels.
-    data_label_params = list(),
-    #' @field chart_area_style Styling for the outer chart area.
-    chart_area_style = list(),
-    #' @field plot_area_style Styling for the inner plot area.
-    plot_area_style = list(),
-    #' @field palette A vector of hex colors to use for series.
-    palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
-    #' @field axis_params Internal list for scaling, units, and formatting.
-    axis_params = list(
-      x = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
-    ),
 
     #' @description Create a new ChartEx object.
     #' @return A new `ChartEx` object.
@@ -58,82 +32,7 @@ ChartEx <- R6::R6Class(
            </cx:plotArea><cx:legend pos="t" align="ctr" overlay="0"/></cx:chart></cx:chartSpace>'
       )
       self$legend_params <- list(pos = "t", align = "ctr", overlay = "0", style = list())
-      self$data_label_params <- list(show = FALSE)
-    },
-
-    #' @description Set chart area styling.
-    #' @param fill Fill color (hex or wbColour).
-    #' @param line Line/border color.
-    #' @param line_width Width of the border.
-    set_chart_style = function(fill = NULL, line = NULL, line_width = 1) {
-      self$chart_area_style <- list(fill = fill, line = line, line_width = line_width)
-      invisible(self)
-    },
-
-    #' @description Set plot area styling.
-    #' @param fill Fill color (hex or wbColour).
-    #' @param line Line/border color.
-    #' @param line_width Width of the border.
-    set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
-      self$plot_area_style <- list(fill = fill, line = line, line_width = line_width)
-      invisible(self)
-    },
-
-    #' @description Set the chart title and style.
-    #' @param text Title text.
-    #' @param ... Styling (sz, b, color, font).
-    set_chart_title = function(text, ...) {
-      self$chart_title <- list(text = text, style = list(...))
-      invisible(self)
-    },
-
-    #' @description Set the X-axis title and style.
-    #' @param text Title text.
-    #' @param ... Styling (sz, b, color, font).
-    set_x_title = function(text, ...) {
-      self$x_title      <- list(text = text, style = list(...))
-      invisible(self)
-    },
-
-    #' @description Set the Y-axis title and style.
-    #' @param text Title text.
-    #' @param ... Styling (sz, b, color, font).
-    set_y_title = function(text, ...) {
-      self$y_title      <- list(text = text, style = list(...))
-      invisible(self)
-    },
-
-    #' @description Set legend properties.
-    #' @param pos Position (t, b, l, r, none).
-    #' @param align Alignment (ctr, min, max).
-    #' @param overlay Logical; overlay legend on chart.
-    #' @param sz Size of font.
-    #' @param name Name of font.
-    #' @param bold Logical.
-    #' @param italic Logical.
-    #' @param color Hex color.
-    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL) {
-      self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
-                                 style = list(sz = sz, name = name, bold = bold, italic = italic, color = color))
-      invisible(self)
-    },
-
-    #' @description Set data label properties.
-    #' @param show_val Logical. Show numeric values.
-    #' @param show_cat Logical. Show category names.
-    #' @param show_legend_key Logical. Show legend key next to label.
-    #' @param pos Position (outEnd, inEnd, ctr, etc).
-    #' @param sz Font size.
-    #' @param name Font name.
-    #' @param bold Logical.
-    #' @param italic Logical.
-    #' @param color Hex color.
-    #' @param format A number format string.
-    set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "outEnd", sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL, format = NULL) {
-      self$data_label_params <- list(show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key, pos = pos,
-                                     style = list(sz = sz, name = name, bold = bold, italic = italic, color = color),
-                                     format = format)
-      invisible(self)
+      self$label_params <- list(show = FALSE)
     },
 
     #' @description Set Primary X-axis scaling, units, and format.
@@ -389,13 +288,13 @@ ChartEx <- R6::R6Class(
 
       # 1. Plot Area Background (plotSurface)
       xml2::xml_remove(xml2::xml_find_all(plot_region_node, "cx:plotSurface"))
-      if (length(self$plot_area_style) > 0) {
+      if (length(self$plot_style) > 0) {
         surf <- xml2::xml_add_child(plot_region_node, "cx:plotSurface", .where = 0)
         spPr <- xml2::xml_add_child(surf, "cx:spPr")
-        if (!is.null(self$plot_area_style$fill)) private$render_color(spPr, self$plot_area_style$fill)
-        if (!is.null(self$plot_area_style$line)) {
-          ln <- xml2::xml_add_child(spPr, "a:ln", w = as.character(round(self$plot_area_style$line_width * 12700)))
-          private$render_color(ln, self$plot_area_style$line)
+        if (!is.null(self$plot_style$fill)) private$render_color(spPr, self$plot_style$fill)
+        if (!is.null(self$plot_style$line)) {
+          ln <- xml2::xml_add_child(spPr, "a:ln", w = as.character(round(self$plot_style$line_width * 12700)))
+          private$render_color(ln, self$plot_style$line)
         }
       }
 
@@ -458,13 +357,13 @@ ChartEx <- R6::R6Class(
           }
         }
 
-        if (isTRUE(self$data_label_params$show_cat) || isTRUE(self$data_label_params$show_val) || isTRUE(self$data_label_params$show_legend_key)) {
-          dlbls <- xml2::xml_add_child(ser, "cx:dataLabels", pos = self$data_label_params$pos %||% "outEnd")
-          if (!is.null(self$data_label_params$format)) xml2::xml_add_child(dlbls, "cx:numFmt", formatCode = self$data_label_params$format, sourceLinked = "0")
-          if (any(!vapply(self$data_label_params$style, is.null, logical(1)))) private$apply_label_style(dlbls, self$data_label_params$style)
-          show_cat <- ifelse(isTRUE(self$data_label_params$show_cat), "1", "0")
-          show_val <- ifelse(isTRUE(self$data_label_params$show_val), "1", "0")
-          show_key <- ifelse(isTRUE(self$data_label_params$show_legend_key), "1", "0")
+        if (isTRUE(self$label_params$show_cat) || isTRUE(self$label_params$show_val) || isTRUE(self$label_params$show_legend_key)) {
+          dlbls <- xml2::xml_add_child(ser, "cx:dataLabels", pos = self$label_params$pos %||% "outEnd")
+          if (!is.null(self$label_params$format)) xml2::xml_add_child(dlbls, "cx:numFmt", formatCode = self$label_params$format, sourceLinked = "0")
+          if (any(!vapply(self$label_params$style, is.null, logical(1)))) private$apply_label_style(dlbls, self$label_params$style)
+          show_cat <- ifelse(isTRUE(self$label_params$show_cat), "1", "0")
+          show_val <- ifelse(isTRUE(self$label_params$show_val), "1", "0")
+          show_key <- ifelse(isTRUE(self$label_params$show_legend_key), "1", "0")
           xml2::xml_add_child(dlbls, "cx:visibility", seriesName = show_key, categoryName = show_cat, value = show_val)
         }
 
@@ -615,12 +514,12 @@ ChartEx <- R6::R6Class(
 
       # 4. Chart Area Styling
       xml2::xml_remove(xml2::xml_find_all(self$xml, "/cx:chartSpace/cx:spPr"))
-      if (length(self$chart_area_style) > 0) {
+      if (length(self$chart_style) > 0) {
         spPr_chart <- xml2::xml_add_child(self$xml, "cx:spPr")
-        if (!is.null(self$chart_area_style$fill)) private$render_color(spPr_chart, self$chart_area_style$fill)
-        if (!is.null(self$chart_area_style$line)) {
-          ln_chart <- xml2::xml_add_child(spPr_chart, "a:ln", w = as.character(round(self$chart_area_style$line_width * 12700)))
-          private$render_color(ln_chart, self$chart_area_style$line)
+        if (!is.null(self$chart_style$fill)) private$render_color(spPr_chart, self$chart_style$fill)
+        if (!is.null(self$chart_style$line)) {
+          ln_chart <- xml2::xml_add_child(spPr_chart, "a:ln", w = as.character(round(self$chart_style$line_width * 12700)))
+          private$render_color(ln_chart, self$chart_style$line)
         }
       }
 

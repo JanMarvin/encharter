@@ -22,7 +22,8 @@ my_wf$add_series(
   header = "Data2!$B$1",         # "Amount"
   data   = "Data2!$B$2:$B$7",     # 1200, -450, -300...
   cat    = "Data2!$A$2:$A$7",     # Categories
-  type         = "waterfall"
+  type   = "waterfall",
+  subtotals = 5
 )
 
 wb <- wb_add_encharter(wb, sheet = "Data2", dims = "D2:L20", graph = my_wf)
