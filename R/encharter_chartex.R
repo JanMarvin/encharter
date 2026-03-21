@@ -281,8 +281,17 @@ ChartEx <- R6::R6Class(
     #' @param line_width Border width.
     #' @param gap_width Integer between 0 and 500.
     #' @param subtotals Numeric vector of indices to treat as subtotals (Waterfall only).
+    #' @param statistics Quartile method: "inclusive" or "exclusive".
+    #' @param binning A list for Histogram/BoxWhisker:
+    #'   `binSize` (numeric), `binCount` (integer), `intervalClosed` ("left", "right"),
+    #'   `underflow` (numeric or "auto"), `overflow` (numeric or "auto").
+    #' @param visibility A named list of logicals for BoxWhisker/Waterfall:
+    #'   `connectorLines`, `meanLine`, `meanMarker`, `nonoutliers`, `outliers`.
+    #' @param parent_label Treemap label style: "overlapping", "banner", or "none".
     add_series = function(header = NULL, data, cat = NULL, type = NULL, color = "auto",
-                          line_color = NULL, line_width = 1,  gap_width = NULL, subtotals = NULL) {
+                          line_color = NULL, line_width = 1,  gap_width = NULL, subtotals = NULL,
+                          statistics = NULL, binning = NULL,
+                          visibility = NULL, parent_label = "overlapping") {
 
       if (is.null(color)) {
         color_idx <- (length(self$series_data) %% length(self$palette)) + 1
@@ -325,8 +334,21 @@ ChartEx <- R6::R6Class(
         stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
       }
 
+      # @param aggregation (unknown, undocumented complex type?)
+      aggregation <- NULL
+      # @param geography Map projection: "mercator", "miller", "robinson", or "albers". (does not wrok yet)
+      geography <- NULL
+
       if (is.logical(subtotals) && subtotals) {
         subtotals <- 0 # avoid bailing
+      }
+
+      if (is.null(binning)) {
+        binning <- list()
+      }
+
+      if (is.null(visibility)) {
+        visibility <- list()
       }
 
       header <- if (is.null(header)) NA_character_ else header
@@ -343,7 +365,13 @@ ChartEx <- R6::R6Class(
         line_color = line_color,
         line_width = line_width,
         gap_width = gap_width,
-        subtotals = subtotals
+        subtotals = subtotals,
+        statistics = statistics,
+        geography = geography,
+        aggregation = aggregation,
+        binning = binning,
+        visibility = visibility,
+        parent_label = parent_label
       )
       invisible(self)
     },
@@ -442,18 +470,95 @@ ChartEx <- R6::R6Class(
 
         xml2::xml_add_child(ser, "cx:dataId", val = as.character(i - 1))
 
-        if (s$type == "waterfall" && !identical(s$subtotals, FALSE)) {
-          lpr <- xml2::xml_add_child(ser, "cx:layoutPr")
-          st_node <- xml2::xml_add_child(lpr, "cx:subtotals")
+        # --- Series Layout Properties (layoutPr) ---
+        has_lpr <- !is.null(s$statistics) || !is.null(s$subtotals) ||
+                   !is.null(s$geography)  || !is.null(s$aggregation) ||
+                   !is.null(s$binning)    || length(s$visibility) > 0 ||
+                   s$type %in% c("treemap", "sunburst")
 
-          if (is.null(s$subtotals)) {
-            coords <- openxlsx2::dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
-            last_idx <- max(length(coords$row), length(coords$col)) - 1
-            xml2::xml_add_child(st_node, "cx:idx", val = "0")
-            xml2::xml_add_child(st_node, "cx:idx", val = as.character(last_idx))
-          } else {
-            for (idx in s$subtotals) {
-              xml2::xml_add_child(st_node, "cx:idx", val = as.character(idx))
+        if (has_lpr) {
+          lpr <- xml2::xml_add_child(ser, "cx:layoutPr")
+
+          # 1. Parent Label Layout (ST_ParentLabelLayout)
+          # Values: "none", "overlapping", "banner"
+          if (s$type %in% c("treemap", "sunburst")) {
+            label_val <- s$parent_label %||% "overlapping"
+            xml2::xml_add_child(lpr, "cx:parentLabelLayout", val = as.character(label_val))
+          }
+
+          # 2. Region Label Layout (For Maps)
+          if (s$type == "regionMap") {
+            xml2::xml_add_child(lpr, "cx:regionLabelLayout", val = "bestFitOnly")
+          }
+
+          # 3. visibility
+          if (length(s$visibility) > 0) {
+            vis <- xml2::xml_add_child(lpr, "cx:visibility")
+            for (attr_name in names(s$visibility)) {
+              val <- if (isTRUE(s$visibility[[attr_name]])) "true" else "false"
+              xml2::xml_set_attr(vis, attr_name, val)
+            }
+          }
+
+          # 4. aggregation (Empty Tag)
+          if (isTRUE(s$aggregation)) {
+            xml2::xml_add_child(lpr, "cx:aggregation")
+
+          # 3. Binning (Choice: binSize or binCount)
+          } else if (length(s$binning) > 0) {
+            # Mapping full names to Excel's internal single-char codes
+            int_closed <- switch(as.character(s$binning$intervalClosed %||% ""),
+                                "left"  = "l",
+                                "right" = "r",
+                                as.character(s$binning$intervalClosed))
+
+            bn <- xml2::xml_add_child(lpr, "cx:binning")
+            if (nzchar(int_closed)) xml2::xml_set_attr(bn, "intervalClosed", int_closed)
+
+            if (!is.null(s$binning$underflow)) {
+              xml2::xml_set_attr(bn, "underflow", as.character(s$binning$underflow))
+            }
+            if (!is.null(s$binning$overflow)) {
+              xml2::xml_set_attr(bn, "overflow", as.character(s$binning$overflow))
+            }
+
+            # Child Elements use 'val' attribute per Excel XML sample
+            if (!is.null(s$binning$binSize)) {
+              xml2::xml_add_child(bn, "cx:binSize", val = as.character(s$binning$binSize))
+            } else if (!is.null(s$binning$binCount)) {
+              xml2::xml_add_child(bn, "cx:binCount", val = as.character(s$binning$binCount))
+            }
+          }
+
+          # 3. geography (CT_Geography)
+          if (!is.null(s$geography)) {
+            message("currently not implemented")
+          #   # Requires culture and attribution attributes to load correctly
+          #   xml2::xml_add_child(lpr, "cx:geography",
+          #                       projectionType = as.character(s$geography),
+          #                       cultureLanguage = "en-US",
+          #                       cultureRegion = "US",
+          #                       attribution = "Bing")
+          }
+
+          # 4. statistics (CT_Statistics)
+          if (!is.null(s$statistics)) {
+            # Attribute MUST be quartileMethod (ST_QuartileMethod: inclusive/exclusive)
+            xml2::xml_add_child(lpr, "cx:statistics",
+                                quartileMethod = as.character(s$statistics))
+          }
+
+          # 5. subtotals (CT_Subtotals)
+          if (s$type == "waterfall" && !is.null(s$subtotals) && !identical(s$subtotals, FALSE)) {
+            sub_node <- xml2::xml_add_child(lpr, "cx:subtotals")
+            if (is.numeric(s$subtotals)) {
+              for (idx in s$subtotals) {
+                xml2::xml_add_child(sub_node, "cx:idx", val = as.character(idx))
+              }
+            } else {
+              coords <- openxlsx2::dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
+              last_idx <- max(length(coords$row), length(coords$col)) - 1
+              xml2::xml_add_child(sub_node, "cx:idx", val = as.character(last_idx))
             }
           }
         }

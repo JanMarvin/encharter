@@ -1357,7 +1357,11 @@ Add a data series to the chart.
   line_color = NULL,
   line_width = 1,
   gap_width = NULL,
-  subtotals = NULL
+  subtotals = NULL,
+  statistics = NULL,
+  binning = NULL,
+  visibility = NULL,
+  parent_label = "overlapping"
 )}\if{html}{\out{</div>}}
 }
 
@@ -1381,6 +1385,17 @@ Add a data series to the chart.
 \item{\code{gap_width}}{Integer between 0 and 500.}
 
 \item{\code{subtotals}}{Numeric vector of indices to treat as subtotals (Waterfall only).}
+
+\item{\code{statistics}}{Quartile method: "inclusive" or "exclusive".}
+
+\item{\code{binning}}{A list for Histogram/BoxWhisker:
+`binSize` (numeric), `binCount` (integer), `intervalClosed` ("left", "right"),
+`underflow` (numeric or "auto"), `overflow` (numeric or "auto").}
+
+\item{\code{visibility}}{A named list of logicals for BoxWhisker/Waterfall:
+`connectorLines`, `meanLine`, `meanMarker`, `nonoutliers`, `outliers`.}
+
+\item{\code{parent_label}}{Treemap label style: "overlapping", "banner", or "none".}
 }
 \if{html}{\out{</div>}}
 }
