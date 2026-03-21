@@ -430,8 +430,9 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
   ch <- ChartEx$new()
 
   # 2. Apply Titles and Axis Styles
-  ch$set_chart_title("MPG Distribution", sz = 16, name = "Arial", bold = TRUE)
+  ch$set_chart_title("MPG Distribution", sz = 16, name = "Arial", bold = TRUE, italic = TRUE, fill = "#DDADDA", line = wb_color("blue")) # test italic, fill and line
   ch$set_x_title("by Cylinder", sz = 12, italic = TRUE)
+  ch$set_x_axis(sz = 10) # test this
   ch$set_y_axis(sz = 12, name = "Times New Roman", italic = TRUE, color = "000000")
 
   # 3. Add Series with Color and Line Style
@@ -443,6 +444,14 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
     line_color = wb_color("black"),
     type   = "boxWhisker"
   )
+
+  ch$
+    set_legend_style( # test this
+      pos   = "r",
+      sz    = 15,
+      bold  = TRUE,
+      color = wb_color(theme = "4")
+    )
 
   # 4. Render XML
   xml_res <- xml2::read_xml(ch$render(1))
