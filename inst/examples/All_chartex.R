@@ -36,7 +36,7 @@ my_tm <- ec("treemap")
 my_tm$set_chart_title("treemap")$
   add_series("Data!$C$1", "Data!$C$2:$C$30", "Data!$B$2:$B$30")$
   set_data_label_style(
-    show = TRUE,
+    show_val = TRUE,
     pos = "outEnd",       # or "ctr", "inEnd", "inBase"
     sz = 10,
     bold = TRUE,

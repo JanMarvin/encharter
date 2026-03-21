@@ -1121,7 +1121,9 @@ Set legend properties.
 Set data label properties.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_data_label_style(
-  show = TRUE,
+  show_val = TRUE,
+  show_cat = FALSE,
+  show_legend_key = FALSE,
   pos = "outEnd",
   sz = NULL,
   name = NULL,
@@ -1135,7 +1137,11 @@ Set data label properties.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{show}}{Logical.}
+\item{\code{show_val}}{Logical. Show numeric values.}
+
+\item{\code{show_cat}}{Logical. Show category names.}
+
+\item{\code{show_legend_key}}{Logical. Show legend key next to label.}
 
 \item{\code{pos}}{Position (outEnd, inEnd, ctr, etc).}
 

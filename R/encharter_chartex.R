@@ -119,7 +119,9 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Set data label properties.
-    #' @param show Logical.
+    #' @param show_val Logical. Show numeric values.
+    #' @param show_cat Logical. Show category names.
+    #' @param show_legend_key Logical. Show legend key next to label.
     #' @param pos Position (outEnd, inEnd, ctr, etc).
     #' @param sz Font size.
     #' @param name Font name.
@@ -127,8 +129,8 @@ ChartEx <- R6::R6Class(
     #' @param italic Logical.
     #' @param color Hex color.
     #' @param format A number format string.
-    set_data_label_style = function(show = TRUE, pos = "outEnd", sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL, format = NULL) {
-      self$data_label_params <- list(show = show, pos = pos,
+    set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "outEnd", sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL, format = NULL) {
+      self$data_label_params <- list(show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key, pos = pos,
                                      style = list(sz = sz, name = name, bold = bold, italic = italic, color = color),
                                      format = format)
       invisible(self)
@@ -428,11 +430,14 @@ ChartEx <- R6::R6Class(
           }
         }
 
-        if (isTRUE(self$data_label_params$show)) {
+        if (isTRUE(self$data_label_params$show_cat) || isTRUE(self$data_label_params$show_val) || isTRUE(self$data_label_params$show_legend_key)) {
           dlbls <- xml2::xml_add_child(ser, "cx:dataLabels", pos = self$data_label_params$pos %||% "outEnd")
           if (!is.null(self$data_label_params$format)) xml2::xml_add_child(dlbls, "cx:numFmt", formatCode = self$data_label_params$format, sourceLinked = "0")
           if (any(!vapply(self$data_label_params$style, is.null, logical(1)))) private$apply_label_style(dlbls, self$data_label_params$style)
-          xml2::xml_add_child(dlbls, "cx:visibility", seriesName = "0", categoryName = "0", value = "1")
+          show_cat <- ifelse(isTRUE(self$data_label_params$show_cat), "1", "0")
+          show_val <- ifelse(isTRUE(self$data_label_params$show_val), "1", "0")
+          show_key <- ifelse(isTRUE(self$data_label_params$show_legend_key), "1", "0")
+          xml2::xml_add_child(dlbls, "cx:visibility", seriesName = show_key, categoryName = show_cat, value = show_val)
         }
 
         xml2::xml_add_child(ser, "cx:dataId", val = as.character(i - 1))
