@@ -9,11 +9,37 @@ ENCHARTER_EXTENDED <- c(
   "paretoLine", "boxWhisker"
 )
 
-#' Create an Encharter Chart (The Factory)
-#' @param type A character string specifying the chart type
+#' Create an Encharter Chart
+#'
+#' @description
+#' A factory function to initialize an R6 chart object. It supports both standard
+#' OOXML charts (e.g., Bar, Line, Scatter) and modern "Extended" charts
+#' (e.g., Waterfall, Treemap).
+#'
+#' @param type A character string specifying the chart type. Familiar R aliases
+#' are supported (see Details).
+#'
+#' @details
+#' \strong{Supported Chart Types:}
+#' \itemize{
+#'   \item \bold{Bar/Column:} \code{"barChart"}, \code{"barplot"}, \code{"hist"}, \code{"histogram"}
+#'   \item \bold{Line/Area:} \code{"lineChart"}, \code{"line"}, \code{"areaChart"}, \code{"area"}
+#'   \item \bold{Scatter/Points:} \code{"scatterChart"}, \code{"scatter"}, \code{"point"}
+#'   \item \bold{Pie/Doughnut:} \code{"pieChart"}, \code{"pie"}, \code{"doughnutChart"}, \code{"doughnut"}
+#'   \item \bold{Extended (ChartEx):} \code{"waterfall"}, \code{"treemap"}, \code{"sunburst"},
+#'   \code{"regionMap"}, \code{"boxWhisker"} (or \code{"boxplot"}), \code{"funnel"}
+#' }
+#'
+#' \strong{Direction Handling:}
+#' For Bar/Column charts, the orientation is determined by the \code{dir} parameter
+#' in \code{add_series()}. You can use \code{"v"}, \code{"vertical"} (Column) or
+#' \code{"h"}, \code{"horizontal"} (Bar).
+#'
+#' @return An R6 object of class \code{Chart} or \code{ChartEx}.
 #' @export
 encharter <- function(type = "lineChart") {
 
+  type <- normalize_encharter_type(type)
   match.arg(as.character(type), choices = c(ENCHARTER_STANDARD, ENCHARTER_EXTENDED))
 
   if (type %in% ENCHARTER_EXTENDED) {
@@ -28,6 +54,10 @@ encharter <- function(type = "lineChart") {
 
   ec
 }
+
+#' @rdname encharter
+#' @export
+ec <- encharter
 
 #' Alias for encharter()
 #' @rdname encharter
@@ -243,6 +273,7 @@ EncharterBase <- R6::R6Class(
     #' @param pos Label position (e.g., 't', 'b', 'ctr', 'l', 'r').
     #' @param ... Font styling for labels (e.g., color, sz, name).
     set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", ...) {
+      pos <- normalize_encharter_string(pos)
       pos <- private$validate_input(pos, c("t", "b", "l", "r", "ctr", "inEnd", "outEnd", "bestFit", "none"), "pos")
       self$label_params <- list(show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key, pos = pos, style = list(...))
       invisible(self)
@@ -258,6 +289,8 @@ EncharterBase <- R6::R6Class(
     #' @param italic Logical.
     #' @param color Hex color.
     set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL) {
+      pos <- normalize_encharter_string(pos)
+      align <- normalize_encharter_string(align)
       self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
                                  style = list(sz = sz, name = name, bold = bold, italic = italic, color = color))
       invisible(self)

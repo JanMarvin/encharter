@@ -21,6 +21,7 @@ ChartEx <- R6::R6Class(
     #' @param type Initial chart type (e.g., "waterfall", "treemap").
     initialize = function(type = NULL) {
 
+      type <- normalize_encharter_type(type)
       self$type <- type
       self$xml <- xml2::read_xml(
         '<cx:chartSpace xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
@@ -254,6 +255,7 @@ ChartEx <- R6::R6Class(
       cat    <- if (is.null(cat))    NA_character_ else cat
 
       series_type <- type %||% self$type %||% "waterfall"
+      series_type <- normalize_encharter_type(series_type)
 
       self$series_data[[length(self$series_data) + 1]] <- list(
         header = private$fix_quote(header),

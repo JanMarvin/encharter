@@ -48,6 +48,7 @@ Chart <- R6::R6Class(
         "series type"
       )
 
+      type <- normalize_encharter_type(type)
       self$type <- type
       self$xml <- xml2::read_xml(
         '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"
@@ -342,6 +343,7 @@ Chart <- R6::R6Class(
         "marker"
       )
 
+      dir <- normalize_encharter_string(dir)
       dir <- private$validate_input(dir, c("col", "bar"), "dir")
 
       grouping <- private$validate_input(
@@ -363,6 +365,7 @@ Chart <- R6::R6Class(
         else match.arg(secondary, c("x", "y", "xy", "none"))
 
       series_type <- type %||% self$type %||% "barChart"
+      series_type <- normalize_encharter_type(series_type)
       self$type <- series_type
       if (!is.null(color) && length(color) > 1 && series_type %in% c("bubbleChart", "pieChart", "doughnutChart")) self$palette <- color
 

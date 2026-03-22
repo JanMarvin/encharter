@@ -6,16 +6,26 @@
 \alias{ec}
 \alias{Chart}
 \alias{ChartEx}
-\title{Create an Encharter Chart (The Factory)}
+\title{Create an Encharter Chart}
 \usage{
 encharter(type = "lineChart")
 
 ec(type = "lineChart")
+
+ec(type = "lineChart")
 }
 \arguments{
-\item{type}{A character string specifying the chart type}
+\item{type}{A character string specifying the chart type. Familiar R aliases
+are supported (see Details).}
+}
+\value{
+An R6 object of class \code{Chart} or \code{ChartEx}.
 }
 \description{
+A factory function to initialize an R6 chart object. It supports both standard
+OOXML charts (e.g., Bar, Line, Scatter) and modern "Extended" charts
+(e.g., Waterfall, Treemap).
+
 The `Chart` class provides a flexible interface to build Office OpenXML
 (OOXML) chart objects. It allows for granular control over gridlines,
 secondary axes, and combined chart types (e.g., Bar and Line) within a
@@ -26,6 +36,21 @@ including Waterfall, Sunburst, Treemap, and Region Maps, which are not
 supported by standard Office Open XML chart types.
 }
 \details{
+\strong{Supported Chart Types:}
+\itemize{
+  \item \bold{Bar/Column:} \code{"barChart"}, \code{"barplot"}, \code{"hist"}, \code{"histogram"}
+  \item \bold{Line/Area:} \code{"lineChart"}, \code{"line"}, \code{"areaChart"}, \code{"area"}
+  \item \bold{Scatter/Points:} \code{"scatterChart"}, \code{"scatter"}, \code{"point"}
+  \item \bold{Pie/Doughnut:} \code{"pieChart"}, \code{"pie"}, \code{"doughnutChart"}, \code{"doughnut"}
+  \item \bold{Extended (ChartEx):} \code{"waterfall"}, \code{"treemap"}, \code{"sunburst"},
+  \code{"regionMap"}, \code{"boxWhisker"} (or \code{"boxplot"}), \code{"funnel"}
+}
+
+\strong{Direction Handling:}
+For Bar/Column charts, the orientation is determined by the \code{dir} parameter
+in \code{add_series()}. You can use \code{"v"}, \code{"vertical"} (Column) or
+\code{"h"}, \code{"horizontal"} (Bar).
+
 This class is designed to work with the `openxlsx2` package by generating
 the underlying XML required for the \code{add_chart_xml} method.
 

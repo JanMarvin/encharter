@@ -31,6 +31,62 @@ to_abs_ref <- function(x) {
   }, USE.NAMES = FALSE)
 }
 
+normalize_encharter_type <- function(type) {
+  # Keep original for the fallback to preserve camelCase if user was precise
+  type_orig <- type
+  type_low  <- tolower(as.character(type))
+
+  # Map familiar R names to OOXML types (Named Vector is cleaner than List here)
+  type_map <- c(
+    "barplot"   = "barChart",
+    "bubble"    = "bubbleChart",
+    "histogram" = "barChart",
+    "hist"      = "barChart",
+    "line"      = "lineChart",
+    "scatter"   = "scatterChart",
+    "point"     = "scatterChart",
+    "area"      = "areaChart",
+    "pie"       = "pieChart",
+    "doughnut"  = "doughnutChart",
+    "radar"     = "radarChart",
+    "surface"   = "surfaceChart",
+    "box"       = "boxWhisker",
+    "boxplot"   = "boxWhisker",
+    "map"       = "regionMap",
+    "pareto"    = "paretoLine"
+  )
+
+  if (!is.null(type) && type_low %in% names(type_map)) {
+    return(unname(type_map[type_low]))
+  }
+
+  # Return original to preserve camelCase (e.g. "barChart") for match.arg
+  type_orig
+}
+
+#' Internal helper to normalize directions and positions
+#' @noRd
+normalize_encharter_string <- function(x) {
+  if (is.null(x)) return(NULL)
+  x <- trimws(tolower(as.character(x)))
+
+  switch(x,
+         # Directions
+         "v"          = "col",
+         "vertical"   = "col",
+         "h"          = "bar",
+         "horizontal" = "bar",
+         # Positions
+         "left"       = "l",
+         "right"      = "r",
+         "top"        = "t",
+         "bottom"     = "b",
+         "center"     = "ctr",
+         # Return original if no match
+         x
+  )
+}
+
 ## these shall be moved to openxlsx2
 
 #' Add a Chart object to a workbook sheet
