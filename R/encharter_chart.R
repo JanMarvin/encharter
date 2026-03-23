@@ -55,15 +55,16 @@ Chart <- R6::R6Class(
                         xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
            <c:date1904 val="0" /><c:roundedCorners val="0" />
-           <mc:AlternateContent>
-             <mc:Choice Requires="c14" xmlns:c14="http://schemas.microsoft.com/office/drawing/2007/8/2/chart">
-               <c14:style val="102" />
-             </mc:Choice>
-             <mc:Fallback><c:style val="2" /></mc:Fallback>
-           </mc:AlternateContent>
            <c:chart></c:chart>
          </c:chartSpace>'
-      ) # <c:lang val="en-GB" />
+      )
+      # <c:lang val="en-GB" />
+      # <mc:AlternateContent>
+      #   <mc:Choice Requires="c14" xmlns:c14="http://schemas.microsoft.com/office/drawing/2007/8/2/chart">
+      #     <c14:style val="102" />
+      #   </mc:Choice>
+      #   <mc:Fallback><c:style val="2" /></mc:Fallback>
+      # </mc:AlternateContent>
     },
 
     #' @description Set the secondary X-axis title.
