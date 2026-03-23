@@ -16,10 +16,18 @@ ChartEx <- R6::R6Class(
   inherit = EncharterBase,
   public = list(
 
+    #' @field color_xml color
+    color_xml = character(),
+
+    #' @field style_xml style
+    style_xml = character(),
+
     #' @description Create a new ChartEx object.
     #' @return A new `ChartEx` object.
     #' @param type Initial chart type (e.g., "waterfall", "treemap").
     initialize = function(type = NULL) {
+      self$color_xml <- colors1_xml
+      self$style_xml <- styleplot_xml
 
       type <- normalize_encharter_type(type)
       self$type <- type

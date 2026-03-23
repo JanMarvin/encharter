@@ -547,6 +547,15 @@ This rotates the chart clockwise.}
 \section{Super class}{
 \code{\link[encharter:EncharterBase]{EncharterBase}} -> \code{ChartEx}
 }
+\section{Public fields}{
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{color_xml}}{color}
+
+    \item{\code{style_xml}}{style}
+  }
+  \if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
   \itemize{
