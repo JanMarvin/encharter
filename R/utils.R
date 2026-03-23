@@ -68,9 +68,8 @@ normalize_encharter_type <- function(type) {
 #' @noRd
 normalize_encharter_string <- function(x) {
   if (is.null(x)) return(NULL)
-  x <- trimws(tolower(as.character(x)))
 
-  switch(x,
+  switch(trimws(tolower(as.character(x))),
          # Directions
          "v"          = "col",
          "vertical"   = "col",

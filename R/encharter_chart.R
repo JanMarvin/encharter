@@ -54,7 +54,7 @@ Chart <- R6::R6Class(
         '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"
                         xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
-           <c:date1904 val="0" /><c:lang val="en-GB" /><c:roundedCorners val="0" />
+           <c:date1904 val="0" /><c:roundedCorners val="0" />
            <mc:AlternateContent>
              <mc:Choice Requires="c14" xmlns:c14="http://schemas.microsoft.com/office/drawing/2007/8/2/chart">
                <c14:style val="102" />
@@ -63,7 +63,7 @@ Chart <- R6::R6Class(
            </mc:AlternateContent>
            <c:chart></c:chart>
          </c:chartSpace>'
-      )
+      ) # <c:lang val="en-GB" />
     },
 
     #' @description Set the secondary X-axis title.
@@ -477,7 +477,7 @@ Chart <- R6::R6Class(
     #' @description Generate the final XML string for the chart.
     #' @return A character string containing the OOXML chart definition.
     #' @param u_ids five unique ids
-    render = function(u_ids = c(1e5, 2e5, 3e5, 4e5, 5e5)) {
+    render = function(u_ids = c("53178645", "60812428", "64752656", "81893617", "90007639")) {
 
       if (length(self$series_data) == 0) {
         stop(

@@ -38,10 +38,9 @@ test_that("Chart: Date Axes and Axis Units", {
     header = "S1!C$1", data = "S1!$C$2:$C$5", secondary = "x"
   )
   chart$set_x2_title("Bar", sz = 14, bold = TRUE)
-  xml <- as.character(chart$render())
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)
-  wb <- openxlsx2::wb_add_encharter(wb, dims = "A2:K10", graph = chart)
+  wb <- openxlsx2::wb_add_encharter(wb, graph = chart)
 })
 
 test_that("Chart: Combo charts and Secondary Axis", {
@@ -60,5 +59,5 @@ test_that("Chart: Combo charts and Secondary Axis", {
   expect_match(xml, "<c:valAx>")
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("dat")$add_data(x = mtcars)$
-    add_chart_xml(xml = xml)
+    add_encharter(graph = chart)
 })

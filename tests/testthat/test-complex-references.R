@@ -8,7 +8,7 @@ test_that("Chart: Multi-level labels and Bubbles", {
   expect_match(xml, "<c:multiLvlStrRef>")
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("dat")$add_data(x = mtcars)$
-    add_chart_xml(xml = xml)
+    add_encharter(graph = chart)
 
   # Bubble Chart with Z-Data
   bb <- Chart$new("bubbleChart")

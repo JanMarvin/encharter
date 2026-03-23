@@ -560,7 +560,9 @@ Add a data series to the chart with independent styling.
 \subsection{Method \code{render()}}{
 Generate the final XML string for the chart.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Chart$render(u_ids = c(1e+05, 2e+05, 3e+05, 4e+05, 5e+05))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Chart$render(
+  u_ids = c("53178645", "60812428", "64752656", "81893617", "90007639")
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

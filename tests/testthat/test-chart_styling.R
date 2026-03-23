@@ -21,7 +21,7 @@ test_that("Chart: Styling, Markers, and Labels", {
   expect_match(xml, "<c:size val=\"7\"/>")
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)$
-    add_chart_xml(xml = xml)
+    add_encharter(graph = chart)
 })
 
 test_that("Chart: Legend and Title styles", {
@@ -41,7 +41,7 @@ test_that("Chart: Legend and Title styles", {
   expect_match(xml, "<c:legendPos val=\"b\"/>")
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)$
-    add_chart_xml(xml = xml)
+    add_encharter(graph = chart)
 })
 
 test_that("Chart and Plot area styling works", {
