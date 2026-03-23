@@ -9,6 +9,10 @@ encharter
 
 Experimental package that is still in early development.
 
+As of `encharter` 0.4 requires a current development build of
+`openxlsx2` due to internal changes when moving the `wb_add_encharter()`
+function to `openxlsx2`.
+
 This is a lightweight R6-based engine for generating Office Open XML
 (OOXML) charts. It is designed for users who need precise control over
 chart internals—such as combining multiple chart types, mapping
