@@ -1,7 +1,7 @@
 Package: encharter
 Type: Package
 Title: Enhanced OOXML Charting for `openxlsx2`
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: c(
     person("Jan Marvin", "Garbuszus", email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut", "cre"))
   )
@@ -16,10 +16,11 @@ Encoding: UTF-8
 Imports:
     R6,
     xml2,
-    openxlsx2
+    openxlsx2 (> 1.25)
 Suggests:
     testthat (>= 3.0.0),
     viridisLite
 Config/testthat/edition: 3
 Config/roxygen2/version: 7.3.3.9000
 RoxygenNote: 7.3.3
+Remotes: JanMarvin/openxlsx2

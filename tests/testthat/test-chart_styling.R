@@ -119,7 +119,7 @@ test_that("ChartEx chart and plot styling works", {
   xml <- xml2::read_xml(xml_str)
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("Sheet1")$add_data(x = mtcars)
-  wb <- wb_add_encharter(wb, sheet = "Sheet1", dims = "A2:G12", graph = ce)
+  wb <- openxlsx2::wb_add_encharter(wb, sheet = "Sheet1", dims = "A2:G12", graph = ce)
 
   # 2. Test Chart Styling (cx:chart/cx:spPr)
   chart_sp_pr <- xml2::xml_find_first(xml, "cx:spPr")
@@ -184,7 +184,7 @@ test_that("Major and Minor gridlines are correctly rendered and visible", {
   wb <- openxlsx2::wb_workbook() |>
     openxlsx2::wb_add_worksheet("Sheet1") |>
     openxlsx2::wb_add_data(x = sales_data) |>
-    wb_add_encharter(dims = "E2:M25", graph = my_chart)
+    openxlsx2::wb_add_encharter(dims = "E2:M25", graph = my_chart)
 })
 
 test_that("ChartEx renders full styling and axis properties", {
@@ -430,8 +430,9 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
   ch <- ChartEx$new()
 
   # 2. Apply Titles and Axis Styles
-  ch$set_chart_title("MPG Distribution", sz = 16, name = "Arial", bold = TRUE)
+  ch$set_chart_title("MPG Distribution", sz = 16, name = "Arial", bold = TRUE, italic = TRUE, fill = "#DDADDA", line = wb_color("blue")) # test italic, fill and line
   ch$set_x_title("by Cylinder", sz = 12, italic = TRUE)
+  ch$set_x_axis(sz = 10) # test this
   ch$set_y_axis(sz = 12, name = "Times New Roman", italic = TRUE, color = "000000")
 
   # 3. Add Series with Color and Line Style
@@ -443,6 +444,14 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
     line_color = wb_color("black"),
     type   = "boxWhisker"
   )
+
+  ch$
+    set_legend_style( # test this
+      pos   = "r",
+      sz    = 15,
+      bold  = TRUE,
+      color = wb_color(theme = "4")
+    )
 
   # 4. Render XML
   xml_res <- xml2::read_xml(ch$render(1))

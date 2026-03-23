@@ -33,6 +33,6 @@ wb <- wb_workbook() |>
     Product = c("Apples", "Bananas", "Cherries", "Dates"),
     Sales = c(40, 30, 20, 10)
   )) |>
-  wb_add_encharter(dims = "D2:L20", graph = pie)
+  openxlsx2::wb_add_encharter(dims = "D2:L20", graph = pie)
 
 wb$open()

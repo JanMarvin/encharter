@@ -32,6 +32,6 @@ my_wf$add_series(
   gap_width = 0
 )
 
-wb <- wb_add_encharter(wb, sheet = "MonthlyFlow", graph = my_wf)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "MonthlyFlow", graph = my_wf)
 
 wb$open()

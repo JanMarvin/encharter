@@ -16,10 +16,18 @@ ChartEx <- R6::R6Class(
   inherit = EncharterBase,
   public = list(
 
+    #' @field color_xml color
+    color_xml = character(),
+
+    #' @field style_xml style
+    style_xml = character(),
+
     #' @description Create a new ChartEx object.
     #' @return A new `ChartEx` object.
     #' @param type Initial chart type (e.g., "waterfall", "treemap").
     initialize = function(type = NULL) {
+      self$color_xml <- colors1_xml
+      self$style_xml <- styleplot_xml
 
       type <- normalize_encharter_type(type)
       self$type <- type
@@ -279,8 +287,9 @@ ChartEx <- R6::R6Class(
 
     #' @description Render the internal XML for writing to a file.
     #' @param id_start Numeric starting ID for XML data references.
+    #' @param guid a guid
     #' @return A list containing the XML and attribute mappings.
-    render = function(id_start = 1) {
+    render = function(id_start = 1, guid = "{C59B1284-E301-0D0F-1B20-FD96A66D6E43}") {
       chart_data_node <- xml2::xml_find_first(self$xml, "//cx:chartData")
       plot_area_node <- xml2::xml_find_first(self$xml, "//cx:plotArea")
       plot_region_node <- xml2::xml_find_first(self$xml, "//cx:plotAreaRegion")
@@ -331,7 +340,7 @@ ChartEx <- R6::R6Class(
         xml2::xml_add_child(num_dim, "cx:f", d_id)
         xml2::xml_add_child(num_dim, "cx:nf", nf_id)
 
-        ser <- xml2::xml_add_child(plot_region_node, "cx:series", layoutId = s$type, uniqueId = openxlsx2:::st_guid())
+        ser <- xml2::xml_add_child(plot_region_node, "cx:series", layoutId = s$type, uniqueId = guid)
 
         if (!is.na(s$header)) {
           tx_node <- xml2::xml_add_child(xml2::xml_add_child(ser, "cx:tx"), "cx:txData")

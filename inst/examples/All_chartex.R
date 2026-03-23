@@ -70,13 +70,13 @@ my_bw$
   )
 
 wb <- wb_workbook()$add_worksheet("Data")$add_data(x = mtcars)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "A2:G12", graph = my_wf)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "A13:G24", graph = my_hist)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "H2:N12", graph = my_funnel)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "H13:N24", graph = my_bw)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "O2:U12", graph = my_pl)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "V2:AB12", graph = my_tm)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "O13:U24", graph = my_sb)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "A2:G12", graph = my_wf)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "A13:G24", graph = my_hist)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "H2:N12", graph = my_funnel)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "H13:N24", graph = my_bw)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "O2:U12", graph = my_pl)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "V2:AB12", graph = my_tm)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "O13:U24", graph = my_sb)
 
 
 map_data <- data.frame(
@@ -95,9 +95,9 @@ my_rm$set_chart_title("Region Map")$
              cat = "'Region Map'!$A$2:$A$12")
 
 wb$add_worksheet("Region Map")$add_data(x = map_data)
-wb <- wb_add_encharter(wb, sheet = "Data", dims = "V13:AB24", graph = my_rm)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "V13:AB24", graph = my_rm)
 
 wb$add_chartsheet("WorldMap")
-wb <- wb_add_encharter(wb, sheet = "WorldMap", graph = my_rm)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "WorldMap", graph = my_rm)
 
 if (interactive()) wb$open()

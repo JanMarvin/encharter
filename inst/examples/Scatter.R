@@ -38,6 +38,6 @@ scatter_xml <- scatter_plot$render()
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = scatter_data) |>
-  wb_add_encharter(dims = "E2:M20", graph = scatter_plot)
+  openxlsx2::wb_add_encharter(dims = "E2:M20", graph = scatter_plot)
 
 wb$open()

@@ -31,6 +31,6 @@ ce_tree$set_chart_title("Treemap Aggregation")
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = df_tree) |>
-  wb_add_encharter(dims = "D2:L25", graph = ce_tree)
+  openxlsx2::wb_add_encharter(dims = "D2:L25", graph = ce_tree)
 
 if (interactive()) wb$open()

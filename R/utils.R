@@ -87,77 +87,8 @@ normalize_encharter_string <- function(x) {
   )
 }
 
-## these shall be moved to openxlsx2
-
-#' Add a Chart object to a workbook sheet
-#'
-#' @description
-#' Renders a \code{Chart} R6 object and injects the resulting XML into an
-#' \code{openxlsx2} workbook at the specified location.
-#'
-#' @param wb An \code{openxlsx2} workbook object.
-#' @param sheet Sheet name or index where the chart will be placed.
-#' @param dims Character string defining the cell range (e.g., "E2:M20").
-#' @param graph An initialized \code{Chart} R6 object.
-#'
-#' @return The workbook object, invisibly.
+#' a trimmed down styleplot_xml
 #' @export
-wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL, graph) {
-
-  wb <- wb$clone()
-
-  if (inherits(graph, "Chart")) {
-    chart_xml <- graph$render()
-    return(wb$add_chart_xml(sheet = sheet, dims = dims, xml = chart_xml))
-  } else if (inherits(graph, "ChartEx")) {
-
-    wb <- wb$clone(deep = TRUE)
-    target_sheet <- wb$validate_sheet(sheet)
-
-    # 1. Find the highest ID to prevent collisions
-    existing_names <- wb$get_named_regions()$name
-    chart_ids <- grep("^_xlchart\\.v1\\.", existing_names, value = TRUE)
-    id_base <- 1L
-    if (length(chart_ids) > 0) {
-      id_nums <- as.integer(gsub("_xlchart\\.v1\\.", "", chart_ids))
-      id_base <- max(id_nums, na.rm = TRUE) + 1L
-    }
-
-    chart_xml_rendered <- graph$render(id_start = id_base)
-
-    # 2. Add Drawing to the TARGET sheet
-    drw_rel_id <- wb$worksheets[[target_sheet]]$relships$drawing
-    next_rid <- if (length(drw_rel_id)) {
-      openxlsx2:::get_next_id(wb$drawings_rels[[drw_rel_id]])
-    } else {
-      "rId1"
-    }
-
-    drawing_xml <- sprintf("<xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><xdr:absoluteAnchor><xdr:pos x=\"0\" y=\"0\"/><xdr:ext cx=\"9313333\" cy=\"6070985\" /><xdr:graphicFrame macro=\"\"><xdr:nvGraphicFramePr><xdr:cNvPr id=\"2\" name=\"Chart 1\"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"4572000\" cy=\"2926080\"/></xdr:xfrm><a:graphic><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2014/chartex\"><cx:chart xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"%s\"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:absoluteAnchor></xdr:wsDr>", next_rid)
-
-    wb$add_drawing(sheet = target_sheet, dims = dims, xml = drawing_xml)
-
-    # 3. Handle Relationships & Chart XML
-    # chart_idx <- length(wb$charts$chartEx) + 1L
-    # probably not the most elegant way to do it, but at least it should not break anything
-    # The total number of chart and chartex is not the same. not every chart needs a style
-    # or a color. Therefore we can already have a chart.
-    # Spreadsheet software counts chart and chartex starting at 1. To be fully in line, we
-    # should start counting the number of available slots in wb$charts for each of the
-    # columns, append a row if required or assign into a free slot. When cloning into another
-    # workbook, we have to collect the style and color for the chart, do the same slot assign-
-    # ment in the new workbook and re-assign the ids.
-    chart_idx <- max(
-      sum(nchar(wb$charts$chart) > 0, na.rm = TRUE) +
-      sum(nchar(wb$charts$chartEx) > 0, na.rm = TRUE),
-      0L
-    ) + 1L
-
-    rel_xml <- sprintf("<Relationship Id=\"%s\" Type=\"http://schemas.microsoft.com/office/2014/relationships/chartEx\" Target=\"../charts/chartEx%s.xml\"/>", next_rid, chart_idx)
-    drw_id <- wb$worksheets[[target_sheet]]$relships$drawing
-    wb$drawings_rels[[drw_id]] <- if (all(wb$drawings_rels[[drw_id]] == "")) rel_xml else c(wb$drawings_rels[[drw_id]], rel_xml)
-
-    # a trimmed down styleplot_xml
     styleplot_xml <- '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cs:chartStyle xmlns:cs="http://schemas.microsoft.com/office/drawing/2012/chartStyle"
                xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" id="201">
@@ -194,36 +125,22 @@ wb_add_encharter <- function(wb, sheet = openxlsx2::current_sheet(), dims = NULL
   <cs:wall><cs:lnRef idx="0"/><cs:fillRef idx="0"/><cs:effectRef idx="0"/><cs:fontRef idx="minor"><a:schemeClr val="tx1"/></cs:fontRef></cs:wall>
 </cs:chartStyle>'
 
-    # for chart we do not need style and color entries.
-    # for chartex we need style and color entries. basically for colors e.g. for treemap, this loops through the colors
-    wb$charts <- rbind(wb$charts, data.frame(
-      chart = "",
-      colors = openxlsx2:::colors1_xml,
-      style = styleplot_xml,
-      rels = "",
-      chartEx = as.character(chart_xml_rendered),
-      relsEx = sprintf("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId2\" Type=\"http://schemas.microsoft.com/office/2011/relationships/chartColorStyle\" Target=\"colors%s.xml\"/><Relationship Id=\"rId1\" Type=\"http://schemas.microsoft.com/office/2011/relationships/chartStyle\" Target=\"style%s.xml\"/></Relationships>", chart_idx, chart_idx),
-      stringsAsFactors = FALSE
-    ))
-
-    # 4. Add Named Regions to the DATA sheet
-    h_at <- attr(chart_xml_rendered, "head")
-    b_at <- attr(chart_xml_rendered, "body")
-    all_refs <- c(h_at, b_at)
-
-    for (i in seq_along(all_refs)) {
-      ref <- all_refs[i]
-
-      # Check: Must contain '!' and have at least one character after it
-      # This prevents literal strings (e.g. "Total!") from being treated as ranges
-      is_valid_ref <- !is.na(ref) && ref != "" && grepl("!.+", ref)
-      if (!is_valid_ref) next
-
-      sheet_part <- gsub("^'?(.*?)'?!.*$", "\\1", ref)
-      range_part <- gsub("^.*!", "", ref)
-      wb$add_named_region(sheet = sheet_part, dims = range_part, name = names(all_refs)[i], hidden = "1")
-    }
-  }
-
-  invisible(wb)
-}
+#' A colors xml file
+#' @export
+    colors1_xml <- "<cs:colorStyle xmlns:cs=\"http://schemas.microsoft.com/office/drawing/2012/chartStyle\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" meth=\"cycle\" id=\"10\">
+<a:schemeClr val=\"accent1\"/>
+<a:schemeClr val=\"accent2\"/>
+<a:schemeClr val=\"accent3\"/>
+<a:schemeClr val=\"accent4\"/>
+<a:schemeClr val=\"accent5\"/>
+<a:schemeClr val=\"accent6\"/>
+<cs:variation/>
+<cs:variation><a:lumMod val=\"60000\"/></cs:variation>
+<cs:variation><a:lumMod val=\"80000\"/><a:lumOff val=\"20000\"/></cs:variation>
+<cs:variation><a:lumMod val=\"80000\"/></cs:variation>
+<cs:variation><a:lumMod val=\"60000\"/><a:lumOff val=\"40000\"/></cs:variation>
+<cs:variation><a:lumMod val=\"50000\"/></cs:variation>
+<cs:variation><a:lumMod val=\"70000\"/><a:lumOff val=\"30000\"/></cs:variation>
+<cs:variation><a:lumMod val=\"70000\"/></cs:variation>
+<cs:variation><a:lumMod val=\"50000\"/><a:lumOff val=\"50000\"/></cs:variation>
+</cs:colorStyle>"

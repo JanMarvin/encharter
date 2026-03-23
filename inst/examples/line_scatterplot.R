@@ -53,6 +53,6 @@ chart$set_legend_style(pos = "b")
 
 
 wb <- wb |>
-  wb_add_encharter(dims = "E2:M20", graph = chart)
+  openxlsx2::wb_add_encharter(dims = "E2:M20", graph = chart)
 
 wb$open()

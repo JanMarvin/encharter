@@ -58,131 +58,128 @@ This class uses `xml2` to manipulate the underlying XML structure and
 integrates with `openxlsx2` for workbook generation.
 }
 \section{Super class}{
-\code{\link[encharter:EncharterBase]{EncharterBase}} -> \code{Chart}
+\code{\link[encharter:EncharterBase]{encharter::EncharterBase}} -> \code{Chart}
 }
 \section{Public fields}{
-  \if{html}{\out{<div class="r6-fields">}}
-  \describe{
-    \item{\code{x2_title}}{List containing text and style for the secondary X-axis.}
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{x2_title}}{List containing text and style for the secondary X-axis.}
 
-    \item{\code{y2_title}}{List containing text and style for the secondary Y-axis.}
+\item{\code{y2_title}}{List containing text and style for the secondary Y-axis.}
 
-    \item{\code{hole_size}}{Integer. Size of the hole for doughnut charts (0-90).}
+\item{\code{hole_size}}{Integer. Size of the hole for doughnut charts (0-90).}
 
-    \item{\code{show_data_table}}{Logical if a data table should be added.}
+\item{\code{show_data_table}}{Logical if a data table should be added.}
 
-    \item{\code{drop_lines}}{Logical; show lines from points to the axis.}
+\item{\code{drop_lines}}{Logical; show lines from points to the axis.}
 
-    \item{\code{high_low_lines}}{Logical; show lines between max/min points.}
+\item{\code{high_low_lines}}{Logical; show lines between max/min points.}
 
-    \item{\code{up_down_bars}}{Logical; show bars between first and last series.}
+\item{\code{up_down_bars}}{Logical; show bars between first and last series.}
 
-    \item{\code{bubble_scale}}{Numeric; the scale factor for bubbles (default 100).}
+\item{\code{bubble_scale}}{Numeric; the scale factor for bubbles (default 100).}
 
-    \item{\code{show_neg_bubbles}}{Logical; whether to show bubbles with negative values.}
+\item{\code{show_neg_bubbles}}{Logical; whether to show bubbles with negative values.}
 
-    \item{\code{disp_blanks_as}}{Character; "gap", "span", or "zero".}
-  }
-  \if{html}{\out{</div>}}
+\item{\code{disp_blanks_as}}{Character; "gap", "span", or "zero".}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-  \itemize{
-    \item \href{#method-Chart-initialize}{\code{Chart$new()}}
-    \item \href{#method-Chart-set_x2_title}{\code{Chart$set_x2_title()}}
-    \item \href{#method-Chart-set_y2_title}{\code{Chart$set_y2_title()}}
-    \item \href{#method-Chart-set_y2_axis}{\code{Chart$set_y2_axis()}}
-    \item \href{#method-Chart-set_x2_axis}{\code{Chart$set_x2_axis()}}
-    \item \href{#method-Chart-set_data_table}{\code{Chart$set_data_table()}}
-    \item \href{#method-Chart-set_hole_size}{\code{Chart$set_hole_size()}}
-    \item \href{#method-Chart-set_pie_options}{\code{Chart$set_pie_options()}}
-    \item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
-    \item \href{#method-Chart-set_disp_blanks}{\code{Chart$set_disp_blanks()}}
-    \item \href{#method-Chart-add_series}{\code{Chart$add_series()}}
-    \item \href{#method-Chart-render}{\code{Chart$render()}}
-    \item \href{#method-Chart-clone}{\code{Chart$clone()}}
-  }
+\itemize{
+\item \href{#method-Chart-new}{\code{Chart$new()}}
+\item \href{#method-Chart-set_x2_title}{\code{Chart$set_x2_title()}}
+\item \href{#method-Chart-set_y2_title}{\code{Chart$set_y2_title()}}
+\item \href{#method-Chart-set_y2_axis}{\code{Chart$set_y2_axis()}}
+\item \href{#method-Chart-set_x2_axis}{\code{Chart$set_x2_axis()}}
+\item \href{#method-Chart-set_data_table}{\code{Chart$set_data_table()}}
+\item \href{#method-Chart-set_hole_size}{\code{Chart$set_hole_size()}}
+\item \href{#method-Chart-set_pie_options}{\code{Chart$set_pie_options()}}
+\item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
+\item \href{#method-Chart-set_disp_blanks}{\code{Chart$set_disp_blanks()}}
+\item \href{#method-Chart-add_series}{\code{Chart$add_series()}}
+\item \href{#method-Chart-render}{\code{Chart$render()}}
+\item \href{#method-Chart-clone}{\code{Chart$clone()}}
 }
-\if{html}{\out{<details><summary>Inherited methods</summary>
+}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
 <ul>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_style'><code>EncharterBase$set_chart_style()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_title'><code>EncharterBase$set_chart_title()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_data_label_style'><code>EncharterBase$set_data_label_style()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_legend_style'><code>EncharterBase$set_legend_style()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_plot_style'><code>EncharterBase$set_plot_style()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_axis"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_x_axis'><code>EncharterBase$set_x_axis()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_x_title'><code>EncharterBase$set_x_title()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_axis"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_y_axis'><code>EncharterBase$set_y_axis()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_y_title'><code>EncharterBase$set_y_title()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_style'><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_title'><code>encharter::EncharterBase$set_chart_title()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_data_label_style'><code>encharter::EncharterBase$set_data_label_style()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_legend_style'><code>encharter::EncharterBase$set_legend_style()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_plot_style'><code>encharter::EncharterBase$set_plot_style()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_axis"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_x_axis'><code>encharter::EncharterBase$set_x_axis()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_x_title'><code>encharter::EncharterBase$set_x_title()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_axis"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_y_axis'><code>encharter::EncharterBase$set_y_axis()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_y_title'><code>encharter::EncharterBase$set_y_title()</code></a></span></li>
 </ul>
-</details>}}
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Chart-initialize"></a>}}
-\if{latex}{\out{\hypertarget{method-Chart-initialize}{}}}
-\subsection{\code{Chart$new()}}{
-  Initialize a new Chart object.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$new(type = NULL)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{type}}{Initial chart type (e.g., "lineChart", "barChart", "pieChart").}
-    }
-    \if{html}{\out{</div>}}
-  }
+\if{html}{\out{<a id="method-Chart-new"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-new}{}}}
+\subsection{Method \code{new()}}{
+Initialize a new Chart object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$new(type = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{Initial chart type (e.g., "lineChart", "barChart", "pieChart").}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_x2_title"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_x2_title}{}}}
-\subsection{\code{Chart$set_x2_title()}}{
-  Set the secondary X-axis title.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_x2_title(text, ...)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{text}}{Title text string.}
-      \item{\code{...}}{Style arguments.}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{set_x2_title()}}{
+Set the secondary X-axis title.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_x2_title(text, ...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{text}}{Title text string.}
+
+\item{\code{...}}{Style arguments.}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_y2_title"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_y2_title}{}}}
-\subsection{\code{Chart$set_y2_title()}}{
-  Set the secondary Y-axis title.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_y2_title(text, ...)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{text}}{Title text string.}
-      \item{\code{...}}{Style arguments.}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{set_y2_title()}}{
+Set the secondary Y-axis title.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_y2_title(text, ...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{text}}{Title text string.}
+
+\item{\code{...}}{Style arguments.}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_y2_axis"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_y2_axis}{}}}
-\subsection{\code{Chart$set_y2_axis()}}{
-  Set Secondary Y-axis scaling, units, and format.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_y2_axis(
+\subsection{Method \code{set_y2_axis()}}{
+Set Secondary Y-axis scaling, units, and format.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_y2_axis(
   min = NULL,
   max = NULL,
   major = NULL,
@@ -212,48 +209,68 @@ integrates with `openxlsx2` for workbook generation.
   crosses = NULL,
   crosses_at = NULL,
   label_pos = NULL
-)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{min}}{Minimum value for the axis.}
-      \item{\code{max}}{Maximum value for the axis.}
-      \item{\code{major}}{Numeric value for major unit interval.}
-      \item{\code{minor}}{Numeric value for minor unit interval.}
-      \item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
-      \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
-      \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
-      \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
-      \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{sz}}{Font size for the axis labels.}
-      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
-      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
-      \item{\code{rot}}{Rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
-      \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
-      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
-      \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
-      \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
-      \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
-    }
-    \if{html}{\out{</div>}}
-  }
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{min}}{Minimum value for the axis.}
+
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
+
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+
+\item{\code{rot}}{Rotation in degrees.}
+
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_x2_axis"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_x2_axis}{}}}
-\subsection{\code{Chart$set_x2_axis()}}{
-  Set Secondary X-axis scaling, units, and format.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_x2_axis(
+\subsection{Method \code{set_x2_axis()}}{
+Set Secondary X-axis scaling, units, and format.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_x2_axis(
   min = NULL,
   max = NULL,
   major = NULL,
@@ -283,143 +300,154 @@ integrates with `openxlsx2` for workbook generation.
   crosses = NULL,
   crosses_at = NULL,
   label_pos = NULL
-)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{min}}{Minimum value for the axis.}
-      \item{\code{max}}{Maximum value for the axis.}
-      \item{\code{major}}{Numeric value for major unit interval.}
-      \item{\code{minor}}{Numeric value for minor unit interval.}
-      \item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
-      \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
-      \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
-      \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
-      \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{sz}}{Font size for the axis labels.}
-      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
-      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
-      \item{\code{rot}}{Rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
-      \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
-      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
-      \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
-      \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
-      \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
-    }
-    \if{html}{\out{</div>}}
-  }
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{min}}{Minimum value for the axis.}
+
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
+
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+
+\item{\code{rot}}{Rotation in degrees.}
+
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_data_table"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_data_table}{}}}
-\subsection{\code{Chart$set_data_table()}}{
-  Set the data table.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_data_table(show = TRUE)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{show}}{Logical TRUE or FALSE.}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{set_data_table()}}{
+Set the data table.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_data_table(show = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{show}}{Logical TRUE or FALSE.}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_hole_size"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_hole_size}{}}}
-\subsection{\code{Chart$set_hole_size()}}{
-  Set the doughnut hole size.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_hole_size(val)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{val}}{Integer 0 to 90.}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{set_hole_size()}}{
+Set the doughnut hole size.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_hole_size(val)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{val}}{Integer 0 to 90.}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_pie_options"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_pie_options}{}}}
-\subsection{\code{Chart$set_pie_options()}}{
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_pie_options(ang = 0)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{ang}}{The angle of the first slice in degrees, from 0 to 360.
-This rotates the chart clockwise.}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{set_pie_options()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_pie_options(ang = 0)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ang}}{The angle of the first slice in degrees, from 0 to 360.
+This rotates the chart clockwise.}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_bubble_options"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_bubble_options}{}}}
-\subsection{\code{Chart$set_bubble_options()}}{
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_bubble_options(scale = 100, show_neg = FALSE)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{scale}}{The scale factor for bubbles, from 0 to 300 (expressed as a percentage).}
-      \item{\code{show_neg}}{Logical; if `TRUE`, bubbles with negative values will be displayed on the chart.}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{set_bubble_options()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_bubble_options(scale = 100, show_neg = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{scale}}{The scale factor for bubbles, from 0 to 300 (expressed as a percentage).}
+
+\item{\code{show_neg}}{Logical; if `TRUE`, bubbles with negative values will be displayed on the chart.}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_disp_blanks"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_disp_blanks}{}}}
-\subsection{\code{Chart$set_disp_blanks()}}{
-  Set missing value behavior ("gap", "span", "zero").
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_disp_blanks(val = "gap")}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{val}}{Character. One of "gap" (break), "span" (continue), or "zero" (drop).}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{set_disp_blanks()}}{
+Set missing value behavior ("gap", "span", "zero").
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_disp_blanks(val = "gap")}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{val}}{Character. One of "gap" (break), "span" (continue), or "zero" (drop).}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-add_series"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-add_series}{}}}
-\subsection{\code{Chart$add_series()}}{
-  Add a data series to the chart with independent styling.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$add_series(
+\subsection{Method \code{add_series()}}{
+Add a data series to the chart with independent styling.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$add_series(
   header = NULL,
   data,
   cat = NULL,
@@ -446,37 +474,61 @@ This rotates the chart clockwise.}
   filled = FALSE,
   error_bars = FALSE,
   trendline = FALSE
-)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{header}}{Cell range or string for series name.}
-      \item{\code{data}}{Cell range for series values.}
-      \item{\code{cat}}{Cell range for category labels.}
-      \item{\code{z_data}}{Cell range for bubble sizes (bubbleChart only).}
-      \item{\code{color}}{Primary Hex color for the series (used as default for line and markers).}
-      \item{\code{type}}{Chart type for this specific series (for combo charts).}
-      \item{\code{secondary}}{Logical. Set to TRUE to move series to secondary axis.}
-      \item{\code{dir}}{Bar direction ("col" or "bar").}
-      \item{\code{grouping}}{Chart grouping ("standard", "stacked", "percentStacked").}
-      \item{\code{overlap}}{Integer between -100 and 100 for bar charts.}
-      \item{\code{gap_width}}{Integer between 0 and 500 for bar charts.}
-      \item{\code{smooth}}{Logical. Enable line smoothing for line/scatter charts.}
-      \item{\code{show_line}}{Logical. Show the line connecting points.}
-      \item{\code{marker}}{Marker type ("none", "circle", "square", "diamond", "triangle").}
-      \item{\code{marker_size}}{Integer size of marker.}
-      \item{\code{marker_fill}}{Hex color for the interior of the marker. Defaults to `color`.}
-      \item{\code{marker_line}}{Hex color for the marker border. Defaults to `color`.}
-      \item{\code{marker_line_width}}{Numeric width of the marker border.}
-      \item{\code{show_val}}{Logical. Override global label settings for this series (show value).}
-      \item{\code{show_cat}}{Logical. Override global label settings for this series (show category).}
-      \item{\code{line_type}}{Line style: "dashed", "dotted", "dashDot", or "solid".}
-      \item{\code{line_width}}{Numeric width of the connecting line.}
-      \item{\code{line_color}}{Hex color for the connecting line. Defaults to `color`.}
-      \item{\code{filled}}{Logical; for radar charts, fills the interior area. Default FALSE.}
-      \item{\code{error_bars}}{A list of error bar properties:
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{header}}{Cell range or string for series name.}
+
+\item{\code{data}}{Cell range for series values.}
+
+\item{\code{cat}}{Cell range for category labels.}
+
+\item{\code{z_data}}{Cell range for bubble sizes (bubbleChart only).}
+
+\item{\code{color}}{Primary Hex color for the series (used as default for line and markers).}
+
+\item{\code{type}}{Chart type for this specific series (for combo charts).}
+
+\item{\code{secondary}}{Logical. Set to TRUE to move series to secondary axis.}
+
+\item{\code{dir}}{Bar direction ("col" or "bar").}
+
+\item{\code{grouping}}{Chart grouping ("standard", "stacked", "percentStacked").}
+
+\item{\code{overlap}}{Integer between -100 and 100 for bar charts.}
+
+\item{\code{gap_width}}{Integer between 0 and 500 for bar charts.}
+
+\item{\code{smooth}}{Logical. Enable line smoothing for line/scatter charts.}
+
+\item{\code{show_line}}{Logical. Show the line connecting points.}
+
+\item{\code{marker}}{Marker type ("none", "circle", "square", "diamond", "triangle").}
+
+\item{\code{marker_size}}{Integer size of marker.}
+
+\item{\code{marker_fill}}{Hex color for the interior of the marker. Defaults to `color`.}
+
+\item{\code{marker_line}}{Hex color for the marker border. Defaults to `color`.}
+
+\item{\code{marker_line_width}}{Numeric width of the marker border.}
+
+\item{\code{show_val}}{Logical. Override global label settings for this series (show value).}
+
+\item{\code{show_cat}}{Logical. Override global label settings for this series (show category).}
+
+\item{\code{line_type}}{Line style: "dashed", "dotted", "dashDot", or "solid".}
+
+\item{\code{line_width}}{Numeric width of the connecting line.}
+
+\item{\code{line_color}}{Hex color for the connecting line. Defaults to `color`.}
+
+\item{\code{filled}}{Logical; for radar charts, fills the interior area. Default FALSE.}
+
+\item{\code{error_bars}}{A list of error bar properties:
 \itemize{
   \item \code{type}: The error value type (\code{ST_ErrValType}).
     Must be one of: \code{"fixedVal"} (Fixed Value), \code{"percentage"} (Percentage),
@@ -486,7 +538,8 @@ This rotates the chart clockwise.}
   \item \code{direction}: Direction of bars. One of \code{"both"}, \code{"plus"}, or \code{"minus"}.
   \item \code{color}: Hex color code for the bars (e.g., "FF0000").
 }}
-      \item{\code{trendline}}{A list of regression line properties:
+
+\item{\code{trendline}}{A list of regression line properties:
 \itemize{
   \item \code{type}: The regression type (\code{ST_TrendlineType}).
     Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
@@ -497,101 +550,111 @@ This rotates the chart clockwise.}
   \item \code{color}: Hex color code for the line.
   \item \code{show_r2}: Logical; if \code{TRUE}, displays the R-squared value on the chart.
 }}
-    }
-    \if{html}{\out{</div>}}
-  }
 }
-
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-render"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-render}{}}}
-\subsection{\code{Chart$render()}}{
-  Generate the final XML string for the chart.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$render()}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Returns}{
-    A character string containing the OOXML chart definition.
-  }
+\subsection{Method \code{render()}}{
+Generate the final XML string for the chart.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$render(u_ids = c(1e+05, 2e+05, 3e+05, 4e+05, 5e+05))}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{u_ids}}{five unique ids}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A character string containing the OOXML chart definition.
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-clone}{}}}
-\subsection{\code{Chart$clone()}}{
-  The objects of this class are cloneable with this method.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$clone(deep = FALSE)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{deep}}{Whether to make a deep clone.}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Chart$clone(deep = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
 }
 \section{Super class}{
-\code{\link[encharter:EncharterBase]{EncharterBase}} -> \code{ChartEx}
+\code{\link[encharter:EncharterBase]{encharter::EncharterBase}} -> \code{ChartEx}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{color_xml}}{color}
+
+\item{\code{style_xml}}{style}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-  \itemize{
-    \item \href{#method-ChartEx-initialize}{\code{ChartEx$new()}}
-    \item \href{#method-ChartEx-set_x_axis}{\code{ChartEx$set_x_axis()}}
-    \item \href{#method-ChartEx-set_y_axis}{\code{ChartEx$set_y_axis()}}
-    \item \href{#method-ChartEx-add_series}{\code{ChartEx$add_series()}}
-    \item \href{#method-ChartEx-render}{\code{ChartEx$render()}}
-    \item \href{#method-ChartEx-clone}{\code{ChartEx$clone()}}
-  }
+\itemize{
+\item \href{#method-ChartEx-new}{\code{ChartEx$new()}}
+\item \href{#method-ChartEx-set_x_axis}{\code{ChartEx$set_x_axis()}}
+\item \href{#method-ChartEx-set_y_axis}{\code{ChartEx$set_y_axis()}}
+\item \href{#method-ChartEx-add_series}{\code{ChartEx$add_series()}}
+\item \href{#method-ChartEx-render}{\code{ChartEx$render()}}
+\item \href{#method-ChartEx-clone}{\code{ChartEx$clone()}}
 }
-\if{html}{\out{<details><summary>Inherited methods</summary>
+}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
 <ul>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_style'><code>EncharterBase$set_chart_style()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_title'><code>EncharterBase$set_chart_title()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_data_label_style'><code>EncharterBase$set_data_label_style()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_legend_style'><code>EncharterBase$set_legend_style()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_plot_style'><code>EncharterBase$set_plot_style()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_x_title'><code>EncharterBase$set_x_title()</code></a></span></li>
-  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_y_title'><code>EncharterBase$set_y_title()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_style'><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_title'><code>encharter::EncharterBase$set_chart_title()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_data_label_style'><code>encharter::EncharterBase$set_data_label_style()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_legend_style'><code>encharter::EncharterBase$set_legend_style()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_plot_style'><code>encharter::EncharterBase$set_plot_style()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_x_title'><code>encharter::EncharterBase$set_x_title()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_y_title'><code>encharter::EncharterBase$set_y_title()</code></a></span></li>
 </ul>
-</details>}}
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ChartEx-initialize"></a>}}
-\if{latex}{\out{\hypertarget{method-ChartEx-initialize}{}}}
-\subsection{\code{ChartEx$new()}}{
-  Create a new ChartEx object.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$new(type = NULL)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{type}}{Initial chart type (e.g., "waterfall", "treemap").}
-    }
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Returns}{
-    A new `ChartEx` object.
-  }
+\if{html}{\out{<a id="method-ChartEx-new"></a>}}
+\if{latex}{\out{\hypertarget{method-ChartEx-new}{}}}
+\subsection{Method \code{new()}}{
+Create a new ChartEx object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ChartEx$new(type = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{type}}{Initial chart type (e.g., "waterfall", "treemap").}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A new `ChartEx` object.
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_x_axis"></a>}}
 \if{latex}{\out{\hypertarget{method-ChartEx-set_x_axis}{}}}
-\subsection{\code{ChartEx$set_x_axis()}}{
-  Set Primary X-axis scaling, units, and format.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$set_x_axis(
+\subsection{Method \code{set_x_axis()}}{
+Set Primary X-axis scaling, units, and format.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_x_axis(
   min = NULL,
   max = NULL,
   major = NULL,
@@ -621,48 +684,68 @@ This rotates the chart clockwise.}
   crosses = NULL,
   crosses_at = NULL,
   label_pos = NULL
-)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{min}}{Minimum value for the axis.}
-      \item{\code{max}}{Maximum value for the axis.}
-      \item{\code{major}}{Numeric value for major unit interval.}
-      \item{\code{minor}}{Numeric value for minor unit interval.}
-      \item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
-      \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
-      \item{\code{sz}}{Font size for the axis labels.}
-      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
-      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
-      \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
-      \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
-      \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{rot}}{Rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
-      \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
-      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
-      \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
-      \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
-      \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
-    }
-    \if{html}{\out{</div>}}
-  }
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{min}}{Minimum value for the axis.}
+
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{rot}}{Rotation in degrees.}
+
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-set_y_axis"></a>}}
 \if{latex}{\out{\hypertarget{method-ChartEx-set_y_axis}{}}}
-\subsection{\code{ChartEx$set_y_axis()}}{
-  Set Primary Y-axis scaling, units, and format.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$set_y_axis(
+\subsection{Method \code{set_y_axis()}}{
+Set Primary Y-axis scaling, units, and format.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ChartEx$set_y_axis(
   min = NULL,
   max = NULL,
   major = NULL,
@@ -692,48 +775,68 @@ This rotates the chart clockwise.}
   crosses = NULL,
   crosses_at = NULL,
   label_pos = NULL
-)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{min}}{Minimum value for the axis.}
-      \item{\code{max}}{Maximum value for the axis.}
-      \item{\code{major}}{Numeric value for major unit interval.}
-      \item{\code{minor}}{Numeric value for minor unit interval.}
-      \item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
-      \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
-      \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
-      \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
-      \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{sz}}{Font size for the axis labels.}
-      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
-      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
-      \item{\code{rot}}{Rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
-      \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
-      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
-      \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
-      \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
-      \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
-    }
-    \if{html}{\out{</div>}}
-  }
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{min}}{Minimum value for the axis.}
+
+\item{\code{max}}{Maximum value for the axis.}
+
+\item{\code{major}}{Numeric value for major unit interval.}
+
+\item{\code{minor}}{Numeric value for minor unit interval.}
+
+\item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
+
+\item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
+
+\item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
+
+\item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
+
+\item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+
+\item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+
+\item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+
+\item{\code{sz}}{Font size for the axis labels.}
+
+\item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+
+\item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+
+\item{\code{rot}}{Rotation in degrees.}
+
+\item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
+
+\item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+
+\item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
+
+\item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+
+\item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+
+\item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
+
+\item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-add_series"></a>}}
 \if{latex}{\out{\hypertarget{method-ChartEx-add_series}{}}}
-\subsection{\code{ChartEx$add_series()}}{
-  Add a data series to the chart.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$add_series(
+\subsection{Method \code{add_series()}}{
+Add a data series to the chart.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ChartEx$add_series(
   header = NULL,
   data,
   cat = NULL,
@@ -747,72 +850,81 @@ This rotates the chart clockwise.}
   binning = NULL,
   visibility = NULL,
   parent_label = "overlapping"
-)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{header}}{Cell range for the series name.}
-      \item{\code{data}}{Cell range for the numeric values.}
-      \item{\code{cat}}{Cell range for the category labels.}
-      \item{\code{type}}{Type of chart (waterfall, sunburst, treemap, regionMap).}
-      \item{\code{color}}{Hex color or "auto".}
-      \item{\code{line_color}}{Border color.}
-      \item{\code{line_width}}{Border width.}
-      \item{\code{gap_width}}{Integer between 0 and 500.}
-      \item{\code{subtotals}}{Numeric vector of indices to treat as subtotals (Waterfall only).}
-      \item{\code{statistics}}{Quartile method: "inclusive" or "exclusive".}
-      \item{\code{binning}}{A list for Histogram/BoxWhisker:
-`binSize` (numeric), `binCount` (integer), `intervalClosed` ("left", "right"),
-`underflow` (numeric or "auto"), `overflow` (numeric or "auto").}
-      \item{\code{visibility}}{A named list of logicals for BoxWhisker/Waterfall:
-`connectorLines`, `meanLine`, `meanMarker`, `nonoutliers`, `outliers`.}
-      \item{\code{parent_label}}{Treemap label style: "overlapping", "banner", or "none".}
-    }
-    \if{html}{\out{</div>}}
-  }
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{header}}{Cell range for the series name.}
+
+\item{\code{data}}{Cell range for the numeric values.}
+
+\item{\code{cat}}{Cell range for the category labels.}
+
+\item{\code{type}}{Type of chart (waterfall, sunburst, treemap, regionMap).}
+
+\item{\code{color}}{Hex color or "auto".}
+
+\item{\code{line_color}}{Border color.}
+
+\item{\code{line_width}}{Border width.}
+
+\item{\code{gap_width}}{Integer between 0 and 500.}
+
+\item{\code{subtotals}}{Numeric vector of indices to treat as subtotals (Waterfall only).}
+
+\item{\code{statistics}}{Quartile method: "inclusive" or "exclusive".}
+
+\item{\code{binning}}{A list for Histogram/BoxWhisker:
+`binSize` (numeric), `binCount` (integer), `intervalClosed` ("left", "right"),
+`underflow` (numeric or "auto"), `overflow` (numeric or "auto").}
+
+\item{\code{visibility}}{A named list of logicals for BoxWhisker/Waterfall:
+`connectorLines`, `meanLine`, `meanMarker`, `nonoutliers`, `outliers`.}
+
+\item{\code{parent_label}}{Treemap label style: "overlapping", "banner", or "none".}
+}
+\if{html}{\out{</div>}}
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-render"></a>}}
 \if{latex}{\out{\hypertarget{method-ChartEx-render}{}}}
-\subsection{\code{ChartEx$render()}}{
-  Render the internal XML for writing to a file.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$render(id_start = 1)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{id_start}}{Numeric starting ID for XML data references.}
-    }
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Returns}{
-    A list containing the XML and attribute mappings.
-  }
+\subsection{Method \code{render()}}{
+Render the internal XML for writing to a file.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ChartEx$render(id_start = 1, guid = "{C59B1284-E301-0D0F-1B20-FD96A66D6E43}")}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{id_start}}{Numeric starting ID for XML data references.}
+
+\item{\code{guid}}{a guid}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list containing the XML and attribute mappings.
+}
+}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ChartEx-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-ChartEx-clone}{}}}
-\subsection{\code{ChartEx$clone()}}{
-  The objects of this class are cloneable with this method.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$clone(deep = FALSE)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{deep}}{Whether to make a deep clone.}
-    }
-    \if{html}{\out{</div>}}
-  }
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{ChartEx$clone(deep = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
 }

@@ -17,6 +17,6 @@ ce$add_series(
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = df_hist) |>
-  wb_add_encharter(dims = "C2:J20", graph = ce)
+  openxlsx2::wb_add_encharter(dims = "C2:J20", graph = ce)
 
 if (interactive()) wb$open()

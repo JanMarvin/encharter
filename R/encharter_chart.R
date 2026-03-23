@@ -476,7 +476,8 @@ Chart <- R6::R6Class(
 
     #' @description Generate the final XML string for the chart.
     #' @return A character string containing the OOXML chart definition.
-    render = function() {
+    #' @param u_ids five unique ids
+    render = function(u_ids = c(1e5, 2e5, 3e5, 4e5, 5e5)) {
 
       if (length(self$series_data) == 0) {
         stop(
@@ -510,7 +511,6 @@ Chart <- R6::R6Class(
       plot_area <- xml2::xml_add_child(chart_root, "c:plotArea")
       xml2::xml_add_child(plot_area, "c:layout")
 
-      u_ids <- openxlsx2:::random_string(n = 5, length = 8, pattern = "[0-9]")
       id_prim_cat <- u_ids[1]
       id_prim_val <- u_ids[2]
       id_sec_cat  <- u_ids[3]
