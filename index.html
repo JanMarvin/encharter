@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">encharter</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.0</span>
       </span>
     </div>
 
@@ -68,6 +68,7 @@
 <!-- badges: start -->
 
 <p>Experimental package that is still in early development.</p>
+<p>As of <code>encharter</code> 0.4 requires a current development build of <code>openxlsx2</code> due to internal changes when moving the <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code> function to <code>openxlsx2</code>.</p>
 <p>This is a lightweight R6-based engine for generating Office Open XML (OOXML) charts. It is designed for users who need precise control over chart internals—such as combining multiple chart types, mapping secondary axes, or handles numeric XY coordinates in scatter and bubble plots—without the overhead of a full spreadsheet suite.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janmarvin.github.io/openxlsx2/" class="external-link">openxlsx2</a></span><span class="op">)</span></span>
@@ -106,7 +107,7 @@
 <span>  marker    <span class="op">=</span> <span class="st">"circle"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/wb_add_encharter.html">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Data"</span>, graph <span class="op">=</span> <span class="va">combo_chart</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Data"</span>, graph <span class="op">=</span> <span class="va">combo_chart</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Create dummy waterfall data</span></span>
 <span><span class="va">df_wf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -126,7 +127,7 @@
 <span>  data   <span class="op">=</span> <span class="st">"WaterfallData!$B$2:$B$6"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/wb_add_encharter.html">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, graph <span class="op">=</span> <span class="va">wf_chart</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, graph <span class="op">=</span> <span class="va">wf_chart</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Create dummy scatter data</span></span>
 <span><span class="va">df_scatter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -150,7 +151,7 @@
 <span>  marker_size <span class="op">=</span> <span class="fl">8</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/wb_add_encharter.html">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"ScatterData"</span>, graph <span class="op">=</span> <span class="va">sc_chart</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"ScatterData"</span>, graph <span class="op">=</span> <span class="va">sc_chart</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
