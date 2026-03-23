@@ -33,6 +33,6 @@ ch$add_series(
 wb <- wb_workbook()  |>
   wb_add_worksheet("Sheet1")  |>
   wb_add_data(x = df)  |>
-  wb_add_encharter(dims = "D2:L20", graph = ch)
+  openxlsx2::wb_add_encharter(dims = "D2:L20", graph = ch)
 
 wb_open(wb)

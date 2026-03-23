@@ -79,11 +79,11 @@ wf_chart <- ec("waterfall")$
 
 # 3. Add all charts to Workbook
 wb <- wb |>
-  wb_add_encharter(sheet = "Standard", dims = "A15:E30", graph = combo_chart) |>
-  wb_add_encharter(sheet = "Standard", dims = "G15:K30", graph = dn_chart) |>
-  wb_add_encharter(sheet = "Standard", dims = "L15:P30", graph = bb_chart) |>
-  wb_add_encharter(sheet = "Extended", dims = "E2:M18",  graph = box_plot) |>
-  wb_add_encharter(sheet = "Extended", dims = "E20:M36", graph = wf_chart)
+  openxlsx2::wb_add_encharter(sheet = "Standard", dims = "A15:E30", graph = combo_chart) |>
+  openxlsx2::wb_add_encharter(sheet = "Standard", dims = "G15:K30", graph = dn_chart) |>
+  openxlsx2::wb_add_encharter(sheet = "Standard", dims = "L15:P30", graph = bb_chart) |>
+  openxlsx2::wb_add_encharter(sheet = "Extended", dims = "E2:M18",  graph = box_plot) |>
+  openxlsx2::wb_add_encharter(sheet = "Extended", dims = "E20:M36", graph = wf_chart)
 
 # 4. Open or Save
 if (interactive()) wb$open()

@@ -26,7 +26,7 @@ test_that("Chart: Date Axes and Axis Units", {
   expect_match(xml, "<c:lblOffset val=\"100\"/>")
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)
-  wb <- wb_add_encharter(wb, dims = "A2:K10", graph = chart)
+  wb <- openxlsx2::wb_add_encharter(wb, dims = "A2:K10", graph = chart)
 
   chart$add_series(
     header = "S1!C$1", data = "S1!$C$2:$C$5", secondary = TRUE # "y"
@@ -41,7 +41,7 @@ test_that("Chart: Date Axes and Axis Units", {
   xml <- as.character(chart$render())
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)
-  wb <- wb_add_encharter(wb, dims = "A2:K10", graph = chart)
+  wb <- openxlsx2::wb_add_encharter(wb, dims = "A2:K10", graph = chart)
 })
 
 test_that("Chart: Combo charts and Secondary Axis", {

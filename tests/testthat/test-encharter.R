@@ -40,7 +40,7 @@ test_that("ChartEx handles unquoted names for Waterfall", {
 
   expect_error(chart$add_series(data = dat, header = Value, cat = foo), "object 'foo' not found")
 
-  wb <- wb_add_encharter(wb, graph = chart)
+  wb <- openxlsx2::wb_add_encharter(wb, graph = chart)
 })
 
 test_that("validates correctly", {

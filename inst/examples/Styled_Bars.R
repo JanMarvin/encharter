@@ -68,6 +68,6 @@ my_chart$
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = sales_data) |>
-  wb_add_encharter(dims = "E2:M20", graph = my_chart)
+  openxlsx2::wb_add_encharter(dims = "E2:M20", graph = my_chart)
 
 wb$open()

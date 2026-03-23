@@ -35,6 +35,6 @@ chart$add_series(
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet 1") |>
   wb_add_data(x = data.frame(Label = c("A", "B", "C", "D"), Val = c(10, 25, 15, 30))) |>
-  wb_add_encharter(dims = "E2:M20", graph = chart)
+  openxlsx2::wb_add_encharter(dims = "E2:M20", graph = chart)
 
 wb$open()

@@ -26,7 +26,7 @@ my_wf$add_series(
   subtotals = 5
 )
 
-wb <- wb_add_encharter(wb, sheet = "Data2", dims = "D2:L20", graph = my_wf)
+wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data2", dims = "D2:L20", graph = my_wf)
 
 wb$charts$chartEx |> as_xml()
 

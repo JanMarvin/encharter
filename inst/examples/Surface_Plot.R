@@ -33,6 +33,6 @@ for (i in 2:6) {
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = surface_data, col_names = TRUE) |>
-  wb_add_encharter(dims = "H2:P25", graph = contour_plot)
+  openxlsx2::wb_add_encharter(dims = "H2:P25", graph = contour_plot)
 
 wb$open()

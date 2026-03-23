@@ -16,11 +16,11 @@ Encoding: UTF-8
 Imports:
     R6,
     xml2,
-    openxlsx2
+    openxlsx2 (> 1.25)
 Suggests:
     testthat (>= 3.0.0),
     viridisLite
 Config/testthat/edition: 3
 Config/roxygen2/version: 7.3.3.9000
 RoxygenNote: 7.3.3
-Remotes: JanMarvin/openxlsx2#1602
+Remotes: JanMarvin/openxlsx2

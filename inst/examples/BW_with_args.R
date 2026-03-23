@@ -27,6 +27,6 @@ ce$set_chart_title("Box Plot with Visibility Toggles")
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet1") |>
   wb_add_data(x = df_box) |>
-  wb_add_encharter(dims = "D2:L25", graph = ce)
+  openxlsx2::wb_add_encharter(dims = "D2:L25", graph = ce)
 
 if (interactive()) wb$open()
