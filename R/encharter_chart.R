@@ -20,6 +20,8 @@ Chart <- R6::R6Class(
     x2_title = list(text = NULL, style = list()),
     #' @field y2_title List containing text and style for the secondary Y-axis.
     y2_title = list(text = NULL, style = list()),
+    #' @field expansion Integer. Size of the expansion for pie charts.
+    expansion = NULL,
     #' @field hole_size Integer. Size of the hole for doughnut charts (0-90).
     hole_size = 75,
     #' @field show_data_table Logical if a data table should be added.
@@ -246,15 +248,19 @@ Chart <- R6::R6Class(
 
     #' @description Set the doughnut hole size.
     #' @param val Integer 0 to 90.
-    set_hole_size    = function(val) {
+    set_hole_size = function(val) {
       self$hole_size <- val
       invisible(self)
     },
 
     #' @param ang The angle of the first slice in degrees, from 0 to 360.
     #' This rotates the chart clockwise.
-    set_pie_options  = function(ang = 0) {
+    #' @param expansion Sets the expansion.
+    set_pie_options  = function(ang = 0, expansion = NULL) {
       self$first_slice_ang <- ang
+      if (!is.null(expansion)) {
+        self$expansion <- expansion
+      }
       invisible(self)
     },
 
@@ -759,6 +765,12 @@ Chart <- R6::R6Class(
             # Fill and Line are now separate
             private$render_fill_style(m_spPr, s$marker$fill)
             private$render_line_style(m_spPr, s$marker$line)
+          }
+        }
+
+        if (type == "pieChart") {
+          if (!is.null(self$expansion)) {
+            xml2::xml_add_child(ser, "c:explosion", val = self$expansion)
           }
         }
 

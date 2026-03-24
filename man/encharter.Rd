@@ -67,6 +67,8 @@ integrates with `openxlsx2` for workbook generation.
 
 \item{\code{y2_title}}{List containing text and style for the secondary Y-axis.}
 
+\item{\code{expansion}}{Integer. Size of the expansion for pie charts.}
+
 \item{\code{hole_size}}{Integer. Size of the hole for doughnut charts (0-90).}
 
 \item{\code{show_data_table}}{Logical if a data table should be added.}
@@ -106,6 +108,7 @@ integrates with `openxlsx2` for workbook generation.
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-print'><code>encharter::EncharterBase$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_style'><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_title'><code>encharter::EncharterBase$set_chart_title()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_data_label_style'><code>encharter::EncharterBase$set_data_label_style()</code></a></span></li>
@@ -394,7 +397,7 @@ Set the doughnut hole size.
 \if{latex}{\out{\hypertarget{method-Chart-set_pie_options}{}}}
 \subsection{Method \code{set_pie_options()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Chart$set_pie_options(ang = 0)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_pie_options(ang = 0, expansion = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -402,6 +405,8 @@ Set the doughnut hole size.
 \describe{
 \item{\code{ang}}{The angle of the first slice in degrees, from 0 to 360.
 This rotates the chart clockwise.}
+
+\item{\code{expansion}}{Sets the expansion.}
 }
 \if{html}{\out{</div>}}
 }
@@ -620,6 +625,7 @@ The objects of this class are cloneable with this method.
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-print'><code>encharter::EncharterBase$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_style'><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_chart_title'><code>encharter::EncharterBase$set_chart_title()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_data_label_style'><code>encharter::EncharterBase$set_data_label_style()</code></a></span></li>
