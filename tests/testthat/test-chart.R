@@ -46,8 +46,10 @@ test_that("Chart: Bubble and Doughnut specific features", {
     cat = "Sheet1!$A$2:$A$6",
     data = "Sheet1!$B$2:$B$6"
   )
-  dn$set_hole_size(65)
+  dn$set_pie_options(hole_size = 65, rotation = 90, expansion = 40)
   expect_match(as.character(dn$render()), "holeSize val=\"65\"")
+  expect_match(as.character(dn$render()), "firstSliceAng val=\"90\"")
+  expect_match(as.character(dn$render()), "explosion val=\"40\"")
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("Sheet1")$
     add_data(x = head(mtcars[1:3]), row_names = TRUE)$

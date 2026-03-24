@@ -20,6 +20,8 @@ Chart <- R6::R6Class(
     x2_title = list(text = NULL, style = list()),
     #' @field y2_title List containing text and style for the secondary Y-axis.
     y2_title = list(text = NULL, style = list()),
+    #' @field first_slice_ang Integer. Rotation of the first slice (0-360).
+    first_slice_ang = NULL,
     #' @field expansion Integer. Size of the expansion for pie charts.
     expansion = NULL,
     #' @field hole_size Integer. Size of the hole for doughnut charts (0-90).
@@ -246,21 +248,22 @@ Chart <- R6::R6Class(
       invisible(self)
     },
 
-    #' @description Set the doughnut hole size.
-    #' @param val Integer 0 to 90.
-    set_hole_size = function(val) {
-      self$hole_size <- val
-      invisible(self)
-    },
-
-    #' @param ang The angle of the first slice in degrees, from 0 to 360.
+    #' @param rotation The angle of the first slice in degrees, from 0 to 360.
     #' This rotates the chart clockwise.
-    #' @param expansion Sets the expansion.
-    set_pie_options  = function(ang = 0, expansion = NULL) {
-      self$first_slice_ang <- ang
+    #' @param expansion Sets the expansion, from 0 to 400.
+    #' @param hole_size Set the hole size of (only doughnut charts), from 0 to 90.
+    set_pie_options  = function(rotation = NULL, expansion = NULL, hole_size = NULL) {
+
+      if (!is.null(rotation)) {
+        self$first_slice_ang <- rotation
+      }
       if (!is.null(expansion)) {
         self$expansion <- expansion
       }
+      if (!is.null(hole_size)) {
+        self$hole_size <- hole_size
+      }
+
       invisible(self)
     },
 
@@ -768,9 +771,9 @@ Chart <- R6::R6Class(
           }
         }
 
-        if (type == "pieChart") {
+        if (type %in% c("pieChart", "doughnutChart")) {
           if (!is.null(self$expansion)) {
-            xml2::xml_add_child(ser, "c:explosion", val = self$expansion)
+            xml2::xml_add_child(ser, "c:explosion", val = as.character(self$expansion))
           }
         }
 
@@ -980,6 +983,11 @@ Chart <- R6::R6Class(
       }
 
       # doughnutChart holeSize
+      if (type %in% c("pieChart", "doughnutChart")) {
+        if (!is.null(self$first_slice_ang)) {
+          xml2::xml_add_child(c_node, "c:firstSliceAng", val = as.character(self$first_slice_ang))
+        }
+      }
       if (type == "doughnutChart") {
         xml2::xml_add_child(c_node, "c:holeSize", val = as.character(self$hole_size %||% 75))
       }

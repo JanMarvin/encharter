@@ -42,7 +42,7 @@ combo_chart <- ec("barplot")$ # Using the new alias
 # B. Doughnut Chart
 dn_chart <- ec("doughnut")$
   set_chart_title("Investment Distribution")$
-  set_hole_size(65)$
+  set_pie_options(hole_size = 65)$
   add_series(
     header = "Standard!$G$1", data = "Standard!$G$2:$G$5",
     cat = "Standard!$F$2:$F$5"

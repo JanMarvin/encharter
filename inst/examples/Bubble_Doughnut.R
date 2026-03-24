@@ -19,7 +19,7 @@ wb <- wb_workbook() |>
 
 # --- DOUGHNUT CHART ---
 dn_chart <- ec("doughnutChart")
-dn_chart$set_chart_title("Budget Allocation")$set_hole_size(60)
+dn_chart$set_chart_title("Budget Allocation")$set_pie_options(hole_size = 60)
 dn_chart$add_series(
   header = "Data!$B$1",
   cat    = "Data!$A$2:$A$5",

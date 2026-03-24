@@ -22,7 +22,7 @@ test_that("Chart: Multi-level labels and Bubbles", {
 
 test_that("Chart: Doughnut Hole Size", {
   dn <- Chart$new("doughnutChart")
-  dn$set_hole_size(75)
+  dn$set_pie_options(hole_size = 75)
   dn$add_series(header = "H", data = "dat!B2:B5")
 
   expect_match(as.character(dn$render()), "<c:holeSize val=\"75\"/>")

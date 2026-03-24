@@ -26,6 +26,10 @@ pie$add_series(
   color = viridisLite::viridis(5)
 )
 
+pie$set_pie_options(
+  rotation = 300, expansion = 10
+)
+
 # 4. Build workbook
 wb <- wb_workbook() |>
   wb_add_worksheet("Sheet 1") |>

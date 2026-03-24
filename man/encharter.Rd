@@ -67,6 +67,8 @@ integrates with `openxlsx2` for workbook generation.
 
 \item{\code{y2_title}}{List containing text and style for the secondary Y-axis.}
 
+\item{\code{first_slice_ang}}{Integer. Rotation of the first slice (0-360).}
+
 \item{\code{expansion}}{Integer. Size of the expansion for pie charts.}
 
 \item{\code{hole_size}}{Integer. Size of the hole for doughnut charts (0-90).}
@@ -96,7 +98,6 @@ integrates with `openxlsx2` for workbook generation.
 \item \href{#method-Chart-set_y2_axis}{\code{Chart$set_y2_axis()}}
 \item \href{#method-Chart-set_x2_axis}{\code{Chart$set_x2_axis()}}
 \item \href{#method-Chart-set_data_table}{\code{Chart$set_data_table()}}
-\item \href{#method-Chart-set_hole_size}{\code{Chart$set_hole_size()}}
 \item \href{#method-Chart-set_pie_options}{\code{Chart$set_pie_options()}}
 \item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
 \item \href{#method-Chart-set_disp_blanks}{\code{Chart$set_disp_blanks()}}
@@ -376,37 +377,22 @@ Set the data table.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Chart-set_hole_size"></a>}}
-\if{latex}{\out{\hypertarget{method-Chart-set_hole_size}{}}}
-\subsection{Method \code{set_hole_size()}}{
-Set the doughnut hole size.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Chart$set_hole_size(val)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{val}}{Integer 0 to 90.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_pie_options"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_pie_options}{}}}
 \subsection{Method \code{set_pie_options()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Chart$set_pie_options(ang = 0, expansion = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Chart$set_pie_options(rotation = NULL, expansion = NULL, hole_size = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{ang}}{The angle of the first slice in degrees, from 0 to 360.
+\item{\code{rotation}}{The angle of the first slice in degrees, from 0 to 360.
 This rotates the chart clockwise.}
 
-\item{\code{expansion}}{Sets the expansion.}
+\item{\code{expansion}}{Sets the expansion, from 0 to 400.}
+
+\item{\code{hole_size}}{Set the hole size of (only doughnut charts), from 0 to 90.}
 }
 \if{html}{\out{</div>}}
 }
