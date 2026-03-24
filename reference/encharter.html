@@ -119,6 +119,10 @@ integrates with `openxlsx2` for workbook generation.</p>
 <dd><p>List containing text and style for the secondary Y-axis.</p></dd>
 
 
+<dt><code>expansion</code></dt>
+<dd><p>Integer. Size of the expansion for pie charts.</p></dd>
+
+
 <dt><code>hole_size</code></dt>
 <dd><p>Integer. Size of the hole for doughnut charts (0-90).</p></dd>
 
@@ -172,7 +176,8 @@ integrates with `openxlsx2` for workbook generation.</p>
 <li><p><a href="#method-Chart-add_series"><code>Chart$add_series()</code></a></p></li>
 <li><p><a href="#method-Chart-render"><code>Chart$render()</code></a></p></li>
 <li><p><a href="#method-Chart-clone"><code>Chart$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href="EncharterBase.html#method-set_chart_style"><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href="EncharterBase.html#method-print"><code>encharter::EncharterBase$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href="EncharterBase.html#method-set_chart_style"><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href="EncharterBase.html#method-set_chart_title"><code>encharter::EncharterBase$set_chart_title()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href="EncharterBase.html#method-set_data_label_style"><code>encharter::EncharterBase$set_data_label_style()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href="EncharterBase.html#method-set_legend_style"><code>encharter::EncharterBase$set_legend_style()</code></a></span></li>
@@ -542,7 +547,7 @@ integrates with `openxlsx2` for workbook generation.</p>
 
 <div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_pie_options</span><span class="op">(</span>ang <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_pie_options</span><span class="op">(</span>ang <span class="op">=</span> <span class="fl">0</span>, expansion <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -550,6 +555,10 @@ integrates with `openxlsx2` for workbook generation.</p>
 <p></p><div class="arguments"><dl><dt><code>ang</code></dt>
 <dd><p>The angle of the first slice in degrees, from 0 to 360.
 This rotates the chart clockwise.</p></dd>
+
+
+<dt><code>expansion</code></dt>
+<dd><p>Sets the expansion.</p></dd>
 
 
 </dl><p></p></div>
@@ -819,7 +828,8 @@ This rotates the chart clockwise.</p></dd>
 <li><p><a href="#method-ChartEx-add_series"><code>ChartEx$add_series()</code></a></p></li>
 <li><p><a href="#method-ChartEx-render"><code>ChartEx$render()</code></a></p></li>
 <li><p><a href="#method-ChartEx-clone"><code>ChartEx$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href="EncharterBase.html#method-set_chart_style"><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href="EncharterBase.html#method-print"><code>encharter::EncharterBase$print()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href="EncharterBase.html#method-set_chart_style"><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href="EncharterBase.html#method-set_chart_title"><code>encharter::EncharterBase$set_chart_title()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href="EncharterBase.html#method-set_data_label_style"><code>encharter::EncharterBase$set_data_label_style()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href="EncharterBase.html#method-set_legend_style"><code>encharter::EncharterBase$set_legend_style()</code></a></span></li>
