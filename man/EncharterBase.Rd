@@ -49,6 +49,7 @@ Encharter Base R6 Class
 \item \href{#method-EncharterBase-set_legend_style}{\code{EncharterBase$set_legend_style()}}
 \item \href{#method-EncharterBase-set_chart_style}{\code{EncharterBase$set_chart_style()}}
 \item \href{#method-EncharterBase-set_plot_style}{\code{EncharterBase$set_plot_style()}}
+\item \href{#method-EncharterBase-print}{\code{EncharterBase$print()}}
 \item \href{#method-EncharterBase-clone}{\code{EncharterBase$clone()}}
 }
 }
@@ -403,6 +404,16 @@ Style the inner plot area background.
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-EncharterBase-print"></a>}}
+\if{latex}{\out{\hypertarget{method-EncharterBase-print}{}}}
+\subsection{Method \code{print()}}{
+print the summary of the Encharter object
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$print()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-clone"></a>}}

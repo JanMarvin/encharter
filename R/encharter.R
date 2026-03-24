@@ -312,6 +312,44 @@ EncharterBase <- R6::R6Class(
     set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
       self$plot_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
+    },
+
+    #' @description print the summary of the Encharter object
+    print = function() {
+      nSeries <- length(self$series_data)
+
+      cat("An encharter object\n")
+      cat("Number of Series:", nSeries, "\n")
+
+      if (nSeries > 0) {
+        cat(rep("-", 30), "\n", sep = "")
+
+        for (i in seq_len(nSeries)) {
+          s <- self$series_data[[i]]
+
+          # Logic to determine axis hint
+          is_secondary <- s$sec_type %in% c("x", "y", "xy")
+          axis_hint <- if (is_secondary) " [Secondary Axis]" else ""
+
+          s_type <- if (!is.null(s$type)) s$type else self$type
+          s_name <- if (!is.null(s$name)) s$name else paste("Series", i)
+
+          cat(sprintf("Series %d: %s %s\n", i, s_name, axis_hint))
+          cat(sprintf("  - Type: %s\n", s_type))
+
+          if (!is.null(s$data)) {
+            cat(sprintf("  - Data: [%s]\n", s$data))
+          }
+
+          if (!is.null(s$cat)) {
+            cat(sprintf("  - Cat:  [%s]\n", s$cat))
+          }
+
+          cat(rep("-", 30), "\n", sep = "")
+        }
+      }
+
+      invisible(self)
     }
   ),
   private = list(

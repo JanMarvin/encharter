@@ -46,3 +46,27 @@ test_that("ChartEx handles unquoted names for Waterfall", {
 test_that("validates correctly", {
   expect_error(chart <- ec("waterFall"), "should be one of")
 })
+
+test_that("print works", {
+  combo_chart <- ec("barplot")$
+    set_chart_title("Sales Volume vs Growth", bold = TRUE)$
+    add_series(
+      header = "Standard!$B$1", data = "Standard!$B$2:$B$13",
+      cat = "Standard!$A$2:$A$13", color = "4472C4"
+    )$
+    add_series(
+      header = "Standard!$D$1", data = "Standard!$D$2:$D$13",
+      type = "lineChart", secondary = TRUE, color = "C0504D", marker = "circle"
+    )$
+    set_legend_style(pos = "bottom")
+
+  output <- capture.output(print(combo_chart))
+
+  expect_match(output[1], "An encharter object")
+  expect_match(output[2], "Number of Series: 2")
+
+  expect_true(any(grepl("Series 2: Series 2  \\[Secondary Axis\\]", output)))
+
+  expect_true(any(grepl("Type: barChart", output)))
+  expect_true(any(grepl("'Standard'!\\$B\\$2", output)))
+})
