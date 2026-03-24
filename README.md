@@ -5,9 +5,11 @@ encharter
 
 [![R-CMD-check.yaml](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/JanMarvin/openxlsx2/actions/workflows/check-standard.yaml)
 [![codecov](https://codecov.io/gh/JanMarvin/encharter/graph/badge.svg?token=JMMBBBHPTG)](https://app.codecov.io/gh/JanMarvin/encharter)
+[![r-universe](https://janmarvin.r-universe.dev/badges/encharter)](https://janmarvin.r-universe.dev/encharter)
+
 <!-- badges: end -->
 
-Experimental package that is still in early development.
+> Experimental package that is still in development.
 
 As of `encharter` 0.4 requires a current development build of
 `openxlsx2` due to internal changes when moving the `wb_add_encharter()`
