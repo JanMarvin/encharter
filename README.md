@@ -11,8 +11,8 @@ encharter
 
 > Experimental package that is still in development.
 
-As of `encharter` 0.4 requires a current development build of
-`openxlsx2` due to internal changes when moving the `wb_add_encharter()`
+As of `encharter` 0.4 a current development build of `openxlsx2` is
+required due to internal changes when moving the `wb_add_encharter()`
 function to `openxlsx2`.
 
 This is a lightweight R6-based engine for generating Office Open XML
