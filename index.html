@@ -71,9 +71,21 @@
 <blockquote>
 <p>Experimental package that is still in development.</p>
 </blockquote>
-<p>As of <code>encharter</code> 0.4 a current development build of <code>openxlsx2</code> is required due to internal changes when moving the <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code> function to <code>openxlsx2</code>.</p>
 <p>This is a lightweight R6-based engine for generating Office Open XML (OOXML) charts. It is designed for users who need precise control over chart internals—such as combining multiple chart types, mapping secondary axes, or handles numeric XY coordinates in scatter and bubble plots—without the overhead of a full spreadsheet suite.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>As of <code>encharter</code> 0.4 a current development build of <code>openxlsx2</code> is required due to internal changes when moving the <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code> function to <code>openxlsx2</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'encharter'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://janmarvin.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>or</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"JanMarvin/encharter"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janmarvin.github.io/openxlsx2/" class="external-link">openxlsx2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janmarvin.github.io/encharter/" class="external-link">encharter</a></span><span class="op">)</span></span>
 <span></span>
@@ -111,7 +123,7 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Data"</span>, graph <span class="op">=</span> <span class="va">combo_chart</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Create dummy waterfall data</span></span>
 <span><span class="va">df_wf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  Label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gross Revenue"</span>, <span class="st">"COGS"</span>, <span class="st">"OpEx"</span>, <span class="st">"Tax"</span>, <span class="st">"Net Income"</span><span class="op">)</span>,</span>
@@ -131,7 +143,7 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, graph <span class="op">=</span> <span class="va">wf_chart</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># 1. Create dummy scatter data</span></span>
 <span><span class="va">df_scatter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  Project <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Project"</span>, <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -155,6 +167,7 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"ScatterData"</span>, graph <span class="op">=</span> <span class="va">sc_chart</span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
   </div>
 
