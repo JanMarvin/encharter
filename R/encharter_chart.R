@@ -898,9 +898,11 @@ Chart <- R6::R6Class(
 
         # 6. Data References (xVal/yVal or cat/val)
         if (type %in% c("scatterChart", "bubbleChart")) {
-          x_val_node <- xml2::xml_add_child(ser, "c:xVal")
-          ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
-          xml2::xml_add_child(xml2::xml_add_child(x_val_node, ref_type), "c:f", s$cat)
+          if (!is.null(s$cat)) {
+            x_val_node <- xml2::xml_add_child(ser, "c:xVal")
+            ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
+            xml2::xml_add_child(xml2::xml_add_child(x_val_node, ref_type), "c:f", s$cat)
+          }
 
           y_val_node <- xml2::xml_add_child(ser, "c:yVal")
           y_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"

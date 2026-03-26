@@ -199,3 +199,32 @@ test_that("radarChart rendering works for both standard and filled styles", {
   expect_s3_class(radar_std, "Chart")
   expect_equal(length(xml2::xml_find_all(xml_std, ".//c:radarChart")), 1)
 })
+
+test_that("scatter without cat is supported", {
+
+  df_scatter <- data.frame(
+    Project = paste("Project", LETTERS[1:5]),
+    Risk    = c(10, 40, 30, 70, 90),
+    ROI     = c(20, 50, 80, 40, 60)
+  )
+
+  sc_chart <- ec("scatterChart")
+  sc_chart$set_chart_title("Risk vs ROI Analysis")
+
+  sc_chart$add_series(
+    header    = "Portfolio",
+    data      = "ScatterData!$C$2:$C$6",
+    show_line = FALSE,
+    marker    = "circle",
+    marker_size = 8
+  )
+
+  xml <- sc_chart$render()
+  expect_true(!any(grepl('c:xVal', as.character(xml))))
+
+  wb <- openxlsx2::wb_workbook()$
+    add_worksheet(sheet = "ScatterData")$
+    add_data(sheet = "ScatterData", x = df_scatter)$
+    add_encharter(sheet = "ScatterData", graph = sc_chart)
+
+})
