@@ -11,15 +11,29 @@ encharter
 
 > Experimental package that is still in development.
 
-As of `encharter` 0.4 a current development build of `openxlsx2` is
-required due to internal changes when moving the `wb_add_encharter()`
-function to `openxlsx2`.
-
 This is a lightweight R6-based engine for generating Office Open XML
 (OOXML) charts. It is designed for users who need precise control over
 chart internals—such as combining multiple chart types, mapping
 secondary axes, or handles numeric XY coordinates in scatter and bubble
 plots—without the overhead of a full spreadsheet suite.
+
+## Installation
+
+As of `encharter` 0.4 a current development build of `openxlsx2` is
+required due to internal changes when moving the `wb_add_encharter()`
+function to `openxlsx2`.
+
+``` r
+install.packages('encharter', repos = c('https://janmarvin.r-universe.dev', 'https://cloud.r-project.org'))
+```
+
+or
+
+``` r
+remotes::install_github("JanMarvin/encharter")
+```
+
+## Examples
 
 ``` r
 library(openxlsx2)
