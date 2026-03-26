@@ -220,7 +220,7 @@ test_that("scatter without cat is supported", {
   )
 
   xml <- sc_chart$render()
-  expect_true(!any(grepl('c:xVal', as.character(xml))))
+  expect_true(!any(grepl("c:xVal", as.character(xml))))
 
   wb <- openxlsx2::wb_workbook()$
     add_worksheet(sheet = "ScatterData")$
