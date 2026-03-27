@@ -54,7 +54,7 @@ in \code{add_series()}. You can use \code{"v"}, \code{"vertical"} (Column) or
 This class is designed to work with the `openxlsx2` package by generating
 the underlying XML required for the \code{add_chart_xml} method.
 
-This class uses `xml2` to manipulate the underlying XML structure and
+This class uses XML to manipulate the underlying XML structure and
 integrates with `openxlsx2` for workbook generation.
 }
 \section{Super class}{
