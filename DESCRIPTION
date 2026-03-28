@@ -13,9 +13,10 @@ License: MIT + file LICENSE
 URL: https://janmarvin.github.io/encharter/, https://github.com/JanMarvin/encharter
 BugReports: https://github.com/JanMarvin/encharter/issues
 Encoding: UTF-8
+LinkingTo:
+    openxlsx2
 Imports:
     R6,
-    xml2,
     openxlsx2 (> 1.25)
 Suggests:
     testthat (>= 3.0.0),

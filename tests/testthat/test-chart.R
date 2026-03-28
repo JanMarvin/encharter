@@ -99,23 +99,23 @@ test_that("Chart series supports Trendlines and Error Bars with correct XSD sequ
 
   xml <- ch$render()
 
-  tl_node <- xml2::xml_find_first(xml2::read_xml(xml), "//c:ser/c:trendline")
+  tl_node <- xml_find_first(read_xml(xml), "//c:ser/c:trendline")
   expect_false(is.null(tl_node))
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(tl_node, "c:trendlineType"), "val"), "linear")
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(tl_node, "c:dispRSqr"), "val"), "0")
+  expect_equal(xml_attr(xml_find_first(tl_node, "c:trendlineType"), "val"), "linear")
+  expect_equal(xml_attr(xml_find_first(tl_node, "c:dispRSqr"), "val"), "0")
 
-  eb_node <- xml2::xml_find_first(xml2::read_xml(xml), "//c:ser/c:errBars")
+  eb_node <- xml_find_first(read_xml(xml), "//c:ser/c:errBars")
   expect_false(is.null(eb_node))
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(eb_node, "c:errDir"), "val"), "y")
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(eb_node, "c:errValType"), "val"), "percentage")
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(eb_node, "c:val"), "val"), "10")
+  expect_equal(xml_attr(xml_find_first(eb_node, "c:errDir"), "val"), "y")
+  expect_equal(xml_attr(xml_find_first(eb_node, "c:errValType"), "val"), "percentage")
+  expect_equal(xml_attr(xml_find_first(eb_node, "c:val"), "val"), "10")
 
-  ser_children <- xml2::xml_name(xml2::xml_children(xml2::xml_find_first(xml2::read_xml(xml), "//c:ser")))
+  ser_children <- xml_name(xml_children(xml_find_first(read_xml(xml), "//c:ser")))
 
-  idx_trendline <- which(ser_children == "trendline")
-  idx_errbars   <- which(ser_children == "errBars")
-  idx_cat       <- which(ser_children == "cat")
-  idx_val       <- which(ser_children == "val")
+  idx_trendline <- which(ser_children == "c:trendline")
+  idx_errbars   <- which(ser_children == "c:errBars")
+  idx_cat       <- which(ser_children == "c:cat")
+  idx_val       <- which(ser_children == "c:val")
 
   expect_true(idx_trendline < idx_errbars)
 
@@ -149,14 +149,14 @@ test_that("surfaceChart rendering works", {
     openxlsx2::wb_add_data(x = surface_data) |>
     openxlsx2::wb_add_encharter(graph = chart)
 
-  xml_content <- xml2::read_xml(chart$render())
+  xml_content <- read_xml(chart$render())
 
   # 4. Assertions
   expect_s3_class(chart, "Chart")
   # Verify the specific OOXML tag for surface charts exists
   expect_true(any(grepl("surfaceChart", as.character(xml_content))))
   # Verify we have the correct number of series nodes
-  expect_equal(length(xml2::xml_find_all(xml_content, ".//c:ser")), 3)
+  expect_equal(length(xml_find_all(xml_content, ".//c:ser")), 3)
 })
 
 test_that("radarChart rendering works for both standard and filled styles", {
@@ -175,7 +175,7 @@ test_that("radarChart rendering works for both standard and filled styles", {
     type   = "radarChart"
   )
 
-  xml_std <- xml2::read_xml(radar_std$render())
+  xml_std <- read_xml(radar_std$render())
 
   # Assert standard radarStyle is "radar" (default line)
   expect_true(any(grepl('radarStyle val="standard"', as.character(xml_std))))
@@ -190,14 +190,14 @@ test_that("radarChart rendering works for both standard and filled styles", {
     filled = TRUE
   )
 
-  xml_filled <- xml2::read_xml(radar_filled$render())
+  xml_filled <- read_xml(radar_filled$render())
 
   # Assert filled radarStyle is "filled"
   expect_true(any(grepl('radarStyle val="filled"', as.character(xml_filled))))
 
   # 4. General structure check
   expect_s3_class(radar_std, "Chart")
-  expect_equal(length(xml2::xml_find_all(xml_std, ".//c:radarChart")), 1)
+  expect_equal(length(xml_find_all(xml_std, ".//c:radarChart")), 1)
 })
 
 test_that("scatter without cat is supported", {

@@ -54,7 +54,7 @@ Chart <- R6::R6Class(
 
       type <- normalize_encharter_type(type)
       self$type <- type
-      self$xml <- xml2::read_xml(
+      self$xml <- read_xml(
         '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"
                         xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
@@ -497,29 +497,29 @@ Chart <- R6::R6Class(
       }
 
       self$type <- self$type %||% "barChart"
-      xml2::xml_remove(xml2::xml_find_all(self$xml, "c:spPr"))
+      xml_remove(xml_find_all(self$xml, "c:spPr"))
       private$apply_sp_pr(self$xml, self$chart_style)
 
-      chart_root <- xml2::xml_find_first(self$xml, "//c:chart")
-      xml2::xml_remove(xml2::xml_children(chart_root))
+      chart_root <- xml_find_first(self$xml, "//c:chart")
+      xml_remove(xml_children(chart_root))
 
       if (!is.null(self$chart_title$text)) {
-        t_node <- xml2::xml_add_child(chart_root, "c:title")
+        t_node <- xml_add_child(chart_root, "c:title")
         private$add_title_content(t_node, self$chart_title$text, self$chart_title$style, default_sz = 1400)
-        xml2::xml_add_child(t_node, "c:overlay", val = "0")
+        xml_add_child(t_node, "c:overlay", val = "0")
       }
-      xml2::xml_add_child(chart_root, "c:autoTitleDeleted", val = if (is.null(self$chart_title$text)) "1" else "0")
+      xml_add_child(chart_root, "c:autoTitleDeleted", val = if (is.null(self$chart_title$text)) "1" else "0")
 
       if (self$type == "surfaceChart") {
-        v3d <- xml2::xml_add_child(chart_root, "c:view3D")
-        xml2::xml_add_child(v3d, "c:rotX", val = "90")
-        xml2::xml_add_child(v3d, "c:rotY", val = "0")
-        xml2::xml_add_child(v3d, "c:rAngAx", val = "0")
-        xml2::xml_add_child(v3d, "c:perspective", val = "0")
+        v3d <- xml_add_child(chart_root, "c:view3D")
+        xml_add_child(v3d, "c:rotX", val = "90")
+        xml_add_child(v3d, "c:rotY", val = "0")
+        xml_add_child(v3d, "c:rAngAx", val = "0")
+        xml_add_child(v3d, "c:perspective", val = "0")
       }
 
-      plot_area <- xml2::xml_add_child(chart_root, "c:plotArea")
-      xml2::xml_add_child(plot_area, "c:layout")
+      plot_area <- xml_add_child(chart_root, "c:plotArea")
+      xml_add_child(plot_area, "c:layout")
 
       id_prim_cat <- u_ids[1]
       id_prim_val <- u_ids[2]
@@ -597,13 +597,13 @@ Chart <- R6::R6Class(
       }
 
       if (isTRUE(self$show_data_table)) {
-        dTable <- xml2::xml_add_child(plot_area, "c:dTable")
+        dTable <- xml_add_child(plot_area, "c:dTable")
 
         # Standard visibility flags
-        xml2::xml_add_child(dTable, "c:showHorzBorder", val = "1")
-        xml2::xml_add_child(dTable, "c:showVertBorder", val = "1")
-        xml2::xml_add_child(dTable, "c:showOutline",    val = "1")
-        xml2::xml_add_child(dTable, "c:showKeys",       val = "1")
+        xml_add_child(dTable, "c:showHorzBorder", val = "1")
+        xml_add_child(dTable, "c:showVertBorder", val = "1")
+        xml_add_child(dTable, "c:showOutline",    val = "1")
+        xml_add_child(dTable, "c:showKeys",       val = "1")
 
         private$apply_text_style(dTable, self$axis_params$x) # size is a little smaller
       }
@@ -612,14 +612,14 @@ Chart <- R6::R6Class(
 
       l_pos <- self$legend_params$pos %||% "t"
       if (l_pos != "none") {
-        legend <- xml2::xml_add_child(chart_root, "c:legend")
-        xml2::xml_add_child(legend, "c:legendPos", val = self$legend_params$pos)
-        xml2::xml_add_child(legend, "c:overlay", val = self$legend_params$overlay)
+        legend <- xml_add_child(chart_root, "c:legend")
+        xml_add_child(legend, "c:legendPos", val = self$legend_params$pos)
+        xml_add_child(legend, "c:overlay", val = self$legend_params$overlay)
         if (length(self$legend_params$style) > 0) private$apply_text_style(legend, self$legend_params$style)
       }
-      xml2::xml_add_child(chart_root, "c:dispBlanksAs", val = self$disp_blanks_as)
+      xml_add_child(chart_root, "c:dispBlanksAs", val = self$disp_blanks_as)
 
-      openxlsx2::read_xml(as.character(self$xml), pointer = FALSE)
+      read_xml(as.character(self$xml), pointer = FALSE)
     }
   ),
 
@@ -635,15 +635,15 @@ Chart <- R6::R6Class(
     # Unified Line Styler
     render_line_style = function(node, settings) {
       if (isFALSE(settings$show)) {
-        xml2::xml_add_child(node, "a:noFill")
+        xml_add_child(node, "a:noFill")
         return()
       }
       # Set Width (Points to EMUs)
       w_emu <- as.character(round((settings$width %||% 1) * 12700))
-      ln <- xml2::xml_add_child(node, "a:ln", w = w_emu)
+      ln <- xml_add_child(node, "a:ln", w = w_emu)
 
       # Set Color
-      private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), settings$color %||% "000000")
+      private$render_fill(xml_add_child(ln, "a:solidFill"), settings$color %||% "000000")
 
       # Set Dash/Line Type
       if (!is.null(settings$type)) {
@@ -654,9 +654,9 @@ Chart <- R6::R6Class(
     # Simplified Fill Styler
     render_fill_style = function(node, color) {
       if (is.null(color) || color == "none") {
-        xml2::xml_add_child(node, "a:noFill")
+        xml_add_child(node, "a:noFill")
       } else {
-        private$render_fill(xml2::xml_add_child(node, "a:solidFill"), color)
+        private$render_fill(xml_add_child(node, "a:solidFill"), color)
       }
     },
 
@@ -668,88 +668,88 @@ Chart <- R6::R6Class(
                       "dotted"  = "dot",
                       style_val # Fallback to literal string
         )
-        xml2::xml_add_child(ln_node, "a:prstDash", val = val)
+        xml_add_child(ln_node, "a:prstDash", val = val)
       }
     },
 
     apply_sp_pr = function(node, style) {
       if (is.null(style$fill) && is.null(style$line)) return()
-      spPr <- xml2::xml_add_child(node, "c:spPr")
-      if (!is.null(style$fill)) private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), style$fill)
+      spPr <- xml_add_child(node, "c:spPr")
+      if (!is.null(style$fill)) private$render_fill(xml_add_child(spPr, "a:solidFill"), style$fill)
       if (!is.null(style$line)) {
-        ln <- xml2::xml_add_child(spPr, "a:ln", w = as.character(round(style$line_width * 12700)))
-        private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), style$line)
+        ln <- xml_add_child(spPr, "a:ln", w = as.character(round(style$line_width * 12700)))
+        private$render_fill(xml_add_child(ln, "a:solidFill"), style$line)
       } else {
-        xml2::xml_add_child(xml2::xml_add_child(spPr, "a:ln"), "a:noFill")
+        xml_add_child(xml_add_child(spPr, "a:ln"), "a:noFill")
       }
     },
 
     render_series_node = function(plot_area, sub_series, type, cat_id, val_id, ser_id) {
-      c_node <- xml2::xml_add_child(plot_area, paste0("c:", type))
+      c_node <- xml_add_child(plot_area, paste0("c:", type))
 
       # 1. INITIAL PROPERTIES (Must come before <c:ser>)
       if (type == "scatterChart") {
-        xml2::xml_add_child(c_node, "c:scatterStyle", val = "lineMarker")
+        xml_add_child(c_node, "c:scatterStyle", val = "lineMarker")
       }
 
       if (type == "barChart") {
-        xml2::xml_add_child(c_node, "c:barDir", val = sub_series[[1]]$dir %||% "col")
-        xml2::xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
+        xml_add_child(c_node, "c:barDir", val = sub_series[[1]]$dir %||% "col")
+        xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
 
       if (type == "radarChart") {
         radar_val <- if (isTRUE(sub_series[[1]]$filled)) "filled" else "standard"
-        xml2::xml_add_child(c_node, "c:radarStyle", val = radar_val)
+        xml_add_child(c_node, "c:radarStyle", val = radar_val)
       }
 
       if (type == "surfaceChart") {
         surface_val <- if (isTRUE(sub_series[[1]]$filled)) "1" else "0"
-        xml2::xml_add_child(c_node, "c:wireframe", val = surface_val)
+        xml_add_child(c_node, "c:wireframe", val = surface_val)
       }
 
       if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart", "barChart", "radarChart", "surfaceChart")) {
-        xml2::xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
+        xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
 
       if (type != "surfaceChart") {
         vary_val <- if (type %in% c("pieChart", "doughnutChart")) "1" else "0"
-        xml2::xml_add_child(c_node, "c:varyColors", val = vary_val)
+        xml_add_child(c_node, "c:varyColors", val = vary_val)
       }
 
       # 2. THE SERIES LOOP
       for (s in sub_series) {
 
-        ser <- xml2::xml_add_child(c_node, "c:ser")
-        xml2::xml_add_child(ser, "c:idx", val = as.character(private$current_idx))
-        xml2::xml_add_child(ser, "c:order", val = as.character(private$current_idx))
+        ser <- xml_add_child(c_node, "c:ser")
+        xml_add_child(ser, "c:idx", val = as.character(private$current_idx))
+        xml_add_child(ser, "c:order", val = as.character(private$current_idx))
         private$current_idx <- private$current_idx + 1
 
         # --- EG_SerShared Start ---
         # tx (Title)
         if (!is.null(s$header) && length(s$header) > 0) {
-          tx <- xml2::xml_add_child(ser, "c:tx")
+          tx <- xml_add_child(ser, "c:tx")
 
           if (private$is_ref(s$header)) {
             # It's a range reference like Sheet1!$A$1
-            strRef <- xml2::xml_add_child(tx, "c:strRef")
-            xml2::xml_add_child(strRef, "c:f", s$header)
+            strRef <- xml_add_child(tx, "c:strRef")
+            xml_add_child(strRef, "c:f", s$header)
           } else {
             # It's a literal string
-            xml2::xml_add_child(tx, "c:v", as.character(s$header))
+            xml_add_child(tx, "c:v", as.character(s$header))
           }
         }
 
         # spPr (Series Styling)
         if (!type %in% c("pieChart", "doughnutChart")) {
-          sp <- xml2::xml_add_child(ser, "c:spPr")
+          sp <- xml_add_child(ser, "c:spPr")
           if (type %in% c("barChart", "areaChart", "bubbleChart")) {
             color <- s$line$color %||% s$color %||% "auto"
-            private$render_fill(xml2::xml_add_child(sp, "a:solidFill"), color)
+            private$render_fill(xml_add_child(sp, "a:solidFill"), color)
           } else if (type %in% c("lineChart", "scatterChart")) {
             # If show_line is FALSE, we must explicitly tell OOXML not to draw the line
             if (isFALSE(s$line$show)) {
-              ln <- xml2::xml_add_child(sp, "a:ln")
-              xml2::xml_add_child(ln, "a:noFill")
+              ln <- xml_add_child(sp, "a:ln")
+              xml_add_child(ln, "a:noFill")
             } else {
               private$render_line_style(sp, s$line)
             }
@@ -760,11 +760,11 @@ Chart <- R6::R6Class(
         # 3. Marker (Must be AFTER spPr but BEFORE dPt/dLbls per CT_ScatterSer)
         if (type %in% c("lineChart", "scatterChart", "radarChart")) {
           mkr_symbol <- if (type == "scatterChart" && (is.null(s$marker$symbol) || s$marker$symbol == "none")) "circle" else s$marker$symbol
-          mkr <- xml2::xml_add_child(ser, "c:marker")
-          xml2::xml_add_child(mkr, "c:symbol", val = mkr_symbol)
+          mkr <- xml_add_child(ser, "c:marker")
+          xml_add_child(mkr, "c:symbol", val = mkr_symbol)
           if (!is.null(mkr_symbol) && mkr_symbol != "none") {
-            xml2::xml_add_child(mkr, "c:size", val = as.character(s$marker$size))
-            m_spPr <- xml2::xml_add_child(mkr, "c:spPr")
+            xml_add_child(mkr, "c:size", val = as.character(s$marker$size))
+            m_spPr <- xml_add_child(mkr, "c:spPr")
             # Fill and Line are now separate
             private$render_fill_style(m_spPr, s$marker$fill)
             private$render_line_style(m_spPr, s$marker$line)
@@ -773,7 +773,7 @@ Chart <- R6::R6Class(
 
         if (type %in% c("pieChart", "doughnutChart")) {
           if (!is.null(self$expansion)) {
-            xml2::xml_add_child(ser, "c:explosion", val = as.character(self$expansion))
+            xml_add_child(ser, "c:explosion", val = as.character(self$expansion))
           }
         }
 
@@ -781,28 +781,28 @@ Chart <- R6::R6Class(
         if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
           palette <- s$line$color %||% self$palette
           # for (i in (seq_along(palette) - 1L)) {
-          #   dPt <- xml2::xml_add_child(ser, "c:dPt")
-          #   xml2::xml_add_child(dPt, "c:idx", val = as.character(i))
-          #   sp_dpt <- xml2::xml_add_child(dPt, "c:spPr")
-          #   private$render_fill(xml2::xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
-          #   ln_dpt <- xml2::xml_add_child(sp_dpt, "a:ln", w = "9525")
-          #   private$render_fill(xml2::xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
+          #   dPt <- xml_add_child(ser, "c:dPt")
+          #   xml_add_child(dPt, "c:idx", val = as.character(i))
+          #   sp_dpt <- xml_add_child(dPt, "c:spPr")
+          #   private$render_fill(xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
+          #   ln_dpt <- xml_add_child(sp_dpt, "a:ln", w = "9525")
+          #   private$render_fill(xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
           # }
 
           for (i in seq_along(self$palette)) {
-            dPt <- xml2::xml_add_child(ser, "c:dPt")
-            xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
-            spPr <- xml2::xml_add_child(dPt, "c:spPr")
-            private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), self$palette[i])
+            dPt <- xml_add_child(ser, "c:dPt")
+            xml_add_child(dPt, "c:idx", val = as.character(i - 1))
+            spPr <- xml_add_child(dPt, "c:spPr")
+            private$render_fill(xml_add_child(spPr, "a:solidFill"), self$palette[i])
           }
         } else {
           if (length(s$color) > 1) {
             # If s$color is a vector, apply colors to individual points
               for (i in seq_along(s$color)) {
-                dPt <- xml2::xml_add_child(ser, "c:dPt")
-                xml2::xml_add_child(dPt, "c:idx", val = as.character(i - 1))
-                spPr <- xml2::xml_add_child(dPt, "c:spPr")
-                private$render_fill(xml2::xml_add_child(spPr, "a:solidFill"), s$color[i])
+                dPt <- xml_add_child(ser, "c:dPt")
+                xml_add_child(dPt, "c:idx", val = as.character(i - 1))
+                spPr <- xml_add_child(dPt, "c:spPr")
+                private$render_fill(xml_add_child(spPr, "a:solidFill"), s$color[i])
               }
           }
         }
@@ -813,7 +813,7 @@ Chart <- R6::R6Class(
         # Only enter if lp exists AND at least one show flag is TRUE
         if (!is.null(lp) && (isTRUE(lp$show_val) || isTRUE(lp$show_cat) || isTRUE(lp$show_legend_key))) {
 
-          dLbls <- xml2::xml_add_child(ser, "c:dLbls")
+          dLbls <- xml_add_child(ser, "c:dLbls")
 
           # A. txPr (Styling)
           if (length(lp$style) > 0) {
@@ -830,95 +830,95 @@ Chart <- R6::R6Class(
           }
 
           if (!is.null(final_pos)) {
-            xml2::xml_add_child(dLbls, "c:dLblPos", val = final_pos)
+            xml_add_child(dLbls, "c:dLblPos", val = final_pos)
           }
 
           # C. show flags
-          xml2::xml_add_child(dLbls, "c:showLegendKey",  val = if (isTRUE(lp$show_legend_key)) "1" else "0")
-          xml2::xml_add_child(dLbls, "c:showVal",        val = if (isTRUE(lp$show_val)) "1" else "0")
-          xml2::xml_add_child(dLbls, "c:showCatName",    val = if (isTRUE(lp$show_cat)) "1" else "0")
-          xml2::xml_add_child(dLbls, "c:showSerName",    val = "0")
-          xml2::xml_add_child(dLbls, "c:showPercent",    val = "0")
-          xml2::xml_add_child(dLbls, "c:showBubbleSize", val = "0")
+          xml_add_child(dLbls, "c:showLegendKey",  val = if (isTRUE(lp$show_legend_key)) "1" else "0")
+          xml_add_child(dLbls, "c:showVal",        val = if (isTRUE(lp$show_val)) "1" else "0")
+          xml_add_child(dLbls, "c:showCatName",    val = if (isTRUE(lp$show_cat)) "1" else "0")
+          xml_add_child(dLbls, "c:showSerName",    val = "0")
+          xml_add_child(dLbls, "c:showPercent",    val = "0")
+          xml_add_child(dLbls, "c:showBubbleSize", val = "0")
         }
 
         # 1. Trendline (Basic)
         if (is.list(s$trendline)) {
-          tl <- xml2::xml_add_child(ser, "c:trendline")
+          tl <- xml_add_child(ser, "c:trendline")
 
           # 1. Name (Optional)
           if (!is.null(s$trendline$name)) {
-            xml2::xml_add_child(tl, "c:name", s$trendline$name)
+            xml_add_child(tl, "c:name", s$trendline$name)
           }
 
           # 2. spPr (STYLING) - Must come BEFORE trendlineType
           if (!is.null(s$trendline$color)) {
-            sp_pr <- xml2::xml_add_child(tl, "c:spPr")
-            ln <- xml2::xml_add_child(sp_pr, "a:ln")
-            private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), s$trendline$color)
+            sp_pr <- xml_add_child(tl, "c:spPr")
+            ln <- xml_add_child(sp_pr, "a:ln")
+            private$render_fill(xml_add_child(ln, "a:solidFill"), s$trendline$color)
           }
 
           # 3. trendlineType (MANDATORY)
-          xml2::xml_add_child(tl, "c:trendlineType", val = s$trendline$type %||% "linear")
+          xml_add_child(tl, "c:trendlineType", val = s$trendline$type %||% "linear")
 
           # 4. Polynomial Order / Moving Average Period
-          if (!is.null(s$trendline$order)) xml2::xml_add_child(tl, "c:order", val = as.character(s$trendline$order))
-          if (!is.null(s$trendline$period)) xml2::xml_add_child(tl, "c:period", val = as.character(s$trendline$period))
+          if (!is.null(s$trendline$order)) xml_add_child(tl, "c:order", val = as.character(s$trendline$order))
+          if (!is.null(s$trendline$period)) xml_add_child(tl, "c:period", val = as.character(s$trendline$period))
 
           # 5. dispRSqr (R-Squared) - Must come AFTER trendlineType
           if (isFALSE(s$trendline$show_r2)) {
-            xml2::xml_add_child(tl, "c:dispRSqr", val = "0")
+            xml_add_child(tl, "c:dispRSqr", val = "0")
           }
 
           # 6. dispEq (Equation)
           if (isFALSE(s$trendline$show_eq)) {
-            xml2::xml_add_child(tl, "c:dispEq", val = "0")
+            xml_add_child(tl, "c:dispEq", val = "0")
           }
         }
 
         # 2. Error Bars (Basic)
         if (is.list(s$error_bars)) {
-          eb <- xml2::xml_add_child(ser, "c:errBars")
+          eb <- xml_add_child(ser, "c:errBars")
 
           # Required: direction (y) and types
-          xml2::xml_add_child(eb, "c:errDir", val = "y")
-          xml2::xml_add_child(eb, "c:errBarType", val = "both")
-          xml2::xml_add_child(eb, "c:errValType", val = s$error_bars$type %||% "fixedVal")
+          xml_add_child(eb, "c:errDir", val = "y")
+          xml_add_child(eb, "c:errBarType", val = "both")
+          xml_add_child(eb, "c:errValType", val = s$error_bars$type %||% "fixedVal")
 
           # Required: the value itself
-          xml2::xml_add_child(eb, "c:val", val = as.character(s$error_bars$value %||% 5))
+          xml_add_child(eb, "c:val", val = as.character(s$error_bars$value %||% 5))
 
           # Add Color Styling
           if (!is.null(s$error_bars$color)) {
-            sp_pr <- xml2::xml_add_child(eb, "c:spPr")
-            ln <- xml2::xml_add_child(sp_pr, "a:ln")
-            private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), s$error_bars$color)
+            sp_pr <- xml_add_child(eb, "c:spPr")
+            ln <- xml_add_child(sp_pr, "a:ln")
+            private$render_fill(xml_add_child(ln, "a:solidFill"), s$error_bars$color)
           }
         }
 
         # 6. Data References (xVal/yVal or cat/val)
         if (type %in% c("scatterChart", "bubbleChart")) {
           if (!is.null(s$cat)) {
-            x_val_node <- xml2::xml_add_child(ser, "c:xVal")
+            x_val_node <- xml_add_child(ser, "c:xVal")
             ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
-            xml2::xml_add_child(xml2::xml_add_child(x_val_node, ref_type), "c:f", s$cat)
+            xml_add_child(xml_add_child(x_val_node, ref_type), "c:f", s$cat)
           }
 
-          y_val_node <- xml2::xml_add_child(ser, "c:yVal")
+          y_val_node <- xml_add_child(ser, "c:yVal")
           y_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
-          xml2::xml_add_child(xml2::xml_add_child(y_val_node, y_ref_type), "c:f", s$data)
+          xml_add_child(xml_add_child(y_val_node, y_ref_type), "c:f", s$data)
 
           if (type == "bubbleChart") {
-            z_val_node <- xml2::xml_add_child(ser, "c:bubbleSize")
+            z_val_node <- xml_add_child(ser, "c:bubbleSize")
             z_ref <- s$z_data %||% s$data
             z_ref_type <- if (grepl("!", z_ref)) "c:numRef" else "c:numLit"
             # Note: Wrap in c:numRef/c:numLit correctly
-            ref_node <- xml2::xml_add_child(z_val_node, z_ref_type)
-            xml2::xml_add_child(ref_node, "c:f", z_ref)
+            ref_node <- xml_add_child(z_val_node, z_ref_type)
+            xml_add_child(ref_node, "c:f", z_ref)
           }
         } else {
           if (!is.null(s$cat)) {
-            cat_node <- xml2::xml_add_child(ser, "c:cat")
+            cat_node <- xml_add_child(ser, "c:cat")
 
             ref_clean <- sub("^('([^']|'')+'|[^!]+)!", "", s$cat)
             ref_clean <- gsub("\\$", "", ref_clean)
@@ -930,303 +930,303 @@ Chart <- R6::R6Class(
             } else {
               c_ref_type <- if (grepl("!", s$cat)) "c:strRef" else "c:strLit"
             }
-            xml2::xml_add_child(xml2::xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
+            xml_add_child(xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
           }
-          val_node <- xml2::xml_add_child(ser, "c:val")
+          val_node <- xml_add_child(ser, "c:val")
           v_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
-          xml2::xml_add_child(xml2::xml_add_child(val_node, v_ref_type), "c:f", s$data)
+          xml_add_child(xml_add_child(val_node, v_ref_type), "c:f", s$data)
         }
 
         # 7. Smooth (Final property for Line/Scatter)
         if (type %in% c("lineChart", "scatterChart")) {
-          xml2::xml_add_child(ser, "c:smooth", val = if (isTRUE(s$smooth)) "1" else "0")
+          xml_add_child(ser, "c:smooth", val = if (isTRUE(s$smooth)) "1" else "0")
         }
 
       }
 
       # 1. Drop Lines
       if (isTRUE(self$drop_lines)) {
-        dl <- xml2::xml_add_child(c_node, "c:dropLines")
+        dl <- xml_add_child(c_node, "c:dropLines")
       }
 
       # 2. High-Low Lines (Common in Stock/Line charts)
       if (isTRUE(self$high_low_lines)) {
-        xml2::xml_add_child(c_node, "c:hiLowLines")
+        xml_add_child(c_node, "c:hiLowLines")
       }
 
       # 3. Up/Down Bars
       if (isTRUE(self$up_down_bars)) {
-        udb <- xml2::xml_add_child(c_node, "c:upDownBars")
+        udb <- xml_add_child(c_node, "c:upDownBars")
         gapWidth <- sub_series[[1]]$gap_width %||% 150
-        xml2::xml_add_child(udb, "c:gapWidth", val = as.character(gapWidth)) # Default gap
+        xml_add_child(udb, "c:gapWidth", val = as.character(gapWidth)) # Default gap
 
         # Style Up Bars (typically white/green)
-        up_bars <- xml2::xml_add_child(udb, "c:upBars")
+        up_bars <- xml_add_child(udb, "c:upBars")
         # Style Down Bars (typically black/red)
-        down_bars <- xml2::xml_add_child(udb, "c:downBars")
+        down_bars <- xml_add_child(udb, "c:downBars")
       }
 
       # 3. POST-SERIES PROPERTIES (Sequence Sensitive)
 
       if (type == "bubbleChart") {
-        # xml2::xml_add_child(c_node, "c:bubble3D", val = "0")
-        xml2::xml_add_child(c_node, "c:bubbleScale", val = as.character(self$bubble_scale))
-        xml2::xml_add_child(c_node, "c:showNegBubbles", val = as.character(as.numeric(self$show_neg_bubbles)))
+        # xml_add_child(c_node, "c:bubble3D", val = "0")
+        xml_add_child(c_node, "c:bubbleScale", val = as.character(self$bubble_scale))
+        xml_add_child(c_node, "c:showNegBubbles", val = as.character(as.numeric(self$show_neg_bubbles)))
       }
 
       # gapWidth and overlap MUST follow <c:ser> but come before <c:axId>
       if (type == "barChart") {
         if (!is.null(sub_series[[1]]$gap_width)) {
-          xml2::xml_add_child(c_node, "c:gapWidth", val = as.character(sub_series[[1]]$gap_width))
+          xml_add_child(c_node, "c:gapWidth", val = as.character(sub_series[[1]]$gap_width))
         }
         if (!is.null(sub_series[[1]]$overlap)) {
-          xml2::xml_add_child(c_node, "c:overlap", val = as.character(sub_series[[1]]$overlap))
+          xml_add_child(c_node, "c:overlap", val = as.character(sub_series[[1]]$overlap))
         }
       }
 
       # doughnutChart holeSize
       if (type %in% c("pieChart", "doughnutChart")) {
         if (!is.null(self$first_slice_ang)) {
-          xml2::xml_add_child(c_node, "c:firstSliceAng", val = as.character(self$first_slice_ang))
+          xml_add_child(c_node, "c:firstSliceAng", val = as.character(self$first_slice_ang))
         }
       }
       if (type == "doughnutChart") {
-        xml2::xml_add_child(c_node, "c:holeSize", val = as.character(self$hole_size %||% 75))
+        xml_add_child(c_node, "c:holeSize", val = as.character(self$hole_size %||% 75))
       }
 
       # 4. AXIS IDS (Must be the last elements in Bar/Line/Scatter)
       if (type %in% c("bubbleChart", "lineChart", "areaChart", "barChart", "scatterChart", "radarChart", "surfaceChart")) {
-        xml2::xml_add_child(c_node, "c:axId", val = as.character(cat_id))
-        xml2::xml_add_child(c_node, "c:axId", val = as.character(val_id))
+        xml_add_child(c_node, "c:axId", val = as.character(cat_id))
+        xml_add_child(c_node, "c:axId", val = as.character(val_id))
         if (type == "surfaceChart") {
-          xml2::xml_add_child(c_node, "c:axId", val = as.character(ser_id))
+          xml_add_child(c_node, "c:axId", val = as.character(ser_id))
         }
       }
     },
 
     add_title_content = function(node, text, style = list(), default_sz = 1000) {
-      tx <- xml2::xml_add_child(node, "c:tx")
-      rich <- xml2::xml_add_child(tx, "c:rich")
-      xml2::xml_add_child(rich, "a:bodyPr")
-      xml2::xml_add_child(rich, "a:lstStyle")
-      p <- xml2::xml_add_child(rich, "a:p")
+      tx <- xml_add_child(node, "c:tx")
+      rich <- xml_add_child(tx, "c:rich")
+      xml_add_child(rich, "a:bodyPr")
+      xml_add_child(rich, "a:lstStyle")
+      p <- xml_add_child(rich, "a:p")
       sz <- if (!is.null(style$sz)) style$sz * 100 else default_sz
-      r <- xml2::xml_add_child(p, "a:r")
-      rPr <- xml2::xml_add_child(r, "a:rPr", sz = as.character(sz))
-      if (isTRUE(style$bold)) xml2::xml_set_attr(rPr, "b", "1")
-      if (isTRUE(style$italic)) xml2::xml_set_attr(rPr, "i", "1")
-      if (!is.null(style$color)) private$render_fill(xml2::xml_add_child(rPr, "a:solidFill"), style$color)
-      if (!is.null(style$name)) xml2::xml_add_child(rPr, "a:latin", typeface = style$name)
-      xml2::xml_add_child(r, "a:t", text)
+      r <- xml_add_child(p, "a:r")
+      rPr <- xml_add_child(r, "a:rPr", sz = as.character(sz))
+      if (isTRUE(style$bold)) xml_set_attr(rPr, "b", "1")
+      if (isTRUE(style$italic)) xml_set_attr(rPr, "i", "1")
+      if (!is.null(style$color)) private$render_fill(xml_add_child(rPr, "a:solidFill"), style$color)
+      if (!is.null(style$name)) xml_add_child(rPr, "a:latin", typeface = style$name)
+      xml_add_child(r, "a:t", text)
     },
 
     render_cat_ax = function(parent, id, cross_id, pos, delete = "0", title_obj = NULL, params = NULL, crosses = "autoZero") {
       is_date <- !is.null(params$major_time)
       node_name <- if (is_date) "c:dateAx" else "c:catAx"
-      ax <- xml2::xml_add_child(parent, node_name)
+      ax <- xml_add_child(parent, node_name)
 
       # 1. Identity and Scaling (EG_AxShared Start)
-      xml2::xml_add_child(ax, "c:axId", val = id)
-      scaling <- xml2::xml_add_child(ax, "c:scaling")
-      xml2::xml_add_child(scaling, "c:orientation", val = "minMax")
-      if (!is.null(params$max)) xml2::xml_add_child(scaling, "c:max", val = as.character(params$max))
-      if (!is.null(params$min)) xml2::xml_add_child(scaling, "c:min", val = as.character(params$min))
+      xml_add_child(ax, "c:axId", val = id)
+      scaling <- xml_add_child(ax, "c:scaling")
+      xml_add_child(scaling, "c:orientation", val = "minMax")
+      if (!is.null(params$max)) xml_add_child(scaling, "c:max", val = as.character(params$max))
+      if (!is.null(params$min)) xml_add_child(scaling, "c:min", val = as.character(params$min))
 
       # 2. Basic Properties
-      xml2::xml_add_child(ax, "c:delete", val = delete)
-      xml2::xml_add_child(ax, "c:axPos", val = pos)
+      xml_add_child(ax, "c:delete", val = delete)
+      xml_add_child(ax, "c:axPos", val = pos)
 
       # 3. Gridlines
       if (!is.null(params$gridlines) && !isFALSE(params$gridlines)) {
-        g <- xml2::xml_add_child(ax, "c:majorGridlines")
+        g <- xml_add_child(ax, "c:majorGridlines")
         grid_style <- list(color = params$grid_color %||% "D9D9D9", width = params$grid_width, type = params$gridlines)
-        private$render_line_style(xml2::xml_add_child(g, "c:spPr"), grid_style)
+        private$render_line_style(xml_add_child(g, "c:spPr"), grid_style)
       }
       if (!is.null(params$minor_gridlines) && !isFALSE(params$minor_gridlines)) {
-        mg <- xml2::xml_add_child(ax, "c:minorGridlines")
+        mg <- xml_add_child(ax, "c:minorGridlines")
         m_style <- list(color = params$minor_grid_color %||% "F2F2F2", width = params$minor_grid_width, type = params$minor_gridlines)
-        private$render_line_style(xml2::xml_add_child(mg, "c:spPr"), m_style)
+        private$render_line_style(xml_add_child(mg, "c:spPr"), m_style)
       }
 
       # 4. Title
       if (!is.null(title_obj$text) && delete == "0") {
-        t_node <- xml2::xml_add_child(ax, "c:title")
+        t_node <- xml_add_child(ax, "c:title")
         private$add_title_content(t_node, title_obj$text, title_obj$style)
-        xml2::xml_add_child(t_node, "c:layout")
-        xml2::xml_add_child(t_node, "c:overlay", val = "0")
+        xml_add_child(t_node, "c:layout")
+        xml_add_child(t_node, "c:overlay", val = "0")
       }
 
       # 5. Number Format & Tick Labels
       if (!is.null(params$format)) {
-        xml2::xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
+        xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
       }
       if (!is.null(params$major_tick)) {
-        xml2::xml_add_child(ax, "c:majorTickMark", val = params$major_tick)
+        xml_add_child(ax, "c:majorTickMark", val = params$major_tick)
       }
       if (!is.null(params$minor_tick)) {
-        xml2::xml_add_child(ax, "c:minorTickMark", val = params$minor_tick)
+        xml_add_child(ax, "c:minorTickMark", val = params$minor_tick)
       }
-      xml2::xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")
+      xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")
 
       # 6. Visual Styles
-      ln <- xml2::xml_add_child(xml2::xml_add_child(ax, "c:spPr"), "a:ln")
-      private$render_fill(xml2::xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
+      ln <- xml_add_child(xml_add_child(ax, "c:spPr"), "a:ln")
+      private$render_fill(xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
 
       label_style <- params
       label_style$color <- params$label_color %||% params$color %||% "000000"
       private$apply_text_style(ax, label_style)
       # 7. Crossing (EG_AxShared)
-      xml2::xml_add_child(ax, "c:crossAx", val = cross_id)
+      xml_add_child(ax, "c:crossAx", val = cross_id)
 
       if (!is.null(params$crosses_at)) {
         # Use a specific value (e.g., cross at Y=100)
-        xml2::xml_add_child(ax, "c:crossesAt", val = as.character(params$crosses_at))
+        xml_add_child(ax, "c:crossesAt", val = as.character(params$crosses_at))
       } else {
         # Use a preset: 'autoZero', 'min', or 'max'
         # Use the 'crosses' argument passed from the render() function
         cross_val <- params$crosses %||% crosses
-        xml2::xml_add_child(ax, "c:crosses", val = cross_val)
+        xml_add_child(ax, "c:crosses", val = cross_val)
       }
 
       # 8. Axis Specifics
       if (is_date) {
         # Sequence for DateAx: lblOffset -> baseTimeUnit -> majorUnit -> minorUnit
-        xml2::xml_add_child(ax, "c:auto", val = "1")
-        xml2::xml_add_child(ax, "c:lblOffset", val = "100")
+        xml_add_child(ax, "c:auto", val = "1")
+        xml_add_child(ax, "c:lblOffset", val = "100")
 
         if (!is.null(params$base_time)) {
-          xml2::xml_add_child(ax, "c:baseTimeUnit", val = params$base_time)
+          xml_add_child(ax, "c:baseTimeUnit", val = params$base_time)
         }
         if (!is.null(params$major)) {
-          xml2::xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
-          if (!is.null(params$major_time)) xml2::xml_add_child(ax, "c:majorTimeUnit", val = params$major_time)
+          xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
+          if (!is.null(params$major_time)) xml_add_child(ax, "c:majorTimeUnit", val = params$major_time)
         }
         if (!is.null(params$minor)) {
-          xml2::xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
-          if (!is.null(params$minor_time)) xml2::xml_add_child(ax, "c:minorTimeUnit", val = params$minor_time)
+          xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
+          if (!is.null(params$minor_time)) xml_add_child(ax, "c:minorTimeUnit", val = params$minor_time)
         }
       } else {
         # Sequence for CatAx: auto -> lblAlgn -> lblOffset -> skip logic
-        xml2::xml_add_child(ax, "c:auto", val = "1")
-        xml2::xml_add_child(ax, "c:lblOffset", val = "100")
-        if (!is.null(params$tick_lbl_skip)) xml2::xml_add_child(ax, "c:tickLblSkip", val = as.character(params$tick_lbl_skip))
-        xml2::xml_add_child(ax, "c:noMultiLvlLbl", val = "0")
+        xml_add_child(ax, "c:auto", val = "1")
+        xml_add_child(ax, "c:lblOffset", val = "100")
+        if (!is.null(params$tick_lbl_skip)) xml_add_child(ax, "c:tickLblSkip", val = as.character(params$tick_lbl_skip))
+        xml_add_child(ax, "c:noMultiLvlLbl", val = "0")
       }
     },
 
     render_val_ax = function(parent, id, cross_id, pos, title_obj = NULL, delete = "0", crosses = "autoZero", params = NULL) {
-      ax <- xml2::xml_add_child(parent, "c:valAx")
+      ax <- xml_add_child(parent, "c:valAx")
 
       # 1. Identity and Scaling
-      xml2::xml_add_child(ax, "c:axId", val = id)
-      scaling <- xml2::xml_add_child(ax, "c:scaling")
-      xml2::xml_add_child(scaling, "c:orientation", val = "minMax")
-      if (!is.null(params$max)) xml2::xml_add_child(scaling, "c:max", val = as.character(params$max))
-      if (!is.null(params$min)) xml2::xml_add_child(scaling, "c:min", val = as.character(params$min))
+      xml_add_child(ax, "c:axId", val = id)
+      scaling <- xml_add_child(ax, "c:scaling")
+      xml_add_child(scaling, "c:orientation", val = "minMax")
+      if (!is.null(params$max)) xml_add_child(scaling, "c:max", val = as.character(params$max))
+      if (!is.null(params$min)) xml_add_child(scaling, "c:min", val = as.character(params$min))
 
       # 2. Delete and Position
-      xml2::xml_add_child(ax, "c:delete", val = delete)
-      xml2::xml_add_child(ax, "c:axPos", val = pos)
+      xml_add_child(ax, "c:delete", val = delete)
+      xml_add_child(ax, "c:axPos", val = pos)
 
       # 3. Gridlines (MUST come here, before Title and NumFmt)
       if (!is.null(params$gridlines) && !isFALSE(params$gridlines)) {
-        g <- xml2::xml_add_child(ax, "c:majorGridlines")
+        g <- xml_add_child(ax, "c:majorGridlines")
         style <- list(color = params$grid_color %||% "D9D9D9", width = params$grid_width, type = params$gridlines)
-        private$render_line_style(xml2::xml_add_child(g, "c:spPr"), style)
+        private$render_line_style(xml_add_child(g, "c:spPr"), style)
       }
       if (!is.null(params$minor_gridlines) && !isFALSE(params$minor_gridlines)) {
-        mg <- xml2::xml_add_child(ax, "c:minorGridlines")
+        mg <- xml_add_child(ax, "c:minorGridlines")
         m_style <- list(color = params$minor_grid_color %||% "F2F2F2", width = params$minor_grid_width, type = params$minor_gridlines)
-        private$render_line_style(xml2::xml_add_child(mg, "c:spPr"), m_style)
+        private$render_line_style(xml_add_child(mg, "c:spPr"), m_style)
       }
 
       # 4. Title
       if (!is.null(title_obj$text)) {
-        t_node <- xml2::xml_add_child(ax, "c:title")
+        t_node <- xml_add_child(ax, "c:title")
         private$add_title_content(t_node, title_obj$text, title_obj$style)
-        xml2::xml_add_child(t_node, "c:layout")
-        xml2::xml_add_child(t_node, "c:overlay", val = "0")
+        xml_add_child(t_node, "c:layout")
+        xml_add_child(t_node, "c:overlay", val = "0")
       }
 
       # 5. Number Format
       if (!is.null(params$format)) {
-        xml2::xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
+        xml_add_child(ax, "c:numFmt", formatCode = params$format, sourceLinked = "0")
       }
       if (!is.null(params$major_tick)) {
-        xml2::xml_add_child(ax, "c:majorTickMark", val = params$major_tick)
+        xml_add_child(ax, "c:majorTickMark", val = params$major_tick)
       }
       if (!is.null(params$minor_tick)) {
-        xml2::xml_add_child(ax, "c:minorTickMark", val = params$minor_tick)
+        xml_add_child(ax, "c:minorTickMark", val = params$minor_tick)
       }
 
-      xml2::xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")
+      xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")
 
       # 6. Shape and Text Properties
       ax_style <- list(color = params$color %||% "000000", width = params$line_width)
-      private$render_line_style(xml2::xml_add_child(ax, "c:spPr"), ax_style)
+      private$render_line_style(xml_add_child(ax, "c:spPr"), ax_style)
 
       label_style <- params
       label_style$color <- params$label_color %||% params$color %||% "000000"
       private$apply_text_style(ax, label_style)
 
       # 7. Crossing Properties (End of EG_AxShared)
-      xml2::xml_add_child(ax, "c:crossAx", val = cross_id)
+      xml_add_child(ax, "c:crossAx", val = cross_id)
       cross_val <- params$crosses %||% crosses
-      xml2::xml_add_child(ax, "c:crosses", val = cross_val)
+      xml_add_child(ax, "c:crosses", val = cross_val)
       cb_val <- params$cross_between %||% "between"
-      xml2::xml_add_child(ax, "c:crossBetween", val = cb_val)
+      xml_add_child(ax, "c:crossBetween", val = cb_val)
 
       # 8. Units (End of ValAx)
-      if (!is.null(params$major)) xml2::xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
-      if (!is.null(params$minor)) xml2::xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
+      if (!is.null(params$major)) xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
+      if (!is.null(params$minor)) xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
     },
 
     render_ser_ax = function(parent, id, cross_id) {
-      ax <- xml2::xml_add_child(parent, "c:serAx")
-      xml2::xml_add_child(ax, "c:axId", val = as.character(id))
+      ax <- xml_add_child(parent, "c:serAx")
+      xml_add_child(ax, "c:axId", val = as.character(id))
 
-      scaling <- xml2::xml_add_child(ax, "c:scaling")
-      xml2::xml_add_child(scaling, "c:orientation", val = "minMax")
+      scaling <- xml_add_child(ax, "c:scaling")
+      xml_add_child(scaling, "c:orientation", val = "minMax")
 
-      xml2::xml_add_child(ax, "c:delete", val = "0")
-      xml2::xml_add_child(ax, "c:axPos", val = "b")
-      xml2::xml_add_child(ax, "c:tickLblPos", val = "nextTo")
-      xml2::xml_add_child(ax, "c:crossAx", val = as.character(cross_id))
-      xml2::xml_add_child(ax, "c:crosses", val = "autoZero")
+      xml_add_child(ax, "c:delete", val = "0")
+      xml_add_child(ax, "c:axPos", val = "b")
+      xml_add_child(ax, "c:tickLblPos", val = "nextTo")
+      xml_add_child(ax, "c:crossAx", val = as.character(cross_id))
+      xml_add_child(ax, "c:crosses", val = "autoZero")
     },
 
     apply_text_style = function(node, s) {
-      txPr <- xml2::xml_add_child(node, "c:txPr")
+      txPr <- xml_add_child(node, "c:txPr")
 
       # 1. Create body properties and apply rotation
-      bodyPr <- xml2::xml_add_child(txPr, "a:bodyPr")
+      bodyPr <- xml_add_child(txPr, "a:bodyPr")
       if (!is.null(s$rot)) {
         # rotation = degrees * 60000
-        xml2::xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
-        xml2::xml_set_attr(bodyPr, "vert", "horz")
+        xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
+        xml_set_attr(bodyPr, "vert", "horz")
       }
 
       # 2. Add required list style
-      xml2::xml_add_child(txPr, "a:lstStyle")
+      xml_add_child(txPr, "a:lstStyle")
 
       # 3. Build the text run properties (defRPr)
-      p      <- xml2::xml_add_child(txPr, "a:p")
-      pPr    <- xml2::xml_add_child(p, "a:pPr")
-      defRPr <- xml2::xml_add_child(pPr, "a:defRPr")
+      p      <- xml_add_child(txPr, "a:p")
+      pPr    <- xml_add_child(p, "a:pPr")
+      defRPr <- xml_add_child(pPr, "a:defRPr")
 
       # Apply font size (OOXML uses 1/100th of a point)
       sz <- if (!is.null(s$sz)) s$sz * 100 else 900
-      xml2::xml_set_attr(defRPr, "sz", as.character(sz))
+      xml_set_attr(defRPr, "sz", as.character(sz))
 
-      if (isTRUE(s$bold)) xml2::xml_set_attr(defRPr, "b", "1")
-      if (isTRUE(s$italic)) xml2::xml_set_attr(defRPr, "i", "1")
+      if (isTRUE(s$bold)) xml_set_attr(defRPr, "b", "1")
+      if (isTRUE(s$italic)) xml_set_attr(defRPr, "i", "1")
 
       if (!is.null(s$color)) {
-        private$render_fill(xml2::xml_add_child(defRPr, "a:solidFill"), s$color)
+        private$render_fill(xml_add_child(defRPr, "a:solidFill"), s$color)
       }
 
       if (!is.null(s$name)) {
-        xml2::xml_add_child(defRPr, "a:latin", typeface = s$name)
+        xml_add_child(defRPr, "a:latin", typeface = s$name)
       }
     },
 
@@ -1238,7 +1238,7 @@ Chart <- R6::R6Class(
 
       # 2. Check for "auto"
       if (length(color_val) == 1 && tolower(as.character(color_val)) == "auto") {
-        xml2::xml_add_child(node, "a:schemeClr", val = "accent1")
+        xml_add_child(node, "a:schemeClr", val = "accent1")
         return()
       }
 
@@ -1250,7 +1250,7 @@ Chart <- R6::R6Class(
 
         # If it's a theme color, use schemeClr
         if (type == "auto") {
-          xml2::xml_add_child(node, "a:schemeClr", val = "accent1")
+          xml_add_child(node, "a:schemeClr", val = "accent1")
           return()
         }
         if (type == "theme") {
@@ -1270,7 +1270,7 @@ Chart <- R6::R6Class(
             theme_idx <- as.integer(color_val)
             val_name <- theme_map[as.numeric(theme_idx) + 1]
           }
-          xml2::xml_add_child(node, "a:schemeClr", val = val_name)
+          xml_add_child(node, "a:schemeClr", val = val_name)
           return()
         }
 
@@ -1287,7 +1287,7 @@ Chart <- R6::R6Class(
       # Final safety check: if 'clean' is empty/invalid, default to black
       if (nchar(clean) != 6) clean <- "000000"
 
-      xml2::xml_add_child(node, "a:srgbClr", val = clean)
+      xml_add_child(node, "a:srgbClr", val = clean)
     }
   )
 )

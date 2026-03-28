@@ -65,30 +65,30 @@ test_that("Chart and Plot area styling works", {
 
   # Render XML
   xml_str <- as.character(chart$render())
-  xml <- xml2::read_xml(xml_str)
+  xml <- read_xml(xml_str)
 
   # 2. Test ChartSpace Styling (Root level spPr)
   # Usually the last spPr child of chartSpace
-  chart_sp_pr <- xml2::xml_find_first(xml, "/c:chartSpace/c:spPr")
+  chart_sp_pr <- xml_find_first(xml, "/c:chartSpace/c:spPr")
   expect_false(is.null(chart_sp_pr))
 
   # Check Chart Fill
   expect_match(as.character(chart_sp_pr), 'val="EDF2F7"')
 
   # Check Chart Line Width (2.25 * 12700 = 28575)
-  chart_ln <- xml2::xml_find_first(chart_sp_pr, "a:ln")
-  expect_equal(xml2::xml_attr(chart_ln, "w"), "28575")
+  chart_ln <- xml_find_first(chart_sp_pr, "a:ln")
+  expect_equal(xml_attr(chart_ln, "w"), "28575")
 
   # 3. Test PlotArea Styling
-  plot_sp_pr <- xml2::xml_find_first(xml, "//c:plotArea/c:spPr")
+  plot_sp_pr <- xml_find_first(xml, "//c:plotArea/c:spPr")
   expect_false(is.null(plot_sp_pr))
 
   # Check Plot Fill
   expect_match(as.character(plot_sp_pr), 'val="FFEE00"')
 
   # Check Plot Line Width (1 * 12700 = 12700)
-  plot_ln <- xml2::xml_find_first(plot_sp_pr, "a:ln")
-  expect_equal(xml2::xml_attr(plot_ln, "w"), "12700")
+  plot_ln <- xml_find_first(plot_sp_pr, "a:ln")
+  expect_equal(xml_attr(plot_ln, "w"), "12700")
 })
 
 test_that("ChartEx chart and plot styling works", {
@@ -116,24 +116,27 @@ test_that("ChartEx chart and plot styling works", {
 
   # Render XML
   xml_str <- as.character(ce$render(1))
-  xml <- xml2::read_xml(xml_str)
+  xml <- read_xml(xml_str)
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("Sheet1")$add_data(x = mtcars)
   wb <- openxlsx2::wb_add_encharter(wb, sheet = "Sheet1", dims = "A2:G12", graph = ce)
 
   # 2. Test Chart Styling (cx:chart/cx:spPr)
-  chart_sp_pr <- xml2::xml_find_first(xml, "cx:spPr")
+  # NOTE they behave different
+  # with xml2::xml_find_first(xml2::read_xml(xml_str), "cx:spPr")
+  # encharter::xml_find_first(encharter::read_xml(xml_str), "cx:spPr")
+  chart_sp_pr <- xml_find_all(xml, "cx:spPr")[[2]]
   expect_false(is.null(chart_sp_pr))
   expect_match(as.character(chart_sp_pr), 'val="F0F0F0"')
 
   # 3. Test Plot Area Styling (cx:plotArea/cx:spPr)
-  plot_sp_pr <- xml2::xml_find_first(xml, "//cx:chart/cx:plotArea/cx:plotAreaRegion/cx:plotSurface/cx:spPr")
+  plot_sp_pr <- xml_find_first(xml, "//cx:chart/cx:plotArea/cx:plotAreaRegion/cx:plotSurface/cx:spPr")
   expect_false(is.null(plot_sp_pr))
   expect_match(as.character(plot_sp_pr), 'val="CCFFCC"')
 
   # Check Plot Line Width (1 * 12700 = 12700)
-  plot_ln <- xml2::xml_find_first(plot_sp_pr, "a:ln")
-  expect_equal(xml2::xml_attr(plot_ln, "w"), "12700")
+  plot_ln <- xml_find_first(plot_sp_pr, "a:ln")
+  expect_equal(xml_attr(plot_ln, "w"), "12700")
 })
 
 test_that("Major and Minor gridlines are correctly rendered and visible", {
@@ -166,19 +169,19 @@ test_that("Major and Minor gridlines are correctly rendered and visible", {
 
   # 3. XML Validation (Logic check)
   xml_str <- as.character(my_chart$render())
-  xml <- xml2::read_xml(xml_str)
+  xml <- read_xml(xml_str)
 
   # Check Major Gridlines
-  major_ln <- xml2::xml_find_first(xml, "//c:valAx/c:majorGridlines/c:spPr/a:ln")
-  expect_equal(xml2::xml_attr(major_ln, "w"), "19050") # 1.5 * 12700
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(major_ln, ".//a:srgbClr"), "val"), "333333")
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(major_ln, "a:prstDash"), "val"), "dash")
+  major_ln <- xml_find_first(xml, "//c:valAx/c:majorGridlines/c:spPr/a:ln")
+  expect_equal(xml_attr(major_ln, "w"), "19050") # 1.5 * 12700
+  expect_equal(xml_attr(xml_find_first(major_ln, ".//a:srgbClr"), "val"), "333333")
+  expect_equal(xml_attr(xml_find_first(major_ln, "a:prstDash"), "val"), "dash")
 
   # Check Minor Gridlines
-  minor_ln <- xml2::xml_find_first(xml, "//c:valAx/c:minorGridlines/c:spPr/a:ln")
-  expect_equal(xml2::xml_attr(minor_ln, "w"), "6350") # 0.5 * 12700
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(minor_ln, ".//a:srgbClr"), "val"), "D9D9D9")
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(minor_ln, "a:prstDash"), "val"), "dot")
+  minor_ln <- xml_find_first(xml, "//c:valAx/c:minorGridlines/c:spPr/a:ln")
+  expect_equal(xml_attr(minor_ln, "w"), "6350") # 0.5 * 12700
+  expect_equal(xml_attr(xml_find_first(minor_ln, ".//a:srgbClr"), "val"), "D9D9D9")
+  expect_equal(xml_attr(xml_find_first(minor_ln, "a:prstDash"), "val"), "dot")
 
   # 4. Visual Verification Workbook
   wb <- openxlsx2::wb_workbook() |>
@@ -208,51 +211,51 @@ test_that("ChartEx renders full styling and axis properties", {
   # Apply Title styling
   ce$set_y_title("USD (Millions)", sz = 14, b = TRUE, color = "000000")
 
-  xml <- xml2::read_xml(ce$render(1))
+  xml <- read_xml(ce$render(1))
 
   # 1. Verify Scaling Attributes (cx:valScaling)
-  scaling_node <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:valScaling")
-  expect_equal(xml2::xml_attr(scaling_node, "min"), "50")
-  expect_equal(xml2::xml_attr(scaling_node, "max"), "500")
-  expect_equal(xml2::xml_attr(scaling_node, "majorUnit"), "100")
-  expect_equal(xml2::xml_attr(scaling_node, "minorUnit"), "50")
+  scaling_node <- xml_find_first(xml, "//cx:axis[@id='1']/cx:valScaling")
+  expect_equal(xml_attr(scaling_node, "min"), "50")
+  expect_equal(xml_attr(scaling_node, "max"), "500")
+  expect_equal(xml_attr(scaling_node, "majorUnit"), "100")
+  expect_equal(xml_attr(scaling_node, "minorUnit"), "50")
 
   # 2. Verify Axis Title Styling (cx:rich)
   # Titles use a:rPr for styling
-  title_rpr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:title//a:rPr")
-  expect_equal(xml2::xml_attr(title_rpr, "sz"), "1400")
-  # expect_equal(xml2::xml_attr(title_rpr, "b"), "1")
-  expect_true(xml2::xml_has_attr(xml2::xml_find_first(title_rpr, ".//a:srgbClr"), "val"))
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(title_rpr, ".//a:srgbClr"), "val"), "000000")
+  title_rpr <- xml_find_first(xml, "//cx:axis[@id='1']/cx:title//a:rPr")
+  expect_equal(xml_attr(title_rpr, "sz"), "1400")
+  # expect_equal(xml_attr(title_rpr, "b"), "1")
+  expect_true(xml_has_attr(xml_find_first(title_rpr, ".//a:srgbClr"), "val"))
+  expect_equal(xml_attr(xml_find_first(title_rpr, ".//a:srgbClr"), "val"), "000000")
 
   # 3. Verify Axis Label Styling (txPr)
   # Check BOTH defRPr (start) and endParaRPr (the fix for washed-out colors)
-  tx_pr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:txPr")
+  tx_pr <- xml_find_first(xml, "//cx:axis[@id='1']/cx:txPr")
 
   # Start Properties
-  def_rpr <- xml2::xml_find_first(tx_pr, ".//a:defRPr")
-  expect_equal(xml2::xml_attr(def_rpr, "sz"), "1200")
-  expect_equal(xml2::xml_attr(def_rpr, "b"), "1")
-  expect_equal(xml2::xml_attr(def_rpr, "i"), "1")
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(def_rpr, ".//a:srgbClr"), "val"), "000000")
+  def_rpr <- xml_find_first(tx_pr, ".//a:defRPr")
+  expect_equal(xml_attr(def_rpr, "sz"), "1200")
+  expect_equal(xml_attr(def_rpr, "b"), "1")
+  expect_equal(xml_attr(def_rpr, "i"), "1")
+  expect_equal(xml_attr(xml_find_first(def_rpr, ".//a:srgbClr"), "val"), "000000")
 
   # End Properties (CRITICAL FIX)
-  end_rpr <- xml2::xml_find_first(tx_pr, ".//a:endParaRPr")
-  expect_equal(xml2::xml_attr(end_rpr, "sz"), "1200")
-  expect_equal(xml2::xml_attr(end_rpr, "b"), "1")
-  expect_equal(xml2::xml_attr(end_rpr, "i"), "1")
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(end_rpr, ".//a:solidFill/a:srgbClr"), "val"), "000000")
+  end_rpr <- xml_find_first(tx_pr, ".//a:endParaRPr")
+  expect_equal(xml_attr(end_rpr, "sz"), "1200")
+  expect_equal(xml_attr(end_rpr, "b"), "1")
+  expect_equal(xml_attr(end_rpr, "i"), "1")
+  expect_equal(xml_attr(xml_find_first(end_rpr, ".//a:solidFill/a:srgbClr"), "val"), "000000")
 
   # 4. Verify Gridlines
-  dash_node <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:majorGridlines//a:prstDash")
-  expect_equal(xml2::xml_attr(dash_node, "val"), "dash")
+  dash_node <- xml_find_first(xml, "//cx:axis[@id='1']/cx:majorGridlines//a:prstDash")
+  expect_equal(xml_attr(dash_node, "val"), "dash")
 
-  grid_clr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:majorGridlines//a:srgbClr")
-  expect_equal(xml2::xml_attr(grid_clr, "val"), "FF0000")
+  grid_clr <- xml_find_first(xml, "//cx:axis[@id='1']/cx:majorGridlines//a:srgbClr")
+  expect_equal(xml_attr(grid_clr, "val"), "FF0000")
 
   # 5. Verify Axis Line Color
-  axis_line_clr <- xml2::xml_find_first(xml, "//cx:axis[@id='1']/cx:spPr//a:ln/a:solidFill/a:srgbClr")
-  expect_equal(xml2::xml_attr(axis_line_clr, "val"), "000000")
+  axis_line_clr <- xml_find_first(xml, "//cx:axis[@id='1']/cx:spPr//a:ln/a:solidFill/a:srgbClr")
+  expect_equal(xml_attr(axis_line_clr, "val"), "000000")
 })
 
 test_that("Bubble chart generates valid XML and integrates with workbook", {
@@ -282,22 +285,22 @@ test_that("Bubble chart generates valid XML and integrates with workbook", {
   # 3. Test XML structure
   # Render and parse back to xml2 object for easy XPath testing
   xml_str <- bc$render()
-  xml_parsed <- xml2::read_xml(xml_str)
+  xml_parsed <- read_xml(xml_str)
 
   # Check for mandatory bubbleChart node
-  expect_true(xml2::xml_name(xml2::xml_find_first(xml_parsed, ".//c:bubbleChart")) == "bubbleChart")
+  expect_true(xml_name(xml_find_first(xml_parsed, ".//c:bubbleChart")) == "c:bubbleChart")
 
   # Check for bubble-specific settings
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(xml_parsed, ".//c:bubbleScale"), "val"), "120")
-  expect_equal(xml2::xml_attr(xml2::xml_find_first(xml_parsed, ".//c:showNegBubbles"), "val"), "0")
+  expect_equal(xml_attr(xml_find_first(xml_parsed, ".//c:bubbleScale"), "val"), "120")
+  expect_equal(xml_attr(xml_find_first(xml_parsed, ".//c:showNegBubbles"), "val"), "0")
 
   # Check for the three data dimensions in the first series
-  expect_true(xml2::xml_length(xml2::xml_find_first(xml_parsed, ".//c:ser/c:xVal")) > 0)
-  expect_true(xml2::xml_length(xml2::xml_find_first(xml_parsed, ".//c:ser/c:yVal")) > 0)
-  expect_true(xml2::xml_length(xml2::xml_find_first(xml_parsed, ".//c:ser/c:bubbleSize")) > 0)
+  expect_true(xml_length(xml_find_first(xml_parsed, ".//c:ser/c:xVal")) > 0)
+  expect_true(xml_length(xml_find_first(xml_parsed, ".//c:ser/c:yVal")) > 0)
+  expect_true(xml_length(xml_find_first(xml_parsed, ".//c:ser/c:bubbleSize")) > 0)
 
   # Check Palette Application (dPt nodes)
-  dpts <- xml2::xml_find_all(xml_parsed, ".//c:dPt")
+  dpts <- xml_find_all(xml_parsed, ".//c:dPt")
   expect_gt(length(dpts), 0)
 })
 
@@ -310,12 +313,12 @@ test_that("set_data_table correctly adds dTable node to XML", {
   chart$set_data_table(TRUE)
 
   # 3. Render and parse XML
-  xml_res <- xml2::read_xml(chart$render())
+  xml_res <- read_xml(chart$render())
 
   # 4. Assertions
   # Check if the dTable tag exists
-  dtable_node <- xml2::xml_find_first(xml_res, ".//c:dTable")
-  expect_false(xml2::xml_type(dtable_node) == "element_absent")
+  dtable_node <- xml_find_first(xml_res, ".//c:dTable")
+  expect_false(xml_type(dtable_node) == "element_absent")
 
   # Optional: check for specific data table attributes (keys, borders, etc.)
   expect_true(any(grepl("showKeys", as.character(xml_res))))
@@ -333,20 +336,20 @@ test_that("drop_lines, high_low_lines, and up_down_bars render correctly", {
   ch$up_down_bars   <- TRUE
 
   # 3. Render and parse XML
-  xml_res <- xml2::read_xml(ch$render())
+  xml_res <- read_xml(ch$render())
 
   # 4. Assertions for specialized OOXML nodes
   # Drop Lines: <c:dropLines>
-  expect_false(xml2::xml_type(xml2::xml_find_first(xml_res, ".//c:dropLines")) == "element_absent")
+  expect_false(xml_type(xml_find_first(xml_res, ".//c:dropLines")) == "element_absent")
 
   # High-Low Lines: <c:hiLowLines>
-  expect_false(xml2::xml_type(xml2::xml_find_first(xml_res, ".//c:hiLowLines")) == "element_absent")
+  expect_false(xml_type(xml_find_first(xml_res, ".//c:hiLowLines")) == "element_absent")
 
   # Up-Down Bars: <c:upDownBars>
-  expect_false(xml2::xml_type(xml2::xml_find_first(xml_res, ".//c:upDownBars")) == "element_absent")
+  expect_false(xml_type(xml_find_first(xml_res, ".//c:upDownBars")) == "element_absent")
 
   # Verify they are nested within the lineChart node
-  expect_equal(length(xml2::xml_find_all(xml_res, ".//c:lineChart/c:dropLines")), 1)
+  expect_equal(length(xml_find_all(xml_res, ".//c:lineChart/c:dropLines")), 1)
 })
 
 test_that("barChart with theme colors and stacked grouping renders correctly", {
@@ -404,19 +407,19 @@ test_that("trendlines and error bars render correctly in a series", {
   )
 
   # 2. Render XML
-  xml_res <- xml2::read_xml(ch$render())
+  xml_res <- read_xml(ch$render())
 
   # 3. Assertions for Trendlines
   # OOXML node for trendline is <c:trendline>
-  trend_node <- xml2::xml_find_first(xml_res, ".//c:ser/c:trendline")
-  expect_false(xml2::xml_type(trend_node) == "element_absent")
+  trend_node <- xml_find_first(xml_res, ".//c:ser/c:trendline")
+  expect_false(xml_type(trend_node) == "element_absent")
   expect_true(any(grepl('trendlineType val="linear"', as.character(xml_res))))
   expect_true(any(grepl('dispRSqr val="0"', as.character(xml_res))))
 
   # 4. Assertions for Error Bars
   # OOXML node for error bars is <c:errBars>
-  err_node <- xml2::xml_find_first(xml_res, ".//c:ser/c:errBars")
-  expect_false(xml2::xml_type(err_node) == "element_absent")
+  err_node <- xml_find_first(xml_res, ".//c:ser/c:errBars")
+  expect_false(xml_type(err_node) == "element_absent")
   expect_true(any(grepl('errBarType val="both"', as.character(xml_res)))) # Default behavior
   expect_true(any(grepl('errValType val="percentage"', as.character(xml_res))))
 
@@ -454,7 +457,7 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
     )
 
   # 4. Render XML
-  xml_res <- xml2::read_xml(ch$render(1))
+  xml_res <- read_xml(ch$render(1))
 
   # --- Assertions ---
 
@@ -476,5 +479,5 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
   expect_true(any(grepl("FF00FF", as.character(xml_res), ignore.case = TRUE)))
 
   # Verify ChartEx Axis Node presence
-  expect_false(xml2::xml_type(xml2::xml_find_first(xml_res, ".//cx:axis")) == "element_absent")
+  expect_false(xml_type(xml_find_first(xml_res, ".//cx:axis")) == "element_absent")
 })

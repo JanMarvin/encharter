@@ -65,9 +65,10 @@ ec <- encharter
 ec <- encharter
 
 #' Encharter Base R6 Class
+#' @useDynLib encharter, .registration=TRUE
+#'
 #' @import R6
-#' @importFrom xml2 read_xml xml_remove xml_add_child xml_find_first xml_find_all xml_set_attr
-#' @importFrom openxlsx2 wb_color dims_to_dataframe
+#' @importFrom openxlsx2 wb_color dims_to_dataframe read_xml
 EncharterBase <- R6::R6Class(
   "EncharterBase",
   public = list(
