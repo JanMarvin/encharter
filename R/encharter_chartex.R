@@ -797,22 +797,27 @@ ChartEx <- R6::R6Class(
       xml_add_child(tx, "a:lstStyle")
       p <- xml_add_child(tx, "a:p")
       pPr <- xml_add_child(p, "a:pPr", algn = "ctr")
-      r <- xml_add_child(p, "a:r")
-      rPr <- xml_add_child(r, "a:rPr")
+      if (inherits(text, "fmt_txt")) {
+        wrapper <- sprintf('<x xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">%s</x>', openxlsx2:::fmt_txt2(text))
+        xml_add_child(p, xml_find_first(read_xml(wrapper), ".//a:r"))
+      } else {
+        r <- xml_add_child(p, "a:r")
+        rPr <- xml_add_child(r, "a:rPr")
 
-      # Color MUST be inside a:solidFill
-      # If s$color is NULL, we default to black "000000"
-      font_color <- s$color %||% "000000"
-      fill_node <- xml_add_child(rPr, "a:solidFill")
-      private$render_color_core(fill_node, font_color)
+        # Color MUST be inside a:solidFill
+        # If s$color is NULL, we default to black "000000"
+        font_color <- s$color %||% "000000"
+        fill_node <- xml_add_child(rPr, "a:solidFill")
+        private$render_color_core(fill_node, font_color)
 
-      # Font Styling
-      if (!is.null(s$sz)) xml_set_attr(rPr, "sz", as.character(s$sz * 100))
-      if (!is.null(s$bold)) xml_set_attr(rPr, "b", ifelse(isTRUE(s$bold), "1", "0"))
-      if (!is.null(s$italic)) xml_set_attr(rPr, "i", ifelse(isTRUE(s$italic), "1", "0"))
-      if (!is.null(s$name)) xml_add_child(rPr, "a:latin", typeface = s$name)
+        # Font Styling
+        if (!is.null(s$sz)) xml_set_attr(rPr, "sz", as.character(s$sz * 100))
+        if (!is.null(s$bold)) xml_set_attr(rPr, "b", ifelse(isTRUE(s$bold), "1", "0"))
+        if (!is.null(s$italic)) xml_set_attr(rPr, "i", ifelse(isTRUE(s$italic), "1", "0"))
+        if (!is.null(s$name)) xml_add_child(rPr, "a:latin", typeface = s$name)
 
-      xml_add_child(r, "a:t", text)
+        xml_add_child(r, "a:t", text)
+      }
     },
     apply_axis_style = function(node, style) {
       pr <- xml_add_child(node, "cx:txPr")

@@ -1010,14 +1010,19 @@ Chart <- R6::R6Class(
       xml_add_child(rich, "a:bodyPr")
       xml_add_child(rich, "a:lstStyle")
       p <- xml_add_child(rich, "a:p")
-      sz <- if (!is.null(style$sz)) style$sz * 100 else default_sz
-      r <- xml_add_child(p, "a:r")
-      rPr <- xml_add_child(r, "a:rPr", sz = as.character(sz))
-      if (isTRUE(style$bold)) xml_set_attr(rPr, "b", "1")
-      if (isTRUE(style$italic)) xml_set_attr(rPr, "i", "1")
-      if (!is.null(style$color)) private$render_fill(xml_add_child(rPr, "a:solidFill"), style$color)
-      if (!is.null(style$name)) xml_add_child(rPr, "a:latin", typeface = style$name)
-      xml_add_child(r, "a:t", text)
+      if (inherits(text, "fmt_txt")) {
+        wrapper <- sprintf('<x xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">%s</x>', openxlsx2:::fmt_txt2(text))
+        xml_add_child(p, xml_find_first(read_xml(wrapper), ".//a:r"))
+      } else {
+        sz <- if (!is.null(style$sz)) style$sz * 100 else default_sz
+        r <- xml_add_child(p, "a:r")
+        rPr <- xml_add_child(r, "a:rPr", sz = as.character(sz))
+        if (isTRUE(style$bold)) xml_set_attr(rPr, "b", "1")
+        if (isTRUE(style$italic)) xml_set_attr(rPr, "i", "1")
+        if (!is.null(style$color)) private$render_fill(xml_add_child(rPr, "a:solidFill"), style$color)
+        if (!is.null(style$name)) xml_add_child(rPr, "a:latin", typeface = style$name)
+        xml_add_child(r, "a:t", text)
+      }
     },
 
     render_cat_ax = function(parent, id, cross_id, pos, delete = "0", title_obj = NULL, params = NULL, crosses = "autoZero") {

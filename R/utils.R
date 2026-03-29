@@ -88,7 +88,7 @@ normalize_encharter_string <- function(x) {
 
 #' a trimmed down styleplot_xml
 #' @noRd
-    styleplot_xml <- '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+styleplot_xml <- '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cs:chartStyle xmlns:cs="http://schemas.microsoft.com/office/drawing/2012/chartStyle"
                xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" id="201">
   <cs:axisTitle><cs:lnRef idx="0"/><cs:fillRef idx="0"/><cs:effectRef idx="0"/><cs:fontRef idx="minor"><a:schemeClr val="tx1"/></cs:fontRef><cs:defRPr/></cs:axisTitle>
@@ -126,7 +126,7 @@ normalize_encharter_string <- function(x) {
 
 #' A colors xml file
 #' @noRd
-    colors1_xml <- "<cs:colorStyle xmlns:cs=\"http://schemas.microsoft.com/office/drawing/2012/chartStyle\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" meth=\"cycle\" id=\"10\">
+colors1_xml <- "<cs:colorStyle xmlns:cs=\"http://schemas.microsoft.com/office/drawing/2012/chartStyle\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" meth=\"cycle\" id=\"10\">
 <a:schemeClr val=\"accent1\"/>
 <a:schemeClr val=\"accent2\"/>
 <a:schemeClr val=\"accent3\"/>

@@ -70,17 +70,34 @@ extern "C" {
     return out;
   }
 
-  SEXP pugi_add_child(SEXP node_ptr, SEXP name_str, SEXP where_int) {
+  SEXP pugi_add_child(SEXP node_ptr, SEXP input, SEXP where_int) {
     if (node_ptr == R_NilValue) return R_NilValue;
     pugi::xml_node* node = (pugi::xml_node*)R_ExternalPtrAddr(node_ptr);
-    const char* name = CHAR(STRING_ELT(name_str, 0));
     int where = Rf_asInteger(where_int);
 
-    pugi::xml_node new_node;
-    if (where == 0) new_node = node->prepend_child(name);
-    else new_node = node->append_child(name);
+    // CASE 1: Input is an External Pointer (Existing Node)
+    if (TYPEOF(input) == EXTPTRSXP) {
+      pugi::xml_node* input_node = (pugi::xml_node*)R_ExternalPtrAddr(input);
+      pugi::xml_node copied_node;
 
-    return wrap_node_raw(new_node);
+      if (where == 0) copied_node = node->prepend_copy(*input_node);
+      else copied_node = node->append_copy(*input_node);
+
+      return wrap_node_raw(copied_node);
+    }
+
+    // CASE 2: Input is a String (New Node Name)
+    if (Rf_isString(input)) {
+      const char* name = CHAR(STRING_ELT(input, 0));
+      pugi::xml_node new_node;
+
+      if (where == 0) new_node = node->prepend_child(name);
+      else new_node = node->append_child(name);
+
+      return wrap_node_raw(new_node);
+    }
+
+    return R_NilValue;
   }
 
   SEXP pugi_remove(SEXP node_ptr) {
