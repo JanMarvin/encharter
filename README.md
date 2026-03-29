@@ -3,7 +3,7 @@ encharter
 
 <!-- badges: start -->
 
-[![R-CMD-check.yaml](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/JanMarvin/openxlsx2/actions/workflows/check-standard.yaml)
+[![R-CMD-check.yaml](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml)
 [![codecov](https://codecov.io/gh/JanMarvin/encharter/graph/badge.svg?token=JMMBBBHPTG)](https://app.codecov.io/gh/JanMarvin/encharter)
 [![r-universe](https://janmarvin.r-universe.dev/badges/encharter)](https://janmarvin.r-universe.dev/encharter)
 

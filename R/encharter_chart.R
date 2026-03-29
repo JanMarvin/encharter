@@ -340,10 +340,10 @@ Chart <- R6::R6Class(
                           line_type = NULL, line_width = 1, line_color = NULL,
                           filled = FALSE, error_bars = FALSE, trendline = FALSE) {
 
+      type <- normalize_encharter_type(type)
       private$validate_input(
         type,
-        c("barChart", "lineChart", "areaChart", "scatterChart",
-          "pieChart", "doughnutChart", "radarChart", "bubbleChart", "surfaceChart"),
+        ENCHARTER_STANDARD,
         "series type"
       )
 
@@ -1095,14 +1095,17 @@ Chart <- R6::R6Class(
         xml_add_child(ax, "c:lblOffset", val = "100")
 
         if (!is.null(params$base_time)) {
+          private$validate_input(params$base_time, c("days", "months", "years"), "base_time")
           xml_add_child(ax, "c:baseTimeUnit", val = params$base_time)
         }
         if (!is.null(params$major)) {
           xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
+          private$validate_input(params$major_time, c("days", "months", "years"), "major_time")
           if (!is.null(params$major_time)) xml_add_child(ax, "c:majorTimeUnit", val = params$major_time)
         }
         if (!is.null(params$minor)) {
           xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
+          private$validate_input(params$minor_time, c("days", "months", "years"), "minor_time")
           if (!is.null(params$minor_time)) xml_add_child(ax, "c:minorTimeUnit", val = params$minor_time)
         }
       } else {
@@ -1282,12 +1285,22 @@ Chart <- R6::R6Class(
 
       # 4. Clean and add as RGB
       clean <- toupper(gsub("^#", "", hex))
-      if (nchar(clean) == 8) clean <- substr(clean, 3, 8)
+
+      alpha_val <- NULL
+      if (nchar(clean) == 8) {
+        aa_hex <- substr(clean, 1, 2)
+        aa_dec <- as.numeric(paste0("0x", aa_hex))
+        alpha_val <- as.integer(round((aa_dec / 255) * 100000))
+        clean <- substr(clean, 3, 8)
+      }
 
       # Final safety check: if 'clean' is empty/invalid, default to black
       if (nchar(clean) != 6) clean <- "000000"
 
-      xml_add_child(node, "a:srgbClr", val = clean)
+      color_node <- xml_add_child(node, "a:srgbClr", val = clean)
+      if (!is.null(alpha_val)) {
+        xml_add_child(color_node, "a:alpha", val = as.character(alpha_val))
+      }
     }
   )
 )

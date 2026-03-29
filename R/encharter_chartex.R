@@ -201,6 +201,14 @@ ChartEx <- R6::R6Class(
                           statistics = NULL, binning = NULL,
                           visibility = NULL, parent_label = "overlapping") {
 
+      # not sure if changing the type here is a good idea
+      type <- normalize_encharter_type(type)
+      private$validate_input(
+        type,
+        ENCHARTER_EXTENDED,
+        "series type"
+      )
+
       if (is.null(color)) {
         color_idx <- (length(self$series_data) %% length(self$palette)) + 1
         color <- self$palette[color_idx]
@@ -748,12 +756,22 @@ ChartEx <- R6::R6Class(
 
       # 4. Clean and add as RGB
       clean <- toupper(gsub("^#", "", hex))
-      if (nchar(clean) == 8) clean <- substr(clean, 3, 8)
+
+      alpha_val <- NULL
+      if (nchar(clean) == 8) {
+        aa_hex <- substr(clean, 1, 2)
+        aa_dec <- as.numeric(paste0("0x", aa_hex))
+        alpha_val <- as.integer(round((aa_dec / 255) * 100000))
+        clean <- substr(clean, 3, 8)
+      }
 
       # Final safety check: if 'clean' is empty/invalid, default to black
       if (nchar(clean) != 6) clean <- "000000"
 
-      xml_add_child(node, "a:srgbClr", val = clean)
+      color_node <- xml_add_child(node, "a:srgbClr", val = clean)
+      if (!is.null(alpha_val)) {
+        xml_add_child(color_node, "a:alpha", val = as.character(alpha_val))
+      }
     },
     add_rich_text = function(parent, text, s) {
       xml_remove(xml_children(parent))

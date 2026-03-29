@@ -1,9 +1,12 @@
 # The 'Super' routing vectors
+
+#' @noRd
 ENCHARTER_STANDARD <- c(
   "barChart", "lineChart", "areaChart", "scatterChart",
   "pieChart", "doughnutChart", "radarChart", "bubbleChart", "surfaceChart"
 )
 
+#' @noRd
 ENCHARTER_EXTENDED <- c(
   "waterfall", "sunburst", "treemap", "regionMap", "clusteredColumn", "funnel",
   "paretoLine", "boxWhisker"
