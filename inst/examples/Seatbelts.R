@@ -20,7 +20,7 @@ seatbelts_clean <- Seatbelts |>
 seatbelts_final <- seatbelts_clean |>
   mutate(
     fatality_rate_12m = slide_mean(
-      x = deaths/total_casualties,
+      x = deaths / total_casualties,
       before = 11,
       complete = TRUE
     )
