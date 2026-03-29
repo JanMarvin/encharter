@@ -8,12 +8,11 @@ library(slider)
 seatbelts_clean <- Seatbelts |>
   as.data.frame() |>
   as_tibble() |>
-  mutate(date = as.Date(zoo::as.yearmon(time(Seatbelts))), .before = 1, law = as.integer(!law)) |>
+  mutate(date = zoo::as.Date(zoo::as.yearmon(time(Seatbelts))), .before = 1, law = as.integer(!law)) |>
   rename(
     total_casualties = drivers,
     deaths = DriversKilled,
     distance_driven = kms
-
   )
 
 # Calculate Rolling Weighted Fatality Rate
@@ -58,10 +57,10 @@ e$add_series(data = wd, header = `12m Fatality Rate`, cat = date, secondary = TR
 e$set_x_axis(format = "YYYY", minor = 4, major = 12, minor_time = "months", major_time = "months", min = unlist(openxlsx2::convert_to_excel_date(data.frame(date = as.Date("1975-01-01")))))
 e$set_y_axis(min = 0, max = 200)
 e$set_y2_axis(format = "0.0%", min = .06, max = 0.08)
-e$set_chart_title("Ratio of Deaths to Total Serious Injuries and Weighted by Distance Driven (KMs)")
+e$set_chart_title("Ratio of Deaths to Total Serious Injuries and Weighted by Distance Driven (KMs)", bold = TRUE)
 e$set_y2_title("Rolling 12-Month (Weighted) Driver Fatality Rate")
 e$set_y_title("Total Amount of Deaths")
-e$set_x_title("Data: UK Driver Seatbelts Dataset (1969-1984)")
+e$set_x_title("Data: UK Driver Seatbelts Dataset (1969-1984)", italic = TRUE, sz = 14)
 e$set_legend_style(pos = "bottom")
 
 wb$add_chartsheet()
