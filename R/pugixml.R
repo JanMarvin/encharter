@@ -90,15 +90,15 @@ xml_remove <- function(x) {
   else if (!is.null(x)) .Call("pugi_remove", x)
 }
 
+#' @method as.character pugi_node
 #' @export
 as.character.pugi_node <- function(x, ...) .Call("pugi_serialize_node", x)
 
-#' @export
-as.character.pugi_xml <- function(x, ...) .Call("pugi_serialize_node", x)
-
+#' @method print pugi_node
 #' @export
 print.pugi_node <- function(x, ...) cat(as.character(x), "\n")
 
+#' @method print pugi_nodeset
 #' @export
 print.pugi_nodeset <- function(x, ...) {
   n <- length(x)
