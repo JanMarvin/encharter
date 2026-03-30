@@ -305,7 +305,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   line_width = NULL,
   grid_width = NULL,
   minor_grid_width = NULL,
-  crosses = NULL,
+  crosses = "max",
   crosses_at = NULL,
   label_pos = NULL
 )}
@@ -376,7 +376,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   line_width = NULL,
   grid_width = NULL,
   minor_grid_width = NULL,
-  crosses = NULL,
+  crosses = "max",
   crosses_at = NULL,
   label_pos = NULL
 )}

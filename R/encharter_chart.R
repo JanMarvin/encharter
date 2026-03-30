@@ -173,7 +173,7 @@ Chart <- R6::R6Class(
                            grid_color = NULL, gridlines = NULL,
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                           crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+                           crosses = "max", crosses_at = NULL, label_pos = NULL) {
         private$set_axis_params(
           "y2",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
@@ -221,7 +221,7 @@ Chart <- R6::R6Class(
                            grid_color = NULL, gridlines = NULL,
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                           crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+                           crosses = "max", crosses_at = NULL, label_pos = NULL) {
 
         private$set_axis_params(
           "x2",
