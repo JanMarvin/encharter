@@ -47,8 +47,7 @@ Chart <- R6::R6Class(
 
       private$validate_input(
         type,
-        c("barChart", "lineChart", "areaChart", "scatterChart",
-          "pieChart", "doughnutChart", "radarChart", "bubbleChart", "surfaceChart"),
+        ENCHARTER_STANDARD,
         "series type"
       )
 
@@ -703,11 +702,11 @@ Chart <- R6::R6Class(
         xml_add_child(c_node, "c:wireframe", val = surface_val)
       }
 
-      if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart", "barChart", "radarChart", "surfaceChart")) {
+      if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart", "barChart", "radarChart", "stockChart", "surfaceChart")) {
         xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
 
-      if (type != "surfaceChart") {
+      if (!type %in% c("stockChart", "surfaceChart")) {
         vary_val <- if (type %in% c("pieChart", "doughnutChart")) "1" else "0"
         xml_add_child(c_node, "c:varyColors", val = vary_val)
       }
@@ -741,7 +740,7 @@ Chart <- R6::R6Class(
           if (type %in% c("barChart", "areaChart", "bubbleChart")) {
             color <- s$line$color %||% s$color %||% "auto"
             private$render_color_core(xml_add_child(sp, "a:solidFill"), color)
-          } else if (type %in% c("lineChart", "scatterChart")) {
+          } else if (type %in% c("lineChart", "scatterChart", "stockChart")) {
             # If show_line is FALSE, we must explicitly tell OOXML not to draw the line
             if (isFALSE(s$line$show)) {
               ln <- xml_add_child(sp, "a:ln")
@@ -934,7 +933,7 @@ Chart <- R6::R6Class(
         }
 
         # 7. Smooth (Final property for Line/Scatter)
-        if (type %in% c("lineChart", "scatterChart")) {
+        if (type %in% c("lineChart", "scatterChart", "stockChart")) {
           xml_add_child(ser, "c:smooth", val = if (isTRUE(s$smooth)) "1" else "0")
         }
 
@@ -942,7 +941,7 @@ Chart <- R6::R6Class(
 
       # 1. Drop Lines
       if (isTRUE(self$drop_lines)) {
-        dl <- xml_add_child(c_node, "c:dropLines")
+        xml_add_child(c_node, "c:dropLines")
       }
 
       # 2. High-Low Lines (Common in Stock/Line charts)
@@ -991,7 +990,7 @@ Chart <- R6::R6Class(
       }
 
       # 4. AXIS IDS (Must be the last elements in Bar/Line/Scatter)
-      if (type %in% c("bubbleChart", "lineChart", "areaChart", "barChart", "scatterChart", "radarChart", "surfaceChart")) {
+      if (type %in% c("bubbleChart", "lineChart", "areaChart", "barChart", "scatterChart", "radarChart", "stockChart", "surfaceChart")) {
         xml_add_child(c_node, "c:axId", val = as.character(cat_id))
         xml_add_child(c_node, "c:axId", val = as.character(val_id))
         if (type == "surfaceChart") {

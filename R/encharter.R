@@ -3,7 +3,8 @@
 #' @noRd
 ENCHARTER_STANDARD <- c(
   "barChart", "lineChart", "areaChart", "scatterChart",
-  "pieChart", "doughnutChart", "radarChart", "bubbleChart", "surfaceChart"
+  "pieChart", "doughnutChart", "radarChart", "bubbleChart",
+  "stockChart", "surfaceChart"
 )
 
 #' @noRd

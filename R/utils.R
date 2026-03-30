@@ -74,6 +74,9 @@ normalize_encharter_type <- function(type) {
     # surface
     "surface"         = "surfaceChart",
     "surfacechart"    = "surfaceChart",
+    # stock
+    "stock"           = "stockChart",
+    "stockchart"      = "stockChart",
     # extended
     "box"             = "boxWhisker",
     "boxplot"         = "boxWhisker",
