@@ -41,7 +41,7 @@ my_chart$add_series(
 
 
 # Set Titles
-my_chart$set_chart_title("Annual Sales & Growth", bold = TRUE, sz = 16)
+my_chart$set_chart_title("Annual Sales & Growth", bold = TRUE, font_size = 16)
 my_chart$set_x_title("Reporting Month")
 my_chart$set_y_title("Revenue (k)")
 my_chart$set_y2_title("Growth Rate (%)")

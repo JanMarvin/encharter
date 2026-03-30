@@ -104,10 +104,10 @@ EncharterBase <- R6::R6Class(
 
     #' @field axis_params Internal list for scaling, units, and formatting.
     axis_params = list(
-      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", name = NULL, sz = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
+      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, label_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
     ),
 
     #' @description Set the chart's main title.
@@ -146,10 +146,10 @@ EncharterBase <- R6::R6Class(
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
-    #' @param sz Font size for the axis labels.
+    #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
@@ -162,7 +162,7 @@ EncharterBase <- R6::R6Class(
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           major_tick = NULL, minor_tick = NULL,
                           format = NULL, log_base = NULL, color = NULL,
-                          name = NULL, sz = NULL, bold = NULL, italic = NULL,
+                          font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           label_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -192,7 +192,7 @@ EncharterBase <- R6::R6Class(
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
-                     name = name, sz = sz, bold = bold, italic = italic,
+                     font_name = font_name, font_size = font_size, bold = bold, italic = italic,
                      label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -214,10 +214,10 @@ EncharterBase <- R6::R6Class(
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
-    #' @param sz Font size for the axis labels.
+    #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
@@ -230,7 +230,7 @@ EncharterBase <- R6::R6Class(
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           major_tick = NULL, minor_tick = NULL,
                           format = NULL, log_base = NULL, color = NULL,
-                          name = NULL, sz = NULL, bold = NULL, italic = NULL,
+                          font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           label_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -260,7 +260,7 @@ EncharterBase <- R6::R6Class(
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
-                     name = name, sz = sz, bold = bold, italic = italic,
+                     font_name = font_name, font_size = font_size, bold = bold, italic = italic,
                      label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -287,16 +287,16 @@ EncharterBase <- R6::R6Class(
     #' @param pos Position (t, b, l, r, none).
     #' @param align Alignment (ctr, min, max).
     #' @param overlay Logical; overlay legend on chart.
-    #' @param sz Size of font.
-    #' @param name Name of font.
+    #' @param font_size Size of font.
+    #' @param font_name Name of font.
     #' @param bold Logical.
     #' @param italic Logical.
     #' @param color Hex color.
-    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, sz = NULL, name = NULL, bold = NULL, italic = NULL, color = NULL) {
+    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
       pos <- normalize_encharter_string(pos)
       align <- normalize_encharter_string(align)
       self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
-                                 style = list(sz = sz, name = name, bold = bold, italic = italic, color = color))
+                                 style = list(font_size = font_size, font_name = font_name, bold = bold, italic = italic, color = color))
       invisible(self)
     },
 

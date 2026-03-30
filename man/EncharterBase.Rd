@@ -131,8 +131,8 @@ Encharter Base R6 Class
   format = NULL,
   log_base = NULL,
   color = NULL,
-  name = NULL,
-  sz = NULL,
+  font_name = NULL,
+  font_size = NULL,
   bold = NULL,
   italic = NULL,
   label_color = NULL,
@@ -165,8 +165,8 @@ Encharter Base R6 Class
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
       \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{sz}}{Font size for the axis labels.}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
       \item{\code{rot}}{Rotation in degrees.}
@@ -202,8 +202,8 @@ Encharter Base R6 Class
   format = NULL,
   log_base = NULL,
   color = NULL,
-  name = NULL,
-  sz = NULL,
+  font_name = NULL,
+  font_size = NULL,
   bold = NULL,
   italic = NULL,
   label_color = NULL,
@@ -236,8 +236,8 @@ Encharter Base R6 Class
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
       \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{sz}}{Font size for the axis labels.}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
       \item{\code{rot}}{Rotation in degrees.}
@@ -293,8 +293,8 @@ Encharter Base R6 Class
   pos = "t",
   align = "ctr",
   overlay = FALSE,
-  sz = NULL,
-  name = NULL,
+  font_size = NULL,
+  font_name = NULL,
   bold = NULL,
   italic = NULL,
   color = NULL
@@ -307,8 +307,8 @@ Encharter Base R6 Class
       \item{\code{pos}}{Position (t, b, l, r, none).}
       \item{\code{align}}{Alignment (ctr, min, max).}
       \item{\code{overlay}}{Logical; overlay legend on chart.}
-      \item{\code{sz}}{Size of font.}
-      \item{\code{name}}{Name of font.}
+      \item{\code{font_size}}{Size of font.}
+      \item{\code{font_name}}{Name of font.}
       \item{\code{bold}}{Logical.}
       \item{\code{italic}}{Logical.}
       \item{\code{color}}{Hex color.}

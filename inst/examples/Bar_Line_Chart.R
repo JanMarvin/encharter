@@ -15,7 +15,7 @@ sales_data <- data.frame(
 my_chart <- ec("barChart") # Base is Bar for Volume
 my_chart$
   set_chart_title("Sales vs Volume")$
-  set_legend_style(pos = "b", sz = 10)$
+  set_legend_style(pos = "b", font_size = 10)$
   # Primary Axis: Volume (Bars)
   add_series(
     header = "Sheet1!$B$1",

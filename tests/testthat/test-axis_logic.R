@@ -13,10 +13,10 @@ test_that("Chart: Date Axes and Axis Units", {
     minor_gridlines = "dotted", minor_grid_color = "#707070", # test grid lines
   )
 
-  chart$set_x_title("Foo", sz = 14, bold = TRUE)
-  expect_warning(chart$set_x2_title("Bar", sz = 14, bold = TRUE), "Secondary axis title ignored.")
-  chart$set_y_title("Baz", sz = 14, bold = TRUE)
-  expect_warning(chart$set_y2_title("Bam", sz = 14, bold = TRUE), "Secondary axis title ignored.")
+  chart$set_x_title("Foo", font_size = 14, bold = TRUE)
+  expect_warning(chart$set_x2_title("Bar", font_size = 14, bold = TRUE), "Secondary axis title ignored.")
+  chart$set_y_title("Baz", font_size = 14, bold = TRUE)
+  expect_warning(chart$set_y2_title("Bam", font_size = 14, bold = TRUE), "Secondary axis title ignored.")
 
   xml <- as.character(chart$render())
 
@@ -31,13 +31,13 @@ test_that("Chart: Date Axes and Axis Units", {
   chart$add_series(
     header = "S1!C$1", data = "S1!$C$2:$C$5", secondary = TRUE # "y"
   )
-  chart$set_y2_title("Bam", sz = 14, bold = TRUE)
+  chart$set_y2_title("Bam", font_size = 14, bold = TRUE)
   xml <- as.character(chart$render())
 
   chart$add_series(
     header = "S1!C$1", data = "S1!$C$2:$C$5", secondary = "x"
   )
-  chart$set_x2_title("Bar", sz = 14, bold = TRUE)
+  chart$set_x2_title("Bar", font_size = 14, bold = TRUE)
 
   wb <- openxlsx2::wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)
   wb <- openxlsx2::wb_add_encharter(wb, graph = chart)

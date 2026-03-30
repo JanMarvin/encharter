@@ -25,8 +25,8 @@ my_wf$add_series(
 
 # 2. Skinning the X-Axis (Category Axis)
 my_wf$set_x_axis(
-  sz = 11,
-  name = "Segoe UI",
+  font_size = 11,
+  font_name = "Segoe UI",
   bold = TRUE,
   color = wb_color(hex = "#444444"),
   major_tick = "out"   # Uses the new <cx:majorTickMarks type="out" />
@@ -34,8 +34,8 @@ my_wf$set_x_axis(
 
 # 3. Skinning the Y-Axis (Value Axis)
 my_wf$set_y_axis(
-  sz = 10,
-  name = "Segoe UI",
+  font_size = 10,
+  font_name = "Segoe UI",
   italic = TRUE,
   grid_color = wb_color(hex = "#D9D9D9"), # Subtle gridlines using render_color_core
   gridlines = TRUE,
@@ -43,8 +43,8 @@ my_wf$set_y_axis(
 )
 
 # 4. Skinning the Legend & Title
-my_wf$set_chart_title("2024 Performance", sz = 14, bold = TRUE)$
-  set_legend_style(pos = "b", sz = 10)$
+my_wf$set_chart_title("2024 Performance", font_size = 14, bold = TRUE)$
+  set_legend_style(pos = "b", font_size = 10)$
   set_plot_style(
     fill       = wb_color("white"),
     line       = wb_color("black"),

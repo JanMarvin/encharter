@@ -3,7 +3,7 @@ test_that("Chart: Styling, Markers, and Labels", {
 
   # Test Data Label Style (from Line.R)
   chart$set_data_label_style(
-    show_val = TRUE, show_cat = FALSE, pos = "t", bold = TRUE, sz = 9
+    show_val = TRUE, show_cat = FALSE, pos = "t", bold = TRUE, font_size = 9
   )
 
   # Test Marker Styling
@@ -26,8 +26,8 @@ test_that("Chart: Styling, Markers, and Labels", {
 
 test_that("Chart: Legend and Title styles", {
   chart <- Chart$new()
-  chart$set_chart_title("Main Title", bold = TRUE, sz = 14)
-  chart$set_legend_style(pos = "b", sz = 10)
+  chart$set_chart_title("Main Title", bold = TRUE, font_size = 14)
+  chart$set_legend_style(pos = "b", font_size = 10)
   expect_error(chart$render(), "The chart contains no data. You must add at least one series")
 
   chart$add_series(
@@ -202,14 +202,14 @@ test_that("ChartEx renders full styling and axis properties", {
     gridlines = "dash",
     grid_color = "FF0000",
     color = "000000",      # Black axis line
-    sz = 12,               # 12pt font
+    font_size = 12,        # 12pt font
     bold = TRUE,
     italic = TRUE,
     format = "#,##0"
   )
 
   # Apply Title styling
-  ce$set_y_title("USD (Millions)", sz = 14, b = TRUE, color = "000000")
+  ce$set_y_title("USD (Millions)", font_size = 14, b = TRUE, color = "000000")
 
   xml <- read_xml(ce$render(1))
 
@@ -433,10 +433,10 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
   ch <- ChartEx$new()
 
   # 2. Apply Titles and Axis Styles
-  ch$set_chart_title("MPG Distribution", sz = 16, name = "Arial", bold = TRUE, italic = TRUE, fill = "#DDADDA", line = wb_color("blue")) # test italic, fill and line
-  ch$set_x_title("by Cylinder", sz = 12, italic = TRUE)
-  ch$set_x_axis(sz = 10) # test this
-  ch$set_y_axis(sz = 12, name = "Times New Roman", italic = TRUE, color = "000000")
+  ch$set_chart_title("MPG Distribution", font_size = 16, font_name = "Arial", bold = TRUE, italic = TRUE, fill = "#DDADDA", line = wb_color("blue")) # test italic, fill and line
+  ch$set_x_title("by Cylinder", font_size = 12, italic = TRUE)
+  ch$set_x_axis(font_size = 10) # test this
+  ch$set_y_axis(font_size = 12, font_name = "Times New Roman", italic = TRUE, color = "000000")
 
   # 3. Add Series with Color and Line Style
   ch$add_series(
@@ -450,10 +450,10 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
 
   ch$
     set_legend_style( # test this
-      pos   = "r",
-      sz    = 15,
-      bold  = TRUE,
-      color = wb_color(theme = "4")
+      pos       = "r",
+      font_size = 15,
+      bold      = TRUE,
+      color     = wb_color(theme = "4")
     )
 
   # 4. Render XML

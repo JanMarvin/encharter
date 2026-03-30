@@ -56,10 +56,10 @@ ChartEx <- R6::R6Class(
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
-    #' @param sz Font size for the axis labels.
+    #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
@@ -70,9 +70,9 @@ ChartEx <- R6::R6Class(
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     set_x_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                           major_time = NULL, minor_time = NULL, base_time = NULL,
-                          major_tick = NULL, minor_tick = NULL, sz = NULL, bold = NULL, italic = NULL,
+                          major_tick = NULL, minor_tick = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           format = NULL, log_base = NULL, color = NULL,
-                          name = NULL, label_color = NULL, rot = NULL,
+                          font_name = NULL, label_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
@@ -101,7 +101,7 @@ ChartEx <- R6::R6Class(
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
-                     name = name, sz = sz, bold = bold, italic = italic,
+                     font_name = font_name, font_size = font_size, bold = bold, italic = italic,
                      label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -123,10 +123,10 @@ ChartEx <- R6::R6Class(
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
-    #' @param sz Font size for the axis labels.
+    #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
@@ -139,7 +139,7 @@ ChartEx <- R6::R6Class(
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           major_tick = NULL, minor_tick = NULL,
                           format = NULL, log_base = NULL, color = NULL,
-                          name = NULL, sz = NULL, bold = NULL, italic = NULL,
+                          font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           label_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -169,7 +169,7 @@ ChartEx <- R6::R6Class(
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
-                     name = name, sz = sz, bold = bold, italic = italic,
+                     font_name = font_name, font_size = font_size, bold = bold, italic = italic,
                      label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -602,7 +602,7 @@ ChartEx <- R6::R6Class(
       p <- xml_add_child(txPr, "a:p")
       pPr <- xml_add_child(p, "a:pPr")
       set_run_attrs <- function(n, st) {
-        if (!is.null(st$sz)) xml_set_attr(n, "sz", as.character(st$sz * 100))
+        if (!is.null(st$font_size)) xml_set_attr(n, "sz", as.character(st$font_size * 100))
         if (!is.null(st$bold)) xml_set_attr(n, "b", if (isTRUE(st$bold)) "1" else "0")
         if (!is.null(st$italic)) xml_set_attr(n, "i", if (isTRUE(st$italic)) "1" else "0")
       }
@@ -612,7 +612,7 @@ ChartEx <- R6::R6Class(
       endRPr <- xml_add_child(p, "a:endParaRPr")
       set_run_attrs(endRPr, s)
       if (!is.null(s$color)) private$render_color(endRPr, s$color)
-      if (!is.null(s$name)) xml_add_child(endRPr, "a:latin", typeface = s$name)
+      if (!is.null(s$font_name)) xml_add_child(endRPr, "a:latin", typeface = s$font_name)
     },
 
     render_axis_full = function(plot_area, s, title, title_style, gap_width = NULL, type = "val") {
@@ -685,16 +685,16 @@ ChartEx <- R6::R6Class(
       p <- xml_add_child(txPr, "a:p")
       pPr <- xml_add_child(p, "a:pPr", algn = "ctr")
       defRPr <- xml_add_child(pPr, "a:defRPr")
-      if (!is.null(s$sz)) xml_set_attr(defRPr, "sz", as.character(s$sz * 100))
+      if (!is.null(s$font_size)) xml_set_attr(defRPr, "sz", as.character(s$font_size * 100))
       if (!is.null(s$bold)) xml_set_attr(defRPr, "b", if (isTRUE(s$bold)) "1" else "0")
       if (!is.null(s$italic)) xml_set_attr(defRPr, "i", if (isTRUE(s$italic)) "1" else "0")
       if (!is.null(s$color)) private$render_color_core(defRPr, s$color, wrap = TRUE)
       endRPr <- xml_add_child(p, "a:endParaRPr")
-      if (!is.null(s$sz)) xml_set_attr(endRPr, "sz", as.character(s$sz * 100))
+      if (!is.null(s$font_size)) xml_set_attr(endRPr, "sz", as.character(s$font_size * 100))
       if (!is.null(s$bold)) xml_set_attr(endRPr, "b", if (isTRUE(s$bold)) "1" else "0")
       if (!is.null(s$italic)) xml_set_attr(endRPr, "i", if (isTRUE(s$italic)) "1" else "0")
       if (!is.null(s$color)) private$render_color_core(endRPr, s$color, wrap = TRUE)
-      if (!is.null(s$name)) xml_add_child(endRPr, "a:latin", typeface = s$name)
+      if (!is.null(s$font_name)) xml_add_child(endRPr, "a:latin", typeface = s$font_name)
     },
     render_color = function(parent_node, color_val) {
       if (is.null(color_val) || identical(color_val, "auto")) return()
@@ -806,15 +806,15 @@ ChartEx <- R6::R6Class(
 
         # Color MUST be inside a:solidFill
         # If s$color is NULL, we default to black "000000"
-        font_color <- s$color %||% "000000"
+        color <- s$color %||% "000000"
         fill_node <- xml_add_child(rPr, "a:solidFill")
-        private$render_color_core(fill_node, font_color)
+        private$render_color_core(fill_node, color)
 
         # Font Styling
-        if (!is.null(s$sz)) xml_set_attr(rPr, "sz", as.character(s$sz * 100))
+        if (!is.null(s$font_size)) xml_set_attr(rPr, "sz", as.character(s$font_size * 100))
         if (!is.null(s$bold)) xml_set_attr(rPr, "b", ifelse(isTRUE(s$bold), "1", "0"))
         if (!is.null(s$italic)) xml_set_attr(rPr, "i", ifelse(isTRUE(s$italic), "1", "0"))
-        if (!is.null(s$name)) xml_add_child(rPr, "a:latin", typeface = s$name)
+        if (!is.null(s$font_name)) xml_add_child(rPr, "a:latin", typeface = s$font_name)
 
         xml_add_child(r, "a:t", text)
       }
@@ -836,12 +836,12 @@ ChartEx <- R6::R6Class(
       private$render_color_core(fill, f_color)
 
       # sz is 1/100 points
-      sz_val <- if (!is.null(style$sz)) as.character(style$sz * 100) else "1000"
+      sz_val <- if (!is.null(style$font_size)) as.character(style$font_size * 100) else "1000"
       xml_set_attr(defRPr, "sz", sz_val)
       if (isTRUE(style$bold)) xml_set_attr(defRPr, "b", "1")
       if (isTRUE(style$italic)) xml_set_attr(defRPr, "i", "1")
 
-      if (!is.null(style$name)) xml_add_child(defRPr, "a:latin", typeface = style$name)
+      if (!is.null(style$font_name)) xml_add_child(defRPr, "a:latin", typeface = style$font_name)
 
       # The final node in the OOXML paragraph
       end_pr <- xml_add_child(p, "a:endParaRPr", sz = sz_val)
@@ -852,8 +852,8 @@ ChartEx <- R6::R6Class(
       private$render_color_core(xml_add_child(end_pr, "a:solidFill"), f_color)
 
       # Font typeface sync
-      if (!is.null(style$name)) {
-        xml_add_child(end_pr, "a:latin", typeface = style$name)
+      if (!is.null(style$font_name)) {
+        xml_add_child(end_pr, "a:latin", typeface = style$font_name)
       }
     }
   )

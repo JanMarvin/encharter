@@ -199,8 +199,8 @@ integrates with `openxlsx2` for workbook generation.
   format = NULL,
   log_base = NULL,
   color = NULL,
-  name = NULL,
-  sz = NULL,
+  font_name = NULL,
+  font_size = NULL,
   bold = NULL,
   italic = NULL,
   label_color = NULL,
@@ -233,8 +233,8 @@ integrates with `openxlsx2` for workbook generation.
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
       \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{sz}}{Font size for the axis labels.}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
       \item{\code{rot}}{Rotation in degrees.}
@@ -270,8 +270,8 @@ integrates with `openxlsx2` for workbook generation.
   format = NULL,
   log_base = NULL,
   color = NULL,
-  name = NULL,
-  sz = NULL,
+  font_name = NULL,
+  font_size = NULL,
   bold = NULL,
   italic = NULL,
   label_color = NULL,
@@ -304,8 +304,8 @@ integrates with `openxlsx2` for workbook generation.
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
       \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{sz}}{Font size for the axis labels.}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
       \item{\code{rot}}{Rotation in degrees.}
@@ -607,13 +607,13 @@ This rotates the chart clockwise.}
   base_time = NULL,
   major_tick = NULL,
   minor_tick = NULL,
-  sz = NULL,
+  font_size = NULL,
   bold = NULL,
   italic = NULL,
   format = NULL,
   log_base = NULL,
   color = NULL,
-  name = NULL,
+  font_name = NULL,
   label_color = NULL,
   rot = NULL,
   grid_color = NULL,
@@ -641,13 +641,13 @@ This rotates the chart clockwise.}
       \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
       \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
       \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
-      \item{\code{sz}}{Font size for the axis labels.}
+      \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
       \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
       \item{\code{rot}}{Rotation in degrees.}
       \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
       \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
@@ -681,8 +681,8 @@ This rotates the chart clockwise.}
   format = NULL,
   log_base = NULL,
   color = NULL,
-  name = NULL,
-  sz = NULL,
+  font_name = NULL,
+  font_size = NULL,
   bold = NULL,
   italic = NULL,
   label_color = NULL,
@@ -715,8 +715,8 @@ This rotates the chart clockwise.}
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
       \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{sz}}{Font size for the axis labels.}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
       \item{\code{rot}}{Rotation in degrees.}

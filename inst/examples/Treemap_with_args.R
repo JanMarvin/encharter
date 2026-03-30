@@ -21,7 +21,7 @@ ce_tree$add_series(
     show_val = FALSE,
     show_legend_key = FALSE,
     pos = "outEnd",       # or "ctr", "inEnd", "inBase"
-    sz = 10,
+    font_size = 10,
     bold = TRUE,
     color = wb_color("gray")
   )

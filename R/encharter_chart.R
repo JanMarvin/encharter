@@ -117,10 +117,10 @@ Chart <- R6::R6Class(
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
-    #' @param sz Font size for the axis labels.
+    #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
@@ -133,7 +133,7 @@ Chart <- R6::R6Class(
                            major_time = NULL, minor_time = NULL, base_time = NULL,
                            major_tick = NULL, minor_tick = NULL,
                            format = NULL, log_base = NULL, color = NULL,
-                           name = NULL, sz = NULL, bold = NULL, italic = NULL,
+                           font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                            label_color = NULL, rot = NULL,
                            grid_color = NULL, gridlines = NULL,
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -163,7 +163,7 @@ Chart <- R6::R6Class(
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
-                     name = name, sz = sz, bold = bold, italic = italic,
+                     font_name = font_name, font_size = font_size, bold = bold, italic = italic,
                      label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -185,10 +185,10 @@ Chart <- R6::R6Class(
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
     #' @param color,label_color Hex color for the axis lines and label (or independent label color).
-    #' @param sz Font size for the axis labels.
+    #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
     #' @param rot Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
@@ -201,7 +201,7 @@ Chart <- R6::R6Class(
                            major_time = NULL, minor_time = NULL, base_time = NULL,
                            major_tick = NULL, minor_tick = NULL,
                            format = NULL, log_base = NULL, color = NULL,
-                           name = NULL, sz = NULL, bold = NULL, italic = NULL,
+                           font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                            label_color = NULL, rot = NULL,
                            grid_color = NULL, gridlines = NULL,
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
@@ -231,7 +231,7 @@ Chart <- R6::R6Class(
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
-                     name = name, sz = sz, bold = bold, italic = italic,
+                     font_name = font_name, font_size = sz, bold = bold, italic = italic,
                      label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
@@ -1014,13 +1014,13 @@ Chart <- R6::R6Class(
         wrapper <- sprintf('<x xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">%s</x>', fmt_txt2(text))
         xml_add_child(p, xml_find_all(read_xml(wrapper), ".//a:r"))
       } else {
-        sz <- if (!is.null(style$sz)) style$sz * 100 else default_sz
+        sz <- if (!is.null(style$font_size)) style$font_size * 100 else default_sz
         r <- xml_add_child(p, "a:r")
         rPr <- xml_add_child(r, "a:rPr", sz = as.character(sz))
         if (isTRUE(style$bold)) xml_set_attr(rPr, "b", "1")
         if (isTRUE(style$italic)) xml_set_attr(rPr, "i", "1")
         if (!is.null(style$color)) private$render_fill(xml_add_child(rPr, "a:solidFill"), style$color)
-        if (!is.null(style$name)) xml_add_child(rPr, "a:latin", typeface = style$name)
+        if (!is.null(style$font_name)) xml_add_child(rPr, "a:latin", typeface = style$font_name)
         xml_add_child(r, "a:t", text)
       }
     },
@@ -1223,7 +1223,7 @@ Chart <- R6::R6Class(
       defRPr <- xml_add_child(pPr, "a:defRPr")
 
       # Apply font size (OOXML uses 1/100th of a point)
-      sz <- if (!is.null(s$sz)) s$sz * 100 else 900
+      sz <- if (!is.null(s$font_size)) s$font_size * 100 else 900
       xml_set_attr(defRPr, "sz", as.character(sz))
 
       if (isTRUE(s$bold)) xml_set_attr(defRPr, "b", "1")
@@ -1233,8 +1233,8 @@ Chart <- R6::R6Class(
         private$render_fill(xml_add_child(defRPr, "a:solidFill"), s$color)
       }
 
-      if (!is.null(s$name)) {
-        xml_add_child(defRPr, "a:latin", typeface = s$name)
+      if (!is.null(s$font_name)) {
+        xml_add_child(defRPr, "a:latin", typeface = s$font_name)
       }
     },
 
