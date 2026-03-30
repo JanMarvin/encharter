@@ -100,7 +100,7 @@ Chart <- R6::R6Class(
         warning("Secondary axis title ignored: no series is assigned to a secondary X-axis.", call. = FALSE)
         return(invisible(self))
       }
-
+      if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$x2_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
@@ -135,7 +135,7 @@ Chart <- R6::R6Class(
         warning("Secondary axis title ignored: no series is assigned to a secondary Y-axis.", call. = FALSE)
         return(invisible(self))
       }
-
+      if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$y2_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },

@@ -156,6 +156,7 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_chart_title("Monthly Sales", font_size = 14, bold = TRUE)
     set_chart_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$chart_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
@@ -173,6 +174,7 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_x_title("Month", font_color = "888888", italic = TRUE)
     set_x_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$x_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
@@ -190,6 +192,7 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_y_title("Revenue (USD)", bold = TRUE)
     set_y_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$y_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
@@ -548,6 +551,17 @@ EncharterBase <- R6::R6Class(
         xml_add_child(parent_node, "a:solidFill"),
         color_val
       )
+    },
+
+    sanitize_xml = function(text) {
+      if (is.null(text) || !is.character(text)) return(text)
+      # Standard XML entities replacement
+      text <- gsub("&", "&amp;", text, fixed = TRUE)
+      text <- gsub("<", "&lt;", text, fixed = TRUE)
+      text <- gsub(">", "&gt;", text, fixed = TRUE)
+      text <- gsub("\"", "&quot;", text, fixed = TRUE)
+      text <- gsub("'", "&apos;", text, fixed = TRUE)
+      text
     },
 
     # Input validator. Returns choices[1] for NULL input, or the matched choice.
