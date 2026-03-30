@@ -122,14 +122,45 @@
 <h3 id="encharterbase-set-chart-title-"><code>EncharterBase$set_chart_title()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-chart-title-"></a></h3>
 <p>Set the chart's main title.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span></span>
+<span>  <span class="va">text</span>,</span>
+<span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bold <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  italic <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line_width <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>text</code></dt>
 <dd><p>Title text string.</p></dd>
 
-      <dt><code>...</code></dt>
-<dd><p>Style arguments like `sz` (font size), `bold` (TRUE/FALSE), `color`, and `name` (font name).</p></dd>
+      <dt><code>font_size</code></dt>
+<dd><p>Font size for the axis labels.</p></dd>
+
+      <dt><code>font_name</code></dt>
+<dd><p>Font typeface name (e.g., "Arial", "Calibri").</p></dd>
+
+      <dt><code>font_color</code></dt>
+<dd><p>Font color for the chart title.</p></dd>
+
+      <dt><code>bold</code></dt>
+<dd><p>Logical; if `TRUE`, axis labels will be bold.</p></dd>
+
+      <dt><code>italic</code></dt>
+<dd><p>Logical; if `TRUE`, axis labels will be italicized.</p></dd>
+
+      <dt><code>fill</code></dt>
+<dd><p>Hex color for background.</p></dd>
+
+      <dt><code>line</code></dt>
+<dd><p>Hex color for border line.</p></dd>
+
+      <dt><code>line_width</code></dt>
+<dd><p>Numeric width of border line.</p></dd>
 
 
 </dl><p></p></div>
@@ -141,14 +172,45 @@
 <h3 id="encharterbase-set-x-title-"><code>EncharterBase$set_x_title()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-x-title-"></a></h3>
 <p>Set the X-axis title.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span></span>
+<span>  <span class="va">text</span>,</span>
+<span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bold <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  italic <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line_width <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>text</code></dt>
 <dd><p>Title text string.</p></dd>
 
-      <dt><code>...</code></dt>
-<dd><p>Style arguments.</p></dd>
+      <dt><code>font_size</code></dt>
+<dd><p>Font size for the axis labels.</p></dd>
+
+      <dt><code>font_name</code></dt>
+<dd><p>Font typeface name (e.g., "Arial", "Calibri").</p></dd>
+
+      <dt><code>font_color</code></dt>
+<dd><p>Font color for the axis title.</p></dd>
+
+      <dt><code>bold</code></dt>
+<dd><p>Logical; if `TRUE`, axis labels will be bold.</p></dd>
+
+      <dt><code>italic</code></dt>
+<dd><p>Logical; if `TRUE`, axis labels will be italicized.</p></dd>
+
+      <dt><code>fill</code></dt>
+<dd><p>Hex color for background.</p></dd>
+
+      <dt><code>line</code></dt>
+<dd><p>Hex color for border line.</p></dd>
+
+      <dt><code>line_width</code></dt>
+<dd><p>Numeric width of border line.</p></dd>
 
 
 </dl><p></p></div>
@@ -160,14 +222,45 @@
 <h3 id="encharterbase-set-y-title-"><code>EncharterBase$set_y_title()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-y-title-"></a></h3>
 <p>Set the primary Y-axis title.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="va">text</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span></span>
+<span>  <span class="va">text</span>,</span>
+<span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bold <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  italic <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  fill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line_width <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>text</code></dt>
 <dd><p>Title text string.</p></dd>
 
-      <dt><code>...</code></dt>
-<dd><p>Style arguments.</p></dd>
+      <dt><code>font_size</code></dt>
+<dd><p>Font size for the axis labels.</p></dd>
+
+      <dt><code>font_name</code></dt>
+<dd><p>Font typeface name (e.g., "Arial", "Calibri").</p></dd>
+
+      <dt><code>font_color</code></dt>
+<dd><p>Font color for the axis title.</p></dd>
+
+      <dt><code>bold</code></dt>
+<dd><p>Logical; if `TRUE`, axis labels will be bold.</p></dd>
+
+      <dt><code>italic</code></dt>
+<dd><p>Logical; if `TRUE`, axis labels will be italicized.</p></dd>
+
+      <dt><code>fill</code></dt>
+<dd><p>Hex color for background.</p></dd>
+
+      <dt><code>line</code></dt>
+<dd><p>Hex color for border line.</p></dd>
+
+      <dt><code>line_width</code></dt>
+<dd><p>Numeric width of border line.</p></dd>
 
 
 </dl><p></p></div>
@@ -192,8 +285,8 @@
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_base <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sz <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bold <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  italic <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -245,10 +338,10 @@
       <dt><code>color, label_color</code></dt>
 <dd><p>Hex color for the axis lines and label (or independent label color).</p></dd>
 
-      <dt><code>name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name (e.g., "Arial", "Calibri").</p></dd>
 
-      <dt><code>sz</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Font size for the axis labels.</p></dd>
 
       <dt><code>bold</code></dt>
@@ -304,8 +397,8 @@
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_base <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sz <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bold <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  italic <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -357,10 +450,10 @@
       <dt><code>color, label_color</code></dt>
 <dd><p>Hex color for the axis lines and label (or independent label color).</p></dd>
 
-      <dt><code>name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name (e.g., "Arial", "Calibri").</p></dd>
 
-      <dt><code>sz</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Font size for the axis labels.</p></dd>
 
       <dt><code>bold</code></dt>
@@ -441,8 +534,8 @@
 <span>  pos <span class="op">=</span> <span class="st">"t"</span>,</span>
 <span>  align <span class="op">=</span> <span class="st">"ctr"</span>,</span>
 <span>  overlay <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  sz <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  font_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  bold <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  italic <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span></span>
@@ -458,10 +551,10 @@
       <dt><code>overlay</code></dt>
 <dd><p>Logical; overlay legend on chart.</p></dd>
 
-      <dt><code>sz</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Size of font.</p></dd>
 
-      <dt><code>name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Name of font.</p></dd>
 
       <dt><code>bold</code></dt>
