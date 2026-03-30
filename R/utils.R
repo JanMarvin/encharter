@@ -38,23 +38,56 @@ normalize_encharter_type <- function(type) {
 
   # Map familiar R names to OOXML types (Named Vector is cleaner than List here)
   type_map <- c(
-    "barplot"   = "barChart",
-    "bubble"    = "bubbleChart",
-    "histogram" = "barChart",
-    "hist"      = "barChart",
-    "line"      = "lineChart",
-    "scatter"   = "scatterChart",
-    "point"     = "scatterChart",
-    "area"      = "areaChart",
-    "pie"       = "pieChart",
-    "doughnut"  = "doughnutChart",
-    "radar"     = "radarChart",
-    "surface"   = "surfaceChart",
-    "box"       = "boxWhisker",
-    "boxplot"   = "boxWhisker",
-    "map"       = "regionMap",
-    "pareto"    = "paretoLine"
+    # bar / column
+    "bar"             = "barChart",
+    "barchart"        = "barChart",
+    "barplot"         = "barChart",
+    "col"             = "barChart",
+    "column"          = "barChart",
+    "histogram"       = "barChart",
+    "hist"            = "barChart",
+    # line
+    "line"            = "lineChart",
+    "linechart"       = "lineChart",
+    # area
+    "area"            = "areaChart",
+    "areachart"       = "areaChart",
+    # scatter
+    "scatter"         = "scatterChart",
+    "scatterchart"    = "scatterChart",
+    "point"           = "scatterChart",
+    "xy"              = "scatterChart",
+    # bubble
+    "bubble"          = "bubbleChart",
+    "bubblechart"     = "bubbleChart",
+    # pie
+    "pie"             = "pieChart",
+    "piechart"        = "pieChart",
+    # doughnut
+    "doughnut"        = "doughnutChart",
+    "donut"           = "doughnutChart",
+    "doughnutchart"   = "doughnutChart",
+    # radar
+    "radar"           = "radarChart",
+    "radarchart"      = "radarChart",
+    "spider"          = "radarChart",
+    # surface
+    "surface"         = "surfaceChart",
+    "surfacechart"    = "surfaceChart",
+    # extended
+    "box"             = "boxWhisker",
+    "boxplot"         = "boxWhisker",
+    "boxwhisker"      = "boxWhisker",
+    "map"             = "regionMap",
+    "regionmap"       = "regionMap",
+    "funnel"          = "funnel",
+    "treemap"         = "treemap",
+    "sunburst"        = "sunburst",
+    "pareto"          = "paretoLine",
+    "paretoline"      = "paretoLine",
+    "clusteredcolumn" = "clusteredColumn"
   )
+
 
   if (!is.null(type) && type_low %in% names(type_map)) {
     return(unname(type_map[type_low]))
