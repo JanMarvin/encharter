@@ -186,7 +186,7 @@ Encharter Base R6 Class
   font_size = NULL,
   bold = NULL,
   italic = NULL,
-  label_color = NULL,
+  font_color = NULL,
   rot = NULL,
   grid_color = NULL,
   gridlines = NULL,
@@ -215,7 +215,7 @@ Encharter Base R6 Class
       \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
-      \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+      \item{\code{color, font_color}}{Hex color for the axis lines and label (or independent label color).}
       \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
       \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
@@ -257,7 +257,7 @@ Encharter Base R6 Class
   font_size = NULL,
   bold = NULL,
   italic = NULL,
-  label_color = NULL,
+  font_color = NULL,
   rot = NULL,
   grid_color = NULL,
   gridlines = NULL,
@@ -286,7 +286,7 @@ Encharter Base R6 Class
       \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
-      \item{\code{color, label_color}}{Hex color for the axis lines and label (or independent label color).}
+      \item{\code{color, font_color}}{Hex color for the axis lines and label (or independent label color).}
       \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
       \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}

@@ -55,7 +55,7 @@ ChartEx <- R6::R6Class(
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
-    #' @param color,label_color Hex color for the axis lines and label (or independent label color).
+    #' @param color,font_color Hex color for the axis lines and label (or independent label color).
     #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
@@ -72,7 +72,7 @@ ChartEx <- R6::R6Class(
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           major_tick = NULL, minor_tick = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           format = NULL, log_base = NULL, color = NULL,
-                          font_name = NULL, label_color = NULL, rot = NULL,
+                          font_name = NULL, font_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
@@ -102,7 +102,7 @@ ChartEx <- R6::R6Class(
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
                      font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-                     label_color = label_color, rot = rot,
+                     font_color = font_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
                      line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
@@ -122,7 +122,7 @@ ChartEx <- R6::R6Class(
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
-    #' @param color,label_color Hex color for the axis lines and label (or independent label color).
+    #' @param color,font_color Hex color for the axis lines and label (or independent label color).
     #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
@@ -140,7 +140,7 @@ ChartEx <- R6::R6Class(
                           major_tick = NULL, minor_tick = NULL,
                           format = NULL, log_base = NULL, color = NULL,
                           font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
-                          label_color = NULL, rot = NULL,
+                          font_color = NULL, rot = NULL,
                           grid_color = NULL, gridlines = NULL,
                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
@@ -170,7 +170,7 @@ ChartEx <- R6::R6Class(
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
                      font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-                     label_color = label_color, rot = rot,
+                     font_color = font_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
                      line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
@@ -755,7 +755,7 @@ ChartEx <- R6::R6Class(
       defRPr <- xml_add_child(pPr, "a:defRPr")
 
       # FIX: Use srgbClr to avoid the washed-out schemeClr
-      f_color <- style$label_color %||% style$font_color %||% "000000"
+      f_color <- style$font_color %||% style$font_color %||% "000000"
       fill <- xml_add_child(defRPr, "a:solidFill")
       private$render_color_core(fill, f_color)
 
