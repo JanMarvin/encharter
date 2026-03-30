@@ -798,8 +798,8 @@ ChartEx <- R6::R6Class(
       p <- xml_add_child(tx, "a:p")
       pPr <- xml_add_child(p, "a:pPr", algn = "ctr")
       if (inherits(text, "fmt_txt")) {
-        wrapper <- sprintf('<x xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">%s</x>', openxlsx2:::fmt_txt2(text))
-        xml_add_child(p, xml_find_first(read_xml(wrapper), ".//a:r"))
+        wrapper <- sprintf('<x xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">%s</x>', fmt_txt2(text))
+        xml_add_child(p, xml_find_all(read_xml(wrapper), ".//a:r"))
       } else {
         r <- xml_add_child(p, "a:r")
         rPr <- xml_add_child(r, "a:rPr")

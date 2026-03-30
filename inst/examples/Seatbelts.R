@@ -48,9 +48,10 @@ wb <- openxlsx2::wb_workbook()$
 
 wd <- wb_data(wb)
 
-txt <- fmt_txt("Data: UK Driver Seatbelts Dataset (1969-1984)", italic = TRUE, color = wb_color("black"), size = 14)
+txt <- fmt_txt("Ratio of Deaths to Total Serious Injuries and Weighted by Distance Driven (KMs)", bold = TRUE, size = 18) +
+  fmt_txt("Data: UK Driver Seatbelts Dataset (1969-1984)", italic = TRUE, color = wb_color("black"), size = 14)
 
-e <- encharter::ec(type = "barplot")
+te <- encharter::ec(type = "barplot")
 e$add_series(data = wd, header = Deaths, cat = date)
 e$add_series(data = wd, header = `Before law change`, cat = date, type = "barplot", secondary = TRUE, line_color = wb_color(hex = scales::alpha("lightgray", alpha = 0.2), format = "RGBA"), gap_width = 0, overlap = 100)
 e$add_series(data = wd, header = `Weighted 12m Fatality Rate`, cat = date, secondary = TRUE, type = "line", line_color = wb_color("orange"), line_width = 2)
@@ -58,11 +59,12 @@ e$add_series(data = wd, header = `12m Fatality Rate`, cat = date, secondary = TR
 e$set_x_axis(format = "YYYY", minor = 4, major = 12, minor_time = "months", major_time = "months", min = unlist(openxlsx2::convert_to_excel_date(data.frame(date = as.Date("1975-01-01")))))
 e$set_y_axis(min = 0, max = 200)
 e$set_y2_axis(format = "0.0%", min = .06, max = 0.08)
-e$set_chart_title("Ratio of Deaths to Total Serious Injuries and Weighted by Distance Driven (KMs)", bold = TRUE)
+# e$set_chart_title("Ratio of Deaths to Total Serious Injuries and Weighted by Distance Driven (KMs)", bold = TRUE)
+e$set_chart_title(txt)
 e$set_y2_title("Rolling 12-Month (Weighted) Driver Fatality Rate")
 e$set_y_title("Total Amount of Deaths")
 # e$set_x_title("Data: UK Driver Seatbelts Dataset (1969-1984)", italic = TRUE, sz = 14)
-e$set_x_title(text =  txt)
+# e$set_x_title(text =  txt)
 e$set_legend_style(pos = "bottom")
 
 wb$add_chartsheet()

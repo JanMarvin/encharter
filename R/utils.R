@@ -143,3 +143,159 @@ colors1_xml <- "<cs:colorStyle xmlns:cs=\"http://schemas.microsoft.com/office/dr
 <cs:variation><a:lumMod val=\"70000\"/></cs:variation>
 <cs:variation><a:lumMod val=\"50000\"/><a:lumOff val=\"50000\"/></cs:variation>
 </cs:colorStyle>"
+
+
+### borrowed from openxlsx2 (MIT) to avoid more exports ###
+
+as_binary <- function(x) {
+  # To be used within a function
+  if (any(!x %in% list(0, 1, FALSE, TRUE))) {
+    stop(deparse(x), " must be 0, 1, FALSE, or TRUE", call. = FALSE)
+  }
+
+  as.integer(x)
+}
+
+as_xml_attr <- function(x) {
+
+  if (is.null(x)) {
+    return("")
+  }
+
+  if (inherits(x, "logical")) {
+    x <- as_binary(x)
+  }
+
+  if (inherits(x, "character")) {
+    x
+  } else {
+    op <- options(OutDec = ".")
+    on.exit(options(op), add = TRUE)
+    as.character(x)
+  }
+}
+
+#' create a color used in create_shape
+#' @param color a [wb_color()] object
+#' @param transparency an integer value
+#' @noRd
+get_color <- function(color, transparency = 0) {
+
+  alignment_map <- c(
+    "0" =   "bg1",
+    "1" =   "tx1",
+    "2" =   "bg2",
+    "3" =   "tx2",
+    "4" =   "accent1",
+    "5" =   "accent2",
+    "6" =   "accent3",
+    "7" =   "accent4",
+    "8" =   "accent5",
+    "9" =   "accent6",
+    "10" =  "hlink",
+    "11" =  "folHlink",
+    "12" =  "phClr",
+    "13" =  "dk1",
+    "14" =  "lt1",
+    "15" =  "dk2",
+    "16" =  "lt2"
+  )
+
+  if (inherits(color, "wbColour")) {
+    if ("rgb" %in% names(color)) {
+      color <- sprintf(
+        '<a:solidFill>
+        <a:srgbClr val="%s">
+          <a:alpha val="%s" />
+        </a:srgbClr>
+      </a:solidFill>',
+        substr(c(color["rgb"]), 3, 8),
+        min(99, (100 - transparency)) * 1000
+      )
+    } else if ("theme" %in% names(color)) {
+      color <- sprintf(
+        '<a:solidFill>
+        <a:schemeClr val="%s">
+          <a:alpha val="%s" />
+        </a:schemeClr>
+      </a:solidFill>',
+        alignment_map[color["theme"]],
+        min(99, (100 - transparency)) * 1000
+      )
+    } else {
+      warning("currently only rgb and theme colors are supported")
+      color <- ""
+    }
+  } else {
+    color <- ""
+  }
+  color
+}
+
+#' string styling used in create_shape()
+#'
+#' handles bold, italic, strike, size, font, charset
+#' unhandled charset, outline, vert_align
+#' @param txt input, character or [fmt_txt()]
+#' @param text_color a [wb_color()]
+#' @param transparency an integer value
+#' @noRd
+fmt_txt2 <- function(txt, text_color = "", transparency = 0) {
+  if (!inherits(txt, "fmt_txt")) {
+    txt <- fmt_txt(txt)
+  }
+
+  txts <- openxlsx2::xml_node(txt, "r")
+
+  out <- NULL
+  for (txt in txts) { # no need to check for <b val="1"/>
+    bold      <- ifelse(grepl("<b/>", txt), "1", "")
+    italic    <- ifelse(grepl("<i/>", txt), "1", "")
+    strike    <- ifelse(grepl("<strike/>", txt), "sngStrike", "")
+    underline <- ifelse(grepl("<u/>", txt), "sng", "")
+
+    color     <- sapply(openxlsx2::xml_attr(txt, "r", "rPr", "color"), "[")
+    if (length(color) == 0) {
+      color   <- get_color(text_color, transparency)
+    } else {
+      color     <- get_color(wb_color(color), transparency) # tint?
+    }
+
+    sz <- sapply(openxlsx2::xml_attr(txt, "r", "rPr", "sz"), "[")
+    if (length(sz)) sz        <- as.integer(sz[["val"]]) * 100
+
+    font <- sapply(openxlsx2::xml_attr(txt, "r", "rPr", "rFont"), "[")
+    charset <- sapply(openxlsx2::xml_attr(txt, "r", "rPr", "charset"), "[")
+
+    if (length(charset) == 0) charset <- c(val = "0")
+    if (length(font)) {
+      font <- c(
+        sprintf('<a:latin typeface="%s" charset="%s" />', font[["val"]], charset[["val"]]),
+        sprintf('<a:cs typeface="%s" charset="%s" />', font[["val"]], charset[["val"]])
+      )
+    } else {
+      font <- NULL
+    }
+
+    rPr <- openxlsx2::xml_node_create(
+      "a:rPr",
+      xml_attributes = c(
+        b = as_xml_attr(bold),
+        i = as_xml_attr(italic),
+        strike = as_xml_attr(strike),
+        sz = as_xml_attr(sz),
+        u  = as_xml_attr(underline)
+      ),
+      xml_children = c(color, font)
+    )
+
+
+    text <- openxlsx2::xml_value(txt, "r", "t")
+    text <- openxlsx2::xml_node_create("a:t", xml_children = text)
+    ar   <- openxlsx2::xml_node_create("a:r", xml_children = c(rPr, text))
+
+    out <- c(out, ar)
+  }
+
+  paste0(out, collapse = "")
+}

@@ -71,30 +71,53 @@ extern "C" {
   }
 
   SEXP pugi_add_child(SEXP node_ptr, SEXP input, SEXP where_int) {
-    if (node_ptr == R_NilValue) return R_NilValue;
-    pugi::xml_node* node = (pugi::xml_node*)R_ExternalPtrAddr(node_ptr);
-    int where = Rf_asInteger(where_int);
-
-    // CASE 1: Input is an External Pointer (Existing Node)
-    if (TYPEOF(input) == EXTPTRSXP) {
-      pugi::xml_node* input_node = (pugi::xml_node*)R_ExternalPtrAddr(input);
-      pugi::xml_node copied_node;
-
-      if (where == 0) copied_node = node->prepend_copy(*input_node);
-      else copied_node = node->append_copy(*input_node);
-
-      return wrap_node_raw(copied_node);
+    if (node_ptr == R_NilValue || TYPEOF(node_ptr) != EXTPTRSXP) {
+      return R_NilValue;
     }
 
-    // CASE 2: Input is a String (New Node Name)
-    if (Rf_isString(input)) {
+    pugi::xml_node* parent_node = (pugi::xml_node*)R_ExternalPtrAddr(node_ptr);
+    if (!parent_node) return R_NilValue;
+
+    int where = Rf_asInteger(where_int);
+    pugi::xml_node last_added;
+
+    // Input is a List (Result of xml_find_all)
+    if (TYPEOF(input) == VECSXP) {
+      int n = Rf_length(input);
+
+      for (int i = 0; i < n; i++) {
+        SEXP item = VECTOR_ELT(input, i);
+
+        if (TYPEOF(item) == EXTPTRSXP) {
+          pugi::xml_node* input_node = (pugi::xml_node*)R_ExternalPtrAddr(item);
+          if (input_node) {
+            if (where == 0) last_added = parent_node->prepend_copy(*input_node);
+            else last_added = parent_node->append_copy(*input_node);
+          }
+        }
+      }
+      return last_added ? wrap_node_raw(last_added) : node_ptr;
+    }
+
+    // Input is a Single External Pointer (Result of xml_find_first)
+    if (TYPEOF(input) == EXTPTRSXP) {
+      pugi::xml_node* input_node = (pugi::xml_node*)R_ExternalPtrAddr(input);
+      if (!input_node) return R_NilValue;
+
+      if (where == 0) last_added = parent_node->prepend_copy(*input_node);
+      else last_added = parent_node->append_copy(*input_node);
+
+      return wrap_node_raw(last_added);
+    }
+
+    // Input is a String (Create a new empty tag by name)
+    if (Rf_isString(input) && Rf_length(input) > 0) {
       const char* name = CHAR(STRING_ELT(input, 0));
-      pugi::xml_node new_node;
 
-      if (where == 0) new_node = node->prepend_child(name);
-      else new_node = node->append_child(name);
+      if (where == 0) last_added = parent_node->prepend_child(name);
+      else last_added = parent_node->append_child(name);
 
-      return wrap_node_raw(new_node);
+      return wrap_node_raw(last_added);
     }
 
     return R_NilValue;
