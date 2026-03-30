@@ -15,30 +15,46 @@ ENCHARTER_EXTENDED <- c(
 #' Create an Encharter Chart
 #'
 #' @description
-#' A factory function to initialize an R6 chart object. It supports both standard
-#' OOXML charts (e.g., Bar, Line, Scatter) and modern "Extended" charts
-#' (e.g., Waterfall, Treemap).
+#' Factory function that initialises an R6 chart object. Returns a \code{Chart}
+#' object for standard OOXML chart types (bar, line, scatter, …) or a
+#' \code{ChartEx} object for modern extended chart types (waterfall, treemap, …).
 #'
-#' @param type A character string specifying the chart type. Familiar R aliases
-#' are supported (see Details).
+#' @param type A character string specifying the chart type. Common R-style
+#'   aliases are accepted (see Details).
 #'
 #' @details
 #' \strong{Supported Chart Types:}
 #' \itemize{
-#'   \item \bold{Bar/Column:} \code{"barChart"}, \code{"barplot"}, \code{"hist"}, \code{"histogram"}
-#'   \item \bold{Line/Area:} \code{"lineChart"}, \code{"line"}, \code{"areaChart"}, \code{"area"}
-#'   \item \bold{Scatter/Points:} \code{"scatterChart"}, \code{"scatter"}, \code{"point"}
-#'   \item \bold{Pie/Doughnut:} \code{"pieChart"}, \code{"pie"}, \code{"doughnutChart"}, \code{"doughnut"}
-#'   \item \bold{Extended (ChartEx):} \code{"waterfall"}, \code{"treemap"}, \code{"sunburst"},
-#'   \code{"regionMap"}, \code{"boxWhisker"} (or \code{"boxplot"}), \code{"funnel"}
+#'   \item \bold{Bar/Column:} \code{"barChart"}, \code{"barplot"},
+#'     \code{"hist"}, \code{"histogram"}
+#'   \item \bold{Line/Area:} \code{"lineChart"}, \code{"line"},
+#'     \code{"areaChart"}, \code{"area"}
+#'   \item \bold{Scatter:} \code{"scatterChart"}, \code{"scatter"},
+#'     \code{"point"}
+#'   \item \bold{Pie/Doughnut:} \code{"pieChart"}, \code{"pie"},
+#'     \code{"doughnutChart"}, \code{"doughnut"}
+#'   \item \bold{Extended (ChartEx):} \code{"waterfall"}, \code{"treemap"},
+#'     \code{"sunburst"}, \code{"regionMap"},
+#'     \code{"boxWhisker"} / \code{"boxplot"}, \code{"funnel"}
 #' }
 #'
-#' \strong{Direction Handling:}
-#' For Bar/Column charts, the orientation is determined by the \code{dir} parameter
-#' in \code{add_series()}. You can use \code{"v"}, \code{"vertical"} (Column) or
-#' \code{"h"}, \code{"horizontal"} (Bar).
+#' \strong{Bar vs Column direction:}
+#' For bar/column charts, orientation is set via the \code{dir} argument in
+#' \code{$add_series()}: \code{"col"} (vertical, default) or \code{"bar"}
+#' (horizontal).
 #'
 #' @return An R6 object of class \code{Chart} or \code{ChartEx}.
+#'
+#' @examples
+#' # Standard line chart
+#' ec("lineChart")
+#'
+#' # Extended waterfall chart
+#' ec("waterfall")
+#'
+#' # R-style alias
+#' ec("barplot")
+#'
 #' @export
 encharter <- function(type = "lineChart") {
 
@@ -46,12 +62,10 @@ encharter <- function(type = "lineChart") {
   match.arg(as.character(type), choices = c(ENCHARTER_STANDARD, ENCHARTER_EXTENDED))
 
   if (type %in% ENCHARTER_EXTENDED) {
-    # Returns the ChartEx child
     ec <- ChartEx$new(type = type)
   }
 
   if (type %in% ENCHARTER_STANDARD) {
-    # Returns the Chart child
     ec <- Chart$new(type = type)
   }
 
@@ -62,14 +76,18 @@ encharter <- function(type = "lineChart") {
 #' @export
 ec <- encharter
 
-#' Alias for encharter()
-#' @rdname encharter
-#' @export
-ec <- encharter
-
 #' Encharter Base R6 Class
-#' @useDynLib encharter, .registration=TRUE
 #'
+#' @description
+#' Abstract base class inherited by \code{Chart} and \code{ChartEx}. Holds all
+#' shared fields (palette, titles, axis params, legend/label settings) and the
+#' shared private helpers (\code{render_color_core}, \code{render_color},
+#' \code{set_axis_params}, \code{validate_input}).
+#'
+#' Users should not instantiate \code{EncharterBase} directly; use
+#' \code{\link{encharter}()} instead.
+#'
+#' @useDynLib encharter, .registration=TRUE
 #' @import R6
 #' @importFrom openxlsx2 wb_color dims_to_dataframe read_xml fmt_txt
 #  some XML functions from openxlsx2 are used but not imported because of name
@@ -81,30 +99,41 @@ EncharterBase <- R6::R6Class(
     xml = NULL,
     #' @field series_data A list containing all added data series and their styles.
     series_data = list(),
-    #' @field type The default chart type for the object (e.g., "lineChart").
+    #' @field type The default chart type for the object (e.g., \code{"lineChart"}).
     type = NULL,
-    #' @field palette A vector of hex colors to use for series.
+    #' @field palette A character vector of six-digit hex colors used for series
+    #'   when no explicit color is supplied. Defaults to the standard Office theme
+    #'   palette.
     palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
 
-    # Standardized list structure for titles
-    #' @field chart_title List containing text and style for the main title.
+    #' @field chart_title Named list with elements \code{text} (character) and
+    #'   \code{style} (list of font/fill/line options) for the main chart title.
     chart_title = list(text = NULL, style = list()),
-    #' @field x_title List containing text and style for the X-axis.
+    #' @field x_title Named list with elements \code{text} and \code{style} for
+    #'   the primary X-axis title.
     x_title  = list(text = NULL, style = list()),
-    #' @field y_title List containing text and style for the primary Y-axis.
+    #' @field y_title Named list with elements \code{text} and \code{style} for
+    #'   the primary Y-axis title.
     y_title  = list(text = NULL, style = list()),
 
-    #' @field chart_style List for the outer chart area styling.
+    #' @field chart_style Named list controlling the outer chart area:
+    #'   \code{fill} (hex), \code{line} (hex), \code{line_width} (numeric).
     chart_style = list(fill = "FFFFFF", line = NULL, line_width = 1),
-    #' @field plot_style List for the inner plot area styling.
+    #' @field plot_style Named list controlling the inner plot area:
+    #'   \code{fill} (hex), \code{line} (hex), \code{line_width} (numeric).
     plot_style  = list(fill = NULL, line = NULL, line_width = 1),
 
-    #' @field label_params List of global data label configuration settings.
+    #' @field label_params Named list of global data label defaults:
+    #'   \code{show_val}, \code{show_cat}, \code{show_legend_key} (logicals),
+    #'   \code{pos} (character), \code{style} (list).
     label_params  = list(show_val = FALSE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", style = list()),
-    #' @field legend_params List of legend configuration settings.
+    #' @field legend_params Named list of legend defaults:
+    #'   \code{pos} (character), \code{overlay} ("0"/"1"), \code{style} (list).
     legend_params = list(pos = "r", overlay = "0", style = list()),
 
-    #' @field axis_params Internal list for scaling, units, and formatting.
+    #' @field axis_params Named list with one entry per axis (\code{x}, \code{x2},
+    #'   \code{y}, \code{y2}). Each entry is a named list of scaling, formatting,
+    #'   and style parameters. Modified via \code{$set_x_axis()}, etc.
     axis_params = list(
       x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
       x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rot = NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
@@ -113,74 +142,101 @@ EncharterBase <- R6::R6Class(
     ),
 
     #' @description Set the chart's main title.
-    #' @param text Title text string.
-    #' @param font_color Font color for the chart title.
-    #' @param font_size Font size for the axis labels.
-    #' @param bold Logical; if `TRUE`, axis labels will be bold.
-    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
-    #' @param fill Hex color for background.
-    #' @param line Hex color for border line.
-    #' @param line_width Numeric width of border line.
+    #' @param text Title string. Accepts a plain character or an
+    #'   \code{openxlsx2::fmt_txt()} object for rich-text formatting.
+    #' @param font_size Numeric font size in points (e.g. \code{14}).
+    #' @param font_name Font typeface name (e.g. \code{"Arial"}).
+    #' @param font_color Six-digit hex color for the title text (e.g.
+    #'   \code{"FF0000"} for red).
+    #' @param bold Logical; \code{TRUE} renders the title in bold.
+    #' @param italic Logical; \code{TRUE} renders the title in italics.
+    #' @param fill Six-digit hex color for the title background box.
+    #' @param line Six-digit hex color for the title border.
+    #' @param line_width Numeric border width in points.
+    #' @examples
+    #' ec("line")$set_chart_title("Monthly Sales", font_size = 14, bold = TRUE)
     set_chart_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
       self$chart_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 
-    #' @description Set the X-axis title.
-    #' @param text Title text string.
-    #' @param font_color Font color for the axis title.
-    #' @param font_size Font size for the axis labels.
-    #' @param bold Logical; if `TRUE`, axis labels will be bold.
-    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
-    #' @param fill Hex color for background.
-    #' @param line Hex color for border line.
-    #' @param line_width Numeric width of border line.
+    #' @description Set the primary X-axis title.
+    #' @param text Title string.
+    #' @param font_size Numeric font size in points.
+    #' @param font_name Font typeface name.
+    #' @param font_color Six-digit hex color for the title text.
+    #' @param bold Logical.
+    #' @param italic Logical.
+    #' @param fill Six-digit hex color for the title background box.
+    #' @param line Six-digit hex color for the title border.
+    #' @param line_width Numeric border width in points.
+    #' @examples
+    #' ec("line")$set_x_title("Month", font_color = "888888", italic = TRUE)
     set_x_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
       self$x_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 
     #' @description Set the primary Y-axis title.
-    #' @param text Title text string.
-    #' @param font_color Font color for the axis title.
-    #' @param font_size Font size for the axis labels.
-    #' @param bold Logical; if `TRUE`, axis labels will be bold.
-    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
-    #' @param fill Hex color for background.
-    #' @param line Hex color for border line.
-    #' @param line_width Numeric width of border line.
+    #' @param text Title string.
+    #' @param font_size Numeric font size in points.
+    #' @param font_name Font typeface name.
+    #' @param font_color Six-digit hex color for the title text.
+    #' @param bold Logical.
+    #' @param italic Logical.
+    #' @param fill Six-digit hex color for the title background box.
+    #' @param line Six-digit hex color for the title border.
+    #' @param line_width Numeric border width in points.
+    #' @examples
+    #' ec("line")$set_y_title("Revenue (USD)", bold = TRUE)
     set_y_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
       self$y_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 
-    #' @description Set Primary X-axis scaling, units, and format.
-    #' @param min Minimum value for the axis.
-    #' @param max Maximum value for the axis.
-    #' @param major Numeric value for major unit interval.
-    #' @param minor Numeric value for minor unit interval.
-    #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
-    #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
-    #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
-    #' @param base_time Base time unit for date axes ("days", "months", "years").
-    #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
-    #' @param log_base Base for logarithmic scaling (e.g., 10).
-    #' @param color,font_color Hex color for the axis lines and label (or independent label color).
-    #' @param font_size Font size for the axis labels.
-    #' @param bold Logical; if `TRUE`, axis labels will be bold.
-    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
-    #' @param rot Rotation in degrees.
-    #' @param grid_color,minor_grid_color Hex color for the gridlines.
-    #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
-    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
-    #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
-    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
-    #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
-    #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
+    #' @description Set primary X-axis scaling, tick marks, and label formatting.
+    #' @param min,max Numeric axis limits.
+    #' @param major,minor Numeric major/minor unit intervals. For date axes, unit
+    #'   is set by \code{major_time}/\code{minor_time}.
+    #' @param major_time,minor_time Time unit for major/minor steps on date axes:
+    #'   \code{"days"}, \code{"months"}, or \code{"years"}.
+    #' @param base_time Base time unit for date axes: \code{"days"},
+    #'   \code{"months"}, or \code{"years"}.
+    #' @param major_tick,minor_tick Tick mark style: \code{"cross"},
+    #'   \code{"in"}, \code{"out"}, or \code{"none"}.
+    #' @param format Number or date format string (e.g. \code{"#,##0"},
+    #'   \code{"yyyy-mm-dd"}).
+    #' @param log_base Numeric base for logarithmic scaling (e.g. \code{10}).
+    #' @param color Six-digit hex color for the axis line.
+    #' @param font_color Six-digit hex color for axis tick labels. Defaults to
+    #'   \code{color} when not set.
+    #' @param font_size Numeric label font size in points.
+    #' @param font_name Font typeface name for tick labels.
+    #' @param bold,italic Logical font style for tick labels.
+    #' @param rot Numeric label rotation in degrees.
+    #' @param grid_color,minor_grid_color Six-digit hex colors for major/minor
+    #'   gridlines.
+    #' @param gridlines,minor_gridlines Show gridlines. \code{TRUE}/\code{FALSE}
+    #'   to toggle; or a dash style string (\code{"dash"}, \code{"dot"},
+    #'   \code{"dashDot"}, etc.) to show styled lines.
+    #' @param line_width,grid_width,minor_grid_width Numeric widths in points for
+    #'   the axis line, major gridlines, and minor gridlines respectively.
+    #' @param cross_between Where the value axis crosses: \code{"between"}
+    #'   (default, between categories) or \code{"midCat"} (through categories).
+    #' @param crosses Where this axis crosses its perpendicular axis:
+    #'   \code{"autoZero"} (default), \code{"min"}, or \code{"max"}.
+    #' @param crosses_at Numeric axis value at which to cross. Overrides
+    #'   \code{crosses} when supplied.
+    #' @param label_pos Tick label position: \code{"nextTo"} (default),
+    #'   \code{"high"}, \code{"low"}, or \code{"none"}.
+    #' @examples
+    #' ec("line")$set_x_axis(
+    #'   min = 0, max = 12,
+    #'   major_tick = "out",
+    #'   gridlines  = TRUE,
+    #'   font_color = "666666",
+    #'   rot        = -45
+    #' )
     set_x_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           major_tick = NULL, minor_tick = NULL,
@@ -205,30 +261,40 @@ EncharterBase <- R6::R6Class(
         )
     },
 
-    #' @description Set Primary Y-axis scaling, units, and format.
-    #' @param min Minimum value for the axis.
-    #' @param max Maximum value for the axis.
-    #' @param major Numeric value for major unit interval.
-    #' @param minor Numeric value for minor unit interval.
-    #' @param major_time Time unit for major steps ("days", "months", "years"). Used for date axes.
-    #' @param minor_time Time unit for minor steps ("days", "months", "years"). Used for date axes.
-    #' @param major_tick,minor_tick Tick marks for major and minor ("cross", "in", "none", "out").
-    #' @param base_time Base time unit for date axes ("days", "months", "years").
-    #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
-    #' @param log_base Base for logarithmic scaling (e.g., 10).
-    #' @param color,font_color Hex color for the axis lines and label (or independent label color).
-    #' @param font_size Font size for the axis labels.
-    #' @param bold Logical; if `TRUE`, axis labels will be bold.
-    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
-    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
-    #' @param rot Rotation in degrees.
-    #' @param grid_color,minor_grid_color Hex color for the gridlines.
-    #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
-    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
-    #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
-    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
-    #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
-    #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
+    #' @description Set primary Y-axis scaling, tick marks, and label formatting.
+    #' @param min,max Numeric axis limits.
+    #' @param major,minor Numeric major/minor unit intervals.
+    #' @param major_time,minor_time Time unit for date axes: \code{"days"},
+    #'   \code{"months"}, or \code{"years"}.
+    #' @param base_time Base time unit for date axes.
+    #' @param major_tick,minor_tick Tick mark style: \code{"cross"},
+    #'   \code{"in"}, \code{"out"}, or \code{"none"}.
+    #' @param format Number format string.
+    #' @param log_base Numeric base for logarithmic scaling.
+    #' @param color Six-digit hex color for the axis line.
+    #' @param font_color Six-digit hex color for axis tick labels.
+    #' @param font_size Numeric label font size in points.
+    #' @param font_name Font typeface name.
+    #' @param bold,italic Logical font style.
+    #' @param rot Numeric label rotation in degrees.
+    #' @param grid_color,minor_grid_color Hex colors for major/minor gridlines.
+    #' @param gridlines,minor_gridlines \code{TRUE}/\code{FALSE} or a dash style
+    #'   string.
+    #' @param line_width,grid_width,minor_grid_width Numeric widths in points.
+    #' @param cross_between \code{"between"} or \code{"midCat"}.
+    #' @param crosses \code{"autoZero"}, \code{"min"}, or \code{"max"}.
+    #' @param crosses_at Numeric crossing value; overrides \code{crosses}.
+    #' @param label_pos \code{"nextTo"}, \code{"high"}, \code{"low"}, or
+    #'   \code{"none"}.
+    #' @examples
+    #' ec("bar")$set_y_axis(
+    #'   min        = 0,
+    #'   max        = 1000,
+    #'   major      = 200,
+    #'   format     = "#,##0",
+    #'   gridlines  = TRUE,
+    #'   grid_color = "DDDDDD"
+    #' )
     set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           major_tick = NULL, minor_tick = NULL,
@@ -253,12 +319,22 @@ EncharterBase <- R6::R6Class(
         )
     },
 
-    #' @description Configure global data label settings.
-    #' @param show_val Logical. Show numeric values.
-    #' @param show_cat Logical. Show category names.
-    #' @param show_legend_key Logical. Show legend key next to label.
-    #' @param pos Label position (e.g., 't', 'b', 'ctr', 'l', 'r').
-    #' @param ... Font styling for labels (e.g., color, sz, name).
+    #' @description Configure global data label defaults for all series.
+    #'
+    #' Per-series overrides can be set via the \code{show_val}/\code{show_cat}
+    #' arguments in \code{$add_series()}.
+    #'
+    #' @param show_val Logical; show the data point value. Default \code{TRUE}.
+    #' @param show_cat Logical; show the category name. Default \code{FALSE}.
+    #' @param show_legend_key Logical; show the series color swatch next to each
+    #'   label. Default \code{FALSE}.
+    #' @param pos Label position: \code{"t"} (top, default), \code{"b"}
+    #'   (bottom), \code{"l"}, \code{"r"}, \code{"ctr"}, \code{"inEnd"},
+    #'   \code{"outEnd"}, \code{"bestFit"}.
+    #' @param ... Additional font style arguments passed to the label text
+    #'   properties (e.g. \code{font_size}, \code{font_color}, \code{bold}).
+    #' @examples
+    #' ec("bar")$set_data_label_style(show_val = TRUE, pos = "outEnd", font_size = 9)
     set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", ...) {
       pos <- normalize_encharter_string(pos)
       pos <- private$validate_input(pos, c("t", "b", "l", "r", "ctr", "inEnd", "outEnd", "bestFit", "none"), "pos")
@@ -266,15 +342,18 @@ EncharterBase <- R6::R6Class(
       invisible(self)
     },
 
-    #' @description Set legend properties.
-    #' @param pos Position (t, b, l, r, none).
-    #' @param align Alignment (ctr, min, max).
-    #' @param overlay Logical; overlay legend on chart.
-    #' @param font_size Size of font.
-    #' @param font_name Name of font.
-    #' @param bold Logical.
-    #' @param italic Logical.
-    #' @param color Hex color.
+    #' @description Configure the chart legend.
+    #' @param pos Legend position: \code{"t"}, \code{"b"}, \code{"l"},
+    #'   \code{"r"} (default), or \code{"none"} to hide.
+    #' @param align Legend alignment relative to the chart: \code{"ctr"}
+    #'   (default), \code{"min"}, or \code{"max"}.
+    #' @param overlay Logical; if \code{TRUE} the legend overlaps the plot area.
+    #' @param font_size Numeric font size in points.
+    #' @param font_name Font typeface name.
+    #' @param bold,italic Logical font style.
+    #' @param color Six-digit hex color for the legend text.
+    #' @examples
+    #' ec("line")$set_legend_style(pos = "b", font_size = 9)
     set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
       pos <- normalize_encharter_string(pos)
       align <- normalize_encharter_string(align)
@@ -283,25 +362,34 @@ EncharterBase <- R6::R6Class(
       invisible(self)
     },
 
-    #' @description Style the outer chart background and border.
-    #' @param fill Hex color for background.
-    #' @param line Hex color for border line.
-    #' @param line_width Numeric width of border line.
+    #' @description Style the outer chart area (background and border).
+    #' @param fill Six-digit hex color for the chart background.
+    #'   Default \code{"FFFFFF"}.
+    #' @param line Six-digit hex color for the chart border. \code{NULL} for no
+    #'   border.
+    #' @param line_width Numeric border width in points. Default \code{1}.
+    #' @examples
+    #' ec("bar")$set_chart_style(fill = "F5F5F5", line = "CCCCCC", line_width = 0.5)
     set_chart_style = function(fill = "FFFFFF", line = NULL, line_width = 1) {
       self$chart_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },
 
-    #' @description Style the inner plot area background.
-    #' @param fill Hex color for background.
-    #' @param line Hex color for border line.
-    #' @param line_width Numeric width of border line.
+    #' @description Style the inner plot area (background and border).
+    #' @param fill Six-digit hex color for the plot area background.
+    #'   \code{NULL} for transparent.
+    #' @param line Six-digit hex color for the plot area border.
+    #' @param line_width Numeric border width in points. Default \code{1}.
+    #' @examples
+    #' ec("line")$set_plot_style(fill = "FAFAFA")
     set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
       self$plot_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },
 
-    #' @description print the summary of the Encharter object
+    #' @description Print a summary of the chart object.
+    #' @examples
+    #' ec("line")
     print = function() {
       nSeries <- length(self$series_data)
 
@@ -314,12 +402,12 @@ EncharterBase <- R6::R6Class(
         for (i in seq_len(nSeries)) {
           s <- self$series_data[[i]]
 
-          # Logic to determine axis hint
           is_secondary <- s$sec_type %in% c("x", "y", "xy")
           axis_hint <- if (is_secondary) " [Secondary Axis]" else ""
 
           s_type <- if (!is.null(s$type)) s$type else self$type
-          s_name <- if (!is.null(s$name)) s$name else paste("Series", i)
+          # series_data stores the name under 'header'
+          s_name <- if (!is.null(s$header)) s$header else paste("Series", i)
 
           cat(sprintf("Series %d: %s %s\n", i, s_name, axis_hint))
           cat(sprintf("  - Type: %s\n", s_type))
@@ -340,6 +428,10 @@ EncharterBase <- R6::R6Class(
     }
   ),
   private = list(
+
+    # Internal helper: validate and merge axis parameters into self$axis_params.
+    # 'which' must be one of "x", "y", "x2", "y2".
+    # All other arguments mirror the public set_*_axis() signatures exactly.
     set_axis_params = function(which, min, max, major, minor,
                                major_time, minor_time, base_time,
                                major_tick, minor_tick,
@@ -382,14 +474,17 @@ EncharterBase <- R6::R6Class(
       invisible(self)
     },
 
+    # Core color renderer. Writes the appropriate DrawingML color child node
+    # (<a:srgbClr>, <a:schemeClr>) directly into `target_node`.
+    # When wrap = TRUE, first inserts an <a:solidFill> wrapper and writes into
+    # that instead, which is the correct structure for text run properties.
     render_color_core = function(target_node, color_val, wrap = FALSE) {
       # Guard: treat NULL and zero-length as no-op
       if (is.null(color_val) || length(color_val) == 0) return()
 
-      # Set the destination node based on the wrap argument
       node <- if (wrap) xml_add_child(target_node, "a:solidFill") else target_node
 
-      # 1. Check for "auto"
+      # "auto" -> accent1 scheme color
       if (length(color_val) == 1 && tolower(as.character(color_val)) == "auto") {
         xml_add_child(node, "a:schemeClr", val = "accent1")
         return()
@@ -397,7 +492,7 @@ EncharterBase <- R6::R6Class(
 
       type <- names(color_val)
 
-      # 2. Handle wb_color objects (Hex vs Theme)
+      # wbColour objects (from openxlsx2::wb_color())
       if (inherits(color_val, "wbColour")) {
         if (!is.null(type) && type == "auto") {
           xml_add_child(node, "a:schemeClr", val = "accent1")
@@ -426,7 +521,7 @@ EncharterBase <- R6::R6Class(
         hex <- as.character(color_val[1])
       }
 
-      # 3. Clean and add as RGB
+      # RGB hex path
       clean <- toupper(gsub("^#", "", hex))
 
       alpha_val <- NULL
@@ -445,6 +540,8 @@ EncharterBase <- R6::R6Class(
       }
     },
 
+    # Convenience wrapper: adds <a:solidFill> to parent_node then delegates to
+    # render_color_core. Returns silently for NULL or "auto" (no fill emitted).
     render_color = function(parent_node, color_val) {
       if (is.null(color_val) || identical(color_val, "auto")) return()
       private$render_color_core(
@@ -453,10 +550,11 @@ EncharterBase <- R6::R6Class(
       )
     },
 
+    # Input validator. Returns choices[1] for NULL input, or the matched choice.
+    # Throws an informative error for unrecognised values.
     validate_input = function(val, choices, arg_name = "Argument") {
       if (is.null(val)) return(choices[1])
 
-      # match.arg works best when choices are provided as a character vector
       res <- try(match.arg(val, choices), silent = TRUE)
 
       if (inherits(res, "try-error")) {
