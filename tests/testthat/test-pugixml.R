@@ -109,3 +109,348 @@ test_that("Attribute handling parity", {
   expect_match(res, "id=\"test_1\"")
   expect_match(res, "val=\"99\"")
 })
+
+XML_SIMPLE  <- "<root><child id=\"1\">Hello</child><child id=\"2\">World</child></root>"
+XML_ATTRS   <- "<item a=\"1\" b=\"two\" c=\"true\"/>"
+XML_NESTED  <- "<a><b><c val=\"deep\"/></b><b><c val=\"other\"/></b></a>"
+XML_EMPTY   <- "<root/>"
+XML_UNICODE <- "<root><node>\u00e9\u00e0\u00fc</node></root>"
+
+# ---- xml_name ---------------------------------------------------------------
+
+test_that("xml_name returns root element name from document node", {
+  doc <- openxlsx2::read_xml(XML_SIMPLE)
+  expect_equal(xml_name(doc), "root")
+})
+
+test_that("xml_name returns element name from element node", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  child <- xml_find_first(doc, ".//child")
+  expect_equal(xml_name(child), "child")
+})
+
+test_that("xml_name works on a list of nodes", {
+  doc      <- openxlsx2::read_xml(XML_SIMPLE)
+  children <- xml_find_all(doc, ".//child")
+  expect_equal(xml_name(children), c("child", "child"))
+})
+
+test_that("xml_name on empty root returns correct name", {
+  doc <- openxlsx2::read_xml(XML_EMPTY)
+  expect_equal(xml_name(doc), "root")
+})
+
+# ---- xml_type ---------------------------------------------------------------
+
+test_that("xml_type returns 'document' for document node", {
+  doc <- openxlsx2::read_xml(XML_SIMPLE)
+  expect_equal(xml_type(doc), "document")
+})
+
+test_that("xml_type returns 'element' for element node", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  child <- xml_find_first(doc, ".//child")
+  expect_equal(xml_type(child), "element")
+})
+
+test_that("xml_type returns 'missing' for NULL", {
+  expect_equal(xml_type(NULL), "missing")
+})
+
+# ---- xml_find_first ---------------------------------------------------------
+
+test_that("xml_find_first finds nested element from document", {
+  doc  <- openxlsx2::read_xml(XML_NESTED)
+  node <- xml_find_first(doc, ".//c")
+  expect_equal(xml_name(node), "c")
+  expect_equal(xml_attr(node, "val"), "deep")
+})
+
+test_that("xml_find_first returns empty node for no match", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  node <- xml_find_first(doc, ".//nonexistent")
+  # Should not error; name of an empty/null node is ""
+  expect_equal(xml_name(node), "")
+})
+
+test_that("xml_find_first auto-prefixes bare tag names", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  # "child" without .// prefix should still work
+  node <- xml_find_first(doc, "child")
+  expect_equal(xml_name(node), "child")
+})
+
+test_that("xml_find_first works on element node, not just document", {
+  doc   <- openxlsx2::read_xml(XML_NESTED)
+  b     <- xml_find_first(doc, ".//b")
+  c_node <- xml_find_first(b, ".//c")
+  expect_equal(xml_attr(c_node, "val"), "deep")
+})
+
+# ---- xml_find_all -----------------------------------------------------------
+
+test_that("xml_find_all returns all matching nodes", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  nodes <- xml_find_all(doc, ".//child")
+  expect_length(nodes, 2)
+  expect_s3_class(nodes, "pugi_nodeset")
+})
+
+test_that("xml_find_all returns empty list for no match", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  nodes <- xml_find_all(doc, ".//nothing")
+  expect_length(nodes, 0)
+})
+
+test_that("xml_find_all on a list of nodes unions results", {
+  doc  <- openxlsx2::read_xml(XML_NESTED)
+  bs   <- xml_find_all(doc, ".//b")
+  cs   <- xml_find_all(bs, ".//c")
+  expect_length(cs, 2)
+  expect_equal(xml_attr(cs, "val"), c("deep", "other"))
+})
+
+# ---- xml_children -----------------------------------------------------------
+
+test_that("xml_children returns direct element children from document", {
+  doc      <- openxlsx2::read_xml(XML_SIMPLE)
+  children <- xml_children(doc)
+  # Document unwraps to <root>, whose children are the two <child> nodes
+  expect_length(children, 2)
+  expect_s3_class(children, "pugi_nodeset")
+  expect_equal(xml_name(children), c("child", "child"))
+})
+
+test_that("xml_children returns empty nodeset for leaf element", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  child <- xml_find_first(doc, ".//child")
+  # <child> contains text only, no element children
+  kids  <- xml_children(child)
+  expect_length(kids, 0)
+})
+
+test_that("xml_children works on a list of nodes", {
+  doc  <- openxlsx2::read_xml(XML_NESTED)
+  bs   <- xml_find_all(doc, ".//b")
+  kids <- xml_children(bs)
+  # Each <b> has one <c> child → 2 total
+  expect_length(kids, 2)
+})
+
+# ---- xml_length -------------------------------------------------------------
+
+test_that("xml_length counts direct element children from document", {
+  doc <- openxlsx2::read_xml(XML_SIMPLE)
+  expect_equal(xml_length(doc), 2L)
+})
+
+test_that("xml_length is 0 for leaf node", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  child <- xml_find_first(doc, ".//child")
+  expect_equal(xml_length(child), 0L)
+})
+
+test_that("xml_length works on a list", {
+  doc  <- openxlsx2::read_xml(XML_NESTED)
+  bs   <- xml_find_all(doc, ".//b")
+  lens <- xml_length(bs)
+  expect_equal(lens, c(1L, 1L))
+})
+
+# ---- xml_attr / xml_set_attr / xml_has_attr ---------------------------------
+
+test_that("xml_attr retrieves existing attribute", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  nodes <- xml_find_all(doc, ".//child")
+  expect_equal(xml_attr(nodes[[1]], "id"), "1")
+  expect_equal(xml_attr(nodes[[2]], "id"), "2")
+})
+
+test_that("xml_attr returns empty string for missing attribute", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  node <- xml_find_first(doc, ".//child")
+  expect_equal(xml_attr(node, "nonexistent"), "")
+})
+
+test_that("xml_attr on a list returns character vector", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  nodes <- xml_find_all(doc, ".//child")
+  expect_equal(xml_attr(nodes, "id"), c("1", "2"))
+})
+
+test_that("xml_set_attr creates new attribute", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  node <- xml_find_first(doc, ".//child")
+  xml_set_attr(node, "class", "highlight")
+  expect_equal(xml_attr(node, "class"), "highlight")
+})
+
+test_that("xml_set_attr updates existing attribute", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  node <- xml_find_first(doc, ".//child")
+  xml_set_attr(node, "id", "99")
+  expect_equal(xml_attr(node, "id"), "99")
+})
+
+test_that("xml_set_attr coerces numeric to character", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  node <- xml_find_first(doc, ".//child")
+  xml_set_attr(node, "count", 42L)
+  expect_equal(xml_attr(node, "count"), "42")
+})
+
+test_that("xml_set_attr on a list sets attribute on all nodes", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  nodes <- xml_find_all(doc, ".//child")
+  xml_set_attr(nodes, "class", "item")
+  expect_equal(xml_attr(nodes, "class"), c("item", "item"))
+})
+
+test_that("xml_has_attr returns TRUE for present attribute", {
+  doc  <- openxlsx2::read_xml(XML_ATTRS)
+  node <- xml_find_first(doc, ".//item")
+  expect_true(xml_has_attr(node, "a"))
+})
+
+test_that("xml_has_attr returns FALSE for absent attribute", {
+  doc  <- openxlsx2::read_xml(XML_ATTRS)
+  node <- xml_find_first(doc, ".//item")
+  expect_false(xml_has_attr(node, "z"))
+})
+
+test_that("xml_has_attr on a list returns logical vector", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  nodes <- xml_find_all(doc, ".//child")
+  # Both have 'id', neither has 'foo'
+  expect_equal(xml_has_attr(nodes, "id"),  c(TRUE, TRUE))
+  expect_equal(xml_has_attr(nodes, "foo"), c(FALSE, FALSE))
+})
+
+# ---- xml_add_child ----------------------------------------------------------
+
+test_that("xml_add_child appends new element by name", {
+  doc     <- openxlsx2::read_xml(XML_EMPTY)
+  new_kid <- xml_add_child(doc, "item")
+  expect_equal(xml_name(new_kid), "item")
+  expect_equal(xml_length(doc), 1L)
+})
+
+test_that("xml_add_child sets attributes from named ...", {
+  doc  <- openxlsx2::read_xml(XML_EMPTY)
+  node <- xml_add_child(doc, "item", id = "5", type = "x")
+  expect_equal(xml_attr(node, "id"),   "5")
+  expect_equal(xml_attr(node, "type"), "x")
+})
+
+test_that("xml_add_child sets text from unnamed ...", {
+  doc  <- openxlsx2::read_xml(XML_EMPTY)
+  node <- xml_add_child(doc, "label", "Hello")
+  xml_str <- as.character(doc)
+  expect_match(xml_str, "Hello")
+})
+
+test_that("xml_add_child appends by default (where = -1)", {
+  doc <- openxlsx2::read_xml(XML_SIMPLE)
+  xml_add_child(doc, "last")
+  children <- xml_children(doc)
+  expect_equal(xml_name(children[[length(children)]]), "last")
+})
+
+test_that("xml_add_child prepends when where = 0", {
+  doc <- openxlsx2::read_xml(XML_SIMPLE)
+  xml_add_child(doc, "first", .where = 0L)
+  children <- xml_children(doc)
+  expect_equal(xml_name(children[[1]]), "first")
+})
+
+test_that("xml_add_child works on document node (unwraps to root)", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  node <- xml_add_child(doc, "appended")
+  expect_equal(xml_name(node), "appended")
+  # Child count of root should now be 3
+  expect_equal(xml_length(doc), 3L)
+})
+
+test_that("xml_add_child copies an external node", {
+  doc1 <- openxlsx2::read_xml(XML_SIMPLE)
+  doc2 <- openxlsx2::read_xml(XML_EMPTY)
+  src  <- xml_find_first(doc1, ".//child")
+  xml_add_child(doc2, src)
+  expect_equal(xml_length(doc2), 1L)
+  expect_equal(xml_name(xml_children(doc2)[[1]]), "child")
+})
+
+# ---- xml_remove -------------------------------------------------------------
+
+test_that("xml_remove detaches a node from the tree", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  expect_equal(xml_length(doc), 2L)
+  node <- xml_find_first(doc, ".//child")
+  xml_remove(node)
+  expect_equal(xml_length(doc), 1L)
+})
+
+test_that("xml_remove on a list removes all matched nodes", {
+  doc   <- openxlsx2::read_xml(XML_SIMPLE)
+  nodes <- xml_find_all(doc, ".//child")
+  xml_remove(nodes)
+  expect_equal(xml_length(doc), 0L)
+})
+
+test_that("xml_remove on NULL is a no-op", {
+  expect_no_error(xml_remove(NULL))
+})
+
+# ---- as.character / serialization -------------------------------------------
+
+test_that("as.character produces valid XML string from element node", {
+  doc  <- openxlsx2::read_xml(XML_SIMPLE)
+  node <- xml_find_first(doc, ".//child")
+  s    <- as.character(node)
+  expect_type(s, "character")
+  expect_match(s, "<child")
+  expect_match(s, "Hello")
+})
+
+test_that("as.character on document node produces full XML", {
+  doc <- openxlsx2::read_xml(XML_SIMPLE)
+  s   <- as.character(doc)
+  expect_match(s, "<root>")
+  expect_match(s, "</root>")
+})
+
+test_that("as.character round-trips: parse → serialize → parse", {
+  doc1 <- openxlsx2::read_xml(XML_NESTED)
+  s    <- as.character(doc1)
+  doc2 <- openxlsx2::read_xml(s)
+  # expect_equal(xml_name(doc2), "a")
+  expect_equal(xml_length(doc2), 2L)
+})
+
+# ---- unicode ----------------------------------------------------------------
+
+test_that("unicode content is preserved through round-trip", {
+  doc  <- openxlsx2::read_xml(XML_UNICODE)
+  node <- xml_find_first(doc, ".//node")
+  s    <- as.character(node)
+  expect_match(s, "\u00e9")
+})
+
+# ---- error handling ---------------------------------------------------------
+
+test_that("xml_name errors on invalid handle", {
+  expect_error(xml_name(42L), regexp = "external pointer|handle")
+})
+
+test_that("xml_attr errors on invalid handle", {
+  expect_error(xml_attr(42L, "id"), regexp = "external pointer|handle")
+})
+
+test_that("xml_find_first errors on non-string xpath", {
+  doc <- openxlsx2::read_xml(XML_SIMPLE)
+  expect_error(xml_find_first(doc, 123L), regexp = "XPath error: Unrecognized node test")
+})
+
+test_that("xml_add_child errors on invalid node handle", {
+  expect_error(xml_add_child(42L, "child"), regexp = "external pointer|handle")
+})

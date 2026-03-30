@@ -60,23 +60,46 @@ extern "C" {
     CHECK_NODE(node_ptr)
     CHECK_STRING(xpath_str, "xpath")
     const char* xpath = CHAR(STRING_ELT(xpath_str, 0));
-    pugi::xpath_node target = node->select_node(xpath);
-    return wrap_node_raw(target.node(), node_ptr);
+    try {
+      pugi::xpath_node target = node->select_node(xpath);
+      return wrap_node_raw(target.node(), node_ptr);
+    } catch (const pugi::xpath_exception& e) {
+      Rf_error("XPath error: %s", e.what());
+    } catch (...) {
+      Rf_error("An unknown error occurred during XPath selection.");
+    }
+    return R_NilValue;
   }
 
   SEXP pugi_find_all(SEXP node_ptr, SEXP xpath_str) {
     CHECK_NODE(node_ptr)
     CHECK_STRING(xpath_str, "xpath")
     const char* xpath = CHAR(STRING_ELT(xpath_str, 0));
-    pugi::xpath_node_set nodes = node->select_nodes(xpath);
-    int n = nodes.size();
 
-    SEXP out = PROTECT(Rf_allocVector(VECSXP, n));
-    for (int i = 0; i < n; i++) {
-      SET_VECTOR_ELT(out, i, wrap_node_raw(nodes[i].node(), node_ptr));
+    try {
+      pugi::xpath_node_set nodes = node->select_nodes(xpath);
+      int n = nodes.size();
+
+      SEXP out = PROTECT(Rf_allocVector(VECSXP, n));
+      for (int i = 0; i < n; i++) {
+        SET_VECTOR_ELT(out, i, wrap_node_raw(nodes[i].node(), node_ptr));
+      }
+
+      SEXP cls = PROTECT(Rf_allocVector(STRSXP, 2));
+      SET_STRING_ELT(cls, 0, Rf_mkChar("pugi_nodeset"));
+      SET_STRING_ELT(cls, 1, Rf_mkChar("list"));
+      Rf_classgets(out, cls);
+
+      UNPROTECT(2);
+      return out;
+
+    } catch (const pugi::xpath_exception& e) {
+      Rf_error("XPath error: %s", e.what());
+    } catch (...) {
+      Rf_error("An unknown C++ exception occurred in pugi_find_all.");
     }
-    UNPROTECT(1);
-    return out;
+
+    return R_NilValue;
   }
 
   SEXP pugi_children(SEXP node_ptr) {

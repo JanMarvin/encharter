@@ -312,7 +312,7 @@ test_that("render() errors without series data", {
   expect_error(ch$render(), regexp = "no data|add.*series")
 })
 
-test_that("render() returns xml2 document for Chart", {
+test_that("render() returns xml document for Chart", {
   ch <- ec("line")
   ch$add_series(data = "'Sheet1'!$A$2:$A$10")
   result <- ch$render()
@@ -602,4 +602,16 @@ test_that("combo chart renders with bar and line series", {
   # Should have two valAx (primary left, secondary right)
   n_valax <- length(gregexpr("<c:valAx>", xml_str)[[1]])
   expect_equal(n_valax, 2)
+})
+
+test_that("fmt_txt() is supported", {
+  txt <- fmt_txt("Bold", bold = TRUE, size = 18) +
+    fmt_txt("\nItalic", italic = TRUE, color = wb_color("black"), size = 14)
+
+  e <- encharter::ec(type = "barplot")
+  e$add_series(data = "Sheet1!A1:A2")
+  e$set_chart_title(txt)
+  xml <- e$render()
+  expect_match(xml, "b=\"1\"")
+  expect_match(xml, "i=\"1\"")
 })

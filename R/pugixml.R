@@ -50,7 +50,7 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
 xml_find_first <- function(x, xpath) {
   if (is.list(x)) return(lapply(x, xml_find_first, xpath = xpath))
   if (!grepl("^\\.|^/", xpath)) xpath <- paste0(".//", xpath)
-  .Call("pugi_find_first", x, xpath)
+  .Call("pugi_find_first", x, as.character(xpath))
 }
 
 #' Find all matches via XPath
@@ -68,7 +68,7 @@ xml_find_all <- function(x, xpath) {
     return(res)
   }
   if (!grepl("^\\.|^/", xpath)) xpath <- paste0(".//", xpath)
-  .Call("pugi_find_all", x, xpath)
+  .Call("pugi_find_all", x, as.character(xpath))
 }
 
 #' Get element children
@@ -96,6 +96,12 @@ xml_children <- function(x) {
 #' # xml_name(xml_find_all(doc, "/*/*"))
 xml_name <- function(x) {
   if (is.list(x)) return(unname(sapply(x, function(node) .Call("pugi_node_name", node))))
+  # Unwrap document node to its root element, matching xml2 behaviour
+  if (.Call("pugi_node_type", x) == "document") {
+    kids <- xml_find_all(x, "/*")
+    if (length(kids) > 0) return(.Call("pugi_node_name", kids[[1]]))
+    return("")
+  }
   .Call("pugi_node_name", x)
 }
 
@@ -119,7 +125,7 @@ xml_type <- function(x) {
 #' # xml_attr(rows, "r")
 xml_attr <- function(x, attr) {
   if (is.list(x)) return(unname(sapply(x, function(node) .Call("pugi_get_attr", node, attr))))
-  .Call("pugi_get_attr", x, attr)
+  .Call("pugi_get_attr", x, as.character(attr))
 }
 
 #' Set attribute value
@@ -134,7 +140,7 @@ xml_set_attr <- function(x, attr, value) {
   if (is.list(x)) {
     invisible(lapply(x, function(node) .Call("pugi_set_attr", node, attr, as.character(value))))
   } else {
-    .Call("pugi_set_attr", x, attr, as.character(value))
+    .Call("pugi_set_attr", x, as.character(attr), as.character(value))
   }
 }
 
@@ -148,7 +154,7 @@ xml_set_attr <- function(x, attr, value) {
 #' # has_r <- xml_has_attr(cells, "r")
 xml_has_attr <- function(x, attr) {
   if (is.list(x)) return(unname(sapply(x, function(node) .Call("pugi_has_attr", node, attr))))
-  .Call("pugi_has_attr", x, attr)
+  .Call("pugi_has_attr", x, as.character(attr))
 }
 
 #' Get count of child elements
