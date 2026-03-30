@@ -6,5 +6,16 @@
 <url><loc>/reference/EncharterBase.html</loc></url>
 <url><loc>/reference/encharter.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/xml_add_child.html</loc></url>
+<url><loc>/reference/xml_attr.html</loc></url>
+<url><loc>/reference/xml_children.html</loc></url>
+<url><loc>/reference/xml_find_all.html</loc></url>
+<url><loc>/reference/xml_find_first.html</loc></url>
+<url><loc>/reference/xml_has_attr.html</loc></url>
+<url><loc>/reference/xml_length.html</loc></url>
+<url><loc>/reference/xml_name.html</loc></url>
+<url><loc>/reference/xml_remove.html</loc></url>
+<url><loc>/reference/xml_set_attr.html</loc></url>
+<url><loc>/reference/xml_type.html</loc></url>
 </urlset>
 
