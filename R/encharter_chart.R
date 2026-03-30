@@ -139,38 +139,18 @@ Chart <- R6::R6Class(
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                            crosses = NULL, crosses_at = NULL, label_pos = NULL) {
-
-      crosses   <- private$validate_input(crosses, c("max", "min", "autoZero"), "crosses")
-      label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
-      major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
-      minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
-      if (is.character(gridlines)) {
-        private$validate_input(
-          gridlines,
-          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
-          "gridlines"
+        private$set_axis_params(
+          "y2",
+          min = min, max = max, major = major, minor = minor, major_time = major_time,
+          minor_time = minor_time, base_time = base_time, major_tick = major_tick,
+          minor_tick = minor_tick, format = format, log_base = log_base, color = color,
+          font_name = font_name, font_size = font_size, bold = bold, italic = italic,
+          font_color = font_color, rot = rot, grid_color = grid_color, gridlines = gridlines,
+          minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
+          cross_between = cross_between, line_width = line_width, grid_width = grid_width,
+          minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
+          label_pos = label_pos
         )
-      }
-      if (is.character(minor_gridlines)) {
-        private$validate_input(
-          minor_gridlines,
-          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
-          "minor_gridlines"
-        )
-      }
-
-      params <- list(min = min, max = max, major = major, minor = minor,
-                     major_time = major_time, minor_time = minor_time, base_time = base_time,
-                     major_tick = major_tick, minor_tick = minor_tick,
-                     format = format, log_base = log_base, color = color,
-                     font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-                     font_color = font_color, rot = rot,
-                     grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
-                     minor_gridlines = minor_gridlines, cross_between = cross_between,
-                     line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
-                     crosses = crosses, crosses_at = crosses_at, label_pos = label_pos)
-      self$axis_params$y2 <- modifyList(self$axis_params$y2, Filter(Negate(is.null), params))
-      invisible(self)
     },
 
     #' @description Set Secondary X-axis scaling, units, and format.
@@ -208,37 +188,18 @@ Chart <- R6::R6Class(
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                            crosses = NULL, crosses_at = NULL, label_pos = NULL) {
 
-      crosses   <- private$validate_input(crosses, c("max", "min", "autoZero"), "crosses")
-      label_pos <- private$validate_input(label_pos, c("nextTo", "high", "low", "none"), "label_pos")
-      major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
-      minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
-      if (is.character(gridlines)) {
-        private$validate_input(
-          gridlines,
-          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
-          "gridlines"
+        private$set_axis_params(
+          "x2",
+          min = min, max = max, major = major, minor = minor, major_time = major_time,
+          minor_time = minor_time, base_time = base_time, major_tick = major_tick,
+          minor_tick = minor_tick, format = format, log_base = log_base, color = color,
+          font_name = font_name, font_size = font_size, bold = bold, italic = italic,
+          font_color = font_color, rot = rot, grid_color = grid_color, gridlines = gridlines,
+          minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
+          cross_between = cross_between, line_width = line_width, grid_width = grid_width,
+          minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
+          label_pos = label_pos
         )
-      }
-      if (is.character(minor_gridlines)) {
-        private$validate_input(
-          minor_gridlines,
-          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
-          "minor_gridlines"
-        )
-      }
-
-      params <- list(min = min, max = max, major = major, minor = minor,
-                     major_time = major_time, minor_time = minor_time, base_time = base_time,
-                     major_tick = major_tick, minor_tick = minor_tick,
-                     format = format, log_base = log_base, color = color,
-                     font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-                     font_color = font_color, rot = rot,
-                     grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
-                     minor_gridlines = minor_gridlines, cross_between = cross_between,
-                     line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
-                     crosses = crosses, crosses_at = crosses_at, label_pos = label_pos)
-      self$axis_params$x2 <- modifyList(self$axis_params$x2, Filter(Negate(is.null), params))
-      invisible(self)
     },
 
     #' @description Set the data table.

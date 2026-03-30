@@ -549,8 +549,6 @@ This rotates the chart clockwise.}
 \subsection{Public methods}{
   \itemize{
     \item \href{#method-ChartEx-initialize}{\code{ChartEx$new()}}
-    \item \href{#method-ChartEx-set_x_axis}{\code{ChartEx$set_x_axis()}}
-    \item \href{#method-ChartEx-set_y_axis}{\code{ChartEx$set_y_axis()}}
     \item \href{#method-ChartEx-add_series}{\code{ChartEx$add_series()}}
     \item \href{#method-ChartEx-render}{\code{ChartEx$render()}}
     \item \href{#method-ChartEx-clone}{\code{ChartEx$clone()}}
@@ -564,7 +562,9 @@ This rotates the chart clockwise.}
   <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_data_label_style'><code>EncharterBase$set_data_label_style()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_legend_style'><code>EncharterBase$set_legend_style()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_plot_style'><code>EncharterBase$set_plot_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_axis"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_x_axis'><code>EncharterBase$set_x_axis()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_x_title'><code>EncharterBase$set_x_title()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_axis"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_y_axis'><code>EncharterBase$set_y_axis()</code></a></span></li>
   <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href='../../encharter/html/EncharterBase.html#method-EncharterBase-set_y_title'><code>EncharterBase$set_y_title()</code></a></span></li>
 </ul>
 </details>}}
@@ -587,148 +587,6 @@ This rotates the chart clockwise.}
   }
   \subsection{Returns}{
     A new `ChartEx` object.
-  }
-}
-
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ChartEx-set_x_axis"></a>}}
-\if{latex}{\out{\hypertarget{method-ChartEx-set_x_axis}{}}}
-\subsection{\code{ChartEx$set_x_axis()}}{
-  Set Primary X-axis scaling, units, and format.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$set_x_axis(
-  min = NULL,
-  max = NULL,
-  major = NULL,
-  minor = NULL,
-  major_time = NULL,
-  minor_time = NULL,
-  base_time = NULL,
-  major_tick = NULL,
-  minor_tick = NULL,
-  font_size = NULL,
-  bold = NULL,
-  italic = NULL,
-  format = NULL,
-  log_base = NULL,
-  color = NULL,
-  font_name = NULL,
-  font_color = NULL,
-  rot = NULL,
-  grid_color = NULL,
-  gridlines = NULL,
-  minor_grid_color = NULL,
-  minor_gridlines = NULL,
-  cross_between = NULL,
-  line_width = NULL,
-  grid_width = NULL,
-  minor_grid_width = NULL,
-  crosses = NULL,
-  crosses_at = NULL,
-  label_pos = NULL
-)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{min}}{Minimum value for the axis.}
-      \item{\code{max}}{Maximum value for the axis.}
-      \item{\code{major}}{Numeric value for major unit interval.}
-      \item{\code{minor}}{Numeric value for minor unit interval.}
-      \item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
-      \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
-      \item{\code{font_size}}{Font size for the axis labels.}
-      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
-      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
-      \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
-      \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
-      \item{\code{color, font_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{rot}}{Rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
-      \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
-      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
-      \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
-      \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
-      \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
-    }
-    \if{html}{\out{</div>}}
-  }
-}
-
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ChartEx-set_y_axis"></a>}}
-\if{latex}{\out{\hypertarget{method-ChartEx-set_y_axis}{}}}
-\subsection{\code{ChartEx$set_y_axis()}}{
-  Set Primary Y-axis scaling, units, and format.
-  \subsection{Usage}{
-    \if{html}{\out{<div class="r">}}
-    \preformatted{ChartEx$set_y_axis(
-  min = NULL,
-  max = NULL,
-  major = NULL,
-  minor = NULL,
-  major_time = NULL,
-  minor_time = NULL,
-  base_time = NULL,
-  major_tick = NULL,
-  minor_tick = NULL,
-  format = NULL,
-  log_base = NULL,
-  color = NULL,
-  font_name = NULL,
-  font_size = NULL,
-  bold = NULL,
-  italic = NULL,
-  font_color = NULL,
-  rot = NULL,
-  grid_color = NULL,
-  gridlines = NULL,
-  minor_grid_color = NULL,
-  minor_gridlines = NULL,
-  cross_between = NULL,
-  line_width = NULL,
-  grid_width = NULL,
-  minor_grid_width = NULL,
-  crosses = NULL,
-  crosses_at = NULL,
-  label_pos = NULL
-)}
-    \if{html}{\out{</div>}}
-  }
-  \subsection{Arguments}{
-    \if{html}{\out{<div class="arguments">}}
-    \describe{
-      \item{\code{min}}{Minimum value for the axis.}
-      \item{\code{max}}{Maximum value for the axis.}
-      \item{\code{major}}{Numeric value for major unit interval.}
-      \item{\code{minor}}{Numeric value for minor unit interval.}
-      \item{\code{major_time}}{Time unit for major steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{minor_time}}{Time unit for minor steps ("days", "months", "years"). Used for date axes.}
-      \item{\code{base_time}}{Base time unit for date axes ("days", "months", "years").}
-      \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
-      \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
-      \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
-      \item{\code{color, font_color}}{Hex color for the axis lines and label (or independent label color).}
-      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
-      \item{\code{font_size}}{Font size for the axis labels.}
-      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
-      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
-      \item{\code{rot}}{Rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
-      \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
-      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
-      \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
-      \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
-      \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
-    }
-    \if{html}{\out{</div>}}
   }
 }
 
