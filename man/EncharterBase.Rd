@@ -58,14 +58,31 @@ Encharter Base R6 Class
   Set the chart's main title.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{EncharterBase$set_chart_title(text, ...)}
+    \preformatted{EncharterBase$set_chart_title(
+  text,
+  font_size = NULL,
+  font_name = NULL,
+  font_color = NULL,
+  bold = NULL,
+  italic = NULL,
+  fill = NULL,
+  line = NULL,
+  line_width = NULL
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{text}}{Title text string.}
-      \item{\code{...}}{Style arguments like `sz` (font size), `bold` (TRUE/FALSE), `color`, and `name` (font name).}
+      \item{\code{font_size}}{Font size for the axis labels.}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_color}}{Font color for the chart title.}
+      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+      \item{\code{fill}}{Hex color for background.}
+      \item{\code{line}}{Hex color for border line.}
+      \item{\code{line_width}}{Numeric width of border line.}
     }
     \if{html}{\out{</div>}}
   }
@@ -78,14 +95,31 @@ Encharter Base R6 Class
   Set the X-axis title.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{EncharterBase$set_x_title(text, ...)}
+    \preformatted{EncharterBase$set_x_title(
+  text,
+  font_size = NULL,
+  font_name = NULL,
+  font_color = NULL,
+  bold = NULL,
+  italic = NULL,
+  fill = NULL,
+  line = NULL,
+  line_width = NULL
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{text}}{Title text string.}
-      \item{\code{...}}{Style arguments.}
+      \item{\code{font_size}}{Font size for the axis labels.}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_color}}{Font color for the axis title.}
+      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+      \item{\code{fill}}{Hex color for background.}
+      \item{\code{line}}{Hex color for border line.}
+      \item{\code{line_width}}{Numeric width of border line.}
     }
     \if{html}{\out{</div>}}
   }
@@ -98,14 +132,31 @@ Encharter Base R6 Class
   Set the primary Y-axis title.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{EncharterBase$set_y_title(text, ...)}
+    \preformatted{EncharterBase$set_y_title(
+  text,
+  font_size = NULL,
+  font_name = NULL,
+  font_color = NULL,
+  bold = NULL,
+  italic = NULL,
+  fill = NULL,
+  line = NULL,
+  line_width = NULL
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{text}}{Title text string.}
-      \item{\code{...}}{Style arguments.}
+      \item{\code{font_size}}{Font size for the axis labels.}
+      \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
+      \item{\code{font_color}}{Font color for the axis title.}
+      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
+      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+      \item{\code{fill}}{Hex color for background.}
+      \item{\code{line}}{Hex color for border line.}
+      \item{\code{line_width}}{Numeric width of border line.}
     }
     \if{html}{\out{</div>}}
   }

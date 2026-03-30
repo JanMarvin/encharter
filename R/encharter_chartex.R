@@ -781,7 +781,7 @@ ChartEx <- R6::R6Class(
         spPr <- xml_add_child(parent, "cx:spPr")
         if (!is.null(s$fill)) private$render_color(spPr, s$fill)
         if (!is.null(s$line)) {
-          ln <- xml_add_child(spPr, "a:ln", w = "12700")
+          ln <- xml_add_child(spPr, "a:ln", w = as.character(round(s$line_width %||% 1L * 12700)))
           private$render_color_core(xml_add_child(ln, "a:solidFill"), s$line)
         }
       }
@@ -806,7 +806,7 @@ ChartEx <- R6::R6Class(
 
         # Color MUST be inside a:solidFill
         # If s$color is NULL, we default to black "000000"
-        color <- s$color %||% "000000"
+        color <- s$font_color %||% "000000"
         fill_node <- xml_add_child(rPr, "a:solidFill")
         private$render_color_core(fill_node, color)
 
@@ -831,7 +831,7 @@ ChartEx <- R6::R6Class(
       defRPr <- xml_add_child(pPr, "a:defRPr")
 
       # FIX: Use srgbClr to avoid the washed-out schemeClr
-      f_color <- style$label_color %||% style$color %||% "000000"
+      f_color <- style$label_color %||% style$font_color %||% "000000"
       fill <- xml_add_child(defRPr, "a:solidFill")
       private$render_color_core(fill, f_color)
 

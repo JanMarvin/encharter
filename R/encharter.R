@@ -112,25 +112,46 @@ EncharterBase <- R6::R6Class(
 
     #' @description Set the chart's main title.
     #' @param text Title text string.
-    #' @param ... Style arguments like `sz` (font size), `bold` (TRUE/FALSE), `color`, and `name` (font name).
-    set_chart_title = function(text, ...) {
-      self$chart_title <- list(text = text, style = list(...))
+    #' @param font_color Font color for the chart title.
+    #' @param font_size Font size for the axis labels.
+    #' @param bold Logical; if `TRUE`, axis labels will be bold.
+    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param fill Hex color for background.
+    #' @param line Hex color for border line.
+    #' @param line_width Numeric width of border line.
+    set_chart_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      self$chart_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 
     #' @description Set the X-axis title.
     #' @param text Title text string.
-    #' @param ... Style arguments.
-    set_x_title      = function(text, ...) {
-      self$x_title      <- list(text = text, style = list(...))
+    #' @param font_color Font color for the axis title.
+    #' @param font_size Font size for the axis labels.
+    #' @param bold Logical; if `TRUE`, axis labels will be bold.
+    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param fill Hex color for background.
+    #' @param line Hex color for border line.
+    #' @param line_width Numeric width of border line.
+    set_x_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      self$x_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 
     #' @description Set the primary Y-axis title.
     #' @param text Title text string.
-    #' @param ... Style arguments.
-    set_y_title      = function(text, ...) {
-      self$y_title      <- list(text = text, style = list(...))
+    #' @param font_color Font color for the axis title.
+    #' @param font_size Font size for the axis labels.
+    #' @param bold Logical; if `TRUE`, axis labels will be bold.
+    #' @param italic Logical; if `TRUE`, axis labels will be italicized.
+    #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
+    #' @param fill Hex color for background.
+    #' @param line Hex color for border line.
+    #' @param line_width Numeric width of border line.
+    set_y_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      self$y_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 

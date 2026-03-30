@@ -1019,7 +1019,7 @@ Chart <- R6::R6Class(
         rPr <- xml_add_child(r, "a:rPr", sz = as.character(sz))
         if (isTRUE(style$bold)) xml_set_attr(rPr, "b", "1")
         if (isTRUE(style$italic)) xml_set_attr(rPr, "i", "1")
-        if (!is.null(style$color)) private$render_fill(xml_add_child(rPr, "a:solidFill"), style$color)
+        if (!is.null(style$font_color)) private$render_fill(xml_add_child(rPr, "a:solidFill"), style$font_color)
         if (!is.null(style$font_name)) xml_add_child(rPr, "a:latin", typeface = style$font_name)
         xml_add_child(r, "a:t", text)
       }

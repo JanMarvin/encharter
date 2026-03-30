@@ -209,7 +209,7 @@ test_that("ChartEx renders full styling and axis properties", {
   )
 
   # Apply Title styling
-  ce$set_y_title("USD (Millions)", font_size = 14, b = TRUE, color = "000000")
+  ce$set_y_title("USD (Millions)", font_size = 14, bold = TRUE, font_color = "000000")
 
   xml <- read_xml(ce$render(1))
 
@@ -380,7 +380,7 @@ test_that("barChart with theme colors and stacked grouping renders correctly", {
   expect_true(any(grepl('val="accent2"', as.character(xml_res))))
 
   # Verify titles and styling
-  ch$set_chart_title("Test Title", color = "0D6797")
+  ch$set_chart_title("Test Title", font_color = "0D6797")
   xml_titled <- ch$render()
   expect_true(any(grepl("0D6797", as.character(xml_titled))))
 })
@@ -433,7 +433,7 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
   ch <- ChartEx$new()
 
   # 2. Apply Titles and Axis Styles
-  ch$set_chart_title("MPG Distribution", font_size = 16, font_name = "Arial", bold = TRUE, italic = TRUE, fill = "#DDADDA", line = wb_color("blue")) # test italic, fill and line
+  ch$set_chart_title("MPG Distribution", font_size = 16, font_name = "Arial", bold = TRUE, italic = TRUE, fill = "#DDADDA", line = wb_color("blue"), line_width = 5) # test italic, fill and line
   ch$set_x_title("by Cylinder", font_size = 12, italic = TRUE)
   ch$set_x_axis(font_size = 10) # test this
   ch$set_y_axis(font_size = 12, font_name = "Times New Roman", italic = TRUE, color = "000000")
@@ -455,6 +455,8 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
       bold      = TRUE,
       color     = wb_color(theme = "4")
     )
+
+  wb <- openxlsx2::wb_workbook()$add_worksheet("data")$add_encharter(graph = ch)
 
   # 4. Render XML
   xml_res <- read_xml(ch$render(1))
