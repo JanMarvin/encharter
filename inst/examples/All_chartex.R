@@ -64,7 +64,7 @@ my_bw$
     color  = wb_color(hex = "FFA500"), line_color = wb_color("black"))$
   set_legend_style(
     pos   = "r",
-    sz    = 15,
+    font_size    = 15,
     bold  = TRUE,
     color = wb_color(theme = "4")
   )
