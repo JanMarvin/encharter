@@ -71,7 +71,9 @@ ec <- encharter
 #' @useDynLib encharter, .registration=TRUE
 #'
 #' @import R6
-#' @importFrom openxlsx2 wb_color dims_to_dataframe read_xml
+#' @importFrom openxlsx2 wb_color dims_to_dataframe read_xml fmt_txt
+#  some XML functions from openxlsx2 are used but not imported because of name
+#  clashes
 EncharterBase <- R6::R6Class(
   "EncharterBase",
   public = list(

@@ -242,7 +242,7 @@ get_color <- function(color, transparency = 0) {
 #' @noRd
 fmt_txt2 <- function(txt, text_color = "", transparency = 0) {
   if (!inherits(txt, "fmt_txt")) {
-    txt <- fmt_txt(txt)
+    txt <- openxlsx2::fmt_txt(txt)
   }
 
   txts <- openxlsx2::xml_node(txt, "r")
