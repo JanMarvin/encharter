@@ -214,16 +214,16 @@ Chart <- R6::R6Class(
       minor_tick <- private$validate_input(minor_tick, c("cross", "in", "out", "none"), "minor_tick")
       if (is.character(gridlines)) {
         private$validate_input(
-          line_type,
+          gridlines,
           c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
-          "line_type"
+          "gridlines"
         )
       }
       if (is.character(minor_gridlines)) {
         private$validate_input(
-          line_type,
+          minor_gridlines,
           c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
-          "line_type"
+          "minor_gridlines"
         )
       }
 
@@ -231,7 +231,7 @@ Chart <- R6::R6Class(
                      major_time = major_time, minor_time = minor_time, base_time = base_time,
                      major_tick = major_tick, minor_tick = minor_tick,
                      format = format, log_base = log_base, color = color,
-                     font_name = font_name, font_size = sz, bold = bold, italic = italic,
+                     font_name = font_name, font_size = font_size, bold = bold, italic = italic,
                      label_color = label_color, rot = rot,
                      grid_color = grid_color, gridlines = gridlines, minor_grid_color = minor_grid_color,
                      minor_gridlines = minor_gridlines, cross_between = cross_between,
