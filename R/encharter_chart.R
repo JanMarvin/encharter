@@ -1184,15 +1184,14 @@ Chart <- R6::R6Class(
       defRPr <- xml_add_child(pPr, "a:defRPr")
 
       # Apply font size (OOXML uses 1/100th of a point)
-      sz <- if (!is.null(s$font_size)) s$font_size * 100 else 900
+      sz <- if (!is.null(s$font_size)) s$font_size * 100 else 1000
       xml_set_attr(defRPr, "sz", as.character(sz))
 
       if (isTRUE(s$bold)) xml_set_attr(defRPr, "b", "1")
       if (isTRUE(s$italic)) xml_set_attr(defRPr, "i", "1")
 
-      if (!is.null(s$color)) {
-        private$render_color_core(xml_add_child(defRPr, "a:solidFill"), s$color)
-      }
+      f_color <- s$font_color %||% s$color %||% "000000"
+      private$render_color_core(xml_add_child(defRPr, "a:solidFill"), f_color)
 
       if (!is.null(s$font_name)) {
         xml_add_child(defRPr, "a:latin", typeface = s$font_name)

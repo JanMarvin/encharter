@@ -620,7 +620,7 @@ ChartEx <- R6::R6Class(
       defRPr <- xml_add_child(pPr, "a:defRPr")
 
       # FIX: Use srgbClr to avoid the washed-out schemeClr
-      f_color <- style$font_color %||% style$font_color %||% "000000"
+      f_color <- style$font_color %||% style$color %||% "000000"
       fill <- xml_add_child(defRPr, "a:solidFill")
       private$render_color_core(fill, f_color)
 
