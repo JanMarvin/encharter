@@ -380,6 +380,76 @@ EncharterBase <- R6::R6Class(
     }
   ),
   private = list(
+    render_color_core = function(target_node, color_val, wrap = FALSE) {
+      # Guard: treat NULL and zero-length as no-op
+      if (is.null(color_val) || length(color_val) == 0) return()
+
+      # Set the destination node based on the wrap argument
+      node <- if (wrap) xml_add_child(target_node, "a:solidFill") else target_node
+
+      # 1. Check for "auto"
+      if (length(color_val) == 1 && tolower(as.character(color_val)) == "auto") {
+        xml_add_child(node, "a:schemeClr", val = "accent1")
+        return()
+      }
+
+      type <- names(color_val)
+
+      # 2. Handle wb_color objects (Hex vs Theme)
+      if (inherits(color_val, "wbColour")) {
+        if (!is.null(type) && type == "auto") {
+          xml_add_child(node, "a:schemeClr", val = "accent1")
+          return()
+        }
+
+        if (!is.null(type) && type == "theme") {
+          theme_map <- c(
+            "bg1", "tx1", "bg2", "tx2",
+            "accent1", "accent2", "accent3", "accent4", "accent5", "accent6",
+            "hlink", "folHlink", "phClr",
+            "dk1", "lt1", "dk2", "lt2"
+          )
+          if (as.character(color_val) %in% theme_map) {
+            val_name <- as.character(color_val)
+          } else {
+            theme_idx <- as.integer(color_val)
+            val_name <- theme_map[as.numeric(theme_idx) + 1]
+          }
+          xml_add_child(node, "a:schemeClr", val = val_name)
+          return()
+        }
+
+        hex <- if (!is.null(type) && type == "rgb") as.character(color_val) else as.character(color_val[1])
+      } else {
+        hex <- as.character(color_val[1])
+      }
+
+      # 3. Clean and add as RGB
+      clean <- toupper(gsub("^#", "", hex))
+
+      alpha_val <- NULL
+      if (nchar(clean) == 8) {
+        aa_hex <- substr(clean, 1, 2)
+        aa_dec <- as.numeric(paste0("0x", aa_hex))
+        alpha_val <- as.integer(round((aa_dec / 255) * 100000))
+        clean <- substr(clean, 3, 8)
+      }
+
+      if (nchar(clean) != 6) clean <- "000000"
+
+      color_node <- xml_add_child(node, "a:srgbClr", val = clean)
+      if (!is.null(alpha_val)) {
+        xml_add_child(color_node, "a:alpha", val = as.character(alpha_val))
+      }
+    },
+
+    render_color = function(parent_node, color_val) {
+      if (is.null(color_val) || identical(color_val, "auto")) return()
+      private$render_color_core(
+        xml_add_child(parent_node, "a:solidFill"),
+        color_val
+      )
+    },
 
     validate_input = function(val, choices, arg_name = "Argument") {
       if (is.null(val)) return(choices[1])

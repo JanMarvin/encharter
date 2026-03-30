@@ -643,7 +643,7 @@ Chart <- R6::R6Class(
       ln <- xml_add_child(node, "a:ln", w = w_emu)
 
       # Set Color
-      private$render_fill(xml_add_child(ln, "a:solidFill"), settings$color %||% "000000")
+      private$render_color_core(xml_add_child(ln, "a:solidFill"), settings$color %||% "000000")
 
       # Set Dash/Line Type
       if (!is.null(settings$type)) {
@@ -656,7 +656,7 @@ Chart <- R6::R6Class(
       if (is.null(color) || color == "none") {
         xml_add_child(node, "a:noFill")
       } else {
-        private$render_fill(xml_add_child(node, "a:solidFill"), color)
+        private$render_color_core(xml_add_child(node, "a:solidFill"), color)
       }
     },
 
@@ -675,10 +675,10 @@ Chart <- R6::R6Class(
     apply_sp_pr = function(node, style) {
       if (is.null(style$fill) && is.null(style$line)) return()
       spPr <- xml_add_child(node, "c:spPr")
-      if (!is.null(style$fill)) private$render_fill(xml_add_child(spPr, "a:solidFill"), style$fill)
+      if (!is.null(style$fill)) private$render_color_core(xml_add_child(spPr, "a:solidFill"), style$fill)
       if (!is.null(style$line)) {
         ln <- xml_add_child(spPr, "a:ln", w = as.character(round(style$line_width * 12700)))
-        private$render_fill(xml_add_child(ln, "a:solidFill"), style$line)
+        private$render_color_core(xml_add_child(ln, "a:solidFill"), style$line)
       } else {
         xml_add_child(xml_add_child(spPr, "a:ln"), "a:noFill")
       }
@@ -744,7 +744,7 @@ Chart <- R6::R6Class(
           sp <- xml_add_child(ser, "c:spPr")
           if (type %in% c("barChart", "areaChart", "bubbleChart")) {
             color <- s$line$color %||% s$color %||% "auto"
-            private$render_fill(xml_add_child(sp, "a:solidFill"), color)
+            private$render_color_core(xml_add_child(sp, "a:solidFill"), color)
           } else if (type %in% c("lineChart", "scatterChart")) {
             # If show_line is FALSE, we must explicitly tell OOXML not to draw the line
             if (isFALSE(s$line$show)) {
@@ -784,16 +784,16 @@ Chart <- R6::R6Class(
           #   dPt <- xml_add_child(ser, "c:dPt")
           #   xml_add_child(dPt, "c:idx", val = as.character(i))
           #   sp_dpt <- xml_add_child(dPt, "c:spPr")
-          #   private$render_fill(xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
+          #   private$render_color_core(xml_add_child(sp_dpt, "a:solidFill"), palette[(i %% length(palette)) + 1])
           #   ln_dpt <- xml_add_child(sp_dpt, "a:ln", w = "9525")
-          #   private$render_fill(xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
+          #   private$render_color_core(xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
           # }
 
           for (i in seq_along(self$palette)) {
             dPt <- xml_add_child(ser, "c:dPt")
             xml_add_child(dPt, "c:idx", val = as.character(i - 1))
             spPr <- xml_add_child(dPt, "c:spPr")
-            private$render_fill(xml_add_child(spPr, "a:solidFill"), self$palette[i])
+            private$render_color_core(xml_add_child(spPr, "a:solidFill"), self$palette[i])
           }
         } else {
           if (length(s$color) > 1) {
@@ -802,7 +802,7 @@ Chart <- R6::R6Class(
                 dPt <- xml_add_child(ser, "c:dPt")
                 xml_add_child(dPt, "c:idx", val = as.character(i - 1))
                 spPr <- xml_add_child(dPt, "c:spPr")
-                private$render_fill(xml_add_child(spPr, "a:solidFill"), s$color[i])
+                private$render_color_core(xml_add_child(spPr, "a:solidFill"), s$color[i])
               }
           }
         }
@@ -855,7 +855,7 @@ Chart <- R6::R6Class(
           if (!is.null(s$trendline$color)) {
             sp_pr <- xml_add_child(tl, "c:spPr")
             ln <- xml_add_child(sp_pr, "a:ln")
-            private$render_fill(xml_add_child(ln, "a:solidFill"), s$trendline$color)
+            private$render_color_core(xml_add_child(ln, "a:solidFill"), s$trendline$color)
           }
 
           # 3. trendlineType (MANDATORY)
@@ -892,7 +892,7 @@ Chart <- R6::R6Class(
           if (!is.null(s$error_bars$color)) {
             sp_pr <- xml_add_child(eb, "c:spPr")
             ln <- xml_add_child(sp_pr, "a:ln")
-            private$render_fill(xml_add_child(ln, "a:solidFill"), s$error_bars$color)
+            private$render_color_core(xml_add_child(ln, "a:solidFill"), s$error_bars$color)
           }
         }
 
@@ -1019,7 +1019,7 @@ Chart <- R6::R6Class(
         rPr <- xml_add_child(r, "a:rPr", sz = as.character(sz))
         if (isTRUE(style$bold)) xml_set_attr(rPr, "b", "1")
         if (isTRUE(style$italic)) xml_set_attr(rPr, "i", "1")
-        if (!is.null(style$font_color)) private$render_fill(xml_add_child(rPr, "a:solidFill"), style$font_color)
+        if (!is.null(style$font_color)) private$render_color_core(xml_add_child(rPr, "a:solidFill"), style$font_color)
         if (!is.null(style$font_name)) xml_add_child(rPr, "a:latin", typeface = style$font_name)
         xml_add_child(r, "a:t", text)
       }
@@ -1075,7 +1075,7 @@ Chart <- R6::R6Class(
 
       # 6. Visual Styles
       ln <- xml_add_child(xml_add_child(ax, "c:spPr"), "a:ln")
-      private$render_fill(xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
+      private$render_color_core(xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
 
       label_style <- params
       label_style$color <- params$label_color %||% params$color %||% "000000"
@@ -1230,81 +1230,11 @@ Chart <- R6::R6Class(
       if (isTRUE(s$italic)) xml_set_attr(defRPr, "i", "1")
 
       if (!is.null(s$color)) {
-        private$render_fill(xml_add_child(defRPr, "a:solidFill"), s$color)
+        private$render_color_core(xml_add_child(defRPr, "a:solidFill"), s$color)
       }
 
       if (!is.null(s$font_name)) {
         xml_add_child(defRPr, "a:latin", typeface = s$font_name)
-      }
-    },
-
-    render_fill = function(node, color_val) {
-      # 1. Handle NULL or empty input
-      if (is.null(color_val) || length(color_val) == 0) {
-        color_val <- "000000"
-      }
-
-      # 2. Check for "auto"
-      if (length(color_val) == 1 && tolower(as.character(color_val)) == "auto") {
-        xml_add_child(node, "a:schemeClr", val = "accent1")
-        return()
-      }
-
-      type <- names(color_val)
-
-      # 3. Handle wb_color objects (Hex vs Theme)
-      if (inherits(color_val, "wbColour")) {
-        # TODO add tint and indexed
-
-        # If it's a theme color, use schemeClr
-        if (type == "auto") {
-          xml_add_child(node, "a:schemeClr", val = "accent1")
-          return()
-        }
-        if (type == "theme") {
-
-          theme_map <- st_scheme_color_val <- c(
-            "bg1", "tx1", "bg2", "tx2",
-            "accent1", "accent2", "accent3", "accent4", "accent5", "accent6",
-            "hlink", "folHlink", "phClr",
-            "dk1", "lt1", "dk2", "lt2"
-          )
-
-          if (color_val %in% theme_map) {
-            val_name <- as.character(color_val)
-          } else {
-            # Map openxlsx2 theme integers to DrawingML scheme names
-            # Ensure index is within bounds (0-indexed to 1-indexed)
-            theme_idx <- as.integer(color_val)
-            val_name <- theme_map[as.numeric(theme_idx) + 1]
-          }
-          xml_add_child(node, "a:schemeClr", val = val_name)
-          return()
-        }
-
-        # Otherwise, get the hex from the rgb attribute
-        hex <- if (type == "rgb") as.character(color_val)
-      } else {
-        hex <- as.character(color_val[1])
-      }
-
-      # 4. Clean and add as RGB
-      clean <- toupper(gsub("^#", "", hex))
-
-      alpha_val <- NULL
-      if (nchar(clean) == 8) {
-        aa_hex <- substr(clean, 1, 2)
-        aa_dec <- as.numeric(paste0("0x", aa_hex))
-        alpha_val <- as.integer(round((aa_dec / 255) * 100000))
-        clean <- substr(clean, 3, 8)
-      }
-
-      # Final safety check: if 'clean' is empty/invalid, default to black
-      if (nchar(clean) != 6) clean <- "000000"
-
-      color_node <- xml_add_child(node, "a:srgbClr", val = clean)
-      if (!is.null(alpha_val)) {
-        xml_add_child(color_node, "a:alpha", val = as.character(alpha_val))
       }
     }
   )
