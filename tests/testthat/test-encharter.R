@@ -65,7 +65,7 @@ test_that("print works", {
   expect_match(output[1], "An encharter object")
   expect_match(output[2], "Number of Series: 2")
 
-  expect_true(any(grepl("Series 2: Series 2  \\[Secondary Axis\\]", output)))
+  expect_true(any(grepl("Series 2: 'Standard'!\\$D\\$1  \\[Secondary Axis\\]", output)))
 
   expect_true(any(grepl("Type: barChart", output)))
   expect_true(any(grepl("'Standard'!\\$B\\$2", output)))
