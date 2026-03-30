@@ -365,7 +365,7 @@ ChartEx <- R6::R6Class(
           s = self$axis_params$x,
           gap_width = if (length(self$series_data)) self$series_data[[1]]$gap_width else NULL,
           title = self$x_title$text,
-          title_style = self$x_title_style$style,
+          title_style = self$x_title$style,
           type = "cat"
         )
 
@@ -449,7 +449,7 @@ ChartEx <- R6::R6Class(
       color <- params[[paste0(prefix, "grid_color")]] %||% "D9D9D9"
 
       ln <- xml_add_child(sp_pr, "a:ln", w = as.character(round(width * 12700)))
-      private$render_color_core(ln, color)
+      private$render_color_core(xml_add_child(ln, "a:solidFill"), color)
 
       # Dash type support
       dash <- switch(as.character(style_val), "dotted" = "dot", "dash" = "dash", NULL)
@@ -473,10 +473,12 @@ ChartEx <- R6::R6Class(
       }
       defRPr <- xml_add_child(pPr, "a:defRPr")
       set_run_attrs(defRPr, s)
-      if (!is.null(s$color)) private$render_color(defRPr, s$color)
+      if (!is.null(s$font_color) || !is.null(s$color))
+        private$render_color_core(defRPr, s$font_color %||% s$color, wrap = TRUE)
       endRPr <- xml_add_child(p, "a:endParaRPr")
       set_run_attrs(endRPr, s)
-      if (!is.null(s$color)) private$render_color(endRPr, s$color)
+      if (!is.null(s$font_color) || !is.null(s$color))
+        private$render_color_core(endRPr, s$font_color %||% s$color, wrap = TRUE)
       if (!is.null(s$font_name)) xml_add_child(endRPr, "a:latin", typeface = s$font_name)
     },
 
@@ -553,12 +555,12 @@ ChartEx <- R6::R6Class(
       if (!is.null(s$font_size)) xml_set_attr(defRPr, "sz", as.character(s$font_size * 100))
       if (!is.null(s$bold)) xml_set_attr(defRPr, "b", if (isTRUE(s$bold)) "1" else "0")
       if (!is.null(s$italic)) xml_set_attr(defRPr, "i", if (isTRUE(s$italic)) "1" else "0")
-      if (!is.null(s$color)) private$render_color_core(defRPr, s$color, wrap = TRUE)
+      if (!is.null(s$font_color)) private$render_color_core(defRPr, s$font_color, wrap = TRUE)
       endRPr <- xml_add_child(p, "a:endParaRPr")
       if (!is.null(s$font_size)) xml_set_attr(endRPr, "sz", as.character(s$font_size * 100))
       if (!is.null(s$bold)) xml_set_attr(endRPr, "b", if (isTRUE(s$bold)) "1" else "0")
       if (!is.null(s$italic)) xml_set_attr(endRPr, "i", if (isTRUE(s$italic)) "1" else "0")
-      if (!is.null(s$color)) private$render_color_core(endRPr, s$color, wrap = TRUE)
+      if (!is.null(s$font_color)) private$render_color_core(endRPr, s$font_color, wrap = TRUE)
       if (!is.null(s$font_name)) xml_add_child(endRPr, "a:latin", typeface = s$font_name)
     },
 
