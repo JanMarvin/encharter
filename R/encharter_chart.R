@@ -72,36 +72,71 @@ Chart <- R6::R6Class(
     },
 
     #' @description Set the secondary X-axis title.
-    #' @param text Title text string.
-    #' @param ... Style arguments.
-    set_x2_title = function(text, ...) {
-      # Logic: Only allow setting a title if at least one series uses the secondary axis
+    #'
+    #' Only takes effect if at least one series has been assigned to the
+    #' secondary X-axis via \code{add_series(secondary = "x")}. Issues a warning
+    #' and returns \code{self} silently otherwise.
+    #'
+    #' @param text Title string.
+    #' @param font_size Numeric font size in points.
+    #' @param font_name Font typeface name.
+    #' @param font_color Six-digit hex color for the title text.
+    #' @param bold,italic Logical font style.
+    #' @param fill Six-digit hex color for the title background box.
+    #' @param line Six-digit hex color for the title border.
+    #' @param line_width Numeric border width in points.
+    #' @examples
+    #' \dontrun{
+    #' ec("scatter") |>
+    #'   add_series(data = "Sheet1!A1:A10", secondary = "x") |>
+    #'   set_x2_title("Secondary X", font_color = "888888")
+    #' }
+    set_x2_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL,
+                            bold = NULL, italic = NULL, fill = NULL, line = NULL,
+                            line_width = NULL) {
       has_secondary <- any(vapply(self$series_data, function(s) s$sec_type == "x", NA))
 
       if (!has_secondary) {
-        warning("Secondary axis title ignored: No series is currently assigned to a secondary axis. Ignoring.", call. = FALSE)
+        warning("Secondary axis title ignored: no series is assigned to a secondary X-axis.", call. = FALSE)
         return(invisible(self))
       }
 
-      # Proceed with setting the title...
-      self$x2_title <- list(text = text, style = list(...))
+      self$x2_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 
     #' @description Set the secondary Y-axis title.
-    #' @param text Title text string.
-    #' @param ... Style arguments.
-    set_y2_title = function(text, ...) {
-      # Logic: Only allow setting a title if at least one series uses the secondary axis
+    #'
+    #' Only takes effect if at least one series has been assigned to the
+    #' secondary Y-axis via \code{add_series(secondary = TRUE)} or
+    #' \code{secondary = "y"}. Issues a warning otherwise.
+    #'
+    #' @param text Title string.
+    #' @param font_size Numeric font size in points.
+    #' @param font_name Font typeface name.
+    #' @param font_color Six-digit hex color for the title text.
+    #' @param bold,italic Logical font style.
+    #' @param fill Six-digit hex color for the title background box.
+    #' @param line Six-digit hex color for the title border.
+    #' @param line_width Numeric border width in points.
+    #' @examples
+    #' \dontrun{
+    #' ec("line") |>
+    #'   add_series(data = "Sheet1!A1:A10") |>
+    #'   add_series(data = "Sheet1!B1:B10", secondary = TRUE) |>
+    #'   set_y2_title("Growth Rate (%)")
+    #' }
+    set_y2_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL,
+                            bold = NULL, italic = NULL, fill = NULL, line = NULL,
+                            line_width = NULL) {
       has_secondary <- any(vapply(self$series_data, function(s) s$sec_type == "y", NA))
 
       if (!has_secondary) {
-        warning("Secondary axis title ignored: No series is currently assigned to a secondary axis. Ignoring.", call. = FALSE)
+        warning("Secondary axis title ignored: no series is assigned to a secondary Y-axis.", call. = FALSE)
         return(invisible(self))
       }
 
-      # Proceed with setting the title...
-      self$y2_title <- list(text = text, style = list(...))
+      self$y2_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 

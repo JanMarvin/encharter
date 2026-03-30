@@ -70,6 +70,27 @@ ec("waterfall")
 # R-style alias
 ec("barplot")
 
+
+## ------------------------------------------------
+## Method `Chart$set_x2_title()`
+## ------------------------------------------------
+
+\dontrun{
+ec("scatter") |>
+  add_series(data = "Sheet1!A1:A10", secondary = "x") |>
+  set_x2_title("Secondary X", font_color = "888888")
+}
+
+## ------------------------------------------------
+## Method `Chart$set_y2_title()`
+## ------------------------------------------------
+
+\dontrun{
+ec("line") |>
+  add_series(data = "Sheet1!A1:A10") |>
+  add_series(data = "Sheet1!B1:B10", secondary = TRUE) |>
+  set_y2_title("Growth Rate (\%)")
+}
 }
 \section{Super class}{
 \code{\link[encharter:EncharterBase]{EncharterBase}} -> \code{Chart}
@@ -158,17 +179,45 @@ ec("barplot")
 \if{latex}{\out{\hypertarget{method-Chart-set_x2_title}{}}}
 \subsection{\code{Chart$set_x2_title()}}{
   Set the secondary X-axis title.
+
+Only takes effect if at least one series has been assigned to the
+secondary X-axis via \code{add_series(secondary = "x")}. Issues a warning
+and returns \code{self} silently otherwise.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_x2_title(text, ...)}
+    \preformatted{Chart$set_x2_title(
+  text,
+  font_size = NULL,
+  font_name = NULL,
+  font_color = NULL,
+  bold = NULL,
+  italic = NULL,
+  fill = NULL,
+  line = NULL,
+  line_width = NULL
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{text}}{Title text string.}
-      \item{\code{...}}{Style arguments.}
+      \item{\code{text}}{Title string.}
+      \item{\code{font_size}}{Numeric font size in points.}
+      \item{\code{font_name}}{Font typeface name.}
+      \item{\code{font_color}}{Six-digit hex color for the title text.}
+      \item{\code{bold, italic}}{Logical font style.}
+      \item{\code{fill}}{Six-digit hex color for the title background box.}
+      \item{\code{line}}{Six-digit hex color for the title border.}
+      \item{\code{line_width}}{Numeric border width in points.}
     }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("scatter") |>
+  add_series(data = "Sheet1!A1:A10", secondary = "x") |>
+  set_x2_title("Secondary X", font_color = "888888")
+}
     \if{html}{\out{</div>}}
   }
 }
@@ -178,17 +227,46 @@ ec("barplot")
 \if{latex}{\out{\hypertarget{method-Chart-set_y2_title}{}}}
 \subsection{\code{Chart$set_y2_title()}}{
   Set the secondary Y-axis title.
+
+Only takes effect if at least one series has been assigned to the
+secondary Y-axis via \code{add_series(secondary = TRUE)} or
+\code{secondary = "y"}. Issues a warning otherwise.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_y2_title(text, ...)}
+    \preformatted{Chart$set_y2_title(
+  text,
+  font_size = NULL,
+  font_name = NULL,
+  font_color = NULL,
+  bold = NULL,
+  italic = NULL,
+  fill = NULL,
+  line = NULL,
+  line_width = NULL
+)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{text}}{Title text string.}
-      \item{\code{...}}{Style arguments.}
+      \item{\code{text}}{Title string.}
+      \item{\code{font_size}}{Numeric font size in points.}
+      \item{\code{font_name}}{Font typeface name.}
+      \item{\code{font_color}}{Six-digit hex color for the title text.}
+      \item{\code{bold, italic}}{Logical font style.}
+      \item{\code{fill}}{Six-digit hex color for the title background box.}
+      \item{\code{line}}{Six-digit hex color for the title border.}
+      \item{\code{line_width}}{Numeric border width in points.}
     }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("line") |>
+  add_series(data = "Sheet1!A1:A10") |>
+  add_series(data = "Sheet1!B1:B10", secondary = TRUE) |>
+  set_y2_title("Growth Rate (\%)")
+}
     \if{html}{\out{</div>}}
   }
 }
