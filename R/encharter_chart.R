@@ -482,8 +482,8 @@ Chart <- R6::R6Class(
         # Other params
         show_val    = show_val %||% self$label_params$show_val,
         show_cat    = show_cat %||% self$label_params$show_cat,
-        label_pos   = self$label_params$pos,
-        label_style = self$label_params$style
+        label_pos   = self$label_params$pos
+        #  label_style = self$label_params$style currently unused?
       )
 
       invisible(self)
@@ -941,10 +941,6 @@ Chart <- R6::R6Class(
             xml_add_child(xml_add_child(y_val_node, y_ref_type), "c:f", s$data)
           }
 
-          y_val_node <- xml_add_child(ser, "c:yVal")
-          y_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
-          xml_add_child(xml_add_child(y_val_node, y_ref_type), "c:f", s$data)
-
           if (type == "bubbleChart") {
             z_val_node <- xml_add_child(ser, "c:bubbleSize")
             z_ref <- s$z_data %||% s$data
@@ -1305,7 +1301,12 @@ Chart <- R6::R6Class(
       # 7. Crossing Properties (End of EG_AxShared)
       xml_add_child(ax, "c:crossAx", val = cross_id)
       cross_val <- params$crosses %||% crosses
-      xml_add_child(ax, "c:crosses", val = cross_val)
+      if (!is.null(params$crosses_at)) {
+        # If a specific value is provided, it overrides the 'crosses' string
+        xml_add_child(ax, "c:crossesAt", val = as.character(params$crosses_at))
+      } else {
+        xml_add_child(ax, "c:crosses", val = cross_val)
+      }
       cb_val <- params$cross_between %||% "between"
       xml_add_child(ax, "c:crossBetween", val = cb_val)
 
