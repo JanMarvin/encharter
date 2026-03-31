@@ -1333,7 +1333,10 @@ Chart <- R6::R6Class(
       txPr <- xml_add_child(node, "c:txPr")
 
       # 1. Create body properties and apply rotation
-      bodyPr <- xml_add_child(txPr, "a:bodyPr")
+      bodyPr <- xml_add_child(
+        txPr, "a:bodyPr",
+        lIns = "0", tIns = "0", rIns = "0", bIns = "0", wrap = "square"
+      )
       if (!is.null(s$rot)) {
         # rotation = degrees * 60000
         xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))

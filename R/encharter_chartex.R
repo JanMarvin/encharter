@@ -458,7 +458,10 @@ ChartEx <- R6::R6Class(
 
     apply_label_style = function(node, s) {
       txPr <- xml_add_child(node, "cx:txPr")
-      bodyPr <- xml_add_child(txPr, "a:bodyPr", lIns = "0", tIns = "0", rIns = "0", bIns = "0")
+      bodyPr <- xml_add_child(
+        pr, "a:bodyPr",
+        lIns = "0", tIns = "0", rIns = "0", bIns = "0", wrap = "square"
+      )
       if (!is.null(s$rot)) {
         xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
         xml_set_attr(bodyPr, "vert", "horz")
