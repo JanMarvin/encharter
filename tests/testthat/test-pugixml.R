@@ -430,6 +430,7 @@ test_that("as.character round-trips: parse → serialize → parse", {
 # ---- unicode ----------------------------------------------------------------
 
 test_that("unicode content is preserved through round-trip", {
+  skip_if_not(l10n_info()$`UTF-8`, "UTF-8 is not supported in this locale")
   doc  <- openxlsx2::read_xml(XML_UNICODE)
   node <- xml_find_first(doc, ".//node")
   s    <- as.character(node)

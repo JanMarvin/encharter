@@ -221,7 +221,7 @@ test_that("date cat_cache formatCode is m/d/yy", {
   ch$add_series(header = High, cat = Date, data = wd)
   x <- xml_str(ch)
 
-  expect_match(x, 'formatCode.*mm/dd/yyyy.*formatCode')
+  expect_match(x, "formatCode.*mm/dd/yyyy.*formatCode")
 })
 
 # ---- missing values ---------------------------------------------------------
@@ -238,7 +238,7 @@ test_that("NA values in data_cache are omitted from pt nodes", {
   expect_match(x_str, 'ptCount val="5"')
 
   # Only 3 pt nodes (indices 0, 2, 4) — NAs at index 1 and 3 are skipped
-  pt_matches <- gregexpr('<c:pt ', x_str)[[1]]
+  pt_matches <- gregexpr("<c:pt ", x_str)[[1]]
   # Filter to only the val cache pts (not cat pts)
   expect_equal(length(pt_matches[pt_matches > 0]), 3L + length(na_df$x))
   # idx="1" and idx="3" should not appear in the val cache
