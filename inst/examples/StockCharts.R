@@ -5,31 +5,36 @@ stock_data <- data.frame(
   Close = c(41.23, 42.21, 41.29, 41.03, 41.86, 42.53, 42.99, 43.62, 44.03, 44.75, 45.02, 45.33, 44.98, 45.48, 45.03)
 )
 
+
+wb <- wb_workbook()$add_worksheet("Sheet1")$add_data(x = stock_data)
+
+df <- wb_data(wb)
+
 library(encharter)
 
 stock_chart <- ec("stockChart")
 
 # Add the 'High' series
 stock_chart$add_series(
-  data = "Sheet1!B2:B16",
-  cat  = "Sheet1!A2:A16",
-  header = "Sheet1!B1",
-  show_line = FALSE
+  data = df,
+  cat  = Date,
+  header = High,
+  show_line = FALSE, marker = "circle"
 )
 
 # Add the 'Low' series
 stock_chart$add_series(
-  data = "Sheet1!C2:C16",
-  cat  = "Sheet1!A2:A16",
-  header = "Sheet1!C1",
+  data = df,
+  cat  = Date,
+  header = Low,
   show_line = FALSE
 )
 
 # Add the 'Close' series
 stock_chart$add_series(
-  data = "Sheet1!D2:D16",
-  cat  = "Sheet1!A2:A16",
-  header = "Sheet1!D1",
+  data = df,
+  cat  = Date,
+  header = Close,
   show_line = FALSE
 )
 
@@ -44,12 +49,11 @@ stock_chart
 stock_chart$high_low_lines <- TRUE
 
 # Optional: Add drop lines if you want vertical lines to the X-axis
-stock_chart$drop_lines <- TRUE
+stock_chart$drop_lines <- FALSE
 
-stock_chart$up_down_bars <- FALSE
+stock_chart$up_down_bars <- TRUE
 
 # 4. Integrate with openxlsx2 (standard workflow)
-wb <- wb_workbook()$add_worksheet("Sheet1")$add_data(x = stock_data)
 wb$add_encharter(sheet = "Sheet1", graph = stock_chart)
 
 wb$open()

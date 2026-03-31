@@ -336,7 +336,13 @@ test_that("drop_lines, high_low_lines, and up_down_bars render correctly", {
   ch$up_down_bars   <- TRUE
 
   # 3. Render and parse XML
-  xml_res <- read_xml(ch$render())
+  expect_message(
+    expect_message(
+      xml_res <- read_xml(ch$render()),
+      "drop lines require ",
+    ),
+    "high low lines require "
+  )
 
   # 4. Assertions for specialized OOXML nodes
   # Drop Lines: <c:dropLines>

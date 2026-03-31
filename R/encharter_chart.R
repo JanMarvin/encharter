@@ -382,6 +382,9 @@ Chart <- R6::R6Class(
         color <- self$palette[color_idx]
       }
 
+      data_vals <- NULL
+      cat_vals <- NULL
+      z_vals <- NULL
       if (inherits(data, "wb_data")) {
         wb_sheet   <- attr(data, "sheet")
         dims_mat   <- attr(data, "dims")
@@ -398,26 +401,30 @@ Chart <- R6::R6Class(
         z_label <- tryCatch(if (is.symbol(z_expr)) deparse1(z_expr) else z_data, error = function(e) NULL)
 
         start_row <- if (has_header) 2 else 1
+        wd_orig <- data
 
         # 1. Resolve Column Index for Y-Data and Header
         col_idx <- which(col_names == h_label)
         if (length(col_idx) > 0) {
-          col_idx <- col_idx[1]
-          header  <- if (has_header) sprintf("'%s'!%s", wb_sheet, dims_mat[1, col_idx]) else NULL
-          data    <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, col_idx], dims_mat[nrow(dims_mat), col_idx])
+          col_idx   <- col_idx[1]
+          data_vals <- wd_orig[[h_label]]
+          header    <- if (has_header) sprintf("'%s'!%s", wb_sheet, dims_mat[1, col_idx]) else NULL
+          data      <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, col_idx], dims_mat[nrow(dims_mat), col_idx])
         }
 
         # 2. Resolve Category (cat / X-Axis)
         cat_idx <- which(col_names == c_label)
         if (length(cat_idx) > 0) {
-          cat_idx <- cat_idx[1]
-          cat     <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, cat_idx], dims_mat[nrow(dims_mat), cat_idx])
+          cat_idx  <- cat_idx[1]
+          cat_vals <- wd_orig[[c_label]]
+          cat      <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, cat_idx], dims_mat[nrow(dims_mat), cat_idx])
         }
 
         # 3. Resolve Z-Data (Bubble Size)
         z_idx <- which(col_names == z_label)
         if (length(z_idx) > 0) {
           z_idx  <- z_idx[1]
+          z_vals <- wd_orig[[z_label]]
           z_data <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, z_idx], dims_mat[nrow(dims_mat), z_idx])
         }
       }
@@ -438,6 +445,9 @@ Chart <- R6::R6Class(
         data      = data,
         cat       = cat,
         z_data    = z_data,
+        data_cache = data_vals,
+        cat_cache = cat_vals,
+        z_cache   = z_vals,
         type      = series_type,
         sec_type  = sec_val,
         smooth    = smooth,
@@ -753,7 +763,7 @@ Chart <- R6::R6Class(
         # --- EG_SerShared End ---
 
         # 3. Marker (Must be AFTER spPr but BEFORE dPt/dLbls per CT_ScatterSer)
-        if (type %in% c("lineChart", "scatterChart", "radarChart")) {
+        if (type %in% c("lineChart", "scatterChart", "radarChart", "stockChart")) {
           mkr_symbol <- if (type == "scatterChart" && (is.null(s$marker$symbol) || s$marker$symbol == "none")) "circle" else s$marker$symbol
           mkr <- xml_add_child(ser, "c:marker")
           xml_add_child(mkr, "c:symbol", val = mkr_symbol)
@@ -895,8 +905,40 @@ Chart <- R6::R6Class(
         if (type %in% c("scatterChart", "bubbleChart")) {
           if (!is.null(s$cat)) {
             x_val_node <- xml_add_child(ser, "c:xVal")
-            ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
-            xml_add_child(xml_add_child(x_val_node, ref_type), "c:f", s$cat)
+            if (!is.null(s$cat_cache)) {
+              ref_node <- xml_add_child(x_val_node, "c:numRef")
+              xml_add_child(ref_node, "c:f", s$cat)
+              cache <- xml_add_child(ref_node, "c:numCache")
+              xml_add_child(cache, "c:formatCode", "General")
+              xml_add_child(cache, "c:ptCount", val = as.character(length(s$cat_cache)))
+              for (i in seq_along(s$cat_cache)) {
+                if (!is.na(s$cat_cache[[i]])) {
+                  pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+                  xml_add_child(pt, "c:v", as.character(s$cat_cache[[i]]))
+                }
+              }
+            } else {
+              ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
+              xml_add_child(xml_add_child(x_val_node, ref_type), "c:f", s$cat)
+            }
+          }
+
+          y_val_node <- xml_add_child(ser, "c:yVal")
+          if (!is.null(s$data_cache)) {
+            ref_node <- xml_add_child(y_val_node, "c:numRef")
+            xml_add_child(ref_node, "c:f", s$data)
+            cache <- xml_add_child(ref_node, "c:numCache")
+            xml_add_child(cache, "c:formatCode", "General")
+            xml_add_child(cache, "c:ptCount", val = as.character(length(s$data_cache)))
+            for (i in seq_along(s$data_cache)) {
+              if (!is.na(s$data_cache[[i]])) {
+                pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+                xml_add_child(pt, "c:v", as.character(s$data_cache[[i]]))
+              }
+            }
+          } else {
+            y_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
+            xml_add_child(xml_add_child(y_val_node, y_ref_type), "c:f", s$data)
           }
 
           y_val_node <- xml_add_child(ser, "c:yVal")
@@ -906,30 +948,104 @@ Chart <- R6::R6Class(
           if (type == "bubbleChart") {
             z_val_node <- xml_add_child(ser, "c:bubbleSize")
             z_ref <- s$z_data %||% s$data
-            z_ref_type <- if (grepl("!", z_ref)) "c:numRef" else "c:numLit"
-            # Note: Wrap in c:numRef/c:numLit correctly
-            ref_node <- xml_add_child(z_val_node, z_ref_type)
-            xml_add_child(ref_node, "c:f", z_ref)
+            z_cache <- s$z_cache %||% s$data_cache   # fall back to data_cache if z not separately cached
+            if (!is.null(z_cache)) {
+              ref_node <- xml_add_child(z_val_node, "c:numRef")
+              xml_add_child(ref_node, "c:f", z_ref)
+              cache <- xml_add_child(ref_node, "c:numCache")
+              xml_add_child(cache, "c:formatCode", "General")
+              xml_add_child(cache, "c:ptCount", val = as.character(length(z_cache)))
+              for (i in seq_along(z_cache)) {
+                if (!is.na(z_cache[[i]])) {
+                  pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+                  xml_add_child(pt, "c:v", as.character(z_cache[[i]]))
+                }
+              }
+            } else {
+              z_ref_type <- if (grepl("!", z_ref)) "c:numRef" else "c:numLit"
+              ref_node <- xml_add_child(z_val_node, z_ref_type)
+              xml_add_child(ref_node, "c:f", z_ref)
+            }
           }
         } else {
           if (!is.null(s$cat)) {
             cat_node <- xml_add_child(ser, "c:cat")
 
-            ref_clean <- sub("^('([^']|'')+'|[^!]+)!", "", s$cat)
-            ref_clean <- gsub("\\$", "", ref_clean)
-            dims <- dim(openxlsx2::dims_to_dataframe(ref_clean))
-            is_multi <- length(dims) == 2 && min(dims) > 1
-
-            if (is_multi && grepl("!", s$cat)) {
-              c_ref_type <- "c:multiLvlStrRef"
+            # Dates with cache -> always numRef
+            if (!is.null(s$cat_cache) && inherits(s$cat_cache, c("Date", "POSIXt"))) {
+              ref_node <- xml_add_child(cat_node, "c:numRef")
+              xml_add_child(ref_node, "c:f", s$cat)
+              cache <- xml_add_child(ref_node, "c:numCache")
+              fmt <- if (inherits(s$cat_cache, "POSIXt"))
+                getOption("openxlsx2.datetimeFormat", "yyyy-mm-dd hh:mm:ss")
+              else
+                getOption("openxlsx2.dateFormat", "mm/dd/yyyy")
+              xml_add_child(cache, "c:formatCode", fmt)
+              serials <- openxlsx2::convert_to_excel_date(data.frame(d = s$cat_cache))[[1]]
+              xml_add_child(cache, "c:ptCount", val = as.character(length(serials)))
+              for (i in seq_along(serials)) {
+                if (!is.na(serials[[i]])) {
+                  pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+                  xml_add_child(pt, "c:v", as.character(serials[[i]]))
+                }
+              }
             } else {
-              c_ref_type <- if (grepl("!", s$cat)) "c:strRef" else "c:strLit"
+              ref_clean <- sub("^('([^']|'')+'|[^!]+)!", "", s$cat)
+              ref_clean <- gsub("\\$", "", ref_clean)
+              dims      <- dim(openxlsx2::dims_to_dataframe(ref_clean))
+              is_multi  <- length(dims) == 2 && min(dims) > 1
+
+              if (!is.null(s$cat_cache) && is.numeric(s$cat_cache)) {
+                # Numeric categories (e.g. year, integer axis)
+                ref_node <- xml_add_child(cat_node, "c:numRef")
+                xml_add_child(ref_node, "c:f", s$cat)
+                cache <- xml_add_child(ref_node, "c:numCache")
+                xml_add_child(cache, "c:formatCode", "General")
+                xml_add_child(cache, "c:ptCount", val = as.character(length(s$cat_cache)))
+                for (i in seq_along(s$cat_cache)) {
+                  if (!is.na(s$cat_cache[[i]])) {
+                    pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+                    xml_add_child(pt, "c:v", as.character(s$cat_cache[[i]]))
+                  }
+                }
+              } else if (!is.null(s$cat_cache)) {
+                # Character/factor categories
+                ref_node <- xml_add_child(cat_node, "c:strRef")
+                xml_add_child(ref_node, "c:f", s$cat)
+                cache <- xml_add_child(ref_node, "c:strCache")
+                xml_add_child(cache, "c:ptCount", val = as.character(length(s$cat_cache)))
+                for (i in seq_along(s$cat_cache)) {
+                  if (!is.na(s$cat_cache[[i]])) {
+                    pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+                    xml_add_child(pt, "c:v", as.character(s$cat_cache[[i]]))
+                  }
+                }
+              } else {
+                c_ref_type <- if (is_multi && grepl("!", s$cat)) "c:multiLvlStrRef"
+                              else if (grepl("!", s$cat)) "c:strRef"
+                              else "c:strLit"
+                xml_add_child(xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
+              }
             }
-            xml_add_child(xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
           }
+
           val_node <- xml_add_child(ser, "c:val")
-          v_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
-          xml_add_child(xml_add_child(val_node, v_ref_type), "c:f", s$data)
+          if (!is.null(s$data_cache)) {
+            ref_node <- xml_add_child(val_node, "c:numRef")
+            xml_add_child(ref_node, "c:f", s$data)
+            cache <- xml_add_child(ref_node, "c:numCache")
+            xml_add_child(cache, "c:formatCode", "General")
+            xml_add_child(cache, "c:ptCount", val = as.character(length(s$data_cache)))
+            for (i in seq_along(s$data_cache)) {
+              if (!is.na(s$data_cache[[i]])) {
+                pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+                xml_add_child(pt, "c:v", as.character(s$data_cache[[i]]))
+              }
+            }
+          } else {
+            v_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
+            xml_add_child(xml_add_child(val_node, v_ref_type), "c:f", s$data)
+          }
         }
 
         # 7. Smooth (Final property for Line/Scatter)
@@ -941,12 +1057,26 @@ Chart <- R6::R6Class(
 
       # 1. Drop Lines
       if (isTRUE(self$drop_lines)) {
-        xml_add_child(c_node, "c:dropLines")
+        if (is.null(self$series_data[[1]][["data_cache"]])) {
+          message("drop lines require wb_data() input")
+        }
+        dl <- xml_add_child(c_node, "c:dropLines")
+        private$render_line_style(
+          xml_add_child(dl, "c:spPr"),
+          list(color = "000000", width = 0.75, show = TRUE)
+        )
       }
 
-      # 2. High-Low Lines (Common in Stock/Line charts)
+      # 2. High-Low Lines
       if (isTRUE(self$high_low_lines)) {
-        xml_add_child(c_node, "c:hiLowLines")
+        if (is.null(self$series_data[[1]][["data_cache"]])) {
+          message("high low lines require wb_data() input")
+        }
+        hl <- xml_add_child(c_node, "c:hiLowLines")
+        private$render_line_style(
+          xml_add_child(hl, "c:spPr"),
+          list(color = "000000", width = 0.75, show = TRUE)
+        )
       }
 
       # 3. Up/Down Bars
@@ -1021,7 +1151,7 @@ Chart <- R6::R6Class(
     },
 
     render_cat_ax = function(parent, id, cross_id, pos, delete = "0", title_obj = NULL, params = NULL, crosses = "autoZero") {
-      is_date <- !is.null(params$major_time)
+      is_date <- !is.null(params$major_time) || !is.null(params$minor_time) || !is.null(params$base_time)
       node_name <- if (is_date) "c:dateAx" else "c:catAx"
       ax <- xml_add_child(parent, node_name)
 
