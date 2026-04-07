@@ -97,14 +97,14 @@ test_that("set_x_title and set_y_title store correctly", {
 test_that("set_x_axis updates axis_params$x", {
   ch <- ec("line")
   ch$set_x_axis(min = 0, max = 10, major = 2, gridlines = TRUE,
-                font_color = "888888", rot = -45)
+                font_color = "888888", rotation =  -45)
 
   expect_equal(ch$axis_params$x$min, 0)
   expect_equal(ch$axis_params$x$max, 10)
   expect_equal(ch$axis_params$x$major, 2)
   expect_true(ch$axis_params$x$gridlines)
   expect_equal(ch$axis_params$x$font_color, "888888")
-  expect_equal(ch$axis_params$x$rot, -45)
+  expect_equal(ch$axis_params$x$rotation, -45)
 })
 
 test_that("set_y_axis updates axis_params$y", {

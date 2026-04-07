@@ -155,7 +155,7 @@ Chart <- R6::R6Class(
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
     #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
-    #' @param rot Rotation in degrees.
+    #' @param rotation Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
     #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
@@ -168,7 +168,7 @@ Chart <- R6::R6Class(
                            major_tick = NULL, minor_tick = NULL,
                            format = NULL, log_base = NULL, color = NULL,
                            font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
-                           font_color = NULL, rot = NULL,
+                           font_color = NULL, rotation =  NULL,
                            grid_color = NULL, gridlines = NULL,
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
@@ -179,7 +179,7 @@ Chart <- R6::R6Class(
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
           minor_tick = minor_tick, format = format, log_base = log_base, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-          font_color = font_color, rot = rot, grid_color = grid_color, gridlines = gridlines,
+          font_color = font_color, rotation = rotation, grid_color = grid_color, gridlines = gridlines,
           minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
@@ -203,7 +203,7 @@ Chart <- R6::R6Class(
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
     #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
-    #' @param rot Rotation in degrees.
+    #' @param rotation Rotation in degrees.
     #' @param grid_color,minor_grid_color Hex color for the gridlines.
     #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
     #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
@@ -216,7 +216,7 @@ Chart <- R6::R6Class(
                            major_tick = NULL, minor_tick = NULL,
                            format = NULL, log_base = NULL, color = NULL,
                            font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
-                           font_color = NULL, rot = NULL,
+                           font_color = NULL, rotation =  NULL,
                            grid_color = NULL, gridlines = NULL,
                            minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
@@ -228,7 +228,7 @@ Chart <- R6::R6Class(
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
           minor_tick = minor_tick, format = format, log_base = log_base, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-          font_color = font_color, rot = rot, grid_color = grid_color, gridlines = gridlines,
+          font_color = font_color, rotation = rotation, grid_color = grid_color, gridlines = gridlines,
           minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
@@ -1337,9 +1337,9 @@ Chart <- R6::R6Class(
         txPr, "a:bodyPr",
         lIns = "0", tIns = "0", rIns = "0", bIns = "0", wrap = "square"
       )
-      if (!is.null(s$rot)) {
+      if (!is.null(s$rotation)) {
         # rotation = degrees * 60000
-        xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
+        xml_set_attr(bodyPr, "rot", as.character(round(s$rotation * 60000)))
         xml_set_attr(bodyPr, "vert", "horz")
       }
 

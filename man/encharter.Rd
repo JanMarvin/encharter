@@ -296,7 +296,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   bold = NULL,
   italic = NULL,
   font_color = NULL,
-  rot = NULL,
+  rotation = NULL,
   grid_color = NULL,
   gridlines = NULL,
   minor_grid_color = NULL,
@@ -329,7 +329,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
-      \item{\code{rot}}{Rotation in degrees.}
+      \item{\code{rotation}}{Rotation in degrees.}
       \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
       \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
       \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
@@ -367,7 +367,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   bold = NULL,
   italic = NULL,
   font_color = NULL,
-  rot = NULL,
+  rotation = NULL,
   grid_color = NULL,
   gridlines = NULL,
   minor_grid_color = NULL,
@@ -400,7 +400,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{font_size}}{Font size for the axis labels.}
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
-      \item{\code{rot}}{Rotation in degrees.}
+      \item{\code{rotation}}{Rotation in degrees.}
       \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
       \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
       \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}

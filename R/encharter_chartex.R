@@ -462,8 +462,8 @@ ChartEx <- R6::R6Class(
         txPr, "a:bodyPr",
         lIns = "0", tIns = "0", rIns = "0", bIns = "0", wrap = "square"
       )
-      if (!is.null(s$rot)) {
-        xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
+      if (!is.null(s$rotation)) {
+        xml_set_attr(bodyPr, "rot", as.character(round(s$rotation * 60000)))
         xml_set_attr(bodyPr, "vert", "horz")
       }
       xml_add_child(txPr, "a:lstStyle")
@@ -583,8 +583,8 @@ ChartEx <- R6::R6Class(
       # 2. Text Content
       tx <- xml_add_child(xml_add_child(parent, "cx:tx"), "cx:rich")
       bodyPr <- xml_add_child(tx, "a:bodyPr")
-      if (!is.null(s$rot)) {
-        xml_set_attr(bodyPr, "rot", as.character(round(s$rot * 60000)))
+      if (!is.null(s$rotation)) {
+        xml_set_attr(bodyPr, "rot", as.character(round(s$rotation * 60000)))
         xml_set_attr(bodyPr, "vert", "horz")
       }
 

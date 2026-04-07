@@ -41,7 +41,7 @@ ec("line")$set_x_axis(
   major_tick = "out",
   gridlines  = TRUE,
   font_color = "666666",
-  rot        = -45
+  rotation   = -45
 )
 
 ## ------------------------------------------------
@@ -300,7 +300,7 @@ and style parameters. Modified via \code{$set_x_axis()}, etc.}
   bold = NULL,
   italic = NULL,
   font_color = NULL,
-  rot = NULL,
+  rotation = NULL,
   grid_color = NULL,
   gridlines = NULL,
   minor_grid_color = NULL,
@@ -336,7 +336,7 @@ is set by \code{major_time}/\code{minor_time}.}
       \item{\code{bold, italic}}{Logical font style for tick labels.}
       \item{\code{font_color}}{Six-digit hex color for axis tick labels. Defaults to
 \code{color} when not set.}
-      \item{\code{rot}}{Numeric label rotation in degrees.}
+      \item{\code{rotation}}{Numeric label rotation in degrees.}
       \item{\code{grid_color, minor_grid_color}}{Six-digit hex colors for major/minor
 gridlines.}
       \item{\code{gridlines, minor_gridlines}}{Show gridlines. \code{TRUE}/\code{FALSE}
@@ -362,7 +362,7 @@ the axis line, major gridlines, and minor gridlines respectively.}
   major_tick = "out",
   gridlines  = TRUE,
   font_color = "666666",
-  rot        = -45
+  rotation   = -45
 )
 }
     \if{html}{\out{</div>}}
@@ -394,7 +394,7 @@ the axis line, major gridlines, and minor gridlines respectively.}
   bold = NULL,
   italic = NULL,
   font_color = NULL,
-  rot = NULL,
+  rotation = NULL,
   grid_color = NULL,
   gridlines = NULL,
   minor_grid_color = NULL,
@@ -426,7 +426,7 @@ the axis line, major gridlines, and minor gridlines respectively.}
       \item{\code{font_size}}{Numeric label font size in points.}
       \item{\code{bold, italic}}{Logical font style.}
       \item{\code{font_color}}{Six-digit hex color for axis tick labels.}
-      \item{\code{rot}}{Numeric label rotation in degrees.}
+      \item{\code{rotation}}{Numeric label rotation in degrees.}
       \item{\code{grid_color, minor_grid_color}}{Hex colors for major/minor gridlines.}
       \item{\code{gridlines, minor_gridlines}}{\code{TRUE}/\code{FALSE} or a dash style
 string.}
