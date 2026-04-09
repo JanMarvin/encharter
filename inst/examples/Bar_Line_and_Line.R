@@ -26,7 +26,7 @@ chart$
 
 # Build workbook
 wb <- wb_workbook() |>
-  wb_add_worksheet() |>
+  wb_add_worksheet("Sheet 1") |>
   wb_add_data(x = data.frame(Label = c("A", "B", "C", "D"), Val = 1:4)) |>
   openxlsx2::wb_add_encharter(dims = "E2:M20", graph = chart)
 

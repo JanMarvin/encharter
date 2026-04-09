@@ -908,15 +908,7 @@ Chart <- R6::R6Class(
             if (!is.null(s$cat_cache)) {
               ref_node <- xml_add_child(x_val_node, "c:numRef")
               xml_add_child(ref_node, "c:f", s$cat)
-              cache <- xml_add_child(ref_node, "c:numCache")
-              xml_add_child(cache, "c:formatCode", "General")
-              xml_add_child(cache, "c:ptCount", val = as.character(length(s$cat_cache)))
-              for (i in seq_along(s$cat_cache)) {
-                if (!is.na(s$cat_cache[[i]])) {
-                  pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-                  xml_add_child(pt, "c:v", as.character(s$cat_cache[[i]]))
-                }
-              }
+              private$render_num_cache(ref_node, s$cat_cache)
             } else {
               ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
               xml_add_child(xml_add_child(x_val_node, ref_type), "c:f", s$cat)
@@ -927,15 +919,7 @@ Chart <- R6::R6Class(
           if (!is.null(s$data_cache)) {
             ref_node <- xml_add_child(y_val_node, "c:numRef")
             xml_add_child(ref_node, "c:f", s$data)
-            cache <- xml_add_child(ref_node, "c:numCache")
-            xml_add_child(cache, "c:formatCode", "General")
-            xml_add_child(cache, "c:ptCount", val = as.character(length(s$data_cache)))
-            for (i in seq_along(s$data_cache)) {
-              if (!is.na(s$data_cache[[i]])) {
-                pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-                xml_add_child(pt, "c:v", as.character(s$data_cache[[i]]))
-              }
-            }
+            private$render_num_cache(ref_node, s$data_cache)
           } else {
             y_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
             xml_add_child(xml_add_child(y_val_node, y_ref_type), "c:f", s$data)
@@ -944,19 +928,11 @@ Chart <- R6::R6Class(
           if (type == "bubbleChart") {
             z_val_node <- xml_add_child(ser, "c:bubbleSize")
             z_ref <- s$z_data %||% s$data
-            z_cache <- s$z_cache %||% s$data_cache   # fall back to data_cache if z not separately cached
+            z_cache <- s$z_cache %||% s$data_cache
             if (!is.null(z_cache)) {
               ref_node <- xml_add_child(z_val_node, "c:numRef")
               xml_add_child(ref_node, "c:f", z_ref)
-              cache <- xml_add_child(ref_node, "c:numCache")
-              xml_add_child(cache, "c:formatCode", "General")
-              xml_add_child(cache, "c:ptCount", val = as.character(length(z_cache)))
-              for (i in seq_along(z_cache)) {
-                if (!is.na(z_cache[[i]])) {
-                  pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-                  xml_add_child(pt, "c:v", as.character(z_cache[[i]]))
-                }
-              }
+              private$render_num_cache(ref_node, z_cache)
             } else {
               z_ref_type <- if (grepl("!", z_ref)) "c:numRef" else "c:numLit"
               ref_node <- xml_add_child(z_val_node, z_ref_type)
@@ -967,61 +943,30 @@ Chart <- R6::R6Class(
           if (!is.null(s$cat)) {
             cat_node <- xml_add_child(ser, "c:cat")
 
-            # Dates with cache -> always numRef
             if (!is.null(s$cat_cache) && inherits(s$cat_cache, c("Date", "POSIXt"))) {
+              # Date/datetime categories -> numRef with Excel serial conversion
               ref_node <- xml_add_child(cat_node, "c:numRef")
               xml_add_child(ref_node, "c:f", s$cat)
-              cache <- xml_add_child(ref_node, "c:numCache")
-              fmt <- if (inherits(s$cat_cache, "POSIXt"))
-                getOption("openxlsx2.datetimeFormat", "yyyy-mm-dd hh:mm:ss")
-              else
-                getOption("openxlsx2.dateFormat", "mm/dd/yyyy")
-              xml_add_child(cache, "c:formatCode", fmt)
-              serials <- openxlsx2::convert_to_excel_date(data.frame(d = s$cat_cache))[[1]]
-              xml_add_child(cache, "c:ptCount", val = as.character(length(serials)))
-              for (i in seq_along(serials)) {
-                if (!is.na(serials[[i]])) {
-                  pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-                  xml_add_child(pt, "c:v", as.character(serials[[i]]))
-                }
-              }
+              private$render_num_cache(ref_node, s$cat_cache)
+            } else if (!is.null(s$cat_cache) && is.numeric(s$cat_cache)) {
+              # Numeric categories (e.g. year, integer axis)
+              ref_node <- xml_add_child(cat_node, "c:numRef")
+              xml_add_child(ref_node, "c:f", s$cat)
+              private$render_num_cache(ref_node, s$cat_cache)
+            } else if (!is.null(s$cat_cache)) {
+              # Character/factor categories
+              ref_node <- xml_add_child(cat_node, "c:strRef")
+              xml_add_child(ref_node, "c:f", s$cat)
+              private$render_str_cache(ref_node, s$cat_cache)
             } else {
               ref_clean <- sub("^('([^']|'')+'|[^!]+)!", "", s$cat)
               ref_clean <- gsub("\\$", "", ref_clean)
               dims      <- dim(openxlsx2::dims_to_dataframe(ref_clean))
               is_multi  <- length(dims) == 2 && min(dims) > 1
-
-              if (!is.null(s$cat_cache) && is.numeric(s$cat_cache)) {
-                # Numeric categories (e.g. year, integer axis)
-                ref_node <- xml_add_child(cat_node, "c:numRef")
-                xml_add_child(ref_node, "c:f", s$cat)
-                cache <- xml_add_child(ref_node, "c:numCache")
-                xml_add_child(cache, "c:formatCode", "General")
-                xml_add_child(cache, "c:ptCount", val = as.character(length(s$cat_cache)))
-                for (i in seq_along(s$cat_cache)) {
-                  if (!is.na(s$cat_cache[[i]])) {
-                    pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-                    xml_add_child(pt, "c:v", as.character(s$cat_cache[[i]]))
-                  }
-                }
-              } else if (!is.null(s$cat_cache)) {
-                # Character/factor categories
-                ref_node <- xml_add_child(cat_node, "c:strRef")
-                xml_add_child(ref_node, "c:f", s$cat)
-                cache <- xml_add_child(ref_node, "c:strCache")
-                xml_add_child(cache, "c:ptCount", val = as.character(length(s$cat_cache)))
-                for (i in seq_along(s$cat_cache)) {
-                  if (!is.na(s$cat_cache[[i]])) {
-                    pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-                    xml_add_child(pt, "c:v", as.character(s$cat_cache[[i]]))
-                  }
-                }
-              } else {
-                c_ref_type <- if (is_multi && grepl("!", s$cat)) "c:multiLvlStrRef"
-                              else if (grepl("!", s$cat)) "c:strRef"
-                              else "c:strLit"
-                xml_add_child(xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
-              }
+              c_ref_type <- if (is_multi && grepl("!", s$cat)) "c:multiLvlStrRef"
+                            else if (grepl("!", s$cat)) "c:strRef"
+                            else "c:strLit"
+              xml_add_child(xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
             }
           }
 
@@ -1029,15 +974,7 @@ Chart <- R6::R6Class(
           if (!is.null(s$data_cache)) {
             ref_node <- xml_add_child(val_node, "c:numRef")
             xml_add_child(ref_node, "c:f", s$data)
-            cache <- xml_add_child(ref_node, "c:numCache")
-            xml_add_child(cache, "c:formatCode", "General")
-            xml_add_child(cache, "c:ptCount", val = as.character(length(s$data_cache)))
-            for (i in seq_along(s$data_cache)) {
-              if (!is.na(s$data_cache[[i]])) {
-                pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-                xml_add_child(pt, "c:v", as.character(s$data_cache[[i]]))
-              }
-            }
+            private$render_num_cache(ref_node, s$data_cache)
           } else {
             v_ref_type <- if (grepl("!", s$data)) "c:numRef" else "c:numLit"
             xml_add_child(xml_add_child(val_node, v_ref_type), "c:f", s$data)
@@ -1327,6 +1264,41 @@ Chart <- R6::R6Class(
       xml_add_child(ax, "c:tickLblPos", val = "nextTo")
       xml_add_child(ax, "c:crossAx", val = as.character(cross_id))
       xml_add_child(ax, "c:crosses", val = "autoZero")
+    },
+
+    # Emit a c:numCache block into ref_node.
+    # Date/POSIXt values are converted to Excel serials via convert_to_excel_date.
+    # Plain numeric values are written as-is.
+    render_num_cache = function(ref_node, vals) {
+      cache <- xml_add_child(ref_node, "c:numCache")
+      if (inherits(vals, c("Date", "POSIXt"))) {
+        vals <- openxlsx2::convert_to_excel_date(data.frame(d = vals))[[1]]
+
+        fmt <- if (inherits(vals, "POSIXt"))
+          getOption("openxlsx2.datetimeFormat", "yyyy-mm-dd hh:mm:ss")
+        else
+          getOption("openxlsx2.dateFormat", "mm/dd/yyyy")
+        xml_add_child(cache, "c:formatCode", fmt)
+      }
+      xml_add_child(cache, "c:ptCount", val = as.character(length(vals)))
+      for (i in seq_along(vals)) {
+        if (!is.na(vals[[i]])) {
+          pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+          xml_add_child(pt, "c:v", as.character(vals[[i]]))
+        }
+      }
+    },
+
+    # Emit a c:strCache block into ref_node for character/factor categories.
+    render_str_cache = function(ref_node, vals) {
+      cache <- xml_add_child(ref_node, "c:strCache")
+      xml_add_child(cache, "c:ptCount", val = as.character(length(vals)))
+      for (i in seq_along(vals)) {
+        if (!is.na(vals[[i]])) {
+          pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
+          xml_add_child(pt, "c:v", as.character(vals[[i]]))
+        }
+      }
     },
 
     apply_text_style = function(node, s) {
