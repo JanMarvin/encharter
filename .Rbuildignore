@@ -18,7 +18,7 @@ codecov.yml
 # Temporary files
 .DS_Store
 \~\$.*\.[a-z]+$
-^inst/img$
+^inst/img/highres$
 vignettes/img/worksheet_styling.jpg
 
 # Test files
