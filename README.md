@@ -4,7 +4,7 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml)
-[![codecov](https://codecov.io/gh/JanMarvin/encharter/graph/badge.svg?token=JMMBBBHPTG)](https://app.codecov.io/gh/JanMarvin/encharter)
+[![codecov](https://codecov.io/gh/JanMarvin/encharter/graph/badge.svg?token=JMMBBBHPTG)](https://codecov.io/gh/JanMarvin/encharter)
 [![r-universe](https://janmarvin.r-universe.dev/badges/encharter)](https://janmarvin.r-universe.dev/encharter)
 <!-- badges: end -->
 
@@ -13,9 +13,12 @@
 `encharter` is the charting companion to
 [`openxlsx2`](https://janmarvin.github.io/openxlsx2/). It is treated as
 a first-class citizen there: `wb_add_encharter()` lives directly in
-openxlsx2, and `encharter` integrates with `openxlsx2`’s own helper
-functions — `wb_color()` for colors and `fmt_txt()` for rich-text
-formatting — wherever those make sense in a chart context.
+`openxlsx2`, and `encharter` integrates with `openxlsx2`’s own helper
+functions —
+[`wb_color()`](https://janmarvin.github.io/openxlsx2/reference/wb_color.html)
+for colors and
+[`fmt_txt()`](https://janmarvin.github.io/openxlsx2/reference/fmt_txt.html)
+for rich-text formatting — wherever those make sense in a chart context.
 
 The package covers both the standard OOXML chart types (bar, line,
 scatter, pie, …) and the extended modern types Excel introduced later:
