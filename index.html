@@ -67,106 +67,541 @@
 </h1></div>
 <!-- badges: start -->
 
-<!-- badges: end -->
 <blockquote>
 <p>Experimental package that is still in development.</p>
 </blockquote>
-<p>This is a lightweight R6-based engine for generating Office Open XML (OOXML) charts. It is designed for users who need precise control over chart internals—such as combining multiple chart types, mapping secondary axes, or handles numeric XY coordinates in scatter and bubble plots—without the overhead of a full spreadsheet suite.</p>
+<p><code>encharter</code> is the charting companion to <a href="https://janmarvin.github.io/openxlsx2/" class="external-link"><code>openxlsx2</code></a>. It is treated as a first-class citizen there: <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code> lives directly in openxlsx2, and <code>encharter</code> integrates with <code>openxlsx2</code>’s own helper functions — <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">wb_color()</a></code> for colors and <code><a href="https://janmarvin.github.io/openxlsx2/reference/fmt_txt.html" class="external-link">fmt_txt()</a></code> for rich-text formatting — wherever those make sense in a chart context.</p>
+<p>The package covers both the standard OOXML chart types (bar, line, scatter, pie, …) and the extended modern types Excel introduced later: waterfall, treemap, sunburst, box-and-whisker, funnel, and region map.</p>
+<hr>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>As of <code>encharter</code> 0.4 a current development build of <code>openxlsx2</code> is required due to internal changes when moving the <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code> function to <code>openxlsx2</code>.</p>
+<p><code>encharter</code> 0.4 and later requires a current development build of openxlsx2, because <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code> was moved into openxlsx2 at that point.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'encharter'</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'https://janmarvin.r-universe.dev'</span>, <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>or</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
+<span>  <span class="st">"encharter"</span>,</span>
+<span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://janmarvin.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Or from GitHub directly:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"JanMarvin/encharter"</span><span class="op">)</span></span></code></pre></div>
+<hr>
 </div>
 <div class="section level2">
-<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+<h2 id="how-a-chart-is-built">How a chart is built<a class="anchor" aria-label="anchor" href="#how-a-chart-is-built"></a>
 </h2>
+<p><code><a href="reference/encharter.html">ec()</a></code> (short for <code><a href="reference/encharter.html">encharter()</a></code>) creates an <code>R6</code> chart object. You then call methods on it to add series and configure the chart, and finally hand it to <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janmarvin.github.io/openxlsx2/" class="external-link">openxlsx2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janmarvin.github.io/encharter/" class="external-link">encharter</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 1. Create workbook and dummy data</span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_workbook.html" class="external-link">wb_workbook</a></span><span class="op">(</span><span class="op">)</span>, sheet <span class="op">=</span> <span class="st">"Data"</span><span class="op">)</span></span>
-<span><span class="va">df_combo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  Month <span class="op">=</span> <span class="va">month.abb</span>,</span>
-<span>  Revenue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">200</span>, <span class="fl">220</span>, <span class="fl">210</span>, <span class="fl">250</span>, <span class="fl">280</span>, <span class="fl">300</span>, <span class="fl">320</span>, <span class="fl">310</span>, <span class="fl">340</span>, <span class="fl">360</span>, <span class="fl">380</span>, <span class="fl">400</span><span class="op">)</span>,</span>
-<span>  Growth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.1</span>, <span class="op">-</span><span class="fl">0.04</span>, <span class="fl">0.19</span>, <span class="fl">0.12</span>, <span class="fl">0.07</span>, <span class="fl">0.06</span>, <span class="op">-</span><span class="fl">0.03</span>, <span class="fl">0.1</span>, <span class="fl">0.06</span>, <span class="fl">0.05</span>, <span class="fl">0.05</span><span class="op">)</span></span>
+<span>  Sales <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">280</span>, <span class="fl">295</span>, <span class="fl">310</span>, <span class="fl">340</span>, <span class="fl">365</span>, <span class="fl">390</span>, <span class="fl">410</span>, <span class="fl">400</span>, <span class="fl">435</span>, <span class="fl">460</span>, <span class="fl">490</span>, <span class="fl">520</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data.html" class="external-link">wb_add_data</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Data"</span>, x <span class="op">=</span> <span class="va">df_combo</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 2. Initialize and configure the Chart</span></span>
-<span><span class="va">combo_chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"barChart"</span><span class="op">)</span></span>
-<span><span class="va">combo_chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Monthly Revenue &amp; Growth"</span><span class="op">)</span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"lineChart"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Monthly Sales"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header <span class="op">=</span> <span class="st">"Sales!$B$1"</span>,</span>
+<span>  cat    <span class="op">=</span> <span class="st">"Sales!$A$2:$A$13"</span>,</span>
+<span>  data   <span class="op">=</span> <span class="st">"Sales!$B$2:$B$13"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Primary Axis: Revenue Bars</span></span>
-<span><span class="va">combo_chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="st">"Data!$B$1"</span>,</span>
-<span>  cat    <span class="op">=</span> <span class="st">"Data!$A$2:$A$13"</span>,</span>
-<span>  data   <span class="op">=</span> <span class="st">"Data!$B$2:$B$13"</span>,</span>
-<span>  color  <span class="op">=</span> <span class="st">"4472C4"</span>,</span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_workbook.html" class="external-link">wb_workbook</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="st">"Sales"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data.html" class="external-link">wb_add_data</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">df</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"D2:K18"</span><span class="op">)</span></span></code></pre></div>
+<p>Because R6 objects mutate in place, there is no need to reassign after each method call.</p>
+<div class="figure">
+<img src="inst/img/man_1.jpg" alt="Fig 1: Our first `encharter` chart" width="1272"><p class="caption">
+Fig 1: Our first <code>encharter</code> chart
+</p>
+</div>
+<div class="section level3">
+<h3 id="specifying-data-ranges">Specifying data ranges<a class="anchor" aria-label="anchor" href="#specifying-data-ranges"></a>
+</h3>
+<p>Series data is referenced by cell range strings. There are two ways to write these.</p>
+<p><strong>By hand</strong>, using standard Excel notation — sheet name, column, and row, all absolute:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header <span class="op">=</span> <span class="st">"Sales!$B$1"</span>,</span>
+<span>  cat    <span class="op">=</span> <span class="st">"Sales!$A$2:$A$13"</span>,</span>
+<span>  data   <span class="op">=</span> <span class="st">"Sales!$B$2:$B$13"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><strong>Via <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code></strong>, which constructs the range strings from a workbook object that already has data in it. This avoids hardcoding cell addresses and is less error-prone when the data layout changes:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Sales"</span>, dims <span class="op">=</span> <span class="st">"A1:B13"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header <span class="op">=</span> <span class="st">"Sales"</span>,</span>
+<span>  cat    <span class="op">=</span> <span class="st">"Month"</span>,</span>
+<span>  data   <span class="op">=</span> <span class="va">dat</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Both approaches produce the same OOXML output. The manual approach is more explicit and easier to read when the ranges are simple and fixed. <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code> pays off when building charts programmatically or when the source range is determined at runtime, and feels more native to R.</p>
+<p>There are trade-offs to both. With the range approach it is possible to assign a custom series name that is not itself a cell reference — in the <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code> approach the name must correspond to a column in the data object. Multi-level legends, where Excel groups entries across two rows (for example, an age group label spanning a male and female series), are only achievable with the range approach. On the other hand, some features like drop-down lines require construction with <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code> objects. The examples below use both approaches interchangeably to show that they are equivalent; a comment marks each switch.</p>
+</div>
+<div class="section level3">
+<h3 id="wb_color-and-fmt_txt">
+<code>wb_color()</code> and <code>fmt_txt()</code>
+<a class="anchor" aria-label="anchor" href="#wb_color-and-fmt_txt"></a>
+</h3>
+<p>Anywhere <code>encharter</code> accepts a color string, you can pass a plain six-digit hex value (<code>"4472C4"</code>) or a <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">wb_color()</a></code> object from openxlsx2:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># chart$add_series(..., color = wb_color("steelblue"))</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Sales"</span>, font_color <span class="op">=</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">wb_color</a></span><span class="op">(</span>hex <span class="op">=</span> <span class="st">"#CC0000"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>Chart titles also accept <code><a href="https://janmarvin.github.io/openxlsx2/reference/fmt_txt.html" class="external-link">fmt_txt()</a></code> objects for mixed formatting within a single title — for example, a word in bold followed by normal text:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/fmt_txt.html" class="external-link">fmt_txt</a></span><span class="op">(</span><span class="st">"Monthly "</span>, bold <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/fmt_txt.html" class="external-link">fmt_txt</a></span><span class="op">(</span><span class="st">"Sales"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="styling">Styling<a class="anchor" aria-label="anchor" href="#styling"></a>
+</h2>
+<p><code>encharter</code> ships with an opinionated set of defaults that produce clean, neutral charts without any extra configuration. The chart background is white, the plot area is transparent, vertical gridlines are off by default, and the legend sits to the right. These defaults are a deliberate subset of what OOXML allows — enough to cover most cases without overwhelming the API.</p>
+<p>All styling calls are optional and can be mixed into any of the examples below.</p>
+<div class="section level3">
+<h3 id="titles">Titles<a class="anchor" aria-label="anchor" href="#titles"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"My Chart"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span>, font_size <span class="op">=</span> <span class="fl">14</span>, font_color <span class="op">=</span> <span class="st">"222222"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span><span class="st">"Month"</span>, italic <span class="op">=</span> <span class="cn">TRUE</span>, font_color <span class="op">=</span> <span class="st">"888888"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Revenue (EUR)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="axes">Axes<a class="anchor" aria-label="anchor" href="#axes"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Value axis: fixed range, thousands separator, light gridlines</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span></span>
+<span>  min        <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  max        <span class="op">=</span> <span class="fl">600</span>,</span>
+<span>  major      <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  format     <span class="op">=</span> <span class="st">"#,##0"</span>,</span>
+<span>  gridlines  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Category axis: angled labels, outward ticks</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span></span>
+<span>  major_tick <span class="op">=</span> <span class="st">"out"</span>,</span>
+<span>  rotation   <span class="op">=</span> <span class="op">-</span><span class="fl">45</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="chart-and-plot-area">Chart and plot area<a class="anchor" aria-label="anchor" href="#chart-and-plot-area"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_style</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"F7F7F7"</span>, line <span class="op">=</span> <span class="st">"DDDDDD"</span>, line_width <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_plot_style</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"FFFFFF"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="data-labels">Data labels<a class="anchor" aria-label="anchor" href="#data-labels"></a>
+</h3>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Global default for all series</span></span>
+<span><span class="co"># the position is relative to the chart type, while some chart types support </span></span>
+<span><span class="co"># "t", "b" (e.g., line) others require "outEnd" (bar charts)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_data_label_style</span><span class="op">(</span>show_val <span class="op">=</span> <span class="cn">TRUE</span>, font_size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># # Or per series, via add_series()</span></span>
+<span><span class="co"># chart$add_series(..., show_val = TRUE)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="legend">Legend<a class="anchor" aria-label="anchor" href="#legend"></a>
+</h3>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># chart$set_legend_style(pos = "bottom", font_size = 9)   # bottom</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>                      <span class="co"># hidden</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="va">wb</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"D20:K36"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="va">wb</span><span class="op">$</span><span class="fu">open</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="inst/img/man_2.jpg" alt="Fig 2: The initial chart with styling" width="878"><p class="caption">
+Fig 2: The initial chart with styling
+</p>
+</div>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+</h2>
+<p>The chunks below build a single workbook. Run them from top to bottom and save at the end to get <code>encharter_examples.xlsx</code> with one sheet per chart type. Each sheet places the data in the top-left corner and the chart directly to its right, with some basic table styling applied so the result looks reasonable when opened.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># This section can be run standalone. The libraries are loaded again here</span></span>
+<span><span class="co"># so these chunks work independently of the intro section above.</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janmarvin.github.io/openxlsx2/" class="external-link">openxlsx2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://janmarvin.github.io/encharter/" class="external-link">encharter</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_workbook.html" class="external-link">wb_workbook</a></span><span class="op">(</span>creator <span class="op">=</span> <span class="st">"encharter"</span><span class="op">)</span></span></code></pre></div>
+<hr>
+<div class="section level3">
+<h3 id="line-chart--trends-over-time">Line chart — trends over time<a class="anchor" aria-label="anchor" href="#line-chart--trends-over-time"></a>
+</h3>
+<p>A line chart is the natural choice when the X axis is a time dimension and the story is about direction of change rather than individual values. Here we show monthly headcount across two departments so the reader can compare trajectories at a glance.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_line</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Month   <span class="op">=</span> <span class="va">month.abb</span>,</span>
+<span>  Engineering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">42</span>, <span class="fl">43</span>, <span class="fl">45</span>, <span class="fl">46</span>, <span class="fl">48</span>, <span class="fl">51</span>, <span class="fl">53</span>, <span class="fl">53</span>, <span class="fl">56</span>, <span class="fl">58</span>, <span class="fl">60</span>, <span class="fl">63</span><span class="op">)</span>,</span>
+<span>  Marketing   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">18</span>, <span class="fl">19</span>, <span class="fl">21</span>, <span class="fl">22</span>, <span class="fl">22</span>, <span class="fl">23</span>, <span class="fl">25</span>, <span class="fl">25</span>, <span class="fl">26</span>, <span class="fl">27</span>, <span class="fl">28</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, <span class="st">"Line"</span>, grid_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data_table.html" class="external-link">wb_add_data_table</a></span><span class="op">(</span></span>
+<span>  <span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Line"</span>, x <span class="op">=</span> <span class="va">df_line</span>,</span>
+<span>  dims <span class="op">=</span> <span class="st">"A1"</span>, table_style <span class="op">=</span> <span class="st">"TableStyleMedium2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/col_widths-wb.html" class="external-link">wb_set_col_widths</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Line"</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">14</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">wb_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"lineChart"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Headcount by Department"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span><span class="st">"Month"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Employees"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">80</span>, major <span class="op">=</span> <span class="fl">20</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header <span class="op">=</span> <span class="va">Engineering</span>,</span>
+<span>  cat    <span class="op">=</span> <span class="va">Month</span>,</span>
+<span>  data   <span class="op">=</span> <span class="va">wb_df</span>,</span>
+<span>  color  <span class="op">=</span> <span class="st">"2E4057"</span>,</span>
+<span>  marker <span class="op">=</span> <span class="st">"circle"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header <span class="op">=</span> <span class="va">Marketing</span>,</span>
+<span>  cat    <span class="op">=</span> <span class="va">Month</span>,</span>
+<span>  data   <span class="op">=</span> <span class="va">wb_df</span>,</span>
+<span>  color  <span class="op">=</span> <span class="st">"E84855"</span>,</span>
+<span>  marker <span class="op">=</span> <span class="st">"circle"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Line"</span>, graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"E1:N18"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="inst/img/man_line.jpg" alt="Fig 3: The line chart" width="1800"><p class="caption">
+Fig 3: The line chart
+</p>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="bar-chart--comparing-categories">Bar chart — comparing categories<a class="anchor" aria-label="anchor" href="#bar-chart--comparing-categories"></a>
+</h3>
+<p>A bar/column chart works well when the categories are independent (not a time series) and the goal is to rank or compare magnitudes. Here we show quarterly revenue by product line — a fixed set of categories where size differences are the main point.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_bar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Product <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Software"</span>, <span class="st">"Services"</span>, <span class="st">"Hardware"</span>, <span class="st">"Support"</span><span class="op">)</span>,</span>
+<span>  Q1      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">310</span>, <span class="fl">195</span>, <span class="fl">140</span>, <span class="fl">85</span><span class="op">)</span>,</span>
+<span>  Q2      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">340</span>, <span class="fl">210</span>, <span class="fl">130</span>, <span class="fl">90</span><span class="op">)</span>,</span>
+<span>  Q3      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">375</span>, <span class="fl">225</span>, <span class="fl">125</span>, <span class="fl">95</span><span class="op">)</span>,</span>
+<span>  Q4      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">420</span>, <span class="fl">250</span>, <span class="fl">120</span>, <span class="fl">105</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, <span class="st">"Bar"</span>, grid_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data_table.html" class="external-link">wb_add_data_table</a></span><span class="op">(</span></span>
+<span>  <span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Bar"</span>, x <span class="op">=</span> <span class="va">df_bar</span>,</span>
+<span>  dims <span class="op">=</span> <span class="st">"A1"</span>, table_style <span class="op">=</span> <span class="st">"TableStyleMedium2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/col_widths-wb.html" class="external-link">wb_set_col_widths</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Bar"</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">8</span>, <span class="fl">8</span>, <span class="fl">8</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">wb_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"barChart"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Quarterly Revenue by Product (EUR k)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, format <span class="op">=</span> <span class="st">"#,##0"</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">colors</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2E4057"</span>, <span class="st">"048A81"</span>, <span class="st">"E84855"</span>, <span class="st">"F4A261"</span><span class="op">)</span></span>
+<span><span class="va">quarters</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Q1"</span>, <span class="st">"Q2"</span>, <span class="st">"Q3"</span>, <span class="st">"Q4"</span><span class="op">)</span></span>
+<span><span class="va">cols</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"B"</span>,  <span class="st">"C"</span>,  <span class="st">"D"</span>,  <span class="st">"E"</span><span class="op">)</span></span>
+<span><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">wb_df</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">quarters</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>    header <span class="op">=</span> <span class="va">variables</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span>,</span>
+<span>    cat    <span class="op">=</span> <span class="va">variables</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span>,</span>
+<span>    data   <span class="op">=</span> <span class="va">wb_df</span>,</span>
+<span>    color  <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Bar"</span>, graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"G1:P18"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="inst/img/man_bar_1.jpg" alt="Fig 4: The bar chart" width="1840"><p class="caption">
+Fig 4: The bar chart
+</p>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="stacked-bar-chart--part-to-whole-over-categories">Stacked bar chart — part-to-whole over categories<a class="anchor" aria-label="anchor" href="#stacked-bar-chart--part-to-whole-over-categories"></a>
+</h3>
+<p>A stacked bar shows how a total is composed, and how that composition shifts across categories. Here the same revenue data is stacked to show each product line’s share of total revenue per quarter.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, <span class="st">"Stacked"</span>, grid_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data_table.html" class="external-link">wb_add_data_table</a></span><span class="op">(</span></span>
+<span>  <span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Stacked"</span>, x <span class="op">=</span> <span class="va">df_bar</span>,</span>
+<span>  dims <span class="op">=</span> <span class="st">"A1"</span>, table_style <span class="op">=</span> <span class="st">"TableStyleMedium2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/col_widths-wb.html" class="external-link">wb_set_col_widths</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Stacked"</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">8</span>, <span class="fl">8</span>, <span class="fl">8</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">wb_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"barChart"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Revenue Composition by Quarter (EUR k)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>format <span class="op">=</span> <span class="st">"#,##0"</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># using the range approach here (interchangeable with wb_data())</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">quarters</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>    header   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Stacked!$%s$1"</span>, <span class="va">cols</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    cat      <span class="op">=</span> <span class="st">"Stacked!$A$2:$A$5"</span>,</span>
+<span>    data     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Stacked!$%s$2:$%s$5"</span>, <span class="va">cols</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">cols</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    color    <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>    grouping <span class="op">=</span> <span class="st">"stacked"</span>,</span>
+<span>    overlap  <span class="op">=</span> <span class="fl">100</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Stacked"</span>, graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"G1:P18"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="inst/img/man_bar_2.jpg" alt="Fig 5: The stacked bar chart" width="1852"><p class="caption">
+Fig 5: The stacked bar chart
+</p>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="combo-chart--two-measures-two-scales">Combo chart — two measures, two scales<a class="anchor" aria-label="anchor" href="#combo-chart--two-measures-two-scales"></a>
+</h3>
+<p>When two series have different units or very different magnitudes, putting them on the same axis makes one of them unreadable. A combo chart solves this by adding a second Y axis. Here, absolute revenue (bars, left axis) is shown alongside a margin percentage (line, right axis).</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_combo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Month   <span class="op">=</span> <span class="va">month.abb</span>,</span>
+<span>  Revenue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">280</span>, <span class="fl">295</span>, <span class="fl">310</span>, <span class="fl">340</span>, <span class="fl">365</span>, <span class="fl">390</span>, <span class="fl">410</span>, <span class="fl">400</span>, <span class="fl">435</span>, <span class="fl">460</span>, <span class="fl">490</span>, <span class="fl">520</span><span class="op">)</span>,</span>
+<span>  Margin  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.22</span>, <span class="fl">.21</span>, <span class="fl">.23</span>, <span class="fl">.24</span>, <span class="fl">.25</span>, <span class="fl">.26</span>, <span class="fl">.26</span>, <span class="fl">.24</span>, <span class="fl">.27</span>, <span class="fl">.27</span>, <span class="fl">.28</span>, <span class="fl">.29</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, <span class="st">"Combo"</span>, grid_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data_table.html" class="external-link">wb_add_data_table</a></span><span class="op">(</span></span>
+<span>  <span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Combo"</span>, x <span class="op">=</span> <span class="va">df_combo</span>,</span>
+<span>  dims <span class="op">=</span> <span class="st">"A1"</span>, table_style <span class="op">=</span> <span class="st">"TableStyleMedium2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/col_widths-wb.html" class="external-link">wb_set_col_widths</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Combo"</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">wb_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"barChart"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Revenue &amp; Margin"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># primary axis — bars for revenue</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header <span class="op">=</span> <span class="va">Revenue</span>,</span>
+<span>  cat    <span class="op">=</span> <span class="va">Month</span>,</span>
+<span>  data   <span class="op">=</span> <span class="va">wb_df</span>,</span>
+<span>  color  <span class="op">=</span> <span class="st">"2E4057"</span>,</span>
 <span>  type   <span class="op">=</span> <span class="st">"barChart"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Secondary Axis: Growth Line</span></span>
-<span><span class="va">combo_chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header    <span class="op">=</span> <span class="st">"Data!$C$1"</span>,</span>
-<span>  cat       <span class="op">=</span> <span class="st">"Data!$A$2:$A$13"</span>,</span>
-<span>  data      <span class="op">=</span> <span class="st">"Data!$C$2:$C$13"</span>,</span>
+<span><span class="co"># secondary axis — line for margin</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header    <span class="op">=</span> <span class="va">Margin</span>,</span>
+<span>  cat       <span class="op">=</span> <span class="va">Month</span>,</span>
+<span>  data      <span class="op">=</span> <span class="va">wb_df</span>,</span>
 <span>  type      <span class="op">=</span> <span class="st">"lineChart"</span>,</span>
 <span>  secondary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  color     <span class="op">=</span> <span class="st">"ED7D31"</span>,</span>
-<span>  marker    <span class="op">=</span> <span class="st">"circle"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Data"</span>, graph <span class="op">=</span> <span class="va">combo_chart</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Create dummy waterfall data</span></span>
-<span><span class="va">df_wf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  Label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gross Revenue"</span>, <span class="st">"COGS"</span>, <span class="st">"OpEx"</span>, <span class="st">"Tax"</span>, <span class="st">"Net Income"</span><span class="op">)</span>,</span>
-<span>  Value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="op">-</span><span class="fl">400</span>, <span class="op">-</span><span class="fl">200</span>, <span class="op">-</span><span class="fl">100</span>, <span class="fl">300</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"WaterfallData"</span><span class="op">)</span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data.html" class="external-link">wb_add_data</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"WaterfallData"</span>, x <span class="op">=</span> <span class="va">df_wf</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 2. Initialize and configure the Waterfall Chart</span></span>
-<span><span class="va">wf_chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"waterfall"</span><span class="op">)</span></span>
-<span><span class="va">wf_chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Net Income Bridge"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">wf_chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  cat    <span class="op">=</span> <span class="st">"WaterfallData!$A$2:$A$6"</span>,</span>
-<span>  data   <span class="op">=</span> <span class="st">"WaterfallData!$B$2:$B$6"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, graph <span class="op">=</span> <span class="va">wf_chart</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># 1. Create dummy scatter data</span></span>
-<span><span class="va">df_scatter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  Project <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Project"</span>, <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>  Risk    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">40</span>, <span class="fl">30</span>, <span class="fl">70</span>, <span class="fl">90</span><span class="op">)</span>,</span>
-<span>  ROI     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">50</span>, <span class="fl">80</span>, <span class="fl">40</span>, <span class="fl">60</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"ScatterData"</span><span class="op">)</span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data.html" class="external-link">wb_add_data</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"ScatterData"</span>, x <span class="op">=</span> <span class="va">df_scatter</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 2. Initialize and configure Scatter Chart</span></span>
-<span><span class="va">sc_chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"scatterChart"</span><span class="op">)</span></span>
-<span><span class="va">sc_chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Risk vs ROI Analysis"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sc_chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header    <span class="op">=</span> <span class="st">"Portfolio"</span>,</span>
-<span>  cat       <span class="op">=</span> <span class="st">"ScatterData!$B$2:$B$6"</span>, <span class="co"># X-axis (Risk)</span></span>
-<span>  data      <span class="op">=</span> <span class="st">"ScatterData!$C$2:$C$6"</span>, <span class="co"># Y-axis (ROI)</span></span>
-<span>  show_line <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  color     <span class="op">=</span> <span class="st">"E84855"</span>,</span>
 <span>  marker    <span class="op">=</span> <span class="st">"circle"</span>,</span>
-<span>  marker_size <span class="op">=</span> <span class="fl">8</span></span>
+<span>  line_width <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"ScatterData"</span>, graph <span class="op">=</span> <span class="va">sc_chart</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, format <span class="op">=</span> <span class="st">"#,##0"</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y2_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">0.4</span>, format <span class="op">=</span> <span class="st">"0%"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Revenue (EUR k)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y2_title</span><span class="op">(</span><span class="st">"Margin"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Combo"</span>, graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"E1:N18"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="inst/img/man_combo.jpg" alt="Fig 6: The combo chart" width="1670"><p class="caption">
+Fig 6: The combo chart
+</p>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="scatter-chart--relationship-between-two-measures">Scatter chart — relationship between two measures<a class="anchor" aria-label="anchor" href="#scatter-chart--relationship-between-two-measures"></a>
+</h3>
+<p>A scatter chart is for exploring the relationship between two numeric variables. Both axes are continuous, unlike the category-based charts above. Here we look at whether there is a pattern between average deal size and close rate across sales reps.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7</span><span class="op">)</span></span>
+<span><span class="va">df_scatter</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Rep        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Rep"</span>, <span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  AvgDeal    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">14</span>, <span class="fl">22</span>, <span class="fl">18</span>, <span class="fl">35</span>, <span class="fl">28</span>, <span class="fl">42</span>, <span class="fl">19</span>, <span class="fl">31</span>, <span class="fl">25</span>, <span class="fl">38</span>, <span class="fl">16</span>, <span class="fl">45</span><span class="op">)</span>,</span>
+<span>  CloseRate  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">.28</span>, <span class="fl">.34</span>, <span class="fl">.31</span>, <span class="fl">.42</span>, <span class="fl">.38</span>, <span class="fl">.45</span>, <span class="fl">.29</span>, <span class="fl">.40</span>, <span class="fl">.36</span>, <span class="fl">.43</span>, <span class="fl">.27</span>, <span class="fl">.48</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, <span class="st">"Scatter"</span>, grid_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data_table.html" class="external-link">wb_add_data_table</a></span><span class="op">(</span></span>
+<span>  <span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Scatter"</span>, x <span class="op">=</span> <span class="va">df_scatter</span>,</span>
+<span>  dims <span class="op">=</span> <span class="st">"A1"</span>, table_style <span class="op">=</span> <span class="st">"TableStyleMedium2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/col_widths-wb.html" class="external-link">wb_set_col_widths</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Scatter"</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"scatterChart"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Deal Size vs. Close Rate"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span><span class="st">"Avg Deal Size (EUR k)"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Close Rate"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">0.6</span>, format <span class="op">=</span> <span class="st">"0%"</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header      <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  cat         <span class="op">=</span> <span class="st">"Scatter!$B$2:$B$13"</span>,</span>
+<span>  data        <span class="op">=</span> <span class="st">"Scatter!$C$2:$C$13"</span>,</span>
+<span>  color       <span class="op">=</span> <span class="st">"2E4057"</span>,</span>
+<span>  marker      <span class="op">=</span> <span class="st">"circle"</span>,</span>
+<span>  marker_size <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  show_line   <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  trendline   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"linear"</span>, color <span class="op">=</span> <span class="st">"E84855"</span>, show_r2 <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Scatter"</span>, graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"E1:N18"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">CloseRate</span> <span class="op">~</span> <span class="va">AvgDeal</span>, data <span class="op">=</span> <span class="va">df_scatter</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Intercept)     AvgDeal </span></span>
+<span><span class="co">#&gt; 0.183476102 0.006631492</span></span></code></pre></div>
+<div class="figure">
+<img src="inst/img/man_scatter.jpg" alt="Fig 7: The scatter chart" width="1726"><p class="caption">
+Fig 7: The scatter chart
+</p>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="waterfall-chart--decomposing-a-change">Waterfall chart — decomposing a change<a class="anchor" aria-label="anchor" href="#waterfall-chart--decomposing-a-change"></a>
+</h3>
+<p>A waterfall chart breaks a total into its contributing parts, making it easy to see what drove an increase or decrease. This is common in finance for showing how you get from one period’s profit to the next, or from gross revenue down to net income. Bars marked as <code>subtotals</code> render as running totals rather than incremental steps.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_wf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Item  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Jan Profit"</span>, <span class="st">"New Clients"</span>, <span class="st">"Churn"</span>, <span class="st">"Upsell"</span>, <span class="st">"Cost Increase"</span>, <span class="st">"Feb Profit"</span><span class="op">)</span>,</span>
+<span>  Value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">420</span>, <span class="fl">95</span>, <span class="op">-</span><span class="fl">40</span>, <span class="fl">60</span>, <span class="op">-</span><span class="fl">35</span>, <span class="fl">500</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, <span class="st">"Waterfall"</span>, grid_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data_table.html" class="external-link">wb_add_data_table</a></span><span class="op">(</span></span>
+<span>  <span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Waterfall"</span>, x <span class="op">=</span> <span class="va">df_wf</span>,</span>
+<span>  dims <span class="op">=</span> <span class="st">"A1"</span>, table_style <span class="op">=</span> <span class="st">"TableStyleMedium2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/col_widths-wb.html" class="external-link">wb_set_col_widths</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Waterfall"</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"waterfall"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Profit Bridge: Jan → Feb"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  header    <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  cat       <span class="op">=</span> <span class="st">"Waterfall!$A$2:$A$7"</span>,</span>
+<span>  data      <span class="op">=</span> <span class="st">"Waterfall!$B$2:$B$7"</span>,</span>
+<span>  subtotals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>   <span class="co"># 0-based indices; Jan Profit (0) and Feb Profit (5) are totals, not steps</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Waterfall"</span>, graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"D1:M18"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="inst/img/man_waterfall.jpg" alt="Fig 8: The waterfall chart" width="1652"><p class="caption">
+Fig 8: The waterfall chart
+</p>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="box-and-whisker--distribution-of-a-metric">Box-and-whisker — distribution of a metric<a class="anchor" aria-label="anchor" href="#box-and-whisker--distribution-of-a-metric"></a>
+</h3>
+<p>A box-and-whisker plot summarises the distribution of values — median, quartiles, and outliers — for one or more groups. It is useful when you want to compare spread and central tendency rather than just averages. Here we compare response times across three support tiers.</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="va">df_box</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Tier  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Gold"</span>, <span class="st">"Silver"</span>, <span class="st">"Bronze"</span><span class="op">)</span>, times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Hours <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span>, mean <span class="op">=</span> <span class="fl">2.5</span>,  sd <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span>, mean <span class="op">=</span> <span class="fl">6.0</span>,  sd <span class="op">=</span> <span class="fl">2.0</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">40</span>, mean <span class="op">=</span> <span class="fl">14.0</span>, sd <span class="op">=</span> <span class="fl">4.5</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_worksheet.html" class="external-link">wb_add_worksheet</a></span><span class="op">(</span><span class="va">wb</span>, <span class="st">"BoxWhisker"</span>, grid_lines <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_data_table.html" class="external-link">wb_add_data_table</a></span><span class="op">(</span></span>
+<span>  <span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"BoxWhisker"</span>, x <span class="op">=</span> <span class="va">df_box</span>,</span>
+<span>  dims <span class="op">=</span> <span class="st">"A1"</span>, table_style <span class="op">=</span> <span class="st">"TableStyleMedium2"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/col_widths-wb.html" class="external-link">wb_set_col_widths</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"BoxWhisker"</span>, cols <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, widths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"boxWhisker"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Response Time by Support Tier (hours)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Hours to First Response"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
+<span>  cat        <span class="op">=</span> <span class="st">"BoxWhisker!$A$2:$A$121"</span>,</span>
+<span>  data       <span class="op">=</span> <span class="st">"BoxWhisker!$B$2:$B$121"</span>,</span>
+<span>  statistics <span class="op">=</span> <span class="st">"inclusive"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"BoxWhisker"</span>, graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"D1:M22"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="inst/img/man_boxwhisker.jpg" alt="Fig 9: The box and whisker chart" width="1568"><p class="caption">
+Fig 9: The box and whisker chart
+</p>
+</div>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="save">Save<a class="anchor" aria-label="anchor" href="#save"></a>
+</h3>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># wb_save(wb, "encharter_examples.xlsx")</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="va">wb</span><span class="op">$</span><span class="fu">open</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="missing-data-behavior">Missing data behavior<a class="anchor" aria-label="anchor" href="#missing-data-behavior"></a>
+</h2>
+<p>By default, gaps in data appear as breaks in a line. You can change this per chart:</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_disp_blanks</span><span class="op">(</span><span class="st">"span"</span><span class="op">)</span>   <span class="co"># connect across missing values</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_disp_blanks</span><span class="op">(</span><span class="st">"zero"</span><span class="op">)</span>   <span class="co"># treat as zero</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_disp_blanks</span><span class="op">(</span><span class="st">"gap"</span><span class="op">)</span>    <span class="co"># default</span></span></code></pre></div>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>
+</h2>
+<ul>
+<li>
+<code>encharter</code> is relatively young and does not yet validate all input against the OOXML standard. For example, a label position like <code>"outEnd"</code> works correctly on bar charts but may produce unexpected results on line charts, as no check for chart-type compatibility is in place. Test your output before using it in important files.</li>
+<li>Series cell references use standard Excel notation: <code>"Sheet1!$A$2:$A$10"</code>. The sheet name is required.</li>
+<li>For extended chart types (waterfall, treemap, etc.), Excel uses a different XML schema internally (<code>chartEx</code>). <code>encharter</code> handles this transparently — <code>ec("waterfall")</code> returns a <code>ChartEx</code> object rather than a <code>Chart</code> object, but the interface is the same.</li>
+<li>Radar charts accept <code>filled = TRUE</code> in <code>add_series()</code> to fill the polygon interior.</li>
+<li>Bubble charts require a third data range for bubble sizes, passed as <code>z_data</code> in <code>add_series()</code>.</li>
+<li>Bar direction (vertical column vs horizontal bar) is set via <code>dir = "col"</code> (default) or <code>dir = "bar"</code> in <code>add_series()</code>.</li>
+</ul>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="related">Related<a class="anchor" aria-label="anchor" href="#related"></a>
+</h2>
+<ul>
+<li>
+<a href="https://janmarvin.github.io/openxlsx2/" class="external-link">openxlsx2</a> — the workbook package <code>encharter</code> plugs into</li>
+<li>
+<a href="https://janmarvin.github.io/ox2-book/" class="external-link">openxlsx2 book</a> — longer-form documentation and recipes for openxlsx2</li>
+</ul>
 </div>
 </div>
   </div>
@@ -207,7 +642,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml" class="external-link"><img src="https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg" alt="R-CMD-check.yaml"></a></li>
+<li><a href="https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml" class="external-link"><img src="https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://app.codecov.io/gh/JanMarvin/encharter" class="external-link"><img src="https://codecov.io/gh/JanMarvin/encharter/graph/badge.svg?token=JMMBBBHPTG" alt="codecov"></a></li>
 <li><a href="https://janmarvin.r-universe.dev/encharter" class="external-link"><img src="https://janmarvin.r-universe.dev/badges/encharter" alt="r-universe"></a></li>
 </ul>
