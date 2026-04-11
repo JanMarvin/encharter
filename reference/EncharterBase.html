@@ -66,57 +66,57 @@ shared private helpers (<code>render_color_core</code>, <code>render_color</code
 <dd><p>The raw xml2 object containing the chart space.</p></dd>
 
 
-<dt><code>series_data</code></dt>
+    <dt><code>series_data</code></dt>
 <dd><p>A list containing all added data series and their styles.</p></dd>
 
 
-<dt><code>type</code></dt>
+    <dt><code>type</code></dt>
 <dd><p>The default chart type for the object (e.g., <code>"lineChart"</code>).</p></dd>
 
 
-<dt><code>palette</code></dt>
+    <dt><code>palette</code></dt>
 <dd><p>A character vector of six-digit hex colors used for series
 when no explicit color is supplied. Defaults to the standard Office theme
 palette.</p></dd>
 
 
-<dt><code>chart_title</code></dt>
+    <dt><code>chart_title</code></dt>
 <dd><p>Named list with elements <code>text</code> (character) and
 <code>style</code> (list of font/fill/line options) for the main chart title.</p></dd>
 
 
-<dt><code>x_title</code></dt>
+    <dt><code>x_title</code></dt>
 <dd><p>Named list with elements <code>text</code> and <code>style</code> for
 the primary X-axis title.</p></dd>
 
 
-<dt><code>y_title</code></dt>
+    <dt><code>y_title</code></dt>
 <dd><p>Named list with elements <code>text</code> and <code>style</code> for
 the primary Y-axis title.</p></dd>
 
 
-<dt><code>chart_style</code></dt>
+    <dt><code>chart_style</code></dt>
 <dd><p>Named list controlling the outer chart area:
 <code>fill</code> (hex), <code>line</code> (hex), <code>line_width</code> (numeric).</p></dd>
 
 
-<dt><code>plot_style</code></dt>
+    <dt><code>plot_style</code></dt>
 <dd><p>Named list controlling the inner plot area:
 <code>fill</code> (hex), <code>line</code> (hex), <code>line_width</code> (numeric).</p></dd>
 
 
-<dt><code>label_params</code></dt>
+    <dt><code>label_params</code></dt>
 <dd><p>Named list of global data label defaults:
 <code>show_val</code>, <code>show_cat</code>, <code>show_legend_key</code> (logicals),
 <code>pos</code> (character), <code>style</code> (list).</p></dd>
 
 
-<dt><code>legend_params</code></dt>
+    <dt><code>legend_params</code></dt>
 <dd><p>Named list of legend defaults:
 <code>pos</code> (character), <code>overlay</code> ("0"/"1"), <code>style</code> (list).</p></dd>
 
 
-<dt><code>axis_params</code></dt>
+    <dt><code>axis_params</code></dt>
 <dd><p>Named list with one entry per axis (<code>x</code>, <code>x2</code>,
 <code>y</code>, <code>y2</code>). Each entry is a named list of scaling, formatting,
 and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
@@ -129,8 +129,7 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-EncharterBase-set_chart_title"><code>EncharterBase$set_chart_title()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-EncharterBase-set_chart_title"><code>EncharterBase$set_chart_title()</code></a></p></li>
 <li><p><a href="#method-EncharterBase-set_x_title"><code>EncharterBase$set_x_title()</code></a></p></li>
 <li><p><a href="#method-EncharterBase-set_y_title"><code>EncharterBase$set_y_title()</code></a></p></li>
 <li><p><a href="#method-EncharterBase-set_x_axis"><code>EncharterBase$set_x_axis()</code></a></p></li>
@@ -142,7 +141,7 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 <li><p><a href="#method-EncharterBase-print"><code>EncharterBase$print()</code></a></p></li>
 <li><p><a href="#method-EncharterBase-clone"><code>EncharterBase$clone()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-EncharterBase-set_chart_title"></a><div class="section">
-<h3 id="method-set-chart-title-">Method <code>set_chart_title()</code><a class="anchor" aria-label="anchor" href="#method-set-chart-title-"></a></h3>
+<h3 id="encharterbase-set-chart-title-"><code>EncharterBase$set_chart_title()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-chart-title-"></a></h3>
 <p>Set the chart's main title.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span></span>
@@ -156,58 +155,48 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 <span>  line <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>text</code></dt>
 <dd><p>Title string. Accepts a plain character or an
 <code><a href="https://janmarvin.github.io/openxlsx2/reference/fmt_txt.html" class="external-link">openxlsx2::fmt_txt()</a></code> object for rich-text formatting.</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Numeric font size in points (e.g. <code>14</code>).</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name (e.g. <code>"Arial"</code>).</p></dd>
 
-
-<dt><code>font_color</code></dt>
+      <dt><code>font_color</code></dt>
 <dd><p>Six-digit hex color for the title text (e.g.
 <code>"FF0000"</code> for red).</p></dd>
 
-
-<dt><code>bold</code></dt>
+      <dt><code>bold</code></dt>
 <dd><p>Logical; <code>TRUE</code> renders the title in bold.</p></dd>
 
-
-<dt><code>italic</code></dt>
+      <dt><code>italic</code></dt>
 <dd><p>Logical; <code>TRUE</code> renders the title in italics.</p></dd>
 
-
-<dt><code>fill</code></dt>
+      <dt><code>fill</code></dt>
 <dd><p>Six-digit hex color for the title background box.</p></dd>
 
-
-<dt><code>line</code></dt>
+      <dt><code>line</code></dt>
 <dd><p>Six-digit hex color for the title border.</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Numeric border width in points.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Monthly Sales"</span>, font_size <span class="op">=</span> <span class="fl">14</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-set_x_title"></a><div class="section">
-<h3 id="method-set-x-title-">Method <code>set_x_title()</code><a class="anchor" aria-label="anchor" href="#method-set-x-title-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-set_x_title"></a><div class="section">
+<h3 id="encharterbase-set-x-title-"><code>EncharterBase$set_x_title()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-x-title-"></a></h3>
 <p>Set the primary X-axis title.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span></span>
@@ -221,56 +210,46 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 <span>  line <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>text</code></dt>
 <dd><p>Title string.</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Numeric font size in points.</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name.</p></dd>
 
-
-<dt><code>font_color</code></dt>
+      <dt><code>font_color</code></dt>
 <dd><p>Six-digit hex color for the title text.</p></dd>
 
-
-<dt><code>bold</code></dt>
+      <dt><code>bold</code></dt>
 <dd><p>Logical.</p></dd>
 
-
-<dt><code>italic</code></dt>
+      <dt><code>italic</code></dt>
 <dd><p>Logical.</p></dd>
 
-
-<dt><code>fill</code></dt>
+      <dt><code>fill</code></dt>
 <dd><p>Six-digit hex color for the title background box.</p></dd>
 
-
-<dt><code>line</code></dt>
+      <dt><code>line</code></dt>
 <dd><p>Six-digit hex color for the title border.</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Numeric border width in points.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span><span class="st">"Month"</span>, font_color <span class="op">=</span> <span class="st">"888888"</span>, italic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-set_y_title"></a><div class="section">
-<h3 id="method-set-y-title-">Method <code>set_y_title()</code><a class="anchor" aria-label="anchor" href="#method-set-y-title-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-set_y_title"></a><div class="section">
+<h3 id="encharterbase-set-y-title-"><code>EncharterBase$set_y_title()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-y-title-"></a></h3>
 <p>Set the primary Y-axis title.</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span></span>
@@ -284,56 +263,46 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 <span>  line <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>text</code></dt>
 <dd><p>Title string.</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Numeric font size in points.</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name.</p></dd>
 
-
-<dt><code>font_color</code></dt>
+      <dt><code>font_color</code></dt>
 <dd><p>Six-digit hex color for the title text.</p></dd>
 
-
-<dt><code>bold</code></dt>
+      <dt><code>bold</code></dt>
 <dd><p>Logical.</p></dd>
 
-
-<dt><code>italic</code></dt>
+      <dt><code>italic</code></dt>
 <dd><p>Logical.</p></dd>
 
-
-<dt><code>fill</code></dt>
+      <dt><code>fill</code></dt>
 <dd><p>Six-digit hex color for the title background box.</p></dd>
 
-
-<dt><code>line</code></dt>
+      <dt><code>line</code></dt>
 <dd><p>Six-digit hex color for the title border.</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Numeric border width in points.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-2">Examples<a class="anchor" aria-label="anchor" href="#examples-2"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Revenue (USD)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-set_x_axis"></a><div class="section">
-<h3 id="method-set-x-axis-">Method <code>set_x_axis()</code><a class="anchor" aria-label="anchor" href="#method-set-x-axis-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-set_x_axis"></a><div class="section">
+<h3 id="encharterbase-set-x-axis-"><code>EncharterBase$set_x_axis()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-x-axis-"></a></h3>
 <p>Set primary X-axis scaling, tick marks, and label formatting.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span></span>
@@ -367,107 +336,85 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 <span>  crosses_at <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_pos <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>min, max</code></dt>
 <dd><p>Numeric axis limits.</p></dd>
 
-
-<dt><code>major, minor</code></dt>
+      <dt><code>major, minor</code></dt>
 <dd><p>Numeric major/minor unit intervals. For date axes, unit
 is set by <code>major_time</code>/<code>minor_time</code>.</p></dd>
 
-
-<dt><code>major_time, minor_time</code></dt>
+      <dt><code>major_time, minor_time</code></dt>
 <dd><p>Time unit for major/minor steps on date axes:
 <code>"days"</code>, <code>"months"</code>, or <code>"years"</code>.</p></dd>
 
-
-<dt><code>base_time</code></dt>
+      <dt><code>base_time</code></dt>
 <dd><p>Base time unit for date axes: <code>"days"</code>,
 <code>"months"</code>, or <code>"years"</code>.</p></dd>
 
-
-<dt><code>major_tick, minor_tick</code></dt>
+      <dt><code>major_tick, minor_tick</code></dt>
 <dd><p>Tick mark style: <code>"cross"</code>,
 <code>"in"</code>, <code>"out"</code>, or <code>"none"</code>.</p></dd>
 
-
-<dt><code>format</code></dt>
+      <dt><code>format</code></dt>
 <dd><p>Number or date format string (e.g. <code>"#,##0"</code>,
 <code>"yyyy-mm-dd"</code>).</p></dd>
 
-
-<dt><code>log_base</code></dt>
+      <dt><code>log_base</code></dt>
 <dd><p>Numeric base for logarithmic scaling (e.g. <code>10</code>).</p></dd>
 
-
-<dt><code>color</code></dt>
+      <dt><code>color</code></dt>
 <dd><p>Six-digit hex color for the axis line.</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name for tick labels.</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Numeric label font size in points.</p></dd>
 
-
-<dt><code>bold, italic</code></dt>
+      <dt><code>bold, italic</code></dt>
 <dd><p>Logical font style for tick labels.</p></dd>
 
-
-<dt><code>font_color</code></dt>
+      <dt><code>font_color</code></dt>
 <dd><p>Six-digit hex color for axis tick labels. Defaults to
 <code>color</code> when not set.</p></dd>
 
-
-<dt><code>rotation</code></dt>
+      <dt><code>rotation</code></dt>
 <dd><p>Numeric label rotation in degrees.</p></dd>
 
-
-<dt><code>grid_color, minor_grid_color</code></dt>
+      <dt><code>grid_color, minor_grid_color</code></dt>
 <dd><p>Six-digit hex colors for major/minor
 gridlines.</p></dd>
 
-
-<dt><code>gridlines, minor_gridlines</code></dt>
+      <dt><code>gridlines, minor_gridlines</code></dt>
 <dd><p>Show gridlines. <code>TRUE</code>/<code>FALSE</code>
 to toggle; or a dash style string (<code>"dash"</code>, <code>"dot"</code>,
 <code>"dashDot"</code>, etc.) to show styled lines.</p></dd>
 
-
-<dt><code>cross_between</code></dt>
+      <dt><code>cross_between</code></dt>
 <dd><p>Where the value axis crosses: <code>"between"</code>
 (default, between categories) or <code>"midCat"</code> (through categories).</p></dd>
 
-
-<dt><code>line_width, grid_width, minor_grid_width</code></dt>
+      <dt><code>line_width, grid_width, minor_grid_width</code></dt>
 <dd><p>Numeric widths in points for
 the axis line, major gridlines, and minor gridlines respectively.</p></dd>
 
-
-<dt><code>crosses</code></dt>
+      <dt><code>crosses</code></dt>
 <dd><p>Where this axis crosses its perpendicular axis:
 <code>"autoZero"</code> (default), <code>"min"</code>, or <code>"max"</code>.</p></dd>
 
-
-<dt><code>crosses_at</code></dt>
+      <dt><code>crosses_at</code></dt>
 <dd><p>Numeric axis value at which to cross. Overrides
 <code>crosses</code> when supplied.</p></dd>
 
-
-<dt><code>label_pos</code></dt>
+      <dt><code>label_pos</code></dt>
 <dd><p>Tick label position: <code>"nextTo"</code> (default),
 <code>"high"</code>, <code>"low"</code>, or <code>"none"</code>.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-3">Examples<a class="anchor" aria-label="anchor" href="#examples-3"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span></span>
 <span>  min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">12</span>,</span>
@@ -478,9 +425,10 @@ the axis line, major gridlines, and minor gridlines respectively.</p></dd>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-set_y_axis"></a><div class="section">
-<h3 id="method-set-y-axis-">Method <code>set_y_axis()</code><a class="anchor" aria-label="anchor" href="#method-set-y-axis-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-set_y_axis"></a><div class="section">
+<h3 id="encharterbase-set-y-axis-"><code>EncharterBase$set_y_axis()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-y-axis-"></a></h3>
 <p>Set primary Y-axis scaling, tick marks, and label formatting.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span></span>
@@ -514,97 +462,75 @@ the axis line, major gridlines, and minor gridlines respectively.</p></dd>
 <span>  crosses_at <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_pos <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>min, max</code></dt>
 <dd><p>Numeric axis limits.</p></dd>
 
-
-<dt><code>major, minor</code></dt>
+      <dt><code>major, minor</code></dt>
 <dd><p>Numeric major/minor unit intervals.</p></dd>
 
-
-<dt><code>major_time, minor_time</code></dt>
+      <dt><code>major_time, minor_time</code></dt>
 <dd><p>Time unit for date axes: <code>"days"</code>,
 <code>"months"</code>, or <code>"years"</code>.</p></dd>
 
-
-<dt><code>base_time</code></dt>
+      <dt><code>base_time</code></dt>
 <dd><p>Base time unit for date axes.</p></dd>
 
-
-<dt><code>major_tick, minor_tick</code></dt>
+      <dt><code>major_tick, minor_tick</code></dt>
 <dd><p>Tick mark style: <code>"cross"</code>,
 <code>"in"</code>, <code>"out"</code>, or <code>"none"</code>.</p></dd>
 
-
-<dt><code>format</code></dt>
+      <dt><code>format</code></dt>
 <dd><p>Number format string.</p></dd>
 
-
-<dt><code>log_base</code></dt>
+      <dt><code>log_base</code></dt>
 <dd><p>Numeric base for logarithmic scaling.</p></dd>
 
-
-<dt><code>color</code></dt>
+      <dt><code>color</code></dt>
 <dd><p>Six-digit hex color for the axis line.</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name.</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Numeric label font size in points.</p></dd>
 
-
-<dt><code>bold, italic</code></dt>
+      <dt><code>bold, italic</code></dt>
 <dd><p>Logical font style.</p></dd>
 
-
-<dt><code>font_color</code></dt>
+      <dt><code>font_color</code></dt>
 <dd><p>Six-digit hex color for axis tick labels.</p></dd>
 
-
-<dt><code>rotation</code></dt>
+      <dt><code>rotation</code></dt>
 <dd><p>Numeric label rotation in degrees.</p></dd>
 
-
-<dt><code>grid_color, minor_grid_color</code></dt>
+      <dt><code>grid_color, minor_grid_color</code></dt>
 <dd><p>Hex colors for major/minor gridlines.</p></dd>
 
-
-<dt><code>gridlines, minor_gridlines</code></dt>
+      <dt><code>gridlines, minor_gridlines</code></dt>
 <dd><p><code>TRUE</code>/<code>FALSE</code> or a dash style
 string.</p></dd>
 
-
-<dt><code>cross_between</code></dt>
+      <dt><code>cross_between</code></dt>
 <dd><p><code>"between"</code> or <code>"midCat"</code>.</p></dd>
 
-
-<dt><code>line_width, grid_width, minor_grid_width</code></dt>
+      <dt><code>line_width, grid_width, minor_grid_width</code></dt>
 <dd><p>Numeric widths in points.</p></dd>
 
-
-<dt><code>crosses</code></dt>
+      <dt><code>crosses</code></dt>
 <dd><p><code>"autoZero"</code>, <code>"min"</code>, or <code>"max"</code>.</p></dd>
 
-
-<dt><code>crosses_at</code></dt>
+      <dt><code>crosses_at</code></dt>
 <dd><p>Numeric crossing value; overrides <code>crosses</code>.</p></dd>
 
-
-<dt><code>label_pos</code></dt>
+      <dt><code>label_pos</code></dt>
 <dd><p><code>"nextTo"</code>, <code>"high"</code>, <code>"low"</code>, or
 <code>"none"</code>.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-4">Examples<a class="anchor" aria-label="anchor" href="#examples-4"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span></span>
 <span>  min        <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -616,9 +542,10 @@ string.</p></dd>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-set_data_label_style"></a><div class="section">
-<h3 id="method-set-data-label-style-">Method <code>set_data_label_style()</code><a class="anchor" aria-label="anchor" href="#method-set-data-label-style-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-set_data_label_style"></a><div class="section">
+<h3 id="encharterbase-set-data-label-style-"><code>EncharterBase$set_data_label_style()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-data-label-style-"></a></h3>
 <p>Configure global data label defaults for all series.</p>
 <p>Per-series overrides can be set via the <code>show_val</code>/<code>show_cat</code>
 arguments in <code>$add_series()</code>.</p><div class="section">
@@ -630,44 +557,38 @@ arguments in <code>$add_series()</code>.</p><div class="section">
 <span>  pos <span class="op">=</span> <span class="st">"t"</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>show_val</code></dt>
 <dd><p>Logical; show the data point value. Default <code>TRUE</code>.</p></dd>
 
-
-<dt><code>show_cat</code></dt>
+      <dt><code>show_cat</code></dt>
 <dd><p>Logical; show the category name. Default <code>FALSE</code>.</p></dd>
 
-
-<dt><code>show_legend_key</code></dt>
+      <dt><code>show_legend_key</code></dt>
 <dd><p>Logical; show the series color swatch next to each
 label. Default <code>FALSE</code>.</p></dd>
 
-
-<dt><code>pos</code></dt>
+      <dt><code>pos</code></dt>
 <dd><p>Label position: <code>"t"</code> (top, default), <code>"b"</code>
 (bottom), <code>"l"</code>, <code>"r"</code>, <code>"ctr"</code>, <code>"inEnd"</code>,
 <code>"outEnd"</code>, <code>"bestFit"</code>.</p></dd>
 
-
-<dt><code>...</code></dt>
+      <dt><code>...</code></dt>
 <dd><p>Additional font style arguments passed to the label text
 properties (e.g. <code>font_size</code>, <code>font_color</code>, <code>bold</code>).</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-5">Examples<a class="anchor" aria-label="anchor" href="#examples-5"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_data_label_style</span><span class="op">(</span>show_val <span class="op">=</span> <span class="cn">TRUE</span>, pos <span class="op">=</span> <span class="st">"outEnd"</span>, font_size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-set_legend_style"></a><div class="section">
-<h3 id="method-set-legend-style-">Method <code>set_legend_style()</code><a class="anchor" aria-label="anchor" href="#method-set-legend-style-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-set_legend_style"></a><div class="section">
+<h3 id="encharterbase-set-legend-style-"><code>EncharterBase$set_legend_style()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-legend-style-"></a></h3>
 <p>Configure the chart legend.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span></span>
@@ -680,130 +601,111 @@ properties (e.g. <code>font_size</code>, <code>font_color</code>, <code>bold</co
 <span>  italic <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>pos</code></dt>
 <dd><p>Legend position: <code>"t"</code>, <code>"b"</code>, <code>"l"</code>,
 <code>"r"</code> (default), or <code>"none"</code> to hide.</p></dd>
 
-
-<dt><code>align</code></dt>
+      <dt><code>align</code></dt>
 <dd><p>Legend alignment relative to the chart: <code>"ctr"</code>
 (default), <code>"min"</code>, or <code>"max"</code>.</p></dd>
 
-
-<dt><code>overlay</code></dt>
+      <dt><code>overlay</code></dt>
 <dd><p>Logical; if <code>TRUE</code> the legend overlaps the plot area.</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Numeric font size in points.</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name.</p></dd>
 
-
-<dt><code>bold, italic</code></dt>
+      <dt><code>bold, italic</code></dt>
 <dd><p>Logical font style.</p></dd>
 
-
-<dt><code>color</code></dt>
+      <dt><code>color</code></dt>
 <dd><p>Six-digit hex color for the legend text.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-6">Examples<a class="anchor" aria-label="anchor" href="#examples-6"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"b"</span>, font_size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-set_chart_style"></a><div class="section">
-<h3 id="method-set-chart-style-">Method <code>set_chart_style()</code><a class="anchor" aria-label="anchor" href="#method-set-chart-style-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-set_chart_style"></a><div class="section">
+<h3 id="encharterbase-set-chart-style-"><code>EncharterBase$set_chart_style()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-chart-style-"></a></h3>
 <p>Style the outer chart area (background and border).</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_chart_style</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"FFFFFF"</span>, line <span class="op">=</span> <span class="cn">NULL</span>, line_width <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>fill</code></dt>
 <dd><p>Six-digit hex color for the chart background.
 Default <code>"FFFFFF"</code>.</p></dd>
 
-
-<dt><code>line</code></dt>
+      <dt><code>line</code></dt>
 <dd><p>Six-digit hex color for the chart border. <code>NULL</code> for no
 border.</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Numeric border width in points. Default <code>1</code>.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-7">Examples<a class="anchor" aria-label="anchor" href="#examples-7"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_chart_style</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"F5F5F5"</span>, line <span class="op">=</span> <span class="st">"CCCCCC"</span>, line_width <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-set_plot_style"></a><div class="section">
-<h3 id="method-set-plot-style-">Method <code>set_plot_style()</code><a class="anchor" aria-label="anchor" href="#method-set-plot-style-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-set_plot_style"></a><div class="section">
+<h3 id="encharterbase-set-plot-style-"><code>EncharterBase$set_plot_style()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-plot-style-"></a></h3>
 <p>Style the inner plot area (background and border).</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_plot_style</span><span class="op">(</span>fill <span class="op">=</span> <span class="cn">NULL</span>, line <span class="op">=</span> <span class="cn">NULL</span>, line_width <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>fill</code></dt>
 <dd><p>Six-digit hex color for the plot area background.
 <code>NULL</code> for transparent.</p></dd>
 
-
-<dt><code>line</code></dt>
+      <dt><code>line</code></dt>
 <dd><p>Six-digit hex color for the plot area border.</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Numeric border width in points. Default <code>1</code>.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-8">Examples<a class="anchor" aria-label="anchor" href="#examples-8"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_plot_style</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"FAFAFA"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-print"></a><div class="section">
-<h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-print"></a><div class="section">
+<h3 id="encharterbase-print-"><code>EncharterBase$print()</code><a class="anchor" aria-label="anchor" href="#encharterbase-print-"></a></h3>
 <p>Print a summary of the chart object.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-9">Examples<a class="anchor" aria-label="anchor" href="#examples-9"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-EncharterBase-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+<p></p><hr><a id="method-EncharterBase-clone"></a><div class="section">
+<h3 id="encharterbase-clone-"><code>EncharterBase$clone()</code><a class="anchor" aria-label="anchor" href="#encharterbase-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -814,31 +716,32 @@ border.</p></dd>
 
 </div>
 
+
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_chart_title`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_chart_title()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Monthly Sales"</span>, font_size <span class="op">=</span> <span class="fl">14</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_x_title`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_x_title()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span><span class="st">"Month"</span>, font_color <span class="op">=</span> <span class="st">"888888"</span>, italic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_y_title`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_y_title()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Revenue (USD)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_x_axis`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_x_axis()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span></span></span>
@@ -850,7 +753,7 @@ border.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_y_axis`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_y_axis()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span></span></span>
@@ -863,31 +766,31 @@ border.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_data_label_style`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_data_label_style()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_data_label_style</span><span class="op">(</span>show_val <span class="op">=</span> <span class="cn">TRUE</span>, pos <span class="op">=</span> <span class="st">"outEnd"</span>, font_size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_legend_style`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_legend_style()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"b"</span>, font_size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_chart_style`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_chart_style()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"bar"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_chart_style</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"F5F5F5"</span>, line <span class="op">=</span> <span class="st">"CCCCCC"</span>, line_width <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$set_plot_style`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$set_plot_style()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_plot_style</span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"FAFAFA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `EncharterBase$print`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `EncharterBase$print()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span></span></span>
