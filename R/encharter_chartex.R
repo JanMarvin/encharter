@@ -433,11 +433,11 @@ ChartEx <- R6::R6Class(
       x
     },
 
-    # Renders gridlines for modern charts
-    render_gridlines = function(axis_node, type, params) {
+    # Renders grid lines for modern charts
+    render_grid_lines = function(axis_node, type, params) {
       # type is "majorGridlines" or "minorGridlines"
       prefix <- if (type == "majorGridlines") "" else "minor_"
-      style_val <- params[[paste0(prefix, "gridlines")]]
+      style_val <- params[[paste0(prefix, "grid_lines")]]
 
       if (is.null(style_val) || isFALSE(style_val)) return()
 
@@ -520,14 +520,14 @@ ChartEx <- R6::R6Class(
       private$render_color_core(ln_fill, s$color %||% "000000")
 
       # 5. Gridlines (Aligned with Chart logic)
-      if (!is.null(s$gridlines) && !isFALSE(s$gridlines)) {
+      if (!is.null(s$grid_lines) && !isFALSE(s$grid_lines)) {
         g <- xml_add_child(ax, "cx:majorGridlines")
         sp <- xml_add_child(g, "cx:spPr")
         ln <- xml_add_child(sp, "a:ln", w = as.character(round((s$grid_width %||% 0.75) * 12700)))
         private$render_color_core(xml_add_child(ln, "a:solidFill"), s$grid_color %||% "D9D9D9")
 
         # dash/dot logic
-        dash_val <- switch(as.character(s$gridlines),
+        dash_val <- switch(as.character(s$grid_lines),
                            "dashed" = "dash", "dash" = "dash",
                            "dotted" = "dot", "dot" = "dot", NULL)
         if (!is.null(dash_val)) xml_add_child(ln, "a:prstDash", val = dash_val)

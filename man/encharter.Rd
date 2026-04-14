@@ -25,7 +25,7 @@ object for standard OOXML chart types (bar, line, scatter, …) or a
 \code{ChartEx} object for modern extended chart types (waterfall, treemap, …).
 
 The `Chart` class provides a flexible interface to build Office OpenXML
-(OOXML) chart objects. It allows for granular control over gridlines,
+(OOXML) chart objects. It allows for granular control over grid lines,
 secondary axes, and combined chart types (e.g., Bar and Line) within a
 single plot area.
 
@@ -298,9 +298,9 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   font_color = NULL,
   rotation = NULL,
   grid_color = NULL,
-  gridlines = NULL,
+  grid_lines = NULL,
   minor_grid_color = NULL,
-  minor_gridlines = NULL,
+  minor_grid_lines = NULL,
   cross_between = NULL,
   line_width = NULL,
   grid_width = NULL,
@@ -330,10 +330,10 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
       \item{\code{rotation}}{Rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+      \item{\code{grid_color, minor_grid_color}}{Hex color for the grid lines.}
+      \item{\code{grid_lines, minor_grid_lines}}{Logical. Show or hide grid lines.}
       \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
-      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and grid lines.}
       \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
       \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
       \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
@@ -369,9 +369,9 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   font_color = NULL,
   rotation = NULL,
   grid_color = NULL,
-  gridlines = NULL,
+  grid_lines = NULL,
   minor_grid_color = NULL,
-  minor_gridlines = NULL,
+  minor_grid_lines = NULL,
   cross_between = NULL,
   line_width = NULL,
   grid_width = NULL,
@@ -401,10 +401,10 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
       \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
       \item{\code{rotation}}{Rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex color for the gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Logical. Show or hide gridlines.}
+      \item{\code{grid_color, minor_grid_color}}{Hex color for the grid lines.}
+      \item{\code{grid_lines, minor_grid_lines}}{Logical. Show or hide grid lines.}
       \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
-      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and gridlines.}
+      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and grid lines.}
       \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
       \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
       \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}

@@ -160,7 +160,7 @@ chart$set_chart_title(
 
 `encharter` ships with an opinionated set of defaults that produce
 clean, neutral charts without any extra configuration. The chart
-background is white, the plot area is transparent, vertical gridlines
+background is white, the plot area is transparent, vertical grid lines
 are off by default, and the legend sits to the right. These defaults are
 a deliberate subset of what OOXML allows — enough to cover most cases
 without overwhelming the API.
@@ -179,13 +179,13 @@ chart$set_y_title("Revenue (EUR)", bold = TRUE)
 ### Axes
 
 ``` r
-# Value axis: fixed range, thousands separator, light gridlines
+# Value axis: fixed range, thousands separator, light grid lines
 chart$set_y_axis(
   min        = 0,
   max        = 600,
   major      = 100,
   format     = "#,##0",
-  gridlines  = TRUE,
+  grid_lines = TRUE,
   grid_color = "EEEEEE"
 )
 
@@ -207,7 +207,7 @@ chart$set_plot_style(fill = "FFFFFF")
 
 ``` r
 # Global default for all series
-# the position is relative to the chart type, while some chart types support 
+# the position is relative to the chart type, while some chart types support
 # "t", "b" (e.g., line) others require "outEnd" (bar charts)
 chart$set_data_label_style(show_val = TRUE, font_size = 9)
 
@@ -223,7 +223,7 @@ chart$set_legend_style(pos = "none")                      # hidden
 ```
 
 ``` r
-wb <- wb |> 
+wb <- wb |>
   wb_add_encharter(graph = chart, dims = "D20:K36")
 
 if (interactive()) wb$open()
@@ -286,7 +286,7 @@ chart <- ec("lineChart")
 chart$set_chart_title("Headcount by Department", bold = TRUE)
 chart$set_x_title("Month")
 chart$set_y_title("Employees")
-chart$set_y_axis(min = 0, max = 80, major = 20, gridlines = TRUE, grid_color = "EEEEEE")
+chart$set_y_axis(min = 0, max = 80, major = 20, grid_lines = TRUE, grid_color = "EEEEEE")
 
 chart$add_series(
   header = Engineering,
@@ -346,7 +346,7 @@ wb_df <- wb_data(wb)
 
 chart <- ec("barChart")
 chart$set_chart_title("Quarterly Revenue by Product (EUR k)", bold = TRUE)
-chart$set_y_axis(min = 0, format = "#,##0", gridlines = TRUE, grid_color = "EEEEEE")
+chart$set_y_axis(min = 0, format = "#,##0", grid_lines = TRUE, grid_color = "EEEEEE")
 
 colors    <- c("2E4057", "048A81", "E84855", "F4A261")
 quarters  <- c("Q1", "Q2", "Q3", "Q4")
@@ -395,7 +395,7 @@ wb_df <- wb_data(wb)
 
 chart <- ec("barChart")
 chart$set_chart_title("Revenue Composition by Quarter (EUR k)", bold = TRUE)
-chart$set_y_axis(format = "#,##0", gridlines = TRUE, grid_color = "EEEEEE")
+chart$set_y_axis(format = "#,##0", grid_lines = TRUE, grid_color = "EEEEEE")
 
 # using the range approach here (interchangeable with wb_data())
 for (i in seq_along(quarters)) {
@@ -473,7 +473,7 @@ chart$add_series(
   line_width = 2
 )
 
-chart$set_y_axis(min = 0, format = "#,##0", gridlines = TRUE, grid_color = "EEEEEE")
+chart$set_y_axis(min = 0, format = "#,##0", grid_lines = TRUE, grid_color = "EEEEEE")
 chart$set_y2_axis(min = 0, max = 0.4, format = "0%")
 chart$set_y_title("Revenue (EUR k)", bold = TRUE)
 chart$set_y2_title("Margin", bold = TRUE)
@@ -520,8 +520,8 @@ chart <- ec("scatterChart")
 chart$set_chart_title("Deal Size vs. Close Rate", bold = TRUE)
 chart$set_x_title("Avg Deal Size (EUR k)")
 chart$set_y_title("Close Rate")
-chart$set_y_axis(min = 0, max = 0.6, format = "0%", gridlines = TRUE, grid_color = "EEEEEE")
-chart$set_x_axis(min = 0, gridlines = TRUE, grid_color = "EEEEEE")
+chart$set_y_axis(min = 0, max = 0.6, format = "0%", grid_lines = TRUE, grid_color = "EEEEEE")
+chart$set_x_axis(min = 0, grid_lines = TRUE, grid_color = "EEEEEE")
 
 chart$add_series(
   header      = "",

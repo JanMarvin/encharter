@@ -96,13 +96,13 @@ test_that("set_x_title and set_y_title store correctly", {
 
 test_that("set_x_axis updates axis_params$x", {
   ch <- ec("line")
-  ch$set_x_axis(min = 0, max = 10, major = 2, gridlines = TRUE,
+  ch$set_x_axis(min = 0, max = 10, major = 2, grid_lines = TRUE,
                 font_color = "888888", rotation =  -45)
 
   expect_equal(ch$axis_params$x$min, 0)
   expect_equal(ch$axis_params$x$max, 10)
   expect_equal(ch$axis_params$x$major, 2)
-  expect_true(ch$axis_params$x$gridlines)
+  expect_true(ch$axis_params$x$grid_lines)
   expect_equal(ch$axis_params$x$font_color, "888888")
   expect_equal(ch$axis_params$x$rotation, -45)
 })
@@ -110,13 +110,13 @@ test_that("set_x_axis updates axis_params$x", {
 test_that("set_y_axis updates axis_params$y", {
   ch <- ec("bar")
   ch$set_y_axis(min = 0, max = 1000, major = 200, format = "#,##0",
-                gridlines = TRUE, grid_color = "DDDDDD")
+                grid_lines = TRUE, grid_color = "DDDDDD")
 
   expect_equal(ch$axis_params$y$min, 0)
   expect_equal(ch$axis_params$y$max, 1000)
   expect_equal(ch$axis_params$y$major, 200)
   expect_equal(ch$axis_params$y$format, "#,##0")
-  expect_true(ch$axis_params$y$gridlines)
+  expect_true(ch$axis_params$y$grid_lines)
   expect_equal(ch$axis_params$y$grid_color, "DDDDDD")
 })
 
@@ -151,14 +151,14 @@ test_that("set_axis_params validates tick mark arguments", {
   expect_no_error(ch$set_x_axis(major_tick = "none"))
 })
 
-test_that("set_axis_params validates gridlines dash style", {
+test_that("set_axis_params validates grid_lines dash style", {
   ch <- ec("line")
-  expect_error(ch$set_x_axis(gridlines = "wavy"), regexp = "gridlines")
+  expect_error(ch$set_x_axis(grid_lines = "wavy"), regexp = "grid_lines")
 
-  expect_no_error(ch$set_x_axis(gridlines = "dash"))
-  expect_no_error(ch$set_x_axis(gridlines = "dot"))
-  expect_no_error(ch$set_x_axis(gridlines = TRUE))
-  expect_no_error(ch$set_x_axis(gridlines = FALSE))
+  expect_no_error(ch$set_x_axis(grid_lines = "dash"))
+  expect_no_error(ch$set_x_axis(grid_lines = "dot"))
+  expect_no_error(ch$set_x_axis(grid_lines = TRUE))
+  expect_no_error(ch$set_x_axis(grid_lines = FALSE))
 })
 
 test_that("set_axis_params is idempotent — only updates supplied fields", {
@@ -166,8 +166,8 @@ test_that("set_axis_params is idempotent — only updates supplied fields", {
   # Set one field
   ch$set_y_axis(min = 5)
   expect_equal(ch$axis_params$y$min, 5)
-  # gridlines default is TRUE for y-axis — should be unchanged
-  expect_true(ch$axis_params$y$gridlines)
+  # grid_lines default is TRUE for y-axis — should be unchanged
+  expect_true(ch$axis_params$y$grid_lines)
 
   # Update a different field
   ch$set_y_axis(max = 100)
@@ -185,9 +185,9 @@ test_that("set_y2_axis and set_x2_axis update correct axis_params slot", {
   # y-axis should be untouched
   expect_null(ch$axis_params$y$format)
 
-  ch$set_x2_axis(gridlines = TRUE)
-  expect_true(ch$axis_params$x2$gridlines)
-  expect_false(ch$axis_params$x$gridlines)
+  ch$set_x2_axis(grid_lines = TRUE)
+  expect_true(ch$axis_params$x2$grid_lines)
+  expect_false(ch$axis_params$x$grid_lines)
 })
 
 test_that("set_chart_style and set_plot_style store correctly", {
@@ -368,9 +368,9 @@ test_that("render() respects axis min/max", {
   expect_match(xml_str, '<c:max val="500"')
 })
 
-test_that("render() outputs gridlines when enabled", {
+test_that("render() outputs grid_lines when enabled", {
   ch <- ec("bar")
-  ch$set_x_axis(gridlines = TRUE)
+  ch$set_x_axis(grid_lines = TRUE)
   ch$add_series(data = "'Sheet1'!$A$2:$A$5")
   xml_str <- as.character(ch$render())
   expect_match(xml_str, "majorGridlines")
@@ -450,8 +450,8 @@ test_that("ChartEx add_series rejects non-extended type", {
 
 test_that("ChartEx set_x_axis updates axis_params$x", {
   ch <- ec("waterfall")
-  ch$set_x_axis(gridlines = TRUE, font_color = "444444")
-  expect_true(ch$axis_params$x$gridlines)
+  ch$set_x_axis(grid_lines = TRUE, font_color = "444444")
+  expect_true(ch$axis_params$x$grid_lines)
   expect_equal(ch$axis_params$x$font_color, "444444")
 })
 

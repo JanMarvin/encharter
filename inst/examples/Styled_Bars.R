@@ -49,10 +49,10 @@ my_chart$
   set_y_axis(
     line_width       = 2,
     color            = "000000",
-    gridlines        = "dash",     # Major grid style
+    grid_lines        = "dash",     # Major grid style
     grid_width       = 1.5,
     grid_color       = "D9D9D9",
-    minor_gridlines  = "dotted",   # Minor grid style
+    minor_grid_lines  = "dotted",   # Minor grid style
     minor_grid_width = 1,
     minor_grid_color = "F2F2F2"
   )$

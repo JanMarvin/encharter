@@ -26,7 +26,7 @@ my_chart$
     label_pos = "low"
   )$
   set_y_axis(
-    gridlines = "solid",
+    grid_lines = "solid",
     grid_color = "D9D9D9"
   )
 

@@ -39,7 +39,7 @@ ec("line")$set_y_title("Revenue (USD)", bold = TRUE)
 ec("line")$set_x_axis(
   min = 0, max = 12,
   major_tick = "out",
-  gridlines  = TRUE,
+  grid_lines = TRUE,
   font_color = "666666",
   rotation   = -45
 )
@@ -53,7 +53,7 @@ ec("bar")$set_y_axis(
   max        = 1000,
   major      = 200,
   format     = "#,##0",
-  gridlines  = TRUE,
+  grid_lines = TRUE,
   grid_color = "DDDDDD"
 )
 
@@ -302,9 +302,9 @@ and style parameters. Modified via \code{$set_x_axis()}, etc.}
   font_color = NULL,
   rotation = NULL,
   grid_color = NULL,
-  gridlines = NULL,
+  grid_lines = NULL,
   minor_grid_color = NULL,
-  minor_gridlines = NULL,
+  minor_grid_lines = NULL,
   cross_between = NULL,
   line_width = NULL,
   grid_width = NULL,
@@ -338,14 +338,14 @@ is set by \code{major_time}/\code{minor_time}.}
 \code{color} when not set.}
       \item{\code{rotation}}{Numeric label rotation in degrees.}
       \item{\code{grid_color, minor_grid_color}}{Six-digit hex colors for major/minor
-gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{Show gridlines. \code{TRUE}/\code{FALSE}
+grid_lines.}
+      \item{\code{grid_lines, minor_grid_lines}}{Show grid lines. \code{TRUE}/\code{FALSE}
 to toggle; or a dash style string (\code{"dash"}, \code{"dot"},
 \code{"dashDot"}, etc.) to show styled lines.}
       \item{\code{cross_between}}{Where the value axis crosses: \code{"between"}
 (default, between categories) or \code{"midCat"} (through categories).}
       \item{\code{line_width, grid_width, minor_grid_width}}{Numeric widths in points for
-the axis line, major gridlines, and minor gridlines respectively.}
+the axis line, major grid lines, and minor grid lines respectively.}
       \item{\code{crosses}}{Where this axis crosses its perpendicular axis:
 \code{"autoZero"} (default), \code{"min"}, or \code{"max"}.}
       \item{\code{crosses_at}}{Numeric axis value at which to cross. Overrides
@@ -360,7 +360,7 @@ the axis line, major gridlines, and minor gridlines respectively.}
     \preformatted{ec("line")$set_x_axis(
   min = 0, max = 12,
   major_tick = "out",
-  gridlines  = TRUE,
+  grid_lines = TRUE,
   font_color = "666666",
   rotation   = -45
 )
@@ -396,9 +396,9 @@ the axis line, major gridlines, and minor gridlines respectively.}
   font_color = NULL,
   rotation = NULL,
   grid_color = NULL,
-  gridlines = NULL,
+  grid_lines = NULL,
   minor_grid_color = NULL,
-  minor_gridlines = NULL,
+  minor_grid_lines = NULL,
   cross_between = NULL,
   line_width = NULL,
   grid_width = NULL,
@@ -427,8 +427,8 @@ the axis line, major gridlines, and minor gridlines respectively.}
       \item{\code{bold, italic}}{Logical font style.}
       \item{\code{font_color}}{Six-digit hex color for axis tick labels.}
       \item{\code{rotation}}{Numeric label rotation in degrees.}
-      \item{\code{grid_color, minor_grid_color}}{Hex colors for major/minor gridlines.}
-      \item{\code{gridlines, minor_gridlines}}{\code{TRUE}/\code{FALSE} or a dash style
+      \item{\code{grid_color, minor_grid_color}}{Hex colors for major/minor grid lines.}
+      \item{\code{grid_lines, minor_grid_lines}}{\code{TRUE}/\code{FALSE} or a dash style
 string.}
       \item{\code{cross_between}}{\code{"between"} or \code{"midCat"}.}
       \item{\code{line_width, grid_width, minor_grid_width}}{Numeric widths in points.}
@@ -446,7 +446,7 @@ string.}
   max        = 1000,
   major      = 200,
   format     = "#,##0",
-  gridlines  = TRUE,
+  grid_lines = TRUE,
   grid_color = "DDDDDD"
 )
 }

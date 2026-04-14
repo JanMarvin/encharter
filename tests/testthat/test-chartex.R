@@ -21,7 +21,7 @@ test_that("ChartEx: Treemap and Sunburst", {
 
   hs$
     add_series("Dat!$B$1", "Dat!$B$2:$B$10", type = "paretoLine")$
-    set_y_axis(gridlines = "dashed")
+    set_y_axis(grid_lines = "dashed")
   wb <- openxlsx2::wb_add_encharter(wb, graph = hs)
 
   # Sunburst
