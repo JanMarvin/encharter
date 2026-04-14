@@ -10,12 +10,12 @@ chart$
   set_x_axis(
     color = wb_color("red"),        # Axis line color
     grid_color = wb_color("gray"), # Gridline color
-    gridlines = TRUE
+    grid_lines = TRUE
   )$
   set_y_axis(
     color = wb_color("red"),        # Axis line color
     grid_color = wb_color("gray"), # Gridline color
-    gridlines = TRUE
+    grid_lines = TRUE
   )$
   add_series(
     header = "'Sheet 1'!$B$1",

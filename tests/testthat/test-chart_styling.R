@@ -139,7 +139,7 @@ test_that("ChartEx chart and plot styling works", {
   expect_equal(xml_attr(plot_ln, "w"), "12700")
 })
 
-test_that("Major and Minor gridlines are correctly rendered and visible", {
+test_that("Major and Minor grid_lines are correctly rendered and visible", {
 
   # 1. Create the dataset
   sales_data <- data.frame(
@@ -158,11 +158,11 @@ test_that("Major and Minor gridlines are correctly rendered and visible", {
     color  = "4472C4"
   )$set_y_axis(
     # Major: Dashed, 1.5pt, Dark Grey
-    gridlines        = "dash",
+    grid_lines        = "dash",
     grid_width       = 1.5,
     grid_color       = "333333",
     # Minor: Dotted, 0.5pt, Light Grey
-    minor_gridlines  = "dotted",
+    minor_grid_lines  = "dotted",
     minor_grid_width = 0.5,
     minor_grid_color = "D9D9D9"
   )
@@ -199,7 +199,7 @@ test_that("ChartEx renders full styling and axis properties", {
     max = 500,
     major = 100,
     minor = 50,
-    gridlines = "dash",
+    grid_lines = "dash",
     grid_color = "FF0000",
     color = "000000",      # Black axis line
     font_size = 12,        # 12pt font

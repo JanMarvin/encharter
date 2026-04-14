@@ -136,10 +136,10 @@ EncharterBase <- R6::R6Class(
     #'   \code{y}, \code{y2}). Each entry is a named list of scaling, formatting,
     #'   and style parameters. Modified via \code{$set_x_axis()}, etc.
     axis_params = list(
-      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", gridlines = TRUE,  minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", gridlines = FALSE, minor_gridlines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
+      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = TRUE,  minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
     ),
 
     #' @description Set the chart's main title.
@@ -219,12 +219,12 @@ EncharterBase <- R6::R6Class(
     #' @param bold,italic Logical font style for tick labels.
     #' @param rotation Numeric label rotation in degrees.
     #' @param grid_color,minor_grid_color Six-digit hex colors for major/minor
-    #'   gridlines.
-    #' @param gridlines,minor_gridlines Show gridlines. \code{TRUE}/\code{FALSE}
+    #'   grid_lines.
+    #' @param grid_lines,minor_grid_lines Show grid lines. \code{TRUE}/\code{FALSE}
     #'   to toggle; or a dash style string (\code{"dash"}, \code{"dot"},
     #'   \code{"dashDot"}, etc.) to show styled lines.
     #' @param line_width,grid_width,minor_grid_width Numeric widths in points for
-    #'   the axis line, major gridlines, and minor gridlines respectively.
+    #'   the axis line, major grid lines, and minor grid lines respectively.
     #' @param cross_between Where the value axis crosses: \code{"between"}
     #'   (default, between categories) or \code{"midCat"} (through categories).
     #' @param crosses Where this axis crosses its perpendicular axis:
@@ -237,7 +237,7 @@ EncharterBase <- R6::R6Class(
     #' ec("line")$set_x_axis(
     #'   min = 0, max = 12,
     #'   major_tick = "out",
-    #'   gridlines  = TRUE,
+    #'   grid_lines = TRUE,
     #'   font_color = "666666",
     #'   rotation   = -45
     #' )
@@ -247,8 +247,8 @@ EncharterBase <- R6::R6Class(
                           format = NULL, log_base = NULL, color = NULL,
                           font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           font_color = NULL, rotation =  NULL,
-                          grid_color = NULL, gridlines = NULL,
-                          minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                          grid_color = NULL, grid_lines = NULL,
+                          minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                           crosses = NULL, crosses_at = NULL, label_pos = NULL) {
         private$set_axis_params(
@@ -257,8 +257,8 @@ EncharterBase <- R6::R6Class(
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
           minor_tick = minor_tick, format = format, log_base = log_base, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-          font_color = font_color, rotation = rotation, grid_color = grid_color, gridlines = gridlines,
-          minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
+          font_color = font_color, rotation = rotation, grid_color = grid_color, grid_lines = grid_lines,
+          minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
           label_pos = label_pos
@@ -281,8 +281,8 @@ EncharterBase <- R6::R6Class(
     #' @param font_name Font typeface name.
     #' @param bold,italic Logical font style.
     #' @param rotation Numeric label rotation in degrees.
-    #' @param grid_color,minor_grid_color Hex colors for major/minor gridlines.
-    #' @param gridlines,minor_gridlines \code{TRUE}/\code{FALSE} or a dash style
+    #' @param grid_color,minor_grid_color Hex colors for major/minor grid lines.
+    #' @param grid_lines,minor_grid_lines \code{TRUE}/\code{FALSE} or a dash style
     #'   string.
     #' @param line_width,grid_width,minor_grid_width Numeric widths in points.
     #' @param cross_between \code{"between"} or \code{"midCat"}.
@@ -296,7 +296,7 @@ EncharterBase <- R6::R6Class(
     #'   max        = 1000,
     #'   major      = 200,
     #'   format     = "#,##0",
-    #'   gridlines  = TRUE,
+    #'   grid_lines = TRUE,
     #'   grid_color = "DDDDDD"
     #' )
     set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
@@ -305,8 +305,8 @@ EncharterBase <- R6::R6Class(
                           format = NULL, log_base = NULL, color = NULL,
                           font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           font_color = NULL, rotation =  NULL,
-                          grid_color = NULL, gridlines = NULL,
-                          minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                          grid_color = NULL, grid_lines = NULL,
+                          minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                           crosses = NULL, crosses_at = NULL, label_pos = NULL) {
         private$set_axis_params(
@@ -315,8 +315,8 @@ EncharterBase <- R6::R6Class(
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
           minor_tick = minor_tick, format = format, log_base = log_base, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-          font_color = font_color, rotation = rotation, grid_color = grid_color, gridlines = gridlines,
-          minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
+          font_color = font_color, rotation = rotation, grid_color = grid_color, grid_lines = grid_lines,
+          minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
           label_pos = label_pos
@@ -442,8 +442,8 @@ EncharterBase <- R6::R6Class(
                                format, log_base, color,
                                font_name, font_size, bold, italic,
                                font_color, rotation,
-                               grid_color, gridlines,
-                               minor_grid_color, minor_gridlines, cross_between,
+                               grid_color, grid_lines,
+                               minor_grid_color, minor_grid_lines, cross_between,
                                line_width, grid_width, minor_grid_width,
                                crosses, crosses_at, label_pos) {
 
@@ -454,8 +454,8 @@ EncharterBase <- R6::R6Class(
 
       DASH_TYPES <- c("solid", "dash", "dot", "dashDot", "lgDash",
                       "lgDashDot", "sysDash", "sysDot", "dashed", "dotted")
-      if (is.character(gridlines))       private$validate_input(gridlines,       DASH_TYPES, "gridlines")
-      if (is.character(minor_gridlines)) private$validate_input(minor_gridlines, DASH_TYPES, "minor_gridlines")
+      if (is.character(grid_lines))       private$validate_input(grid_lines,       DASH_TYPES, "grid_lines")
+      if (is.character(minor_grid_lines)) private$validate_input(minor_grid_lines, DASH_TYPES, "minor_grid_lines")
 
       params <- list(
         min = min, max = max, major = major, minor = minor,
@@ -464,8 +464,8 @@ EncharterBase <- R6::R6Class(
         format = format, log_base = log_base, color = color,
         font_name = font_name, font_size = font_size, bold = bold, italic = italic,
         font_color = font_color, rotation = rotation,
-        grid_color = grid_color, gridlines = gridlines,
-        minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
+        grid_color = grid_color, grid_lines = grid_lines,
+        minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
         cross_between = cross_between,
         line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
         crosses = crosses, crosses_at = crosses_at, label_pos = label_pos

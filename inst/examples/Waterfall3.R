@@ -37,8 +37,8 @@ my_wf$set_y_axis(
   font_size = 10,
   font_name = "Segoe UI",
   italic = TRUE,
-  grid_color = wb_color(hex = "#D9D9D9"), # Subtle gridlines using render_color_core
-  gridlines = TRUE,
+  grid_color = wb_color(hex = "#D9D9D9"), # Subtle grid_lines using render_color_core
+  grid_lines = TRUE,
   min = 0                # Forces baseline at 0
 )
 

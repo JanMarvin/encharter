@@ -23,7 +23,7 @@ my_funnel$set_chart_title("Sales Funnel")$
 my_pl <- ec("paretoLine")
 my_pl$set_chart_title("Pareto Line")$
   add_series("Data!$B$1", "Data!$B$2:$B$30")$
-  set_y_axis(gridlines = "dashed")
+  set_y_axis(grid_lines = "dashed")
 
 # sunburst
 my_sb <- ec("sunburst")

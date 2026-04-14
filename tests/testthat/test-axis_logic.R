@@ -9,8 +9,8 @@ test_that("Chart: Date Axes and Axis Units", {
     major = 2, major_time = "months",
     minor = 1, minor_time = "months",
     format = "mmm-yy", label_pos = "low",
-    gridlines = "dotted", grid_color = "#707070", # test grid lines
-    minor_gridlines = "dotted", minor_grid_color = "#707070", # test grid lines
+    grid_lines = "dotted", grid_color = "#707070", # test grid lines
+    minor_grid_lines = "dotted", minor_grid_color = "#707070", # test grid lines
   )
 
   chart$set_x_title("Foo", font_size = 14, bold = TRUE)

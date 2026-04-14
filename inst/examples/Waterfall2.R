@@ -20,7 +20,7 @@ my_wf$set_chart_title("2024 Financial Performance")$
              major_tick = "out",
              minor_tick = "cross")$
   set_y_axis(grid_color = wb_color(theme = "3"),   # Subtle theme-based grid
-             gridlines = "dot"
+             grid_lines = "dot"
   )
 
 # When you map it in ChartEx:

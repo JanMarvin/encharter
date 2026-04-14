@@ -2,7 +2,7 @@
 #'
 #' @description
 #' The `Chart` class provides a flexible interface to build Office OpenXML
-#' (OOXML) chart objects. It allows for granular control over gridlines,
+#' (OOXML) chart objects. It allows for granular control over grid lines,
 #' secondary axes, and combined chart types (e.g., Bar and Line) within a
 #' single plot area.
 #'
@@ -156,9 +156,9 @@ Chart <- R6::R6Class(
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
     #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
     #' @param rotation Rotation in degrees.
-    #' @param grid_color,minor_grid_color Hex color for the gridlines.
-    #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
-    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
+    #' @param grid_color,minor_grid_color Hex color for the grid lines.
+    #' @param grid_lines,minor_grid_lines Logical. Show or hide grid lines.
+    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and grid lines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
     #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
     #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
@@ -169,8 +169,8 @@ Chart <- R6::R6Class(
                            format = NULL, log_base = NULL, color = NULL,
                            font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                            font_color = NULL, rotation =  NULL,
-                           grid_color = NULL, gridlines = NULL,
-                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                           grid_color = NULL, grid_lines = NULL,
+                           minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                            crosses = "max", crosses_at = NULL, label_pos = NULL) {
         private$set_axis_params(
@@ -179,8 +179,8 @@ Chart <- R6::R6Class(
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
           minor_tick = minor_tick, format = format, log_base = log_base, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-          font_color = font_color, rotation = rotation, grid_color = grid_color, gridlines = gridlines,
-          minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
+          font_color = font_color, rotation = rotation, grid_color = grid_color, grid_lines = grid_lines,
+          minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
           label_pos = label_pos
@@ -204,9 +204,9 @@ Chart <- R6::R6Class(
     #' @param italic Logical; if `TRUE`, axis labels will be italicized.
     #' @param font_name Font typeface name (e.g., "Arial", "Calibri").
     #' @param rotation Rotation in degrees.
-    #' @param grid_color,minor_grid_color Hex color for the gridlines.
-    #' @param gridlines,minor_gridlines Logical. Show or hide gridlines.
-    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and gridlines.
+    #' @param grid_color,minor_grid_color Hex color for the grid lines.
+    #' @param grid_lines,minor_grid_lines Logical. Show or hide grid lines.
+    #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and grid lines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
     #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
     #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
@@ -217,8 +217,8 @@ Chart <- R6::R6Class(
                            format = NULL, log_base = NULL, color = NULL,
                            font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                            font_color = NULL, rotation =  NULL,
-                           grid_color = NULL, gridlines = NULL,
-                           minor_grid_color = NULL, minor_gridlines = NULL, cross_between = NULL,
+                           grid_color = NULL, grid_lines = NULL,
+                           minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
                            crosses = "max", crosses_at = NULL, label_pos = NULL) {
 
@@ -228,8 +228,8 @@ Chart <- R6::R6Class(
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
           minor_tick = minor_tick, format = format, log_base = log_base, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
-          font_color = font_color, rotation = rotation, grid_color = grid_color, gridlines = gridlines,
-          minor_grid_color = minor_grid_color, minor_gridlines = minor_gridlines,
+          font_color = font_color, rotation = rotation, grid_color = grid_color, grid_lines = grid_lines,
+          minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
           label_pos = label_pos
@@ -1100,14 +1100,14 @@ Chart <- R6::R6Class(
       xml_add_child(ax, "c:axPos", val = pos)
 
       # 3. Gridlines
-      if (!is.null(params$gridlines) && !isFALSE(params$gridlines)) {
+      if (!is.null(params$grid_lines) && !isFALSE(params$grid_lines)) {
         g <- xml_add_child(ax, "c:majorGridlines")
-        grid_style <- list(color = params$grid_color %||% "D9D9D9", width = params$grid_width, type = params$gridlines)
+        grid_style <- list(color = params$grid_color %||% "D9D9D9", width = params$grid_width, type = params$grid_lines)
         private$render_line_style(xml_add_child(g, "c:spPr"), grid_style)
       }
-      if (!is.null(params$minor_gridlines) && !isFALSE(params$minor_gridlines)) {
+      if (!is.null(params$minor_grid_lines) && !isFALSE(params$minor_grid_lines)) {
         mg <- xml_add_child(ax, "c:minorGridlines")
-        m_style <- list(color = params$minor_grid_color %||% "F2F2F2", width = params$minor_grid_width, type = params$minor_gridlines)
+        m_style <- list(color = params$minor_grid_color %||% "F2F2F2", width = params$minor_grid_width, type = params$minor_grid_lines)
         private$render_line_style(xml_add_child(mg, "c:spPr"), m_style)
       }
 
@@ -1195,14 +1195,14 @@ Chart <- R6::R6Class(
       xml_add_child(ax, "c:axPos", val = pos)
 
       # 3. Gridlines (MUST come here, before Title and NumFmt)
-      if (!is.null(params$gridlines) && !isFALSE(params$gridlines)) {
+      if (!is.null(params$grid_lines) && !isFALSE(params$grid_lines)) {
         g <- xml_add_child(ax, "c:majorGridlines")
-        style <- list(color = params$grid_color %||% "D9D9D9", width = params$grid_width, type = params$gridlines)
+        style <- list(color = params$grid_color %||% "D9D9D9", width = params$grid_width, type = params$grid_lines)
         private$render_line_style(xml_add_child(g, "c:spPr"), style)
       }
-      if (!is.null(params$minor_gridlines) && !isFALSE(params$minor_gridlines)) {
+      if (!is.null(params$minor_grid_lines) && !isFALSE(params$minor_grid_lines)) {
         mg <- xml_add_child(ax, "c:minorGridlines")
-        m_style <- list(color = params$minor_grid_color %||% "F2F2F2", width = params$minor_grid_width, type = params$minor_gridlines)
+        m_style <- list(color = params$minor_grid_color %||% "F2F2F2", width = params$minor_grid_width, type = params$minor_grid_lines)
         private$render_line_style(xml_add_child(mg, "c:spPr"), m_style)
       }
 
