@@ -161,7 +161,7 @@ Fig 1: Our first <code>encharter</code> chart
 <div class="section level2">
 <h2 id="styling">Styling<a class="anchor" aria-label="anchor" href="#styling"></a>
 </h2>
-<p><code>encharter</code> ships with an opinionated set of defaults that produce clean, neutral charts without any extra configuration. The chart background is white, the plot area is transparent, vertical gridlines are off by default, and the legend sits to the right. These defaults are a deliberate subset of what OOXML allows — enough to cover most cases without overwhelming the API.</p>
+<p><code>encharter</code> ships with an opinionated set of defaults that produce clean, neutral charts without any extra configuration. The chart background is white, the plot area is transparent, vertical grid lines are off by default, and the legend sits to the right. These defaults are a deliberate subset of what OOXML allows — enough to cover most cases without overwhelming the API.</p>
 <p>All styling calls are optional and can be mixed into any of the examples below.</p>
 <div class="section level3">
 <h3 id="titles">Titles<a class="anchor" aria-label="anchor" href="#titles"></a>
@@ -175,13 +175,13 @@ Fig 1: Our first <code>encharter</code> chart
 <h3 id="axes">Axes<a class="anchor" aria-label="anchor" href="#axes"></a>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Value axis: fixed range, thousands separator, light gridlines</span></span>
+<code class="sourceCode R"><span><span class="co"># Value axis: fixed range, thousands separator, light grid lines</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span></span>
 <span>  min        <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  max        <span class="op">=</span> <span class="fl">600</span>,</span>
 <span>  major      <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  format     <span class="op">=</span> <span class="st">"#,##0"</span>,</span>
-<span>  gridlines  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  grid_lines <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -203,7 +203,7 @@ Fig 1: Our first <code>encharter</code> chart
 </h3>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Global default for all series</span></span>
-<span><span class="co"># the position is relative to the chart type, while some chart types support </span></span>
+<span><span class="co"># the position is relative to the chart type, while some chart types support</span></span>
 <span><span class="co"># "t", "b" (e.g., line) others require "outEnd" (bar charts)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_data_label_style</span><span class="op">(</span>show_val <span class="op">=</span> <span class="cn">TRUE</span>, font_size <span class="op">=</span> <span class="fl">9</span><span class="op">)</span></span>
 <span></span>
@@ -217,7 +217,7 @@ Fig 1: Our first <code>encharter</code> chart
 <code class="sourceCode R"><span><span class="co"># chart$set_legend_style(pos = "bottom", font_size = 9)   # bottom</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span>pos <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span>                      <span class="co"># hidden</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="va">wb</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="va">wb</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">chart</span>, dims <span class="op">=</span> <span class="st">"D20:K36"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="va">wb</span><span class="op">$</span><span class="fu">open</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -264,7 +264,7 @@ Fig 2: The initial chart with styling
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Headcount by Department"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span><span class="st">"Month"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Employees"</span><span class="op">)</span></span>
-<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">80</span>, major <span class="op">=</span> <span class="fl">20</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">80</span>, major <span class="op">=</span> <span class="fl">20</span>, grid_lines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
 <span>  header <span class="op">=</span> <span class="va">Engineering</span>,</span>
@@ -314,7 +314,7 @@ Fig 3: The line chart
 <span></span>
 <span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"barChart"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Quarterly Revenue by Product (EUR k)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, format <span class="op">=</span> <span class="st">"#,##0"</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, format <span class="op">=</span> <span class="st">"#,##0"</span>, grid_lines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">colors</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2E4057"</span>, <span class="st">"048A81"</span>, <span class="st">"E84855"</span>, <span class="st">"F4A261"</span><span class="op">)</span></span>
 <span><span class="va">quarters</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Q1"</span>, <span class="st">"Q2"</span>, <span class="st">"Q3"</span>, <span class="st">"Q4"</span><span class="op">)</span></span>
@@ -354,7 +354,7 @@ Fig 4: The bar chart
 <span></span>
 <span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"barChart"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Revenue Composition by Quarter (EUR k)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>format <span class="op">=</span> <span class="st">"#,##0"</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>format <span class="op">=</span> <span class="st">"#,##0"</span>, grid_lines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># using the range approach here (interchangeable with wb_data())</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">quarters</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -421,7 +421,7 @@ Fig 5: The stacked bar chart
 <span>  line_width <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, format <span class="op">=</span> <span class="st">"#,##0"</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, format <span class="op">=</span> <span class="st">"#,##0"</span>, grid_lines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y2_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">0.4</span>, format <span class="op">=</span> <span class="st">"0%"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Revenue (EUR k)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y2_title</span><span class="op">(</span><span class="st">"Margin"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -458,8 +458,8 @@ Fig 6: The combo chart
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Deal Size vs. Close Rate"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_title</span><span class="op">(</span><span class="st">"Avg Deal Size (EUR k)"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Close Rate"</span><span class="op">)</span></span>
-<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">0.6</span>, format <span class="op">=</span> <span class="st">"0%"</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
-<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, gridlines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">0.6</span>, format <span class="op">=</span> <span class="st">"0%"</span>, grid_lines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, grid_lines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
 <span>  header      <span class="op">=</span> <span class="st">""</span>,</span>

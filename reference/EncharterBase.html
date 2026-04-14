@@ -325,9 +325,9 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 <span>  font_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gridlines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  grid_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minor_grid_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  minor_gridlines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minor_grid_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cross_between <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -385,10 +385,10 @@ is set by <code>major_time</code>/<code>minor_time</code>.</p></dd>
 
       <dt><code>grid_color, minor_grid_color</code></dt>
 <dd><p>Six-digit hex colors for major/minor
-gridlines.</p></dd>
+grid_lines.</p></dd>
 
-      <dt><code>gridlines, minor_gridlines</code></dt>
-<dd><p>Show gridlines. <code>TRUE</code>/<code>FALSE</code>
+      <dt><code>grid_lines, minor_grid_lines</code></dt>
+<dd><p>Show grid lines. <code>TRUE</code>/<code>FALSE</code>
 to toggle; or a dash style string (<code>"dash"</code>, <code>"dot"</code>,
 <code>"dashDot"</code>, etc.) to show styled lines.</p></dd>
 
@@ -398,7 +398,7 @@ to toggle; or a dash style string (<code>"dash"</code>, <code>"dot"</code>,
 
       <dt><code>line_width, grid_width, minor_grid_width</code></dt>
 <dd><p>Numeric widths in points for
-the axis line, major gridlines, and minor gridlines respectively.</p></dd>
+the axis line, major grid lines, and minor grid lines respectively.</p></dd>
 
       <dt><code>crosses</code></dt>
 <dd><p>Where this axis crosses its perpendicular axis:
@@ -419,7 +419,7 @@ the axis line, major gridlines, and minor gridlines respectively.</p></dd>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span></span>
 <span>  min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  major_tick <span class="op">=</span> <span class="st">"out"</span>,</span>
-<span>  gridlines  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  grid_lines <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  font_color <span class="op">=</span> <span class="st">"666666"</span>,</span>
 <span>  rotation   <span class="op">=</span> <span class="op">-</span><span class="fl">45</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
@@ -451,9 +451,9 @@ the axis line, major gridlines, and minor gridlines respectively.</p></dd>
 <span>  font_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gridlines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  grid_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minor_grid_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  minor_gridlines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minor_grid_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cross_between <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -506,9 +506,9 @@ the axis line, major gridlines, and minor gridlines respectively.</p></dd>
 <dd><p>Numeric label rotation in degrees.</p></dd>
 
       <dt><code>grid_color, minor_grid_color</code></dt>
-<dd><p>Hex colors for major/minor gridlines.</p></dd>
+<dd><p>Hex colors for major/minor grid lines.</p></dd>
 
-      <dt><code>gridlines, minor_gridlines</code></dt>
+      <dt><code>grid_lines, minor_grid_lines</code></dt>
 <dd><p><code>TRUE</code>/<code>FALSE</code> or a dash style
 string.</p></dd>
 
@@ -537,7 +537,7 @@ string.</p></dd>
 <span>  max        <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  major      <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  format     <span class="op">=</span> <span class="st">"#,##0"</span>,</span>
-<span>  gridlines  <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  grid_lines <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  grid_color <span class="op">=</span> <span class="st">"DDDDDD"</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -747,7 +747,7 @@ border.</p></dd>
 <span class="r-in"><span><span class="fu"><a href="encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">12</span>,</span></span>
 <span class="r-in"><span>  major_tick <span class="op">=</span> <span class="st">"out"</span>,</span></span>
-<span class="r-in"><span>  gridlines  <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  grid_lines <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  font_color <span class="op">=</span> <span class="st">"666666"</span>,</span></span>
 <span class="r-in"><span>  rotation   <span class="op">=</span> <span class="op">-</span><span class="fl">45</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
@@ -761,7 +761,7 @@ border.</p></dd>
 <span class="r-in"><span>  max        <span class="op">=</span> <span class="fl">1000</span>,</span></span>
 <span class="r-in"><span>  major      <span class="op">=</span> <span class="fl">200</span>,</span></span>
 <span class="r-in"><span>  format     <span class="op">=</span> <span class="st">"#,##0"</span>,</span></span>
-<span class="r-in"><span>  gridlines  <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  grid_lines <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>  grid_color <span class="op">=</span> <span class="st">"DDDDDD"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>

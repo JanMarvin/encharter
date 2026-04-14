@@ -3,7 +3,7 @@
 object for standard OOXML chart types (bar, line, scatter, …) or a
 ChartEx object for modern extended chart types (waterfall, treemap, …).
 The `Chart` class provides a flexible interface to build Office OpenXML
-(OOXML) chart objects. It allows for granular control over gridlines,
+(OOXML) chart objects. It allows for granular control over grid lines,
 secondary axes, and combined chart types (e.g., Bar and Line) within a
 single plot area.
 An R6 class to create and manipulate Office OpenXML (OOXML) Extended Charts (ChartEx),
@@ -59,7 +59,7 @@ supported by standard Office Open XML chart types."><!-- mathjax --><script src=
 object for standard OOXML chart types (bar, line, scatter, …) or a
 <code>ChartEx</code> object for modern extended chart types (waterfall, treemap, …).</p>
 <p>The `Chart` class provides a flexible interface to build Office OpenXML
-(OOXML) chart objects. It allows for granular control over gridlines,
+(OOXML) chart objects. It allows for granular control over grid lines,
 secondary axes, and combined chart types (e.g., Bar and Line) within a
 single plot area.</p>
 <p>An R6 class to create and manipulate Office OpenXML (OOXML) Extended Charts (ChartEx),
@@ -342,9 +342,9 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  font_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gridlines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  grid_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minor_grid_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  minor_gridlines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minor_grid_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cross_between <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -404,16 +404,16 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <dd><p>Rotation in degrees.</p></dd>
 
       <dt><code>grid_color, minor_grid_color</code></dt>
-<dd><p>Hex color for the gridlines.</p></dd>
+<dd><p>Hex color for the grid lines.</p></dd>
 
-      <dt><code>gridlines, minor_gridlines</code></dt>
-<dd><p>Logical. Show or hide gridlines.</p></dd>
+      <dt><code>grid_lines, minor_grid_lines</code></dt>
+<dd><p>Logical. Show or hide grid lines.</p></dd>
 
       <dt><code>cross_between</code></dt>
 <dd><p>Specifies how the value axis crosses the category axis ('between' or 'midCat').</p></dd>
 
       <dt><code>line_width, grid_width, minor_grid_width</code></dt>
-<dd><p>Numeric. Change the width of the axis and gridlines.</p></dd>
+<dd><p>Numeric. Change the width of the axis and grid lines.</p></dd>
 
       <dt><code>crosses</code></dt>
 <dd><p>Intersection: "autoZero" (default), "min" (start), or "max" (end).</p></dd>
@@ -454,9 +454,9 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  font_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  rotation <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gridlines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  grid_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  minor_grid_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  minor_gridlines <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  minor_grid_lines <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cross_between <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  grid_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -516,16 +516,16 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <dd><p>Rotation in degrees.</p></dd>
 
       <dt><code>grid_color, minor_grid_color</code></dt>
-<dd><p>Hex color for the gridlines.</p></dd>
+<dd><p>Hex color for the grid lines.</p></dd>
 
-      <dt><code>gridlines, minor_gridlines</code></dt>
-<dd><p>Logical. Show or hide gridlines.</p></dd>
+      <dt><code>grid_lines, minor_grid_lines</code></dt>
+<dd><p>Logical. Show or hide grid lines.</p></dd>
 
       <dt><code>cross_between</code></dt>
 <dd><p>Specifies how the value axis crosses the category axis ('between' or 'midCat').</p></dd>
 
       <dt><code>line_width, grid_width, minor_grid_width</code></dt>
-<dd><p>Numeric. Change the width of the axis and gridlines.</p></dd>
+<dd><p>Numeric. Change the width of the axis and grid lines.</p></dd>
 
       <dt><code>crosses</code></dt>
 <dd><p>Intersection: "autoZero" (default), "min" (start), or "max" (end).</p></dd>
