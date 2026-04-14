@@ -235,9 +235,9 @@ test_that("set_data_label_style validates pos argument", {
 test_that("add_series stores series data correctly for Chart", {
   ch <- ec("line")
   ch$add_series(
-    header = "'Sheet1'!$A$1",
+    name = "'Sheet1'!$A$1",
     data   = "'Sheet1'!$A$2:$A$10",
-    cat    = "'Sheet1'!$B$2:$B$10",
+    label  = "'Sheet1'!$B$2:$B$10",
     color  = "FF0000"
   )
 
@@ -434,7 +434,7 @@ test_that("ChartEx add_series stores series correctly", {
   ch <- ec("waterfall")
   ch$add_series(
     data = "'Sheet1'!$B$2:$B$6",
-    cat  = "'Sheet1'!$A$2:$A$6"
+    label= "'Sheet1'!$A$2:$A$6"
   )
   expect_length(ch$series_data, 1)
   expect_equal(ch$series_data[[1]]$type, "waterfall")
@@ -459,7 +459,7 @@ test_that("ChartEx render() returns xml with cx:chartSpace root", {
   ch <- ec("waterfall")
   ch$add_series(
     data = "'Sheet1'!$B$2:$B$5",
-    cat  = "'Sheet1'!$A$2:$A$5"
+    label= "'Sheet1'!$A$2:$A$5"
   )
   xml <- ch$render()
   expect_true(is.character(xml))
@@ -471,7 +471,7 @@ test_that("ChartEx render() includes chart title when set", {
   ch$set_chart_title("Treemap Title")
   ch$add_series(
     data = "'Sheet1'!$B$2:$B$5",
-    cat  = "'Sheet1'!$A$2:$A$5"
+    label= "'Sheet1'!$A$2:$A$5"
   )
   xml_str <- as.character(ch$render())
   expect_match(xml_str, "Treemap Title")
@@ -481,7 +481,7 @@ test_that("ChartEx waterfall subtotals render correctly", {
   ch <- ec("waterfall")
   ch$add_series(
     data      = "'Sheet1'!$B$2:$B$6",
-    cat       = "'Sheet1'!$A$2:$A$6",
+    label     = "'Sheet1'!$A$2:$A$6",
     subtotals = c(4)
   )
   xml_str <- as.character(ch$render())
@@ -586,12 +586,12 @@ test_that("combo chart renders with bar and line series", {
   ch <- ec("bar")
   ch$add_series(
     data = "'Data'!$B$2:$B$13",
-    cat  = "'Data'!$A$2:$A$13",
+    label= "'Data'!$A$2:$A$13",
     type = "barChart"
   )
   ch$add_series(
     data      = "'Data'!$C$2:$C$13",
-    cat       = "'Data'!$A$2:$A$13",
+    label     = "'Data'!$A$2:$A$13",
     type      = "lineChart",
     secondary = TRUE,
     marker    = "circle"

@@ -278,10 +278,10 @@ Chart <- R6::R6Class(
     },
 
     #' @description Add a data series to the chart with independent styling.
-    #' @param header Cell range or string for series name.
+    #' @param name Cell range or string for series name.
     #' @param data Cell range for series values.
-    #' @param cat Cell range for category labels.
-    #' @param z_data Cell range for bubble sizes (bubbleChart only).
+    #' @param label Cell range for category labels.
+    #' @param weight Cell range for bubble sizes (bubbleChart only).
     #' @param color Primary Hex color for the series (used as default for line and markers).
     #' @param type Chart type for this specific series (for combo charts).
     #' @param secondary Logical. Set to TRUE to move series to secondary axis.
@@ -323,7 +323,7 @@ Chart <- R6::R6Class(
     #'   \item \code{color}: Hex color code for the line.
     #'   \item \code{show_r2}: Logical; if \code{TRUE}, displays the R-squared value on the chart.
     #' }
-    add_series = function(header = NULL, data, cat = NULL, z_data = NULL,
+    add_series = function(name = NULL, data, label = NULL, weight = NULL,
                           color = "4472C4", type = NULL,
                           secondary = FALSE, dir = "col", grouping = "standard",
                           overlap = NULL, gap_width = NULL,
@@ -374,8 +374,8 @@ Chart <- R6::R6Class(
       self$type <- series_type
       if (!is.null(color) && length(color) > 1 && series_type %in% c("bubbleChart", "pieChart", "doughnutChart")) self$palette <- color
 
-      h_expr <- substitute(header)
-      c_expr <- substitute(cat)
+      h_expr <- substitute(name)
+      c_expr <- substitute(label)
 
       if (is.null(color)) {
         color_idx <- (length(self$series_data) %% length(self$palette)) + 1
@@ -390,15 +390,15 @@ Chart <- R6::R6Class(
         dims_mat   <- attr(data, "dims")
         col_names  <- names(data)
 
-        # Deterministic header detection based on row counts
+        # Deterministic name detection based on row counts
         has_header <- nrow(dims_mat) > length(attr(data, "row.names"))
 
-        h_label <- tryCatch(if (is.symbol(h_expr)) deparse1(h_expr) else header, error = function(e) NULL)
-        c_label <- tryCatch(if (is.symbol(c_expr)) deparse1(c_expr) else cat, error = function(e) NULL)
+        h_label <- tryCatch(if (is.symbol(h_expr)) deparse1(h_expr) else name, error = function(e) NULL)
+        c_label <- tryCatch(if (is.symbol(c_expr)) deparse1(c_expr) else label, error = function(e) NULL)
 
-        # For z_data, we handle the NSE expression locally
-        z_expr  <- substitute(z_data)
-        z_label <- tryCatch(if (is.symbol(z_expr)) deparse1(z_expr) else z_data, error = function(e) NULL)
+        # For weight, we handle the NSE expression locally
+        z_expr  <- substitute(weight)
+        z_label <- tryCatch(if (is.symbol(z_expr)) deparse1(z_expr) else weight, error = function(e) NULL)
 
         start_row <- if (has_header) 2 else 1
         wd_orig <- data
@@ -408,16 +408,16 @@ Chart <- R6::R6Class(
         if (length(col_idx) > 0) {
           col_idx   <- col_idx[1]
           data_vals <- wd_orig[[h_label]]
-          header    <- if (has_header) sprintf("'%s'!%s", wb_sheet, dims_mat[1, col_idx]) else NULL
+          name      <- if (has_header) sprintf("'%s'!%s", wb_sheet, dims_mat[1, col_idx]) else NULL
           data      <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, col_idx], dims_mat[nrow(dims_mat), col_idx])
         }
 
-        # 2. Resolve Category (cat / X-Axis)
+        # 2. Resolve Category (label / X-Axis)
         cat_idx <- which(col_names == c_label)
         if (length(cat_idx) > 0) {
           cat_idx  <- cat_idx[1]
           cat_vals <- wd_orig[[c_label]]
-          cat      <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, cat_idx], dims_mat[nrow(dims_mat), cat_idx])
+          label    <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, cat_idx], dims_mat[nrow(dims_mat), cat_idx])
         }
 
         # 3. Resolve Z-Data (Bubble Size)
@@ -425,15 +425,15 @@ Chart <- R6::R6Class(
         if (length(z_idx) > 0) {
           z_idx  <- z_idx[1]
           z_vals <- wd_orig[[z_label]]
-          z_data <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, z_idx], dims_mat[nrow(dims_mat), z_idx])
+          weight <- sprintf("'%s'!%s:%s", wb_sheet, dims_mat[start_row, z_idx], dims_mat[nrow(dims_mat), z_idx])
         }
       }
 
       # Apply absolute reference wrapper to all potential range strings
-      header <- to_abs_ref(header)
+      name <- to_abs_ref(name)
       data   <- to_abs_ref(data)
-      cat    <- to_abs_ref(cat)
-      z_data <- to_abs_ref(z_data)
+      label  <- to_abs_ref(label)
+      weight <- to_abs_ref(weight)
 
       if (!is.null(data) && !grepl("!", data)) {
         stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
@@ -441,10 +441,10 @@ Chart <- R6::R6Class(
 
       # Create the clean object
       self$series_data[[length(self$series_data) + 1]] <- list(
-        header    = header,
+        name      = name,
         data      = data,
-        cat       = cat,
-        z_data    = z_data,
+        label     = label,
+        weight    = weight,
         data_cache = data_vals,
         cat_cache = cat_vals,
         z_cache   = z_vals,
@@ -731,16 +731,16 @@ Chart <- R6::R6Class(
 
         # --- EG_SerShared Start ---
         # tx (Title)
-        if (!is.null(s$header) && length(s$header) > 0) {
+        if (!is.null(s$name) && length(s$name) > 0) {
           tx <- xml_add_child(ser, "c:tx")
 
-          if (private$is_ref(s$header)) {
+          if (private$is_ref(s$name)) {
             # It's a range reference like Sheet1!$A$1
             strRef <- xml_add_child(tx, "c:strRef")
-            xml_add_child(strRef, "c:f", s$header)
+            xml_add_child(strRef, "c:f", s$name)
           } else {
             # It's a literal string
-            xml_add_child(tx, "c:v", as.character(s$header))
+            xml_add_child(tx, "c:v", as.character(s$name))
           }
         }
 
@@ -901,17 +901,17 @@ Chart <- R6::R6Class(
           }
         }
 
-        # 6. Data References (xVal/yVal or cat/val)
+        # 6. Data References (xVal/yVal or label/val)
         if (type %in% c("scatterChart", "bubbleChart")) {
-          if (!is.null(s$cat)) {
+          if (!is.null(s$label)) {
             x_val_node <- xml_add_child(ser, "c:xVal")
             if (!is.null(s$cat_cache)) {
               ref_node <- xml_add_child(x_val_node, "c:numRef")
-              xml_add_child(ref_node, "c:f", s$cat)
+              xml_add_child(ref_node, "c:f", s$label)
               private$render_num_cache(ref_node, s$cat_cache)
             } else {
-              ref_type <- if (grepl("!", s$cat)) "c:numRef" else "c:numLit"
-              xml_add_child(xml_add_child(x_val_node, ref_type), "c:f", s$cat)
+              ref_type <- if (grepl("!", s$label)) "c:numRef" else "c:numLit"
+              xml_add_child(xml_add_child(x_val_node, ref_type), "c:f", s$label)
             }
           }
 
@@ -927,7 +927,7 @@ Chart <- R6::R6Class(
 
           if (type == "bubbleChart") {
             z_val_node <- xml_add_child(ser, "c:bubbleSize")
-            z_ref <- s$z_data %||% s$data
+            z_ref <- s$weight %||% s$data
             z_cache <- s$z_cache %||% s$data_cache
             if (!is.null(z_cache)) {
               ref_node <- xml_add_child(z_val_node, "c:numRef")
@@ -940,33 +940,33 @@ Chart <- R6::R6Class(
             }
           }
         } else {
-          if (!is.null(s$cat)) {
+          if (!is.null(s$label)) {
             cat_node <- xml_add_child(ser, "c:cat")
 
             if (!is.null(s$cat_cache) && inherits(s$cat_cache, c("Date", "POSIXt"))) {
               # Date/datetime categories -> numRef with Excel serial conversion
               ref_node <- xml_add_child(cat_node, "c:numRef")
-              xml_add_child(ref_node, "c:f", s$cat)
+              xml_add_child(ref_node, "c:f", s$label)
               private$render_num_cache(ref_node, s$cat_cache)
             } else if (!is.null(s$cat_cache) && is.numeric(s$cat_cache)) {
               # Numeric categories (e.g. year, integer axis)
               ref_node <- xml_add_child(cat_node, "c:numRef")
-              xml_add_child(ref_node, "c:f", s$cat)
+              xml_add_child(ref_node, "c:f", s$label)
               private$render_num_cache(ref_node, s$cat_cache)
             } else if (!is.null(s$cat_cache)) {
               # Character/factor categories
               ref_node <- xml_add_child(cat_node, "c:strRef")
-              xml_add_child(ref_node, "c:f", s$cat)
+              xml_add_child(ref_node, "c:f", s$label)
               private$render_str_cache(ref_node, s$cat_cache)
             } else {
-              ref_clean <- sub("^('([^']|'')+'|[^!]+)!", "", s$cat)
+              ref_clean <- sub("^('([^']|'')+'|[^!]+)!", "", s$label)
               ref_clean <- gsub("\\$", "", ref_clean)
               dims      <- dim(openxlsx2::dims_to_dataframe(ref_clean))
               is_multi  <- length(dims) == 2 && min(dims) > 1
-              c_ref_type <- if (is_multi && grepl("!", s$cat)) "c:multiLvlStrRef"
-                            else if (grepl("!", s$cat)) "c:strRef"
+              c_ref_type <- if (is_multi && grepl("!", s$label)) "c:multiLvlStrRef"
+                            else if (grepl("!", s$label)) "c:strRef"
                             else "c:strLit"
-              xml_add_child(xml_add_child(cat_node, c_ref_type), "c:f", s$cat)
+              xml_add_child(xml_add_child(cat_node, c_ref_type), "c:f", s$label)
             }
           }
 

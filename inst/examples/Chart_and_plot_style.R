@@ -3,7 +3,7 @@ library(encharter)
 
 # 1. Create a styled chart
 chart <- ec("lineChart")
-chart$add_series(header = "S1!$B$1", data = "S1!$B$2:$B$5")
+chart$add_series(name = "S1!$B$1", data = "S1!$B$2:$B$5")
 
 # Set Chart Background and Border (ChartSpace)
 chart$set_chart_style(

@@ -20,11 +20,11 @@ contour_plot <- ec("surfaceChart")
 for (i in 2:6) {
   contour_plot$add_series(
     # Header: Single cell for the Y-axis label (e.g., A2, A3...)
-    header = paste0("Sheet1!$A$", i),
+    name = paste0("Sheet1!$A$", i),
     # Data: A single row of values (e.g., B2:F2, B3:F3...)
     data   = paste0("Sheet1!$B$", i, ":$F$", i),
     # Category: The shared X-axis labels (B1:F1)
-    cat    = "Sheet1!$B$1:$F$1",
+    label  = "Sheet1!$B$1:$F$1",
     type   = "surfaceChart"
   )
 }

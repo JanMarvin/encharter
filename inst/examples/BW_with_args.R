@@ -10,9 +10,9 @@ df_box <- data.frame(
 ce <- ec("boxWhisker")
 
 ce$add_series(
-  header = "Scores",
+  name = "Scores",
   data = "Sheet1!$B$2:$B$11",
-  cat = "Sheet1!$A$2:$A$11",
+  label = "Sheet1!$A$2:$A$11",
   statistics = "inclusive",
   visibility = list(
     meanLine = FALSE,

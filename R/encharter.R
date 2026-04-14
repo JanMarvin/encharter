@@ -410,8 +410,8 @@ EncharterBase <- R6::R6Class(
           axis_hint <- if (is_secondary) " [Secondary Axis]" else ""
 
           s_type <- if (!is.null(s$type)) s$type else self$type
-          # series_data stores the name under 'header'
-          s_name <- if (!is.null(s$header)) s$header else paste("Series", i)
+          # series_data stores the name under 'name'
+          s_name <- if (!is.null(s$name)) s$name else paste("Series", i)
 
           cat(sprintf("Series %d: %s %s\n", i, s_name, axis_hint))
           cat(sprintf("  - Type: %s\n", s_type))
@@ -420,8 +420,8 @@ EncharterBase <- R6::R6Class(
             cat(sprintf("  - Data: [%s]\n", s$data))
           }
 
-          if (!is.null(s$cat)) {
-            cat(sprintf("  - Cat:  [%s]\n", s$cat))
+          if (!is.null(s$label)) {
+            cat(sprintf("  - Cat:  [%s]\n", s$label))
           }
 
           cat(rep("-", 30), "\n", sep = "")

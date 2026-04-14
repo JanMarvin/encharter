@@ -8,18 +8,18 @@ test_that("Chart supports unquoted column names (NSE)", {
   chart <- ec("lineChart")
 
   # Note: No quotation marks used for mpg or cyl
-  chart$add_series(data = dat, header = mpg, cat = cyl)
+  chart$add_series(data = dat, name = mpg, label = cyl)
 
   # Verify resolution
-  expect_equal(chart$series_data[[1]]$header, "'Sheet 1'!$A$1")
-  expect_equal(chart$series_data[[1]]$cat,    "'Sheet 1'!$B$2:$B$4")
+  expect_equal(chart$series_data[[1]]$name, "'Sheet 1'!$A$1")
+  expect_equal(chart$series_data[[1]]$label,    "'Sheet 1'!$B$2:$B$4")
 
   # Verify standard string input still works (Backward compatibility)
-  chart$add_series(data = dat, header = "cyl", cat = "mpg")
-  expect_equal(chart$series_data[[2]]$header, "'Sheet 1'!$B$1")
+  chart$add_series(data = dat, name = "cyl", label = "mpg")
+  expect_equal(chart$series_data[[2]]$name, "'Sheet 1'!$B$1")
 
 
-  expect_error(chart$add_series(data = dat, header = mpg, cat = foo), "object 'foo' not found")
+  expect_error(chart$add_series(data = dat, name = mpg, label = foo), "object 'foo' not found")
 
   wb$add_chart_xml(xml = chart$render())
 })
@@ -33,12 +33,12 @@ test_that("ChartEx handles unquoted names for Waterfall", {
 
   chart <- ec("waterfall")
   # Unquoted names
-  chart$add_series(data = dat, header = Value, cat = Category, type = "waterfall")
+  chart$add_series(data = dat, name = Value, label = Category, type = "waterfall")
 
-  expect_equal(chart$series_data[[1]]$header, "'Sheet 1'!$B$1")
-  expect_equal(chart$series_data[[1]]$cat,    "'Sheet 1'!$A$2:$A$3")
+  expect_equal(chart$series_data[[1]]$name, "'Sheet 1'!$B$1")
+  expect_equal(chart$series_data[[1]]$label,    "'Sheet 1'!$A$2:$A$3")
 
-  expect_error(chart$add_series(data = dat, header = Value, cat = foo), "object 'foo' not found")
+  expect_error(chart$add_series(data = dat, name = Value, label = foo), "object 'foo' not found")
 
   wb <- openxlsx2::wb_add_encharter(wb, graph = chart)
 })
@@ -51,11 +51,11 @@ test_that("print works", {
   combo_chart <- ec("barplot")$
     set_chart_title("Sales Volume vs Growth", bold = TRUE)$
     add_series(
-      header = "Standard!$B$1", data = "Standard!$B$2:$B$13",
-      cat = "Standard!$A$2:$A$13", color = "4472C4"
+      name = "Standard!$B$1", data = "Standard!$B$2:$B$13",
+      label = "Standard!$A$2:$A$13", color = "4472C4"
     )$
     add_series(
-      header = "Standard!$D$1", data = "Standard!$D$2:$D$13",
+      name = "Standard!$D$1", data = "Standard!$D$2:$D$13",
       type = "lineChart", secondary = TRUE, color = "C0504D", marker = "circle"
     )$
     set_legend_style(pos = "bottom")

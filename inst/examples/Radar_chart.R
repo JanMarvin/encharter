@@ -18,8 +18,8 @@ radar_std$
   set_chart_title("Standard Radar: Model Comparison")$
   set_legend_style(pos = "b")$
   add_series(
-    header = "Model X",
-    cat    = "Sheet1!$A$2:$A$6",
+    name = "Model X",
+    label  = "Sheet1!$A$2:$A$6",
     data   = "Sheet1!$B$2:$B$6",
     color  = "4472C4",
     line_width = 2,
@@ -27,8 +27,8 @@ radar_std$
     type = "radarChart"
   )$
   add_series(
-    header = "Model Y",
-    cat    = "Sheet1!$A$2:$A$6",
+    name = "Model Y",
+    label  = "Sheet1!$A$2:$A$6",
     data   = "Sheet1!$C$2:$C$6",
     color  = "ED7D31",
     line_width = 2,
@@ -42,15 +42,15 @@ radar_filled <- ec("radarChart")
 radar_filled$
   set_chart_title("Filled Radar: Area View")$
   add_series(
-    header = "Model X",
-    cat    = "Sheet1!$A$2:$A$6",
+    name = "Model X",
+    label  = "Sheet1!$A$2:$A$6",
     data   = "Sheet1!$B$2:$B$6",
     color  = "4472C4",
     filled = TRUE
   )$
   add_series(
-    header = "Model Y",
-    cat    = "Sheet1!$A$2:$A$6",
+    name = "Model Y",
+    label  = "Sheet1!$A$2:$A$6",
     data   = "Sheet1!$C$2:$C$6",
     color  = "ED7D31",
     filled = TRUE

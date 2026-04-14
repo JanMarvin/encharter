@@ -14,9 +14,9 @@ my_wf <- ec("waterfall")
 
 # 1. Skinning the Series (Using the core color logic)
 my_wf$add_series(
-  header = "Data2!$B$1",
+  name = "Data2!$B$1",
   data   = "Data2!$B$2:$B$7",
-  cat    = "Data2!$A$2:$A$7",
+  label  = "Data2!$A$2:$A$7",
   color   = wb_color(theme = "5"), # Correctly maps to accent2
   line_color   = "000000",              # Solid black border
   type         = "waterfall",

@@ -8,7 +8,7 @@ test_that("Chart: Styling, Markers, and Labels", {
 
   # Test Marker Styling
   chart$add_series(
-    header = "S1!$B$1", data = "S1!$B$2:$B$5",
+    name = "S1!$B$1", data = "S1!$B$2:$B$5",
     marker = "circle", marker_size = 7, marker_fill = "#FFFFFF"
   )
 
@@ -31,7 +31,7 @@ test_that("Chart: Legend and Title styles", {
   expect_error(chart$render(), "The chart contains no data. You must add at least one series")
 
   chart$add_series(
-    header = "S1!$B$1", data = "S1!$B$2:$B$5",
+    name = "S1!$B$1", data = "S1!$B$2:$B$5",
     marker = "circle", marker_size = 7, marker_fill = "#FFFFFF"
   )
 
@@ -47,7 +47,7 @@ test_that("Chart: Legend and Title styles", {
 test_that("Chart and Plot area styling works", {
   # 1. Create a styled chart
   chart <- Chart$new("lineChart")
-  chart$add_series(header = "S1!$B$1", data = "S1!$B$2:$B$5")
+  chart$add_series(name = "S1!$B$1", data = "S1!$B$2:$B$5")
 
   # Set Chart Background and Border (ChartSpace)
   chart$set_chart_style(
@@ -96,7 +96,7 @@ test_that("ChartEx chart and plot styling works", {
   ce <- ChartEx$new()
   ce$add_series(
     data = "Sheet1!$B$2:$B$5",
-    cat  = "Sheet1!$A$2:$A$5",
+    label= "Sheet1!$A$2:$A$5",
     type = "treemap"
   )
 
@@ -152,9 +152,9 @@ test_that("Major and Minor grid_lines are correctly rendered and visible", {
   my_chart <- Chart$new("barChart")
 
   my_chart$add_series(
-    header = "Sheet1!$B$1",
+    name = "Sheet1!$B$1",
     data   = "Sheet1!$B$2:$B$13",
-    cat    = "Sheet1!$A$2:$A$13",
+    label  = "Sheet1!$A$2:$A$13",
     color  = "4472C4"
   )$set_y_axis(
     # Major: Dashed, 1.5pt, Dark Grey
@@ -271,10 +271,10 @@ test_that("Bubble chart generates valid XML and integrates with workbook", {
   # 2. Initialize Chart
   bc <- Chart$new()
   bc$add_series(
-    header = "Market Performance",
-    cat    = "Sheet1!$B$2:$B$11",
+    name = "Market Performance",
+    label  = "Sheet1!$B$2:$B$11",
     data   = "Sheet1!$C$2:$C$11",
-    z_data = "Sheet1!$D$2:$D$11",
+    weight = "Sheet1!$D$2:$D$11",
     color  = viridisLite::viridis(10),
     type   = "bubbleChart"
   )
@@ -307,7 +307,7 @@ test_that("Bubble chart generates valid XML and integrates with workbook", {
 test_that("set_data_table correctly adds dTable node to XML", {
   # 1. Minimal setup
   chart <- Chart$new(type = "barChart")
-  chart$add_series(header = "H1", data = "Sheet1!A1:A5", cat = "Sheet1!B1:B5")
+  chart$add_series(name = "H1", data = "Sheet1!A1:A5", label = "Sheet1!B1:B5")
 
   # 2. Enable data table
   chart$set_data_table(TRUE)
@@ -327,8 +327,8 @@ test_that("set_data_table correctly adds dTable node to XML", {
 test_that("drop_lines, high_low_lines, and up_down_bars render correctly", {
   # 1. Setup a basic line chart with two series
   ch <- Chart$new(type = "lineChart")
-  ch$add_series(header = "S1", data = "AA!A2:A5", cat = "AA!B2:B5")
-  ch$add_series(header = "S2", data = "AA!C2:C5")
+  ch$add_series(name = "S1", data = "AA!A2:A5", label = "AA!B2:B5")
+  ch$add_series(name = "S2", data = "AA!C2:C5")
 
   # 2. Enable features
   ch$drop_lines     <- TRUE
@@ -362,9 +362,9 @@ test_that("barChart with theme colors and stacked grouping renders correctly", {
   # 1. Minimal Setup
   ch <- Chart$new()
   ch$add_series(
-    header    = "Sheet1!$B$1",
+    name      = "Sheet1!$B$1",
     data      = "Sheet1!$B$2:$B$4",
-    cat       = "Sheet1!$A$2:$A$4",
+    label     = "Sheet1!$A$2:$A$4",
     color     = wb_color(theme = 5),
     grouping  = "percentStacked",
     dir       = "bar",
@@ -395,9 +395,9 @@ test_that("trendlines and error bars render correctly in a series", {
   # 1. Setup a basic chart
   ch <- Chart$new(type = "barChart")
   ch$add_series(
-    header = "Revenue",
+    name = "Revenue",
     data = "Sheet1!$B$2:$B$4",
-    cat = "Sheet1!$A$2:$A$4",
+    label = "Sheet1!$A$2:$A$4",
     # Add Trendline configuration
     trendline = list(
       type = "linear",
@@ -446,9 +446,9 @@ test_that("ChartEx boxWhisker with complex styling renders correctly", {
 
   # 3. Add Series with Color and Line Style
   ch$add_series(
-    header = '"Super Duper MPG"',
+    name = '"Super Duper MPG"',
     data   = "Data!$A$2:$A$5",
-    cat    = "Data!$B$2:$B$5",
+    label  = "Data!$B$2:$B$5",
     color  = wb_color("magenta"),
     line_color = wb_color("black"),
     type   = "boxWhisker"

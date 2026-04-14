@@ -65,8 +65,8 @@ df <- data.frame(
 chart <- ec("lineChart")
 chart$set_chart_title("Monthly Sales")
 chart$add_series(
-  header = "Sales!$B$1",
-  cat    = "Sales!$A$2:$A$13",
+  name   = "Sales!$B$1",
+  label  = "Sales!$A$2:$A$13",
   data   = "Sales!$B$2:$B$13"
 )
 
@@ -99,8 +99,8 @@ row, all absolute:
 
 ``` r
 chart$add_series(
-  header = "Sales!$B$1",
-  cat    = "Sales!$A$2:$A$13",
+  name   = "Sales!$B$1",
+  label  = "Sales!$A$2:$A$13",
   data   = "Sales!$B$2:$B$13"
 )
 ```
@@ -113,8 +113,8 @@ addresses and is less error-prone when the data layout changes:
 dat <- wb_data(wb, sheet = "Sales", dims = "A1:B13")
 
 chart$add_series(
-  header = "Sales",
-  cat    = "Month",
+  name   = "Sales",
+  label  = "Month",
   data   = dat
 )
 ```
@@ -269,7 +269,7 @@ reader can compare trajectories at a glance.
 
 ``` r
 df_line <- data.frame(
-  Month   = month.abb,
+  Month       = month.abb,
   Engineering = c(42, 43, 45, 46, 48, 51, 53, 53, 56, 58, 60, 63),
   Marketing   = c(18, 18, 19, 21, 22, 22, 23, 25, 25, 26, 27, 28)
 )
@@ -289,15 +289,15 @@ chart$set_y_title("Employees")
 chart$set_y_axis(min = 0, max = 80, major = 20, grid_lines = TRUE, grid_color = "EEEEEE")
 
 chart$add_series(
-  header = Engineering,
-  cat    = Month,
+  name   = Engineering,
+  label  = Month,
   data   = wb_df,
   color  = "2E4057",
   marker = "circle"
 )
 chart$add_series(
-  header = Marketing,
-  cat    = Month,
+  name   = Marketing,
+  label  = Month,
   data   = wb_df,
   color  = "E84855",
   marker = "circle"
@@ -354,8 +354,8 @@ cols      <- c("B",  "C",  "D",  "E")
 variables <- names(wb_df)
 for (i in seq_along(quarters)) {
   chart$add_series(
-    header = variables[i + 1L],
-    cat    = variables[1L],
+    name   = variables[i + 1L],
+    label  = variables[1L],
     data   = wb_df,
     color  = colors[i]
   )
@@ -400,8 +400,8 @@ chart$set_y_axis(format = "#,##0", grid_lines = TRUE, grid_color = "EEEEEE")
 # using the range approach here (interchangeable with wb_data())
 for (i in seq_along(quarters)) {
   chart$add_series(
-    header   = sprintf("Stacked!$%s$1", cols[i]),
-    cat      = "Stacked!$A$2:$A$5",
+    name     = sprintf("Stacked!$%s$1", cols[i]),
+    label    = "Stacked!$A$2:$A$5",
     data     = sprintf("Stacked!$%s$2:$%s$5", cols[i], cols[i]),
     color    = colors[i],
     grouping = "stacked",
@@ -454,8 +454,8 @@ chart$set_chart_title("Revenue & Margin", bold = TRUE)
 
 # primary axis — bars for revenue
 chart$add_series(
-  header = Revenue,
-  cat    = Month,
+  name   = Revenue,
+  label  = Month,
   data   = wb_df,
   color  = "2E4057",
   type   = "barChart"
@@ -463,8 +463,8 @@ chart$add_series(
 
 # secondary axis — line for margin
 chart$add_series(
-  header    = Margin,
-  cat       = Month,
+  name      = Margin,
+  label     = Month,
   data      = wb_df,
   type      = "lineChart",
   secondary = TRUE,
@@ -524,8 +524,8 @@ chart$set_y_axis(min = 0, max = 0.6, format = "0%", grid_lines = TRUE, grid_colo
 chart$set_x_axis(min = 0, grid_lines = TRUE, grid_color = "EEEEEE")
 
 chart$add_series(
-  header      = "",
-  cat         = "Scatter!$B$2:$B$13",
+  name        = "",
+  label       = "Scatter!$B$2:$B$13",
   data        = "Scatter!$C$2:$C$13",
   color       = "2E4057",
   marker      = "circle",
@@ -579,8 +579,8 @@ wb <- wb_set_col_widths(wb, sheet = "Waterfall", cols = 1:2, widths = c(16, 10))
 chart <- ec("waterfall")
 chart$set_chart_title("Profit Bridge: Jan → Feb", bold = TRUE)
 chart$add_series(
-  header    = "",
-  cat       = "Waterfall!$A$2:$A$7",
+  name      = "",
+  label     = "Waterfall!$A$2:$A$7",
   data      = "Waterfall!$B$2:$B$7",
   subtotals = c(0, 5)   # 0-based indices; Jan Profit (0) and Feb Profit (5) are totals, not steps
 )
@@ -629,7 +629,7 @@ chart <- ec("boxWhisker")
 chart$set_chart_title("Response Time by Support Tier (hours)", bold = TRUE)
 chart$set_y_title("Hours to First Response")
 chart$add_series(
-  cat        = "BoxWhisker!$A$2:$A$121",
+  label      = "BoxWhisker!$A$2:$A$121",
   data       = "BoxWhisker!$B$2:$B$121",
   statistics = "inclusive"
 )
@@ -688,7 +688,7 @@ chart$set_disp_blanks("gap")    # default
 - Radar charts accept `filled = TRUE` in `add_series()` to fill the
   polygon interior.
 - Bubble charts require a third data range for bubble sizes, passed as
-  `z_data` in `add_series()`.
+  `weight` in `add_series()`.
 - Bar direction (vertical column vs horizontal bar) is set via
   `dir = "col"` (default) or `dir = "bar"` in `add_series()`.
 

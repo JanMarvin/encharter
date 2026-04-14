@@ -17,24 +17,24 @@ stock_chart <- ec("stockChart")
 # Add the 'High' series
 stock_chart$add_series(
   data = df,
-  cat  = Date,
-  header = High,
+  label= Date,
+  name = High,
   show_line = FALSE, marker = "circle"
 )
 
 # Add the 'Low' series
 stock_chart$add_series(
   data = df,
-  cat  = Date,
-  header = Low,
+  label= Date,
+  name = Low,
   show_line = FALSE
 )
 
 # Add the 'Close' series
 stock_chart$add_series(
   data = df,
-  cat  = Date,
-  header = Close,
+  label= Date,
+  name = Close,
   show_line = FALSE
 )
 

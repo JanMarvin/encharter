@@ -45,9 +45,9 @@ ChartEx <- R6::R6Class(
     },
 
     #' @description Add a data series to the chart.
-    #' @param header Cell range for the series name.
+    #' @param name Cell range for the series name.
     #' @param data Cell range for the numeric values.
-    #' @param cat Cell range for the category labels.
+    #' @param label Cell range for the category labels.
     #' @param type Type of chart (waterfall, sunburst, treemap, regionMap).
     #' @param color Hex color or "auto".
     #' @param line_color Border color.
@@ -61,7 +61,7 @@ ChartEx <- R6::R6Class(
     #' @param visibility A named list of logicals for BoxWhisker/Waterfall:
     #'   `connectorLines`, `meanLine`, `meanMarker`, `nonoutliers`, `outliers`.
     #' @param parent_label Treemap label style: "overlapping", "banner", or "none".
-    add_series = function(header = NULL, data, cat = NULL, type = NULL, color = "auto",
+    add_series = function(name = NULL, data, label = NULL, type = NULL, color = "auto",
                           line_color = NULL, line_width = 1,  gap_width = NULL, subtotals = NULL,
                           statistics = NULL, binning = NULL,
                           visibility = NULL, parent_label = "overlapping") {
@@ -79,8 +79,8 @@ ChartEx <- R6::R6Class(
         color <- self$palette[color_idx]
       }
 
-      h_label <- tryCatch(if (is.symbol(substitute(header))) deparse1(substitute(header)) else header, error = function(e) NULL)
-      c_label <- tryCatch(if (is.symbol(substitute(cat))) deparse1(substitute(cat)) else cat, error = function(e) NULL)
+      h_label <- tryCatch(if (is.symbol(substitute(name))) deparse1(substitute(name)) else name, error = function(e) NULL)
+      c_label <- tryCatch(if (is.symbol(substitute(label))) deparse1(substitute(label)) else label, error = function(e) NULL)
 
       if (inherits(data, "wb_data")) {
         wb_dims    <- attr(data, "dims")
@@ -94,22 +94,22 @@ ChartEx <- R6::R6Class(
         h_idx <- which(col_names == h_label)
         if (length(h_idx) > 0) {
           h_idx  <- h_idx[1]
-          header <- if (has_header) sprintf("'%s'!%s", wb_sheet, wb_dims[1, h_idx]) else NULL
+          name <- if (has_header) sprintf("'%s'!%s", wb_sheet, wb_dims[1, h_idx]) else NULL
           data   <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[start_row, h_idx], wb_dims[nrow(wb_dims), h_idx])
         }
 
-        # 3. Resolve Category (cat)
+        # 3. Resolve Category (label)
         c_idx <- which(col_names == c_label)
         if (length(c_idx) > 0) {
           c_idx <- c_idx[1]
-          cat   <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[start_row, c_idx], wb_dims[nrow(wb_dims), c_idx])
+          label <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[start_row, c_idx], wb_dims[nrow(wb_dims), c_idx])
         }
       }
 
       # 4. Clean and Store
-      header <- to_abs_ref(header)
+      name <- to_abs_ref(name)
       data   <- to_abs_ref(data)
-      cat    <- to_abs_ref(cat)
+      label  <- to_abs_ref(label)
 
       if (!is.null(data) && !grepl("!", data)) {
         stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
@@ -132,16 +132,16 @@ ChartEx <- R6::R6Class(
         visibility <- list()
       }
 
-      header <- if (is.null(header)) NA_character_ else header
-      cat    <- if (is.null(cat))    NA_character_ else cat
+      name <- if (is.null(name)) NA_character_ else name
+      label  <- if (is.null(label))    NA_character_ else label
 
       series_type <- type %||% self$type %||% "waterfall"
       series_type <- normalize_encharter_type(series_type)
 
       self$series_data[[length(self$series_data) + 1]] <- list(
-        header = private$fix_quote(header),
+        name = private$fix_quote(name),
         data = private$fix_quote(data),
-        cat = private$fix_quote(cat),
+        label = private$fix_quote(label),
         type = series_type,
         color = color,
         line_color = line_color,
@@ -201,11 +201,11 @@ ChartEx <- R6::R6Class(
         v_idx <- v_idx + 1
 
         dat <- xml_add_child(chart_data_node, "cx:data", id = as.character(i - 1))
-        if (!is.null(s$cat)) {
+        if (!is.null(s$label)) {
           cat_node <- xml_add_child(dat, "cx:strDim", type = "cat")
           xml_add_child(cat_node, "cx:f", c_id)
           xml_add_child(cat_node, "cx:nf", nf_id)
-          body_attrs[c_id] <- s$cat
+          body_attrs[c_id] <- s$label
         }
 
         dim_type <- if (s$type == "regionMap") "colorVal" else if (s$type %in% c("sunburst", "treemap")) "size" else "val"
@@ -215,15 +215,15 @@ ChartEx <- R6::R6Class(
 
         ser <- xml_add_child(plot_region_node, "cx:series", layoutId = s$type, uniqueId = guid)
 
-        if (!is.na(s$header)) {
+        if (!is.na(s$name)) {
           tx_node <- xml_add_child(xml_add_child(ser, "cx:tx"), "cx:txData")
-          if (private$is_ref(s$header)) {
+          if (private$is_ref(s$name)) {
             # It's a range reference like Sheet1!$A$1
             xml_add_child(tx_node, "cx:f", h_id)
-            head_attrs[h_id] <- s$header
+            head_attrs[h_id] <- s$name
           } else {
             # It's a literal string like "Foo Bar"
-            xml_add_child(tx_node, "cx:v", as.character(s$header))
+            xml_add_child(tx_node, "cx:v", as.character(s$name))
           }
         }
 
@@ -346,7 +346,7 @@ ChartEx <- R6::R6Class(
           }
         }
 
-        head_attrs[h_id] <- s$header
+        head_attrs[h_id] <- s$name
         body_attrs[d_id] <- s$data
         body_attrs[nf_id] <- s$data
       }

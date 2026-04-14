@@ -20,15 +20,15 @@ my_chart$
   # --- SERIES STYLING ---
   # Primary Axis: Volume (Standard Bars)
   add_series(
-    header = "Sheet1!$B$1",
+    name = "Sheet1!$B$1",
     data   = "Sheet1!$B$2:$B$13",
-    cat    = "Sheet1!$A$2:$A$13",
+    label  = "Sheet1!$A$2:$A$13",
     color  = "4472C4" # Blue bars
   )$
 
   # Secondary Axis: Sales (Styled Line with Markers)
   add_series(
-    header      = "Sheet1!$C$1",
+    name        = "Sheet1!$C$1",
     data        = "Sheet1!$C$2:$C$13",
     secondary   = TRUE,
     type        = "lineChart",

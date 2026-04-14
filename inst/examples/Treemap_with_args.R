@@ -11,9 +11,9 @@ ce_tree <- ec("treemap")
 
 # 2. Add Series with Aggregation
 ce_tree$add_series(
-  header = "Total Sales",
+  name = "Total Sales",
   data = "Sheet1!$C$2:$C$6",
-  cat = "Sheet1!$A$2:$B$6",
+  label = "Sheet1!$A$2:$B$6",
   parent_label = "banner"
 )$
   set_data_label_style(

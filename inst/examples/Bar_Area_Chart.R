@@ -10,18 +10,18 @@ combo_chart <- ec("barChart")
 # 2. Add two series for the "Stacked" effect
 # Note: In OOXML, Bar/Column charts use the same 'barChart' node.
 combo_chart$add_series(
-  header = "Sheet1!$B$1",
+  name = "Sheet1!$B$1",
   data = "Sheet1!$B$2:$B$6",
-  cat =  "Sheet1!$A$2:$A$6",
+  label =  "Sheet1!$A$2:$A$6",
   color = "4472C4",
   type = "barChart",
   grouping = "clustered"
 )
 
 combo_chart$add_series(
-  header = "Sheet1!$C$1",
+  name = "Sheet1!$C$1",
   data = "Sheet1!$C$2:$C$6",
-  cat =  "Sheet1!$A$2:$A$6",
+  label =  "Sheet1!$A$2:$A$6",
   color = "A5A5A5",
   type = "barChart",
   grouping = "clustered"
@@ -29,7 +29,7 @@ combo_chart$add_series(
 
 # 3. Add an Area Chart series as an overlay
 combo_chart$add_series(
-  header = "Sheet1!$D$1",
+  name = "Sheet1!$D$1",
   data = "Sheet1!$D$2:$D$6",
   color = "70AD47",
   type = "areaChart", # This will render in its own node
