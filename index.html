@@ -76,7 +76,7 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>encharter</code> 0.4 and later requires a current development build of openxlsx2, because <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code> was moved into openxlsx2 at that point.</p>
+<p><code>encharter</code> requires <code>openxlsx2</code> (&gt;= 1.26).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
 <span>  <span class="st">"encharter"</span>,</span>
@@ -146,7 +146,7 @@ Fig 1: Our first <code>encharter</code> chart
 <code>wb_color()</code> and <code>fmt_txt()</code>
 <a class="anchor" aria-label="anchor" href="#wb_color-and-fmt_txt"></a>
 </h3>
-<p>Anywhere <code>encharter</code> accepts a color string, you can pass a plain six-digit hex value (<code>"4472C4"</code>) or a <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">wb_color()</a></code> object from openxlsx2:</p>
+<p>Anywhere <code>encharter</code> accepts a color string, you can pass a plain six-digit hex value (<code>"4472C4"</code>) or a <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">wb_color()</a></code> object from <code>openxlsx2</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># chart$add_series(..., color = wb_color("steelblue"))</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Sales"</span>, font_color <span class="op">=</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">wb_color</a></span><span class="op">(</span>hex <span class="op">=</span> <span class="st">"#CC0000"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -598,7 +598,7 @@ Fig 9: The box and whisker chart
 </h2>
 <ul>
 <li>
-<a href="https://janmarvin.github.io/openxlsx2/" class="external-link">openxlsx2</a> — the workbook package <code>encharter</code> plugs into</li>
+<a href="https://janmarvin.github.io/openxlsx2/" class="external-link"><code>openxlsx2</code></a> — the workbook package <code>encharter</code> plugs into</li>
 <li>
 <a href="https://janmarvin.github.io/ox2-book/" class="external-link">openxlsx2 book</a> — longer-form documentation and recipes for openxlsx2</li>
 </ul>
