@@ -96,7 +96,7 @@ test_that("ChartEx chart and plot styling works", {
   ce <- ChartEx$new()
   ce$add_series(
     data = "Sheet1!$B$2:$B$5",
-    label= "Sheet1!$A$2:$A$5",
+    label = "Sheet1!$A$2:$A$5",
     type = "treemap"
   )
 

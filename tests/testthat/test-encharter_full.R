@@ -434,7 +434,7 @@ test_that("ChartEx add_series stores series correctly", {
   ch <- ec("waterfall")
   ch$add_series(
     data = "'Sheet1'!$B$2:$B$6",
-    label= "'Sheet1'!$A$2:$A$6"
+    label = "'Sheet1'!$A$2:$A$6"
   )
   expect_length(ch$series_data, 1)
   expect_equal(ch$series_data[[1]]$type, "waterfall")
@@ -459,7 +459,7 @@ test_that("ChartEx render() returns xml with cx:chartSpace root", {
   ch <- ec("waterfall")
   ch$add_series(
     data = "'Sheet1'!$B$2:$B$5",
-    label= "'Sheet1'!$A$2:$A$5"
+    label = "'Sheet1'!$A$2:$A$5"
   )
   xml <- ch$render()
   expect_true(is.character(xml))
@@ -471,7 +471,7 @@ test_that("ChartEx render() includes chart title when set", {
   ch$set_chart_title("Treemap Title")
   ch$add_series(
     data = "'Sheet1'!$B$2:$B$5",
-    label= "'Sheet1'!$A$2:$A$5"
+    label = "'Sheet1'!$A$2:$A$5"
   )
   xml_str <- as.character(ch$render())
   expect_match(xml_str, "Treemap Title")
@@ -586,7 +586,7 @@ test_that("combo chart renders with bar and line series", {
   ch <- ec("bar")
   ch$add_series(
     data = "'Data'!$B$2:$B$13",
-    label= "'Data'!$A$2:$A$13",
+    label = "'Data'!$A$2:$A$13",
     type = "barChart"
   )
   ch$add_series(
