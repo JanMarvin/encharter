@@ -6,9 +6,9 @@ stock_data <- data.frame(
 )
 
 
-wb <- wb_workbook()$add_worksheet("Sheet1")$add_data(x = stock_data)
+wb <- openxlsx2::wb_workbook()$add_worksheet("Sheet1")$add_data(x = stock_data)
 
-df <- wb_data(wb)
+df <- openxlsx2::wb_data(wb)
 
 library(encharter)
 

@@ -28,9 +28,7 @@ waterfall, treemap, sunburst, box-and-whisker, funnel, and region map.
 
 ## Installation
 
-`encharter` 0.4 and later requires a current development build of
-openxlsx2, because `wb_add_encharter()` was moved into openxlsx2 at that
-point.
+`encharter` requires `openxlsx2` (\>= 1.26).
 
 ``` r
 install.packages(
@@ -138,7 +136,7 @@ that they are equivalent; a comment marks each switch.
 
 Anywhere `encharter` accepts a color string, you can pass a plain
 six-digit hex value (`"4472C4"`) or a `wb_color()` object from
-openxlsx2:
+`openxlsx2`:
 
 ``` r
 # chart$add_series(..., color = wb_color("steelblue"))
@@ -696,7 +694,7 @@ chart$set_disp_blanks("gap")    # default
 
 ## Related
 
-- [openxlsx2](https://janmarvin.github.io/openxlsx2/) — the workbook
+- [`openxlsx2`](https://janmarvin.github.io/openxlsx2/) — the workbook
   package `encharter` plugs into
 - [openxlsx2 book](https://janmarvin.github.io/ox2-book/) — longer-form
   documentation and recipes for openxlsx2
