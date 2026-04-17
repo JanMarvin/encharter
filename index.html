@@ -103,8 +103,8 @@
 <span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"lineChart"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Monthly Sales"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="st">"Sales!$B$1"</span>,</span>
-<span>  cat    <span class="op">=</span> <span class="st">"Sales!$A$2:$A$13"</span>,</span>
+<span>  name   <span class="op">=</span> <span class="st">"Sales!$B$1"</span>,</span>
+<span>  label  <span class="op">=</span> <span class="st">"Sales!$A$2:$A$13"</span>,</span>
 <span>  data   <span class="op">=</span> <span class="st">"Sales!$B$2:$B$13"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -125,8 +125,8 @@ Fig 1: Our first <code>encharter</code> chart
 <p><strong>By hand</strong>, using standard Excel notation — sheet name, column, and row, all absolute:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="st">"Sales!$B$1"</span>,</span>
-<span>  cat    <span class="op">=</span> <span class="st">"Sales!$A$2:$A$13"</span>,</span>
+<span>  name   <span class="op">=</span> <span class="st">"Sales!$B$1"</span>,</span>
+<span>  label  <span class="op">=</span> <span class="st">"Sales!$A$2:$A$13"</span>,</span>
 <span>  data   <span class="op">=</span> <span class="st">"Sales!$B$2:$B$13"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><strong>Via <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code></strong>, which constructs the range strings from a workbook object that already has data in it. This avoids hardcoding cell addresses and is less error-prone when the data layout changes:</p>
@@ -134,8 +134,8 @@ Fig 1: Our first <code>encharter</code> chart
 <code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span>, sheet <span class="op">=</span> <span class="st">"Sales"</span>, dims <span class="op">=</span> <span class="st">"A1:B13"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="st">"Sales"</span>,</span>
-<span>  cat    <span class="op">=</span> <span class="st">"Month"</span>,</span>
+<span>  name   <span class="op">=</span> <span class="st">"Sales"</span>,</span>
+<span>  label  <span class="op">=</span> <span class="st">"Month"</span>,</span>
 <span>  data   <span class="op">=</span> <span class="va">dat</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Both approaches produce the same OOXML output. The manual approach is more explicit and easier to read when the ranges are simple and fixed. <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code> pays off when building charts programmatically or when the source range is determined at runtime, and feels more native to R.</p>
@@ -247,7 +247,7 @@ Fig 2: The initial chart with styling
 <p>A line chart is the natural choice when the X axis is a time dimension and the story is about direction of change rather than individual values. Here we show monthly headcount across two departments so the reader can compare trajectories at a glance.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df_line</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  Month   <span class="op">=</span> <span class="va">month.abb</span>,</span>
+<span>  Month       <span class="op">=</span> <span class="va">month.abb</span>,</span>
 <span>  Engineering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">42</span>, <span class="fl">43</span>, <span class="fl">45</span>, <span class="fl">46</span>, <span class="fl">48</span>, <span class="fl">51</span>, <span class="fl">53</span>, <span class="fl">53</span>, <span class="fl">56</span>, <span class="fl">58</span>, <span class="fl">60</span>, <span class="fl">63</span><span class="op">)</span>,</span>
 <span>  Marketing   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">18</span>, <span class="fl">19</span>, <span class="fl">21</span>, <span class="fl">22</span>, <span class="fl">22</span>, <span class="fl">23</span>, <span class="fl">25</span>, <span class="fl">25</span>, <span class="fl">26</span>, <span class="fl">27</span>, <span class="fl">28</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -267,15 +267,15 @@ Fig 2: The initial chart with styling
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">80</span>, major <span class="op">=</span> <span class="fl">20</span>, grid_lines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="va">Engineering</span>,</span>
-<span>  cat    <span class="op">=</span> <span class="va">Month</span>,</span>
+<span>  name   <span class="op">=</span> <span class="va">Engineering</span>,</span>
+<span>  label  <span class="op">=</span> <span class="va">Month</span>,</span>
 <span>  data   <span class="op">=</span> <span class="va">wb_df</span>,</span>
 <span>  color  <span class="op">=</span> <span class="st">"2E4057"</span>,</span>
 <span>  marker <span class="op">=</span> <span class="st">"circle"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="va">Marketing</span>,</span>
-<span>  cat    <span class="op">=</span> <span class="va">Month</span>,</span>
+<span>  name   <span class="op">=</span> <span class="va">Marketing</span>,</span>
+<span>  label  <span class="op">=</span> <span class="va">Month</span>,</span>
 <span>  data   <span class="op">=</span> <span class="va">wb_df</span>,</span>
 <span>  color  <span class="op">=</span> <span class="st">"E84855"</span>,</span>
 <span>  marker <span class="op">=</span> <span class="st">"circle"</span></span>
@@ -322,8 +322,8 @@ Fig 3: The line chart
 <span><span class="va">variables</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">wb_df</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">quarters</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>    header <span class="op">=</span> <span class="va">variables</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span>,</span>
-<span>    cat    <span class="op">=</span> <span class="va">variables</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span>,</span>
+<span>    name   <span class="op">=</span> <span class="va">variables</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span>,</span>
+<span>    label  <span class="op">=</span> <span class="va">variables</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span>,</span>
 <span>    data   <span class="op">=</span> <span class="va">wb_df</span>,</span>
 <span>    color  <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
 <span>  <span class="op">)</span></span>
@@ -359,8 +359,8 @@ Fig 4: The bar chart
 <span><span class="co"># using the range approach here (interchangeable with wb_data())</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">quarters</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>    header   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Stacked!$%s$1"</span>, <span class="va">cols</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>    cat      <span class="op">=</span> <span class="st">"Stacked!$A$2:$A$5"</span>,</span>
+<span>    name     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Stacked!$%s$1"</span>, <span class="va">cols</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    label    <span class="op">=</span> <span class="st">"Stacked!$A$2:$A$5"</span>,</span>
 <span>    data     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Stacked!$%s$2:$%s$5"</span>, <span class="va">cols</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">cols</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>    color    <span class="op">=</span> <span class="va">colors</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
 <span>    grouping <span class="op">=</span> <span class="st">"stacked"</span>,</span>
@@ -402,8 +402,8 @@ Fig 5: The stacked bar chart
 <span></span>
 <span><span class="co"># primary axis — bars for revenue</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="va">Revenue</span>,</span>
-<span>  cat    <span class="op">=</span> <span class="va">Month</span>,</span>
+<span>  name   <span class="op">=</span> <span class="va">Revenue</span>,</span>
+<span>  label  <span class="op">=</span> <span class="va">Month</span>,</span>
 <span>  data   <span class="op">=</span> <span class="va">wb_df</span>,</span>
 <span>  color  <span class="op">=</span> <span class="st">"2E4057"</span>,</span>
 <span>  type   <span class="op">=</span> <span class="st">"barChart"</span></span>
@@ -411,8 +411,8 @@ Fig 5: The stacked bar chart
 <span></span>
 <span><span class="co"># secondary axis — line for margin</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header    <span class="op">=</span> <span class="va">Margin</span>,</span>
-<span>  cat       <span class="op">=</span> <span class="va">Month</span>,</span>
+<span>  name      <span class="op">=</span> <span class="va">Margin</span>,</span>
+<span>  label     <span class="op">=</span> <span class="va">Month</span>,</span>
 <span>  data      <span class="op">=</span> <span class="va">wb_df</span>,</span>
 <span>  type      <span class="op">=</span> <span class="st">"lineChart"</span>,</span>
 <span>  secondary <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -462,8 +462,8 @@ Fig 6: The combo chart
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span>min <span class="op">=</span> <span class="fl">0</span>, grid_lines <span class="op">=</span> <span class="cn">TRUE</span>, grid_color <span class="op">=</span> <span class="st">"EEEEEE"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header      <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  cat         <span class="op">=</span> <span class="st">"Scatter!$B$2:$B$13"</span>,</span>
+<span>  name        <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  label       <span class="op">=</span> <span class="st">"Scatter!$B$2:$B$13"</span>,</span>
 <span>  data        <span class="op">=</span> <span class="st">"Scatter!$C$2:$C$13"</span>,</span>
 <span>  color       <span class="op">=</span> <span class="st">"2E4057"</span>,</span>
 <span>  marker      <span class="op">=</span> <span class="st">"circle"</span>,</span>
@@ -506,8 +506,8 @@ Fig 7: The scatter chart
 <span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"waterfall"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Profit Bridge: Jan → Feb"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header    <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  cat       <span class="op">=</span> <span class="st">"Waterfall!$A$2:$A$7"</span>,</span>
+<span>  name      <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  label     <span class="op">=</span> <span class="st">"Waterfall!$A$2:$A$7"</span>,</span>
 <span>  data      <span class="op">=</span> <span class="st">"Waterfall!$B$2:$B$7"</span>,</span>
 <span>  subtotals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span>   <span class="co"># 0-based indices; Jan Profit (0) and Feb Profit (5) are totals, not steps</span></span>
 <span><span class="op">)</span></span>
@@ -546,7 +546,7 @@ Fig 8: The waterfall chart
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_chart_title</span><span class="op">(</span><span class="st">"Response Time by Support Tier (hours)"</span>, bold <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">set_y_title</span><span class="op">(</span><span class="st">"Hours to First Response"</span><span class="op">)</span></span>
 <span><span class="va">chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  cat        <span class="op">=</span> <span class="st">"BoxWhisker!$A$2:$A$121"</span>,</span>
+<span>  label      <span class="op">=</span> <span class="st">"BoxWhisker!$A$2:$A$121"</span>,</span>
 <span>  data       <span class="op">=</span> <span class="st">"BoxWhisker!$B$2:$B$121"</span>,</span>
 <span>  statistics <span class="op">=</span> <span class="st">"inclusive"</span></span>
 <span><span class="op">)</span></span>
@@ -588,7 +588,7 @@ Fig 9: The box and whisker chart
 <li>Series cell references use standard Excel notation: <code>"Sheet1!$A$2:$A$10"</code>. The sheet name is required.</li>
 <li>For extended chart types (waterfall, treemap, etc.), Excel uses a different XML schema internally (<code>chartEx</code>). <code>encharter</code> handles this transparently — <code>ec("waterfall")</code> returns a <code>ChartEx</code> object rather than a <code>Chart</code> object, but the interface is the same.</li>
 <li>Radar charts accept <code>filled = TRUE</code> in <code>add_series()</code> to fill the polygon interior.</li>
-<li>Bubble charts require a third data range for bubble sizes, passed as <code>z_data</code> in <code>add_series()</code>.</li>
+<li>Bubble charts require a third data range for bubble sizes, passed as <code>weight</code> in <code>add_series()</code>.</li>
 <li>Bar direction (vertical column vs horizontal bar) is set via <code>dir = "col"</code> (default) or <code>dir = "bar"</code> in <code>add_series()</code>.</li>
 </ul>
 <hr>

@@ -621,10 +621,10 @@ This rotates the chart clockwise.</p></dd>
 <p>Add a data series to the chart with independent styling.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
-<span>  cat <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  z_data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  weight <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="st">"4472C4"</span>,</span>
 <span>  type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  secondary <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -650,16 +650,16 @@ This rotates the chart clockwise.</p></dd>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>header</code></dt>
+<p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Cell range or string for series name.</p></dd>
 
       <dt><code>data</code></dt>
 <dd><p>Cell range for series values.</p></dd>
 
-      <dt><code>cat</code></dt>
+      <dt><code>label</code></dt>
 <dd><p>Cell range for category labels.</p></dd>
 
-      <dt><code>z_data</code></dt>
+      <dt><code>weight</code></dt>
 <dd><p>Cell range for bubble sizes (bubbleChart only).</p></dd>
 
       <dt><code>color</code></dt>
@@ -847,9 +847,9 @@ This rotates the chart clockwise.</p></dd>
 <p>Add a data series to the chart.</p><div class="section">
 <h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
-<span>  header <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
-<span>  cat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="st">"auto"</span>,</span>
 <span>  line_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -863,13 +863,13 @@ This rotates the chart clockwise.</p></dd>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>header</code></dt>
+<p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Cell range for the series name.</p></dd>
 
       <dt><code>data</code></dt>
 <dd><p>Cell range for the numeric values.</p></dd>
 
-      <dt><code>cat</code></dt>
+      <dt><code>label</code></dt>
 <dd><p>Cell range for the category labels.</p></dd>
 
       <dt><code>type</code></dt>
