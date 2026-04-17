@@ -8,7 +8,7 @@
 #'
 #' @details
 #' This class is designed to work with the `openxlsx2` package by generating
-#' the underlying XML required for the \code{add_chart_xml} method.
+#' the underlying XML required for the `add_chart_xml` method.
 #'
 #' @rdname encharter
 #' @usage NULL
@@ -73,8 +73,8 @@ Chart <- R6::R6Class(
     #' @description Set the secondary X-axis title.
     #'
     #' Only takes effect if at least one series has been assigned to the
-    #' secondary X-axis via \code{add_series(secondary = "x")}. Issues a warning
-    #' and returns \code{self} silently otherwise.
+    #' secondary X-axis via `add_series(secondary = "x")`. Issues a warning
+    #' and returns `self` silently otherwise.
     #'
     #' @param text Title string.
     #' @param font_size Numeric font size in points.
@@ -107,8 +107,8 @@ Chart <- R6::R6Class(
     #' @description Set the secondary Y-axis title.
     #'
     #' Only takes effect if at least one series has been assigned to the
-    #' secondary Y-axis via \code{add_series(secondary = TRUE)} or
-    #' \code{secondary = "y"}. Issues a warning otherwise.
+    #' secondary Y-axis via `add_series(secondary = TRUE)` or
+    #' `secondary = "y"`. Issues a warning otherwise.
     #'
     #' @param text Title string.
     #' @param font_size Numeric font size in points.
@@ -303,26 +303,26 @@ Chart <- R6::R6Class(
     #' @param line_color Hex color for the connecting line. Defaults to `color`.
     #' @param filled Logical; for radar charts, fills the interior area. Default FALSE.
     #' @param error_bars A list of error bar properties:
-    #' \itemize{
-    #'   \item \code{type}: The error value type (\code{ST_ErrValType}).
-    #'     Must be one of: \code{"fixedVal"} (Fixed Value), \code{"percentage"} (Percentage),
-    #'     \code{"stdDev"} (Standard Deviation), \code{"stdErr"} (Standard Error),
-    #'     or \code{"cust"} (Custom).
-    #'   \item \code{value}: The numeric value for the error bars (e.g., 10 for 10% or 5 for fixed units).
-    #'   \item \code{direction}: Direction of bars. One of \code{"both"}, \code{"plus"}, or \code{"minus"}.
-    #'   \item \code{color}: Hex color code for the bars (e.g., "FF0000").
-    #' }
+    #'
+    #'   * `type`: The error value type (`ST_ErrValType`).
+    #'     Must be one of: `"fixedVal"` (Fixed Value), `"percentage"` (Percentage),
+    #'     `"stdDev"` (Standard Deviation), `"stdErr"` (Standard Error),
+    #'     or `"cust"` (Custom).
+    #'   * `value`: The numeric value for the error bars (e.g., 10 for 10% or 5 for fixed units).
+    #'   * `direction`: Direction of bars. One of `"both"`, `"plus"`, or `"minus"`.
+    #'   * `color`: Hex color code for the bars (e.g., "FF0000").
+    #'
     #' @param trendline A list of regression line properties:
-    #' \itemize{
-    #'   \item \code{type}: The regression type (\code{ST_TrendlineType}).
-    #'     Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
-    #'     \code{"log"} (Logarithmic), \code{"movingAvg"} (Moving Average),
-    #'     \code{"poly"} (Polynomial), or \code{"power"} (Power).
-    #'   \item \code{order}: Required for \code{"poly"}; an integer between 2 and 6.
-    #'   \item \code{period}: Required for \code{"movingAvg"}; an integer representing the window size.
-    #'   \item \code{color}: Hex color code for the line.
-    #'   \item \code{show_r2}: Logical; if \code{TRUE}, displays the R-squared value on the chart.
-    #' }
+    #'
+    #'   * `type`: The regression type (`ST_TrendlineType`).
+    #'     Must be one of: `"linear"` (Linear), `"exp"` (Exponential),
+    #'     `"log"` (Logarithmic), `"movingAvg"` (Moving Average),
+    #'     `"poly"` (Polynomial), or `"power"` (Power).
+    #'   * `order`: Required for `"poly"`; an integer between 2 and 6.
+    #'   * `period`: Required for `"movingAvg"`; an integer representing the window size.
+    #'   * `color`: Hex color code for the line.
+    #'   * `show_r2`: Logical; if `TRUE`, displays the R-squared value on the chart.
+    #'
     add_series = function(name = NULL, data, label = NULL, weight = NULL,
                           color = "4472C4", type = NULL,
                           secondary = FALSE, dir = "col", grouping = "standard",

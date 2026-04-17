@@ -24,7 +24,7 @@ Factory function that initialises an R6 chart object. Returns a \code{Chart}
 object for standard OOXML chart types (bar, line, scatter, …) or a
 \code{ChartEx} object for modern extended chart types (waterfall, treemap, …).
 
-The `Chart` class provides a flexible interface to build Office OpenXML
+The \code{Chart} class provides a flexible interface to build Office OpenXML
 (OOXML) chart objects. It allows for granular control over grid lines,
 secondary axes, and combined chart types (e.g., Bar and Line) within a
 single plot area.
@@ -36,29 +36,29 @@ supported by standard Office Open XML chart types.
 \details{
 \strong{Supported Chart Types:}
 \itemize{
-  \item \bold{Bar/Column:} \code{"barChart"}, \code{"barplot"},
-    \code{"hist"}, \code{"histogram"}
-  \item \bold{Line/Area:} \code{"lineChart"}, \code{"line"},
-    \code{"areaChart"}, \code{"area"}
-  \item \bold{Scatter:} \code{"scatterChart"}, \code{"scatter"},
-    \code{"point"}
-  \item \bold{Pie/Doughnut:} \code{"pieChart"}, \code{"pie"},
-    \code{"doughnutChart"}, \code{"doughnut"}
-  \item \bold{Extended (ChartEx):} \code{"waterfall"}, \code{"treemap"},
-    \code{"sunburst"}, \code{"regionMap"},
-    \code{"boxWhisker"} / \code{"boxplot"}, \code{"funnel"}
+\item \strong{Bar/Column:} \code{"barChart"}, \code{"barplot"},
+\code{"hist"}, \code{"histogram"}
+\item \strong{Line/Area:} \code{"lineChart"}, \code{"line"},
+\code{"areaChart"}, \code{"area"}
+\item \strong{Scatter:} \code{"scatterChart"}, \code{"scatter"},
+\code{"point"}
+\item \strong{Pie/Doughnut:} \code{"pieChart"}, \code{"pie"},
+\code{"doughnutChart"}, \code{"doughnut"}
+\item \strong{Extended (ChartEx):} \code{"waterfall"}, \code{"treemap"},
+\code{"sunburst"}, \code{"regionMap"},
+\code{"boxWhisker"} / \code{"boxplot"}, \code{"funnel"}
 }
 
 \strong{Bar vs Column direction:}
 For bar/column charts, orientation is set via the \code{dir} argument in
-\code{$add_series()}: \code{"col"} (vertical, default) or \code{"bar"}
+\verb{$add_series()}: \code{"col"} (vertical, default) or \code{"bar"}
 (horizontal).
 
-This class is designed to work with the `openxlsx2` package by generating
+This class is designed to work with the \code{openxlsx2} package by generating
 the underlying XML required for the \code{add_chart_xml} method.
 
 This class uses XML to manipulate the underlying XML structure and
-integrates with `openxlsx2` for workbook generation.
+integrates with \code{openxlsx2} for workbook generation.
 }
 \examples{
 # Standard line chart
@@ -327,8 +327,8 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{color, font_color}}{Hex color for the axis lines and label (or independent label color).}
       \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
       \item{\code{font_size}}{Font size for the axis labels.}
-      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
-      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+      \item{\code{bold}}{Logical; if \code{TRUE}, axis labels will be bold.}
+      \item{\code{italic}}{Logical; if \code{TRUE}, axis labels will be italicized.}
       \item{\code{rotation}}{Rotation in degrees.}
       \item{\code{grid_color, minor_grid_color}}{Hex color for the grid lines.}
       \item{\code{grid_lines, minor_grid_lines}}{Logical. Show or hide grid lines.}
@@ -398,8 +398,8 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{color, font_color}}{Hex color for the axis lines and label (or independent label color).}
       \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
       \item{\code{font_size}}{Font size for the axis labels.}
-      \item{\code{bold}}{Logical; if `TRUE`, axis labels will be bold.}
-      \item{\code{italic}}{Logical; if `TRUE`, axis labels will be italicized.}
+      \item{\code{bold}}{Logical; if \code{TRUE}, axis labels will be bold.}
+      \item{\code{italic}}{Logical; if \code{TRUE}, axis labels will be italicized.}
       \item{\code{rotation}}{Rotation in degrees.}
       \item{\code{grid_color, minor_grid_color}}{Hex color for the grid lines.}
       \item{\code{grid_lines, minor_grid_lines}}{Logical. Show or hide grid lines.}
@@ -466,7 +466,7 @@ This rotates the chart clockwise.}
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{scale}}{The scale factor for bubbles, from 0 to 300 (expressed as a percentage).}
-      \item{\code{show_neg}}{Logical; if `TRUE`, bubbles with negative values will be displayed on the chart.}
+      \item{\code{show_neg}}{Logical; if \code{TRUE}, bubbles with negative values will be displayed on the chart.}
     }
     \if{html}{\out{</div>}}
   }
@@ -546,35 +546,35 @@ This rotates the chart clockwise.}
       \item{\code{show_line}}{Logical. Show the line connecting points.}
       \item{\code{marker}}{Marker type ("none", "circle", "square", "diamond", "triangle").}
       \item{\code{marker_size}}{Integer size of marker.}
-      \item{\code{marker_fill}}{Hex color for the interior of the marker. Defaults to `color`.}
-      \item{\code{marker_line}}{Hex color for the marker border. Defaults to `color`.}
+      \item{\code{marker_fill}}{Hex color for the interior of the marker. Defaults to \code{color}.}
+      \item{\code{marker_line}}{Hex color for the marker border. Defaults to \code{color}.}
       \item{\code{marker_line_width}}{Numeric width of the marker border.}
       \item{\code{show_val}}{Logical. Override global label settings for this series (show value).}
       \item{\code{show_cat}}{Logical. Override global label settings for this series (show category).}
       \item{\code{line_type}}{Line style: "dashed", "dotted", "dashDot", or "solid".}
       \item{\code{line_width}}{Numeric width of the connecting line.}
-      \item{\code{line_color}}{Hex color for the connecting line. Defaults to `color`.}
+      \item{\code{line_color}}{Hex color for the connecting line. Defaults to \code{color}.}
       \item{\code{filled}}{Logical; for radar charts, fills the interior area. Default FALSE.}
       \item{\code{error_bars}}{A list of error bar properties:
 \itemize{
-  \item \code{type}: The error value type (\code{ST_ErrValType}).
-    Must be one of: \code{"fixedVal"} (Fixed Value), \code{"percentage"} (Percentage),
-    \code{"stdDev"} (Standard Deviation), \code{"stdErr"} (Standard Error),
-    or \code{"cust"} (Custom).
-  \item \code{value}: The numeric value for the error bars (e.g., 10 for 10% or 5 for fixed units).
-  \item \code{direction}: Direction of bars. One of \code{"both"}, \code{"plus"}, or \code{"minus"}.
-  \item \code{color}: Hex color code for the bars (e.g., "FF0000").
+\item \code{type}: The error value type (\code{ST_ErrValType}).
+Must be one of: \code{"fixedVal"} (Fixed Value), \code{"percentage"} (Percentage),
+\code{"stdDev"} (Standard Deviation), \code{"stdErr"} (Standard Error),
+or \code{"cust"} (Custom).
+\item \code{value}: The numeric value for the error bars (e.g., 10 for 10\% or 5 for fixed units).
+\item \code{direction}: Direction of bars. One of \code{"both"}, \code{"plus"}, or \code{"minus"}.
+\item \code{color}: Hex color code for the bars (e.g., "FF0000").
 }}
       \item{\code{trendline}}{A list of regression line properties:
 \itemize{
-  \item \code{type}: The regression type (\code{ST_TrendlineType}).
-    Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
-    \code{"log"} (Logarithmic), \code{"movingAvg"} (Moving Average),
-    \code{"poly"} (Polynomial), or \code{"power"} (Power).
-  \item \code{order}: Required for \code{"poly"}; an integer between 2 and 6.
-  \item \code{period}: Required for \code{"movingAvg"}; an integer representing the window size.
-  \item \code{color}: Hex color code for the line.
-  \item \code{show_r2}: Logical; if \code{TRUE}, displays the R-squared value on the chart.
+\item \code{type}: The regression type (\code{ST_TrendlineType}).
+Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
+\code{"log"} (Logarithmic), \code{"movingAvg"} (Moving Average),
+\code{"poly"} (Polynomial), or \code{"power"} (Power).
+\item \code{order}: Required for \code{"poly"}; an integer between 2 and 6.
+\item \code{period}: Required for \code{"movingAvg"}; an integer representing the window size.
+\item \code{color}: Hex color code for the line.
+\item \code{show_r2}: Logical; if \code{TRUE}, displays the R-squared value on the chart.
 }}
     }
     \if{html}{\out{</div>}}
@@ -678,7 +678,7 @@ This rotates the chart clockwise.}
     \if{html}{\out{</div>}}
   }
   \subsection{Returns}{
-    A new `ChartEx` object.
+    A new \code{ChartEx} object.
   }
 }
 
@@ -720,10 +720,10 @@ This rotates the chart clockwise.}
       \item{\code{subtotals}}{Numeric vector of indices to treat as subtotals (Waterfall only).}
       \item{\code{statistics}}{Quartile method: "inclusive" or "exclusive".}
       \item{\code{binning}}{A list for Histogram/BoxWhisker:
-`binSize` (numeric), `binCount` (integer), `intervalClosed` ("left", "right"),
-`underflow` (numeric or "auto"), `overflow` (numeric or "auto").}
+\code{binSize} (numeric), \code{binCount} (integer), \code{intervalClosed} ("left", "right"),
+\code{underflow} (numeric or "auto"), \code{overflow} (numeric or "auto").}
       \item{\code{visibility}}{A named list of logicals for BoxWhisker/Waterfall:
-`connectorLines`, `meanLine`, `meanMarker`, `nonoutliers`, `outliers`.}
+\code{connectorLines}, \code{meanLine}, \code{meanMarker}, \code{nonoutliers}, \code{outliers}.}
       \item{\code{parent_label}}{Treemap label style: "overlapping", "banner", or "none".}
     }
     \if{html}{\out{</div>}}

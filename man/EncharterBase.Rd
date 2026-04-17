@@ -10,7 +10,7 @@ shared private helpers (\code{render_color_core}, \code{render_color},
 \code{set_axis_params}, \code{validate_input}).
 
 Users should not instantiate \code{EncharterBase} directly; use
-\code{\link{encharter}()} instead.
+\code{\link[=encharter]{encharter()}} instead.
 }
 \examples{
 
@@ -124,7 +124,7 @@ the primary Y-axis title.}
 
     \item{\code{axis_params}}{Named list with one entry per axis (\code{x}, \code{x2},
 \code{y}, \code{y2}). Each entry is a named list of scaling, formatting,
-and style parameters. Modified via \code{$set_x_axis()}, etc.}
+and style parameters. Modified via \verb{$set_x_axis()}, etc.}
   }
   \if{html}{\out{</div>}}
 }
@@ -461,7 +461,7 @@ string.}
   Configure global data label defaults for all series.
 
 Per-series overrides can be set via the \code{show_val}/\code{show_cat}
-arguments in \code{$add_series()}.
+arguments in \verb{$add_series()}.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{EncharterBase$set_data_label_style(
