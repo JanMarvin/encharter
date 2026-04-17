@@ -18,24 +18,24 @@ data <- wb |> wb_data()
 chart <- ec("scatterChart")
 
 chart$add_series(
-  header = "setosa",
+  name = "setosa",
   data   = data,
-  cat    = "Sepal.Length",
+  label  = "Sepal.Length",
   color  = wb_color(theme = 5),
   marker = "circle",
   marker_size = 7,
   type = "scatterChart" # or lineChart
 )$add_series(
-  header = "versicolor",
+  name = "versicolor",
   data   = data,
-  cat    = "Sepal.Length",
+  label  = "Sepal.Length",
   color  = wb_color(theme = 6),
   marker = "circle",
   marker_size = 7
 )$add_series(
-  header = "virginica",
+  name = "virginica",
   data   = data,
-  cat    = "Sepal.Length",
+  label  = "Sepal.Length",
   color  = wb_color(theme = 7),
   marker = "circle"
 )

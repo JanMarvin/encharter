@@ -18,15 +18,15 @@ my_chart$
   set_legend_style(pos = "b", font_size = 10)$
   # Primary Axis: Volume (Bars)
   add_series(
-    header = "Sheet1!$B$1",
+    name = "Sheet1!$B$1",
     data   = "Sheet1!$B$2:$B$13",
-    cat    = "Sheet1!$A$2:$A$13",
+    label  = "Sheet1!$A$2:$A$13",
     color  = "4472C4",
     type   = "barChart"
   )$
   # Secondary Axis: Sales (Line)
   add_series(
-    header = "Sheet1!$C$1",
+    name = "Sheet1!$C$1",
     data   = "Sheet1!$C$2:$C$13",
     color  = "ED7D31",
     type   = "lineChart",

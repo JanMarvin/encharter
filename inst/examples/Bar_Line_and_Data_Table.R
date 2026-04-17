@@ -20,18 +20,18 @@ my_chart <- ec(type = "barChart")
 # 6. Add Data Series
 # Series 1: Sales (Primary Axis, Bar)
 my_chart$add_series(
-  header    = "Dashboard!$B$1",
+  name      = "Dashboard!$B$1",
   data      = "Dashboard!$B$2:$B$13",
-  cat       = "Dashboard!$A$2:$A$13",
+  label     = "Dashboard!$A$2:$A$13",
   color     = "4F81BD",
   type      = "barChart"
 )
 
 # Series 2: Growth (Secondary Axis, Line)
 my_chart$add_series(
-  header    = "Dashboard!$C$1",
+  name      = "Dashboard!$C$1",
   data      = "Dashboard!$C$2:$C$13",
-  cat       = "Dashboard!$A$2:$A$13",
+  label     = "Dashboard!$A$2:$A$13",
   type      = "lineChart",
   secondary = TRUE,
   color     = "C0504D",

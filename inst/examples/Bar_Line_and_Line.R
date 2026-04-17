@@ -18,9 +18,9 @@ chart$
     grid_lines = TRUE
   )$
   add_series(
-    header = "'Sheet 1'!$B$1",
+    name = "'Sheet 1'!$B$1",
     data = "'Sheet 1'!$B$2:$B$5",
-    cat = "'Sheet 1'!$A$2:$A$5",
+    label = "'Sheet 1'!$A$2:$A$5",
     color = wb_color("blue")
   )
 

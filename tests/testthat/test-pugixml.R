@@ -344,7 +344,7 @@ test_that("xml_add_child sets attributes from named ...", {
 
 test_that("xml_add_child sets text from unnamed ...", {
   doc  <- openxlsx2::read_xml(XML_EMPTY)
-  node <- xml_add_child(doc, "label", "Hello")
+  node <- xml_add_child(doc, "cat", "Hello")
   xml_str <- as.character(doc)
   expect_match(xml_str, "Hello")
 })

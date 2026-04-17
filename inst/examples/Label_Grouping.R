@@ -19,12 +19,12 @@ my_chart <- ec("barChart")
 my_chart$set_chart_title("Smokers by Gender", bold = TRUE)
 
 my_chart$add_series(
-  header = "Prevalence",
+  name = "Prevalence",
   # The values are in column C
   data   = "data!$C$2:$C$5",
   # The CATEGORIES span TWO columns (A and B)
   # This creates the multi-level hierarchy
-  cat    = "data!$A$2:$B$5",
+  label  = "data!$A$2:$B$5",
   color  = wb_color("#003C63"),
   type   = "barChart"
 )

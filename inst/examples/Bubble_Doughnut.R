@@ -21,8 +21,8 @@ wb <- wb_workbook() |>
 dn_chart <- ec("doughnutChart")
 dn_chart$set_chart_title("Budget Allocation")$set_pie_options(hole_size = 60)
 dn_chart$add_series(
-  header = "Data!$B$1",
-  cat    = "Data!$A$2:$A$5",
+  name = "Data!$B$1",
+  label  = "Data!$A$2:$A$5",
   data   = "Data!$B$2:$B$5"
 )
 
@@ -31,10 +31,10 @@ bb_chart <- ec("bubbleChart")
 bb_chart$set_chart_title("Investment Analysis")
 bb_chart$set_x_title("Investment")$set_y_title("Profit")
 bb_chart$add_series(
-  header = "Investment vs Profit",
-  cat    = "Data!$A$2:$A$5",
+  name = "Investment vs Profit",
+  label  = "Data!$A$2:$A$5",
   data   = "Data!$C$2:$C$5",
-  z_data = "Data!$D$2:$D$5"
+  weight = "Data!$D$2:$D$5"
 )
 
 # 3. Add Charts to Workbook

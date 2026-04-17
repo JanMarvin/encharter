@@ -53,14 +53,14 @@ my_bw$
   set_x_axis(font_size = 10, font_name = "Arial", bold = TRUE)$
   set_y_axis(font_size = 12, font_name = "Times New Roman", italic = TRUE, color = "000000", format = "0.0")$
   add_series(
-    header = '"Super Duper MPG"', # dont use strings with a "!"
+    name = '"Super Duper MPG"', # dont use strings with a "!"
     data   = "Data!$A$2:$A$33",
-    cat    = "Data!$B$2:$B$33",
+    label  = "Data!$B$2:$B$33",
     color  = wb_color("magenta"), line_color = wb_color("black"))$
   add_series(
-    header = "Data!$C$1",
+    name = "Data!$C$1",
     data   = "Data!$C$2:$C$33",
-    cat    = "Data!$B$2:$B$33",
+    label  = "Data!$B$2:$B$33",
     color  = wb_color(hex = "FFA500"), line_color = wb_color("black"))$
   set_legend_style(
     pos   = "r",
@@ -91,8 +91,8 @@ map_data <- data.frame(
 ## something is missing
 my_rm <- ec("regionMap")
 my_rm$set_chart_title("Region Map")$
-  add_series(header = "'Region Map'!$B$1", data = "'Region Map'!$B$2:$B$12",
-             cat = "'Region Map'!$A$2:$A$12")
+  add_series(name = "'Region Map'!$B$1", data = "'Region Map'!$B$2:$B$12",
+             label = "'Region Map'!$A$2:$A$12")
 
 wb$add_worksheet("Region Map")$add_data(x = map_data)
 wb <- openxlsx2::wb_add_encharter(wb, sheet = "Data", dims = "V13:AB24", graph = my_rm)

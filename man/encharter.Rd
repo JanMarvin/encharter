@@ -499,10 +499,10 @@ This rotates the chart clockwise.}
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{Chart$add_series(
-  header = NULL,
+  name = NULL,
   data,
-  cat = NULL,
-  z_data = NULL,
+  label = NULL,
+  weight = NULL,
   color = "4472C4",
   type = NULL,
   secondary = FALSE,
@@ -531,10 +531,10 @@ This rotates the chart clockwise.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{header}}{Cell range or string for series name.}
+      \item{\code{name}}{Cell range or string for series name.}
       \item{\code{data}}{Cell range for series values.}
-      \item{\code{cat}}{Cell range for category labels.}
-      \item{\code{z_data}}{Cell range for bubble sizes (bubbleChart only).}
+      \item{\code{label}}{Cell range for category labels.}
+      \item{\code{weight}}{Cell range for bubble sizes (bubbleChart only).}
       \item{\code{color}}{Primary Hex color for the series (used as default for line and markers).}
       \item{\code{type}}{Chart type for this specific series (for combo charts).}
       \item{\code{secondary}}{Logical. Set to TRUE to move series to secondary axis.}
@@ -690,9 +690,9 @@ This rotates the chart clockwise.}
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{ChartEx$add_series(
-  header = NULL,
+  name = NULL,
   data,
-  cat = NULL,
+  label = NULL,
   type = NULL,
   color = "auto",
   line_color = NULL,
@@ -709,9 +709,9 @@ This rotates the chart clockwise.}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{header}}{Cell range for the series name.}
+      \item{\code{name}}{Cell range for the series name.}
       \item{\code{data}}{Cell range for the numeric values.}
-      \item{\code{cat}}{Cell range for the category labels.}
+      \item{\code{label}}{Cell range for the category labels.}
       \item{\code{type}}{Type of chart (waterfall, sunburst, treemap, regionMap).}
       \item{\code{color}}{Hex color or "auto".}
       \item{\code{line_color}}{Border color.}

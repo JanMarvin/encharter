@@ -4,7 +4,7 @@ df_hist <- data.frame(Value = rnorm(100, 50, 10))
 
 ce <- ec("clusteredColumn")
 ce$add_series(
-  header = "Distribution",
+  name = "Distribution",
   data = "Sheet1!$A$2:$A$101",
   binning = list(
     binSize = 10, # or binCount = 10

@@ -14,15 +14,15 @@ ch <- encharter(type = "lineChart")
 
 # Add the "Open" series
 ch$add_series(
-  header = "Sheet1!$B$1",
+  name = "Sheet1!$B$1",
   data   = "Sheet1!$B$2:$B$6",
-  cat    = "Sheet1!$A$2:$A$6",
+  label  = "Sheet1!$A$2:$A$6",
   color  = "4F81BD" # Blue
 )
 
 # Add the "Close" series
 ch$add_series(
-  header = "Sheet1!$C$1",
+  name = "Sheet1!$C$1",
   data   = "Sheet1!$C$2:$C$6",
   color  = "C0504D" # Red
 )

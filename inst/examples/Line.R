@@ -21,9 +21,9 @@ chart$set_data_label_style(
 )
 
 chart$add_series(
-  header = "'Sheet 1'!$B$1",
+  name = "'Sheet 1'!$B$1",
   data   = "'Sheet 1'!$B$2:$B$5",
-  cat    = "'Sheet 1'!$A$2:$A$5",
+  label  = "'Sheet 1'!$A$2:$A$5",
   color  = "#0000FF",
   marker = "circle",
   marker_size = 7,

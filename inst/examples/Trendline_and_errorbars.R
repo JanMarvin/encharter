@@ -13,9 +13,9 @@ ch <- encharter(type = "barChart")
 # 3. Add Series with Error Bars and Trendline
 
 ch$add_series(
-  header = "Monthly Revenue",
+  name = "Monthly Revenue",
   data = "Sheet1!$B$2:$B$7",
-  cat = "Sheet1!$A$2:$A$7",
+  label = "Sheet1!$A$2:$A$7",
   type = "barChart",
   error_bars = list(
     type = "percentage",

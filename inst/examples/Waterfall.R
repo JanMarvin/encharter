@@ -19,9 +19,9 @@ my_wf$set_chart_title("2024 Financial Performance")
 
 # Mapping the "Financial Bridge" data
 my_wf$add_series(
-  header = "Data2!$B$1",         # "Amount"
+  name = "Data2!$B$1",         # "Amount"
   data   = "Data2!$B$2:$B$7",     # 1200, -450, -300...
-  cat    = "Data2!$A$2:$A$7",     # Categories
+  label  = "Data2!$A$2:$A$7",     # Categories
   type   = "waterfall",
   subtotals = 5
 )

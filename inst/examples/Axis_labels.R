@@ -15,9 +15,9 @@ my_chart <- ec("barChart")
 my_chart$
   set_chart_title("Profit Analysis (Negative Values)")$
   add_series(
-    header = "Profit",
+    name = "Profit",
     data   = "Sheet1!$B$2:$B$7",
-    cat    = "Sheet1!$A$2:$A$7",
+    label  = "Sheet1!$A$2:$A$7",
     color  = "4472C4",
     type   = "barChart"
   )$

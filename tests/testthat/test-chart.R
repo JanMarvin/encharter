@@ -6,8 +6,8 @@ clean_xml <- function(xml) {
 
 test_that("Chart: Combo Bar/Area and Secondary Axis", {
   chart <- Chart$new()
-  chart$add_series(header = "Sheet1!$B$1", data = "Sheet1!$B$2:$B$6", type = "barChart")
-  chart$add_series(header = "Sheet1!$D$1", data = "Sheet1!$D$2:$D$6", type = "areaChart", secondary = TRUE)
+  chart$add_series(name = "Sheet1!$B$1", data = "Sheet1!$B$2:$B$6", type = "barChart")
+  chart$add_series(name = "Sheet1!$D$1", data = "Sheet1!$D$2:$D$6", type = "areaChart", secondary = TRUE)
 
   chart$set_y_title("Primary")
   chart$set_y2_title("Secondary")
@@ -43,7 +43,7 @@ test_that("Chart: Bubble and Doughnut specific features", {
   # Doughnut hole size
   dn <- Chart$new("doughnutChart")
   dn$add_series(
-    cat = "Sheet1!$A$2:$A$6",
+    label = "Sheet1!$A$2:$A$6",
     data = "Sheet1!$B$2:$B$6"
   )
   dn$set_pie_options(hole_size = 65, rotation = 90, expansion = 40)
@@ -55,10 +55,10 @@ test_that("Chart: Bubble and Doughnut specific features", {
     add_data(x = head(mtcars[1:3]), row_names = TRUE)$
     add_encharter(graph = dn)
 
-  # Bubble z_data
+  # Bubble weight
   bb <- Chart$new("bubbleChart")
-  bb$add_series(header = "H", cat = "Sheet1!$A$1:$A$5",
-                data = "Sheet1!$B$1:$B$5", z_data = "Sheet1!$C$1:$C$5")
+  bb$add_series(name = "H", label = "Sheet1!$A$1:$A$5",
+                data = "Sheet1!$B$1:$B$5", weight = "Sheet1!$C$1:$C$5")
   expect_match(as.character(bb$render()), "bubbleSize")
   wb$add_encharter(graph = bb)
 })
@@ -66,7 +66,7 @@ test_that("Chart: Bubble and Doughnut specific features", {
 test_that("Chart: Multi-level Category Grouping", {
   chart <- Chart$new()
   # Testing a range covering two columns for categories
-  chart$add_series(header = "Val", data = "Sheet1!$C$2:$C$5", cat = "Sheet1!$A$2:$B$5")
+  chart$add_series(name = "Val", data = "Sheet1!$C$2:$C$5", label = "Sheet1!$A$2:$B$5")
 
   xml <- as.character(chart$render())
   expect_match(xml, "multiLvlStrRef")
@@ -81,9 +81,9 @@ test_that("Chart series supports Trendlines and Error Bars with correct XSD sequ
   ch <- Chart$new()
 
   ch$add_series(
-    header = "Monthly Revenue",
+    name = "Monthly Revenue",
     data = "Sheet1!$B$2:$B$7",
-    cat = "Sheet1!$A$2:$A$7",
+    label = "Sheet1!$A$2:$A$7",
     type = "barChart",
     error_bars = list(
       type = "percentage",
@@ -136,9 +136,9 @@ test_that("surfaceChart rendering works", {
   chart <- Chart$new()
   for (i in 2:4) {
     chart$add_series(
-      header = paste0("Sheet1!$A$", i),
+      name = paste0("Sheet1!$A$", i),
       data   = paste0("Sheet1!$B$", i, ":$D$", i),
-      cat    = "Sheet1!$B$1:$D$1",
+      label  = "Sheet1!$B$1:$D$1",
       type   = "surfaceChart"
     )
   }
@@ -169,8 +169,8 @@ test_that("radarChart rendering works for both standard and filled styles", {
   # 2. Test Standard Radar (Line)
   radar_std <- Chart$new()
   radar_std$add_series(
-    header = "Std",
-    cat    = "Sheet1!$A$2:$A$4",
+    name = "Std",
+    label  = "Sheet1!$A$2:$A$4",
     data   = "Sheet1!$B$2:$B$4",
     type   = "radarChart"
   )
@@ -183,8 +183,8 @@ test_that("radarChart rendering works for both standard and filled styles", {
   # 3. Test Filled Radar
   radar_filled <- Chart$new()
   radar_filled$add_series(
-    header = "Fill",
-    cat    = "Sheet1!$A$2:$A$4",
+    name = "Fill",
+    label  = "Sheet1!$A$2:$A$4",
     data   = "Sheet1!$B$2:$B$4",
     type   = "radarChart",
     filled = TRUE
@@ -200,7 +200,7 @@ test_that("radarChart rendering works for both standard and filled styles", {
   expect_equal(length(xml_find_all(xml_std, ".//c:radarChart")), 1)
 })
 
-test_that("scatter without cat is supported", {
+test_that("scatter without label is supported", {
 
   df_scatter <- data.frame(
     Project = paste("Project", LETTERS[1:5]),
@@ -212,7 +212,7 @@ test_that("scatter without cat is supported", {
   sc_chart$set_chart_title("Risk vs ROI Analysis")
 
   sc_chart$add_series(
-    header    = "Portfolio",
+    name      = "Portfolio",
     data      = "ScatterData!$C$2:$C$6",
     show_line = FALSE,
     marker    = "circle",

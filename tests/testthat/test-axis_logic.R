@@ -1,7 +1,7 @@
 test_that("Chart: Date Axes and Axis Units", {
   chart <- Chart$new("lineChart")
   chart$add_series(
-    header = "S1!$B$1", data = "S1!$B$2:$B$5"
+    name = "S1!$B$1", data = "S1!$B$2:$B$5"
   )
 
   # Date axis configuration
@@ -29,13 +29,13 @@ test_that("Chart: Date Axes and Axis Units", {
   wb <- openxlsx2::wb_add_encharter(wb, dims = "A2:K10", graph = chart)
 
   chart$add_series(
-    header = "S1!C$1", data = "S1!$C$2:$C$5", secondary = TRUE # "y"
+    name = "S1!C$1", data = "S1!$C$2:$C$5", secondary = TRUE # "y"
   )
   chart$set_y2_title("Bam", font_size = 14, bold = TRUE)
   xml <- as.character(chart$render())
 
   chart$add_series(
-    header = "S1!C$1", data = "S1!$C$2:$C$5", secondary = "x"
+    name = "S1!C$1", data = "S1!$C$2:$C$5", secondary = "x"
   )
   chart$set_x2_title("Bar", font_size = 14, bold = TRUE)
 
@@ -46,9 +46,9 @@ test_that("Chart: Date Axes and Axis Units", {
 test_that("Chart: Combo charts and Secondary Axis", {
   chart <- Chart$new("barChart")
   # Primary
-  chart$add_series(header = "B1", data = "dat!B2:B5", color = openxlsx2::wb_color("magenta"))
+  chart$add_series(name = "B1", data = "dat!B2:B5", color = openxlsx2::wb_color("magenta"))
   # Secondary Area
-  chart$add_series(header = "C1", data = "dat!C2:C5", type = "areaChart", secondary = TRUE)
+  chart$add_series(name = "C1", data = "dat!C2:C5", type = "areaChart", secondary = TRUE)
 
   xml <- as.character(chart$render())
 

@@ -30,11 +30,11 @@ wb <- wb_workbook() |>
 combo_chart <- ec("barplot")$ # Using the new alias
   set_chart_title("Sales Volume vs Growth", bold = TRUE)$
   add_series(
-    header = "Standard!$B$1", data = "Standard!$B$2:$B$13",
-    cat = "Standard!$A$2:$A$13", color = "4472C4"
+    name = "Standard!$B$1", data = "Standard!$B$2:$B$13",
+    label = "Standard!$A$2:$A$13", color = "4472C4"
   )$
   add_series(
-    header = "Standard!$D$1", data = "Standard!$D$2:$D$13",
+    name = "Standard!$D$1", data = "Standard!$D$2:$D$13",
     type = "lineChart", secondary = TRUE, color = "C0504D", marker = "circle"
   )$
   set_legend_style(pos = "bottom")
@@ -44,18 +44,18 @@ dn_chart <- ec("doughnut")$
   set_chart_title("Investment Distribution")$
   set_pie_options(hole_size = 65)$
   add_series(
-    header = "Standard!$G$1", data = "Standard!$G$2:$G$5",
-    cat = "Standard!$F$2:$F$5"
+    name = "Standard!$G$1", data = "Standard!$G$2:$G$5",
+    label = "Standard!$F$2:$F$5"
   )
 
 # C. Bubble Chart
 bb_chart <- ec("scatter")$
   set_chart_title("Risk vs Profit Analysis")$
   add_series(
-    header = "Projects",
-    cat = "Standard!$G$2:$G$5",   # X = Investment
+    name = "Projects",
+    label = "Standard!$G$2:$G$5",   # X = Investment
     data = "Standard!$H$2:$H$5",  # Y = Profit
-    z_data = "Standard!$I$2:$I$5" # Z = Risk
+    weight = "Standard!$I$2:$I$5" # Z = Risk
   )
 
 # --- SHEET 2: EXTENDED CHARTS (ChartEx) ---
@@ -64,7 +64,7 @@ bb_chart <- ec("scatter")$
 box_plot <- ec("boxplot")$ # Using the new alias
   set_chart_title("Revenue Distribution (Inclusive)")$
   add_series(
-    header = "Revenue",
+    name = "Revenue",
     data = "Extended!$C$2:$C$13",
     statistics = "inclusive"
   )
@@ -73,7 +73,7 @@ box_plot <- ec("boxplot")$ # Using the new alias
 wf_chart <- ec("waterfall")$
   set_chart_title("Monthly Volume Shifts")$
   add_series(
-    header = "Extended!$B$1",
+    name = "Extended!$B$1",
     data = "Extended!$B$2:$B$10"
   )
 
