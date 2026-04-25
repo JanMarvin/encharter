@@ -13,12 +13,12 @@
 xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
   target <- if (is.list(.x)) .x[[1]] else .x
 
-  if (inherits(target, "pugi_xml") || .Call("pugi_node_type", target) == "document") {
+  if (inherits(target, "pugi_xml") || .Call(C_pugi_node_type, target) == "document") {
     kids <- xml_find_all(target, "/*")
     if (length(kids) > 0) target <- kids[[1]]
   }
 
-  new_node <- .Call("pugi_add_child", target, .name, as.integer(.where))
+  new_node <- .Call(C_pugi_add_child, target, .name, as.integer(.where))
 
   args <- list(...)
   if (length(args) > 0) {
@@ -26,15 +26,15 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
     for (i in seq_along(args)) {
       val <- as.character(args[[i]])
       if (is.null(arg_names) || arg_names[i] == "") {
-        .Call("pugi_set_text", new_node, val)
+        .Call(C_pugi_set_text, new_node, val)
       } else {
-        .Call("pugi_set_attr", new_node, arg_names[i], val)
+        .Call(C_pugi_set_attr, new_node, arg_names[i], val)
       }
     }
   }
 
   if (!is.null(.value)) {
-    .Call("pugi_set_text", new_node, as.character(.value))
+    .Call(C_pugi_set_text, new_node, as.character(.value))
   }
   new_node
 }
@@ -50,7 +50,7 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
 xml_find_first <- function(x, xpath) {
   if (is.list(x)) return(lapply(x, xml_find_first, xpath = xpath))
   if (!grepl("^\\.|^/", xpath)) xpath <- paste0(".//", xpath)
-  .Call("pugi_find_first", x, as.character(xpath))
+  .Call(C_pugi_find_first, x, as.character(xpath))
 }
 
 #' Find all matches via XPath
@@ -68,7 +68,7 @@ xml_find_all <- function(x, xpath) {
     return(res)
   }
   if (!grepl("^\\.|^/", xpath)) xpath <- paste0(".//", xpath)
-  .Call("pugi_find_all", x, as.character(xpath))
+  .Call(C_pugi_find_all, x, as.character(xpath))
 }
 
 #' Get element children
@@ -80,11 +80,11 @@ xml_find_all <- function(x, xpath) {
 #' # xml_children(xml_find_first(doc, ".//row"))
 xml_children <- function(x) {
   if (is.list(x)) {
-    res <- unlist(lapply(x, function(node) .Call("pugi_children", node)), recursive = FALSE)
+    res <- unlist(lapply(x, function(node) .Call(C_pugi_children, node)), recursive = FALSE)
     class(res) <- c("pugi_nodeset", "list")
     return(res)
   }
-  .Call("pugi_children", x)
+  .Call(C_pugi_children, x)
 }
 
 #' Get node names
@@ -95,14 +95,14 @@ xml_children <- function(x) {
 #' @examples
 #' # xml_name(xml_find_all(doc, "/*/*"))
 xml_name <- function(x) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call("pugi_node_name", node))))
+  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_name, node))))
   # Unwrap document node to its root element, matching xml2 behaviour
-  if (.Call("pugi_node_type", x) == "document") {
+  if (.Call(C_pugi_node_type, x) == "document") {
     kids <- xml_find_all(x, "/*")
-    if (length(kids) > 0) return(.Call("pugi_node_name", kids[[1]]))
+    if (length(kids) > 0) return(.Call(C_pugi_node_name, kids[[1]]))
     return("")
   }
-  .Call("pugi_node_name", x)
+  .Call(C_pugi_node_name, x)
 }
 
 #' Get node types
@@ -111,8 +111,8 @@ xml_name <- function(x) {
 #' @return A character vector (e.g., "element", "document").
 #' @keywords internal
 xml_type <- function(x) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call("pugi_node_type", node))))
-  .Call("pugi_node_type", x)
+  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_type, node))))
+  .Call(C_pugi_node_type, x)
 }
 
 #' Get attribute value
@@ -124,8 +124,8 @@ xml_type <- function(x) {
 #' @examples
 #' # xml_attr(rows, "r")
 xml_attr <- function(x, attr) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call("pugi_get_attr", node, attr))))
-  .Call("pugi_get_attr", x, as.character(attr))
+  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_get_attr, node, attr))))
+  .Call(C_pugi_get_attr, x, as.character(attr))
 }
 
 #' Set attribute value
@@ -138,9 +138,9 @@ xml_attr <- function(x, attr) {
 #' # xml_set_attr(rows, "customHeight", "1")
 xml_set_attr <- function(x, attr, value) {
   if (is.list(x)) {
-    invisible(lapply(x, function(node) .Call("pugi_set_attr", node, attr, as.character(value))))
+    invisible(lapply(x, function(node) .Call(C_pugi_set_attr, node, attr, as.character(value))))
   } else {
-    .Call("pugi_set_attr", x, as.character(attr), as.character(value))
+    .Call(C_pugi_set_attr, x, as.character(attr), as.character(value))
   }
 }
 
@@ -153,8 +153,8 @@ xml_set_attr <- function(x, attr, value) {
 #' @examples
 #' # has_r <- xml_has_attr(cells, "r")
 xml_has_attr <- function(x, attr) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call("pugi_has_attr", node, attr))))
-  .Call("pugi_has_attr", x, as.character(attr))
+  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_has_attr, node, attr))))
+  .Call(C_pugi_has_attr, x, as.character(attr))
 }
 
 #' Get count of child elements
@@ -165,8 +165,8 @@ xml_has_attr <- function(x, attr) {
 #' @examples
 #' # xml_length(doc)
 xml_length <- function(x) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call("pugi_node_length", node))))
-  .Call("pugi_node_length", x)
+  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_length, node))))
+  .Call(C_pugi_node_length, x)
 }
 
 #' Remove nodes from the tree
@@ -176,13 +176,13 @@ xml_length <- function(x) {
 #' @examples
 #' # xml_remove(xml_find_all(doc, ".//legacyDrawing"))
 xml_remove <- function(x) {
-  if (is.list(x)) invisible(lapply(x, function(node) .Call("pugi_remove", node)))
-  else if (!is.null(x)) .Call("pugi_remove", x)
+  if (is.list(x)) invisible(lapply(x, function(node) .Call(C_pugi_remove, node)))
+  else if (!is.null(x)) .Call(C_pugi_remove, x)
 }
 
 #' @method as.character pugi_node
 #' @export
-as.character.pugi_node <- function(x, ...) .Call("pugi_serialize_node", x)
+as.character.pugi_node <- function(x, ...) .Call(C_pugi_serialize_node, x)
 
 #' @method print pugi_node
 #' @export

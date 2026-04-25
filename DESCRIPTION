@@ -1,12 +1,12 @@
 Package: encharter
 Type: Package
-Title: Enhanced OOXML Charting for `openxlsx2`
-Version: 0.8
+Title: Enhanced Office Open XML Charting for 'openxlsx2'
+Version: 0.9
 Authors@R: c(
     person("Jan Marvin", "Garbuszus", email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut", "cre"))
   )
-Description: Provides a high-level R6 interface for creating complex
-    Office OpenXML (OOXML) charts. This package allows users to build
+Description: Provides a high-level 'R6' interface for creating complex
+    Office Open XML (OOXML) charts. Allows users to build
     multi-series combo charts with secondary axes and granular styling
     options, designed to integrate seamlessly with 'openxlsx2'.
 License: MIT + file LICENSE
@@ -19,12 +19,9 @@ Imports:
     R6,
     openxlsx2 (>= 1.26)
 Suggests:
-    knitr,
-    rmarkdown,
     testthat (>= 3.0.0),
     viridisLite
 Config/testthat/edition: 3
 Config/roxygen2/version: 7.3.3.9000
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
-Remotes: JanMarvin/openxlsx2

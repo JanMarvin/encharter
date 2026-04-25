@@ -17,8 +17,8 @@ ENCHARTER_EXTENDED <- c(
 #'
 #' @description
 #' Factory function that initialises an R6 chart object. Returns a `Chart`
-#' object for standard OOXML chart types (bar, line, scatter, …) or a
-#' `ChartEx` object for modern extended chart types (waterfall, treemap, …).
+#' object for standard OOXML chart types (bar, line, scatter, ...) or a
+#' `ChartEx` object for modern extended chart types (waterfall, treemap, ...).
 #'
 #' @param type A character string specifying the chart type. Common R-style
 #'   aliases are accepted (see Details).
@@ -87,7 +87,7 @@ ec <- encharter
 #' Users should not instantiate `EncharterBase` directly; use
 #' [encharter()] instead.
 #'
-#' @useDynLib encharter, .registration=TRUE
+#' @useDynLib encharter, .registration=TRUE, .fixes="C_"
 #' @import R6
 #' @importFrom openxlsx2 wb_color dims_to_dataframe read_xml fmt_txt
 #  some XML functions from openxlsx2 are used but not imported because of name

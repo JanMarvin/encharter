@@ -260,6 +260,8 @@ test_that("ChartEx renders full styling and axis properties", {
 
 test_that("Bubble chart generates valid XML and integrates with workbook", {
 
+  skip_if_not_installed("viridisLite")
+
   # 1. Setup Data
   df <- data.frame(
     Product = paste("Item", 1:10),
