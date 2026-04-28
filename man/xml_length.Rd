@@ -15,7 +15,4 @@ An integer vector of child counts.
 \description{
 Get count of child elements
 }
-\examples{
-# xml_length(doc)
-}
 \keyword{internal}

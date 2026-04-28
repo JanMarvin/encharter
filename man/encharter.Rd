@@ -75,22 +75,18 @@ ec("barplot")
 ## Method `Chart$set_x2_title`
 ## ------------------------------------------------
 
-\dontrun{
-ec("scatter") |>
-  add_series(data = "Sheet1!A1:A10", secondary = "x") |>
+ec("scatter")$
+  add_series(data = "Sheet1!A1:A10", secondary = "x")$
   set_x2_title("Secondary X", font_color = "888888")
-}
 
 ## ------------------------------------------------
 ## Method `Chart$set_y2_title`
 ## ------------------------------------------------
 
-\dontrun{
-ec("line") |>
-  add_series(data = "Sheet1!A1:A10") |>
-  add_series(data = "Sheet1!B1:B10", secondary = TRUE) |>
+ec("line")$
+  add_series(data = "Sheet1!A1:A10")$
+  add_series(data = "Sheet1!B1:B10", secondary = TRUE)$
   set_y2_title("Growth Rate (\%)")
-}
 }
 \section{Super class}{
 \code{\link[encharter:EncharterBase]{encharter::EncharterBase}} -> \code{Chart}
@@ -220,11 +216,9 @@ and returns \code{self} silently otherwise.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\dontrun{
-ec("scatter") |>
-  add_series(data = "Sheet1!A1:A10", secondary = "x") |>
+\preformatted{ec("scatter")$
+  add_series(data = "Sheet1!A1:A10", secondary = "x")$
   set_x2_title("Secondary X", font_color = "888888")
-}
 }
 \if{html}{\out{</div>}}
 
@@ -277,12 +271,10 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\dontrun{
-ec("line") |>
-  add_series(data = "Sheet1!A1:A10") |>
-  add_series(data = "Sheet1!B1:B10", secondary = TRUE) |>
+\preformatted{ec("line")$
+  add_series(data = "Sheet1!A1:A10")$
+  add_series(data = "Sheet1!B1:B10", secondary = TRUE)$
   set_y2_title("Growth Rate (\%)")
-}
 }
 \if{html}{\out{</div>}}
 

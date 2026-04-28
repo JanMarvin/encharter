@@ -17,7 +17,4 @@ A logical vector.
 \description{
 Check for attribute existence
 }
-\examples{
-# has_r <- xml_has_attr(cells, "r")
-}
 \keyword{internal}

@@ -12,7 +12,4 @@ xml_remove(x)
 \description{
 Remove nodes from the tree
 }
-\examples{
-# xml_remove(xml_find_all(doc, ".//legacyDrawing"))
-}
 \keyword{internal}

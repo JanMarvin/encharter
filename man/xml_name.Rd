@@ -15,7 +15,4 @@ A character vector of tag names.
 \description{
 Get node names
 }
-\examples{
-# xml_name(xml_find_all(doc, "/*/*"))
-}
 \keyword{internal}

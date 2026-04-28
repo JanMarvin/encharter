@@ -17,7 +17,4 @@ A pugi_nodeset (list of pugi_nodes).
 \description{
 Find all matches via XPath
 }
-\examples{
-# xml_find_all(doc, ".//row")
-}
 \keyword{internal}

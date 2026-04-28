@@ -23,8 +23,4 @@ The newly created pugi_node.
 \description{
 Add a child node to an XML target
 }
-\examples{
-# doc <- read_xml("<root><child/></root>")
-# xml_add_child(doc, "new_node", id = "1", "Some text")
-}
 \keyword{internal}

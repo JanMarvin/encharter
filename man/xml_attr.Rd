@@ -17,7 +17,4 @@ A character vector of attribute values.
 \description{
 Get attribute value
 }
-\examples{
-# xml_attr(rows, "r")
-}
 \keyword{internal}

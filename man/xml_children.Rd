@@ -15,7 +15,4 @@ A pugi_nodeset of child elements.
 \description{
 Get element children
 }
-\examples{
-# xml_children(xml_find_first(doc, ".//row"))
-}
 \keyword{internal}

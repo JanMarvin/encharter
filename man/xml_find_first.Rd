@@ -17,7 +17,4 @@ A pugi_node or list of nodes.
 \description{
 Find first match via XPath
 }
-\examples{
-# xml_find_first(doc, ".//sheetData")
-}
 \keyword{internal}

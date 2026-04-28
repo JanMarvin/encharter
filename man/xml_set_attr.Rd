@@ -16,7 +16,4 @@ xml_set_attr(x, attr, value)
 \description{
 Set attribute value
 }
-\examples{
-# xml_set_attr(rows, "customHeight", "1")
-}
 \keyword{internal}

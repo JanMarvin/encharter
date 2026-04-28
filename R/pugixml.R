@@ -7,9 +7,6 @@
 #' @param .value Optional character string to set as text content.
 #' @return The newly created pugi_node.
 #' @keywords internal
-#' @examples
-#' # doc <- read_xml("<root><child/></root>")
-#' # xml_add_child(doc, "new_node", id = "1", "Some text")
 xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
   target <- if (is.list(.x)) .x[[1]] else .x
 
@@ -45,8 +42,6 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
 #' @param xpath Character string containing XPath expression.
 #' @return A pugi_node or list of nodes.
 #' @keywords internal
-#' @examples
-#' # xml_find_first(doc, ".//sheetData")
 xml_find_first <- function(x, xpath) {
   if (is.list(x)) return(lapply(x, xml_find_first, xpath = xpath))
   if (!grepl("^\\.|^/", xpath)) xpath <- paste0(".//", xpath)
@@ -59,8 +54,6 @@ xml_find_first <- function(x, xpath) {
 #' @param xpath Character string containing XPath expression.
 #' @return A pugi_nodeset (list of pugi_nodes).
 #' @keywords internal
-#' @examples
-#' # xml_find_all(doc, ".//row")
 xml_find_all <- function(x, xpath) {
   if (is.list(x)) {
     res <- unlist(lapply(x, xml_find_all, xpath = xpath), recursive = FALSE)
@@ -76,8 +69,6 @@ xml_find_all <- function(x, xpath) {
 #' @param x A pugi_node or list of nodes.
 #' @return A pugi_nodeset of child elements.
 #' @keywords internal
-#' @examples
-#' # xml_children(xml_find_first(doc, ".//row"))
 xml_children <- function(x) {
   if (is.list(x)) {
     res <- unlist(lapply(x, function(node) .Call(C_pugi_children, node)), recursive = FALSE)
@@ -92,8 +83,6 @@ xml_children <- function(x) {
 #' @param x A pugi_node or list of nodes.
 #' @return A character vector of tag names.
 #' @keywords internal
-#' @examples
-#' # xml_name(xml_find_all(doc, "/*/*"))
 xml_name <- function(x) {
   if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_name, node))))
   # Unwrap document node to its root element, matching xml2 behaviour
@@ -121,8 +110,6 @@ xml_type <- function(x) {
 #' @param attr Character string of the attribute name.
 #' @return A character vector of attribute values.
 #' @keywords internal
-#' @examples
-#' # xml_attr(rows, "r")
 xml_attr <- function(x, attr) {
   if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_get_attr, node, attr))))
   .Call(C_pugi_get_attr, x, as.character(attr))
@@ -134,8 +121,6 @@ xml_attr <- function(x, attr) {
 #' @param attr Character string of the attribute name.
 #' @param value The value to set (coerced to character).
 #' @keywords internal
-#' @examples
-#' # xml_set_attr(rows, "customHeight", "1")
 xml_set_attr <- function(x, attr, value) {
   if (is.list(x)) {
     invisible(lapply(x, function(node) .Call(C_pugi_set_attr, node, attr, as.character(value))))
@@ -150,8 +135,6 @@ xml_set_attr <- function(x, attr, value) {
 #' @param attr Character string of the attribute name.
 #' @return A logical vector.
 #' @keywords internal
-#' @examples
-#' # has_r <- xml_has_attr(cells, "r")
 xml_has_attr <- function(x, attr) {
   if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_has_attr, node, attr))))
   .Call(C_pugi_has_attr, x, as.character(attr))
@@ -162,8 +145,6 @@ xml_has_attr <- function(x, attr) {
 #' @param x A pugi_node or list of nodes.
 #' @return An integer vector of child counts.
 #' @keywords internal
-#' @examples
-#' # xml_length(doc)
 xml_length <- function(x) {
   if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_length, node))))
   .Call(C_pugi_node_length, x)
@@ -173,8 +154,6 @@ xml_length <- function(x) {
 #'
 #' @param x A pugi_node or list of nodes.
 #' @keywords internal
-#' @examples
-#' # xml_remove(xml_find_all(doc, ".//legacyDrawing"))
 xml_remove <- function(x) {
   if (is.list(x)) invisible(lapply(x, function(node) .Call(C_pugi_remove, node)))
   else if (!is.null(x)) .Call(C_pugi_remove, x)

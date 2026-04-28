@@ -85,11 +85,9 @@ Chart <- R6::R6Class(
     #' @param line Six-digit hex color for the title border.
     #' @param line_width Numeric border width in points.
     #' @examples
-    #' \dontrun{
-    #' ec("scatter") |>
-    #'   add_series(data = "Sheet1!A1:A10", secondary = "x") |>
+    #' ec("scatter")$
+    #'   add_series(data = "Sheet1!A1:A10", secondary = "x")$
     #'   set_x2_title("Secondary X", font_color = "888888")
-    #' }
     set_x2_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL,
                             bold = NULL, italic = NULL, fill = NULL, line = NULL,
                             line_width = NULL) {
@@ -119,12 +117,10 @@ Chart <- R6::R6Class(
     #' @param line Six-digit hex color for the title border.
     #' @param line_width Numeric border width in points.
     #' @examples
-    #' \dontrun{
-    #' ec("line") |>
-    #'   add_series(data = "Sheet1!A1:A10") |>
-    #'   add_series(data = "Sheet1!B1:B10", secondary = TRUE) |>
+    #' ec("line")$
+    #'   add_series(data = "Sheet1!A1:A10")$
+    #'   add_series(data = "Sheet1!B1:B10", secondary = TRUE)$
     #'   set_y2_title("Growth Rate (%)")
-    #' }
     set_y2_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL,
                             bold = NULL, italic = NULL, fill = NULL, line = NULL,
                             line_width = NULL) {
