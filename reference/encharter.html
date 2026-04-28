@@ -26,7 +26,7 @@ supported by standard Office Open XML chart types."><!-- mathjax --><script src=
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">encharter</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9</span>
       </span>
     </div>
 
@@ -266,12 +266,9 @@ and returns <code>self</code> silently otherwise.</p><div class="section">
 </div>
 <div class="section">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h4>
-<p></p><div class="r example copy"><div class="sourceCode"><pre><code>\dontrun{
-ec("scatter") |&gt;
-  add_series(data = "Sheet1!A1:A10", secondary = "x") |&gt;
-  set_x2_title("Secondary X", font_color = "888888")
-}
-</code></pre></div><p></p></div>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"scatter"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span>, secondary <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">set_x2_title</span><span class="op">(</span><span class="st">"Secondary X"</span>, font_color <span class="op">=</span> <span class="st">"888888"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -333,13 +330,10 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 </div>
 <div class="section">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a></h4>
-<p></p><div class="r example copy"><div class="sourceCode"><pre><code>\dontrun{
-ec("line") |&gt;
-  add_series(data = "Sheet1!A1:A10") |&gt;
-  add_series(data = "Sheet1!B1:B10", secondary = TRUE) |&gt;
-  set_y2_title("Growth Rate (%)")
-}
-</code></pre></div><p></p></div>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B1:B10"</span>, secondary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">set_y2_title</span><span class="op">(</span><span class="st">"Growth Rate (%)"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -1092,22 +1086,18 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <span class="r-in"><span><span class="co">## Method `Chart$set_x2_title`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"scatter"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span>, secondary <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"scatter"</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span>, secondary <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">$</span></span></span>
 <span class="r-in"><span>  <span class="fu">set_x2_title</span><span class="op">(</span><span class="st">"Secondary X"</span>, font_color <span class="op">=</span> <span class="st">"888888"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span><span class="co">## Method `Chart$set_y2_title`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B1:B10"</span>, secondary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B1:B10"</span>, secondary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">$</span></span></span>
 <span class="r-in"><span>  <span class="fu">set_y2_title</span><span class="op">(</span><span class="st">"Growth Rate (%)"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
