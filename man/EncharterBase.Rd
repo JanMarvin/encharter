@@ -15,25 +15,25 @@ Users should not instantiate \code{EncharterBase} directly; use
 \examples{
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_chart_title`
+## Method `EncharterBase$set_chart_title()`
 ## ------------------------------------------------
 
 ec("line")$set_chart_title("Monthly Sales", font_size = 14, bold = TRUE)
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_x_title`
+## Method `EncharterBase$set_x_title()`
 ## ------------------------------------------------
 
 ec("line")$set_x_title("Month", font_color = "888888", italic = TRUE)
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_y_title`
+## Method `EncharterBase$set_y_title()`
 ## ------------------------------------------------
 
 ec("line")$set_y_title("Revenue (USD)", bold = TRUE)
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_x_axis`
+## Method `EncharterBase$set_x_axis()`
 ## ------------------------------------------------
 
 ec("line")$set_x_axis(
@@ -45,7 +45,7 @@ ec("line")$set_x_axis(
 )
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_y_axis`
+## Method `EncharterBase$set_y_axis()`
 ## ------------------------------------------------
 
 ec("bar")$set_y_axis(
@@ -58,99 +58,100 @@ ec("bar")$set_y_axis(
 )
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_data_label_style`
+## Method `EncharterBase$set_data_label_style()`
 ## ------------------------------------------------
 
 ec("bar")$set_data_label_style(show_val = TRUE, pos = "outEnd", font_size = 9)
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_legend_style`
+## Method `EncharterBase$set_legend_style()`
 ## ------------------------------------------------
 
 ec("line")$set_legend_style(pos = "b", font_size = 9)
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_chart_style`
+## Method `EncharterBase$set_chart_style()`
 ## ------------------------------------------------
 
 ec("bar")$set_chart_style(fill = "F5F5F5", line = "CCCCCC", line_width = 0.5)
 
 ## ------------------------------------------------
-## Method `EncharterBase$set_plot_style`
+## Method `EncharterBase$set_plot_style()`
 ## ------------------------------------------------
 
 ec("line")$set_plot_style(fill = "FAFAFA")
 
 ## ------------------------------------------------
-## Method `EncharterBase$print`
+## Method `EncharterBase$print()`
 ## ------------------------------------------------
 
 ec("line")
 }
 \section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{xml}}{The raw xml2 object containing the chart space.}
+  \if{html}{\out{<div class="r6-fields">}}
+  \describe{
+    \item{\code{xml}}{The raw xml2 object containing the chart space.}
 
-\item{\code{series_data}}{A list containing all added data series and their styles.}
+    \item{\code{series_data}}{A list containing all added data series and their styles.}
 
-\item{\code{type}}{The default chart type for the object (e.g., \code{"lineChart"}).}
+    \item{\code{type}}{The default chart type for the object (e.g., \code{"lineChart"}).}
 
-\item{\code{palette}}{A character vector of six-digit hex colors used for series
+    \item{\code{palette}}{A character vector of six-digit hex colors used for series
 when no explicit color is supplied. Defaults to the standard Office theme
 palette.}
 
-\item{\code{chart_title}}{Named list with elements \code{text} (character) and
+    \item{\code{chart_title}}{Named list with elements \code{text} (character) and
 \code{style} (list of font/fill/line options) for the main chart title.}
 
-\item{\code{x_title}}{Named list with elements \code{text} and \code{style} for
+    \item{\code{x_title}}{Named list with elements \code{text} and \code{style} for
 the primary X-axis title.}
 
-\item{\code{y_title}}{Named list with elements \code{text} and \code{style} for
+    \item{\code{y_title}}{Named list with elements \code{text} and \code{style} for
 the primary Y-axis title.}
 
-\item{\code{chart_style}}{Named list controlling the outer chart area:
+    \item{\code{chart_style}}{Named list controlling the outer chart area:
 \code{fill} (hex), \code{line} (hex), \code{line_width} (numeric).}
 
-\item{\code{plot_style}}{Named list controlling the inner plot area:
+    \item{\code{plot_style}}{Named list controlling the inner plot area:
 \code{fill} (hex), \code{line} (hex), \code{line_width} (numeric).}
 
-\item{\code{label_params}}{Named list of global data label defaults:
+    \item{\code{label_params}}{Named list of global data label defaults:
 \code{show_val}, \code{show_cat}, \code{show_legend_key} (logicals),
 \code{pos} (character), \code{style} (list).}
 
-\item{\code{legend_params}}{Named list of legend defaults:
+    \item{\code{legend_params}}{Named list of legend defaults:
 \code{pos} (character), \code{overlay} ("0"/"1"), \code{style} (list).}
 
-\item{\code{axis_params}}{Named list with one entry per axis (\code{x}, \code{x2},
+    \item{\code{axis_params}}{Named list with one entry per axis (\code{x}, \code{x2},
 \code{y}, \code{y2}). Each entry is a named list of scaling, formatting,
 and style parameters. Modified via \verb{$set_x_axis()}, etc.}
-}
-\if{html}{\out{</div>}}
+  }
+  \if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-EncharterBase-set_chart_title}{\code{EncharterBase$set_chart_title()}}
-\item \href{#method-EncharterBase-set_x_title}{\code{EncharterBase$set_x_title()}}
-\item \href{#method-EncharterBase-set_y_title}{\code{EncharterBase$set_y_title()}}
-\item \href{#method-EncharterBase-set_x_axis}{\code{EncharterBase$set_x_axis()}}
-\item \href{#method-EncharterBase-set_y_axis}{\code{EncharterBase$set_y_axis()}}
-\item \href{#method-EncharterBase-set_data_label_style}{\code{EncharterBase$set_data_label_style()}}
-\item \href{#method-EncharterBase-set_legend_style}{\code{EncharterBase$set_legend_style()}}
-\item \href{#method-EncharterBase-set_chart_style}{\code{EncharterBase$set_chart_style()}}
-\item \href{#method-EncharterBase-set_plot_style}{\code{EncharterBase$set_plot_style()}}
-\item \href{#method-EncharterBase-print}{\code{EncharterBase$print()}}
-\item \href{#method-EncharterBase-clone}{\code{EncharterBase$clone()}}
-}
+  \itemize{
+    \item \href{#method-EncharterBase-set_chart_title}{\code{EncharterBase$set_chart_title()}}
+    \item \href{#method-EncharterBase-set_x_title}{\code{EncharterBase$set_x_title()}}
+    \item \href{#method-EncharterBase-set_y_title}{\code{EncharterBase$set_y_title()}}
+    \item \href{#method-EncharterBase-set_x_axis}{\code{EncharterBase$set_x_axis()}}
+    \item \href{#method-EncharterBase-set_y_axis}{\code{EncharterBase$set_y_axis()}}
+    \item \href{#method-EncharterBase-set_data_label_style}{\code{EncharterBase$set_data_label_style()}}
+    \item \href{#method-EncharterBase-set_legend_style}{\code{EncharterBase$set_legend_style()}}
+    \item \href{#method-EncharterBase-set_chart_style}{\code{EncharterBase$set_chart_style()}}
+    \item \href{#method-EncharterBase-set_plot_style}{\code{EncharterBase$set_plot_style()}}
+    \item \href{#method-EncharterBase-print}{\code{EncharterBase$print()}}
+    \item \href{#method-EncharterBase-clone}{\code{EncharterBase$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_chart_title"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_chart_title}{}}}
-\subsection{Method \code{set_chart_title()}}{
-Set the chart's main title.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_chart_title(
+\subsection{\code{EncharterBase$set_chart_title()}}{
+  Set the chart's main title.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_chart_title(
   text,
   font_size = NULL,
   font_name = NULL,
@@ -160,50 +161,42 @@ Set the chart's main title.
   fill = NULL,
   line = NULL,
   line_width = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{text}}{Title string. Accepts a plain character or an
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{text}}{Title string. Accepts a plain character or an
 \code{openxlsx2::fmt_txt()} object for rich-text formatting.}
-
-\item{\code{font_size}}{Numeric font size in points (e.g. \code{14}).}
-
-\item{\code{font_name}}{Font typeface name (e.g. \code{"Arial"}).}
-
-\item{\code{font_color}}{Six-digit hex color for the title text (e.g.
+      \item{\code{font_size}}{Numeric font size in points (e.g. \code{14}).}
+      \item{\code{font_name}}{Font typeface name (e.g. \code{"Arial"}).}
+      \item{\code{font_color}}{Six-digit hex color for the title text (e.g.
 \code{"FF0000"} for red).}
-
-\item{\code{bold}}{Logical; \code{TRUE} renders the title in bold.}
-
-\item{\code{italic}}{Logical; \code{TRUE} renders the title in italics.}
-
-\item{\code{fill}}{Six-digit hex color for the title background box.}
-
-\item{\code{line}}{Six-digit hex color for the title border.}
-
-\item{\code{line_width}}{Numeric border width in points.}
+      \item{\code{bold}}{Logical; \code{TRUE} renders the title in bold.}
+      \item{\code{italic}}{Logical; \code{TRUE} renders the title in italics.}
+      \item{\code{fill}}{Six-digit hex color for the title background box.}
+      \item{\code{line}}{Six-digit hex color for the title border.}
+      \item{\code{line_width}}{Numeric border width in points.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("line")$set_chart_title("Monthly Sales", font_size = 14, bold = TRUE)
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("line")$set_chart_title("Monthly Sales", font_size = 14, bold = TRUE)
-}
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_x_title"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_x_title}{}}}
-\subsection{Method \code{set_x_title()}}{
-Set the primary X-axis title.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_x_title(
+\subsection{\code{EncharterBase$set_x_title()}}{
+  Set the primary X-axis title.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_x_title(
   text,
   font_size = NULL,
   font_name = NULL,
@@ -213,48 +206,40 @@ Set the primary X-axis title.
   fill = NULL,
   line = NULL,
   line_width = NULL
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{text}}{Title string.}
+      \item{\code{font_size}}{Numeric font size in points.}
+      \item{\code{font_name}}{Font typeface name.}
+      \item{\code{font_color}}{Six-digit hex color for the title text.}
+      \item{\code{bold}}{Logical.}
+      \item{\code{italic}}{Logical.}
+      \item{\code{fill}}{Six-digit hex color for the title background box.}
+      \item{\code{line}}{Six-digit hex color for the title border.}
+      \item{\code{line_width}}{Numeric border width in points.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("line")$set_x_title("Month", font_color = "888888", italic = TRUE)
+}
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{text}}{Title string.}
-
-\item{\code{font_size}}{Numeric font size in points.}
-
-\item{\code{font_name}}{Font typeface name.}
-
-\item{\code{font_color}}{Six-digit hex color for the title text.}
-
-\item{\code{bold}}{Logical.}
-
-\item{\code{italic}}{Logical.}
-
-\item{\code{fill}}{Six-digit hex color for the title background box.}
-
-\item{\code{line}}{Six-digit hex color for the title border.}
-
-\item{\code{line_width}}{Numeric border width in points.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("line")$set_x_title("Month", font_color = "888888", italic = TRUE)
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_y_title"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_y_title}{}}}
-\subsection{Method \code{set_y_title()}}{
-Set the primary Y-axis title.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_y_title(
+\subsection{\code{EncharterBase$set_y_title()}}{
+  Set the primary Y-axis title.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_y_title(
   text,
   font_size = NULL,
   font_name = NULL,
@@ -264,48 +249,40 @@ Set the primary Y-axis title.
   fill = NULL,
   line = NULL,
   line_width = NULL
-)}\if{html}{\out{</div>}}
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{text}}{Title string.}
+      \item{\code{font_size}}{Numeric font size in points.}
+      \item{\code{font_name}}{Font typeface name.}
+      \item{\code{font_color}}{Six-digit hex color for the title text.}
+      \item{\code{bold}}{Logical.}
+      \item{\code{italic}}{Logical.}
+      \item{\code{fill}}{Six-digit hex color for the title background box.}
+      \item{\code{line}}{Six-digit hex color for the title border.}
+      \item{\code{line_width}}{Numeric border width in points.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("line")$set_y_title("Revenue (USD)", bold = TRUE)
+}
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{text}}{Title string.}
-
-\item{\code{font_size}}{Numeric font size in points.}
-
-\item{\code{font_name}}{Font typeface name.}
-
-\item{\code{font_color}}{Six-digit hex color for the title text.}
-
-\item{\code{bold}}{Logical.}
-
-\item{\code{italic}}{Logical.}
-
-\item{\code{fill}}{Six-digit hex color for the title background box.}
-
-\item{\code{line}}{Six-digit hex color for the title border.}
-
-\item{\code{line_width}}{Numeric border width in points.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("line")$set_y_title("Revenue (USD)", bold = TRUE)
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_x_axis"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_x_axis}{}}}
-\subsection{Method \code{set_x_axis()}}{
-Set primary X-axis scaling, tick marks, and label formatting.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_x_axis(
+\subsection{\code{EncharterBase$set_x_axis()}}{
+  Set primary X-axis scaling, tick marks, and label formatting.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_x_axis(
   min = NULL,
   max = NULL,
   major = NULL,
@@ -335,71 +312,52 @@ Set primary X-axis scaling, tick marks, and label formatting.
   crosses = NULL,
   crosses_at = NULL,
   label_pos = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{min, max}}{Numeric axis limits.}
-
-\item{\code{major, minor}}{Numeric major/minor unit intervals. For date axes, unit
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{min, max}}{Numeric axis limits.}
+      \item{\code{major, minor}}{Numeric major/minor unit intervals. For date axes, unit
 is set by \code{major_time}/\code{minor_time}.}
-
-\item{\code{major_time, minor_time}}{Time unit for major/minor steps on date axes:
+      \item{\code{major_time, minor_time}}{Time unit for major/minor steps on date axes:
 \code{"days"}, \code{"months"}, or \code{"years"}.}
-
-\item{\code{base_time}}{Base time unit for date axes: \code{"days"},
+      \item{\code{base_time}}{Base time unit for date axes: \code{"days"},
 \code{"months"}, or \code{"years"}.}
-
-\item{\code{major_tick, minor_tick}}{Tick mark style: \code{"cross"},
+      \item{\code{major_tick, minor_tick}}{Tick mark style: \code{"cross"},
 \code{"in"}, \code{"out"}, or \code{"none"}.}
-
-\item{\code{format}}{Number or date format string (e.g. \code{"#,##0"},
+      \item{\code{format}}{Number or date format string (e.g. \code{"#,##0"},
 \code{"yyyy-mm-dd"}).}
-
-\item{\code{log_base}}{Numeric base for logarithmic scaling (e.g. \code{10}).}
-
-\item{\code{color}}{Six-digit hex color for the axis line.}
-
-\item{\code{font_name}}{Font typeface name for tick labels.}
-
-\item{\code{font_size}}{Numeric label font size in points.}
-
-\item{\code{bold, italic}}{Logical font style for tick labels.}
-
-\item{\code{font_color}}{Six-digit hex color for axis tick labels. Defaults to
+      \item{\code{log_base}}{Numeric base for logarithmic scaling (e.g. \code{10}).}
+      \item{\code{color}}{Six-digit hex color for the axis line.}
+      \item{\code{font_name}}{Font typeface name for tick labels.}
+      \item{\code{font_size}}{Numeric label font size in points.}
+      \item{\code{bold, italic}}{Logical font style for tick labels.}
+      \item{\code{font_color}}{Six-digit hex color for axis tick labels. Defaults to
 \code{color} when not set.}
-
-\item{\code{rotation}}{Numeric label rotation in degrees.}
-
-\item{\code{grid_color, minor_grid_color}}{Six-digit hex colors for major/minor
+      \item{\code{rotation}}{Numeric label rotation in degrees.}
+      \item{\code{grid_color, minor_grid_color}}{Six-digit hex colors for major/minor
 grid_lines.}
-
-\item{\code{grid_lines, minor_grid_lines}}{Show grid lines. \code{TRUE}/\code{FALSE}
+      \item{\code{grid_lines, minor_grid_lines}}{Show grid lines. \code{TRUE}/\code{FALSE}
 to toggle; or a dash style string (\code{"dash"}, \code{"dot"},
 \code{"dashDot"}, etc.) to show styled lines.}
-
-\item{\code{cross_between}}{Where the value axis crosses: \code{"between"}
+      \item{\code{cross_between}}{Where the value axis crosses: \code{"between"}
 (default, between categories) or \code{"midCat"} (through categories).}
-
-\item{\code{line_width, grid_width, minor_grid_width}}{Numeric widths in points for
+      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric widths in points for
 the axis line, major grid lines, and minor grid lines respectively.}
-
-\item{\code{crosses}}{Where this axis crosses its perpendicular axis:
+      \item{\code{crosses}}{Where this axis crosses its perpendicular axis:
 \code{"autoZero"} (default), \code{"min"}, or \code{"max"}.}
-
-\item{\code{crosses_at}}{Numeric axis value at which to cross. Overrides
+      \item{\code{crosses_at}}{Numeric axis value at which to cross. Overrides
 \code{crosses} when supplied.}
-
-\item{\code{label_pos}}{Tick label position: \code{"nextTo"} (default),
+      \item{\code{label_pos}}{Tick label position: \code{"nextTo"} (default),
 \code{"high"}, \code{"low"}, or \code{"none"}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("line")$set_x_axis(
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("line")$set_x_axis(
   min = 0, max = 12,
   major_tick = "out",
   grid_lines = TRUE,
@@ -407,18 +365,18 @@ the axis line, major grid lines, and minor grid lines respectively.}
   rotation   = -45
 )
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_y_axis"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_y_axis}{}}}
-\subsection{Method \code{set_y_axis()}}{
-Set primary Y-axis scaling, tick marks, and label formatting.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_y_axis(
+\subsection{\code{EncharterBase$set_y_axis()}}{
+  Set primary Y-axis scaling, tick marks, and label formatting.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_y_axis(
   min = NULL,
   max = NULL,
   major = NULL,
@@ -448,61 +406,42 @@ Set primary Y-axis scaling, tick marks, and label formatting.
   crosses = NULL,
   crosses_at = NULL,
   label_pos = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{min, max}}{Numeric axis limits.}
-
-\item{\code{major, minor}}{Numeric major/minor unit intervals.}
-
-\item{\code{major_time, minor_time}}{Time unit for date axes: \code{"days"},
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{min, max}}{Numeric axis limits.}
+      \item{\code{major, minor}}{Numeric major/minor unit intervals.}
+      \item{\code{major_time, minor_time}}{Time unit for date axes: \code{"days"},
 \code{"months"}, or \code{"years"}.}
-
-\item{\code{base_time}}{Base time unit for date axes.}
-
-\item{\code{major_tick, minor_tick}}{Tick mark style: \code{"cross"},
+      \item{\code{base_time}}{Base time unit for date axes.}
+      \item{\code{major_tick, minor_tick}}{Tick mark style: \code{"cross"},
 \code{"in"}, \code{"out"}, or \code{"none"}.}
-
-\item{\code{format}}{Number format string.}
-
-\item{\code{log_base}}{Numeric base for logarithmic scaling.}
-
-\item{\code{color}}{Six-digit hex color for the axis line.}
-
-\item{\code{font_name}}{Font typeface name.}
-
-\item{\code{font_size}}{Numeric label font size in points.}
-
-\item{\code{bold, italic}}{Logical font style.}
-
-\item{\code{font_color}}{Six-digit hex color for axis tick labels.}
-
-\item{\code{rotation}}{Numeric label rotation in degrees.}
-
-\item{\code{grid_color, minor_grid_color}}{Hex colors for major/minor grid lines.}
-
-\item{\code{grid_lines, minor_grid_lines}}{\code{TRUE}/\code{FALSE} or a dash style
+      \item{\code{format}}{Number format string.}
+      \item{\code{log_base}}{Numeric base for logarithmic scaling.}
+      \item{\code{color}}{Six-digit hex color for the axis line.}
+      \item{\code{font_name}}{Font typeface name.}
+      \item{\code{font_size}}{Numeric label font size in points.}
+      \item{\code{bold, italic}}{Logical font style.}
+      \item{\code{font_color}}{Six-digit hex color for axis tick labels.}
+      \item{\code{rotation}}{Numeric label rotation in degrees.}
+      \item{\code{grid_color, minor_grid_color}}{Hex colors for major/minor grid lines.}
+      \item{\code{grid_lines, minor_grid_lines}}{\code{TRUE}/\code{FALSE} or a dash style
 string.}
-
-\item{\code{cross_between}}{\code{"between"} or \code{"midCat"}.}
-
-\item{\code{line_width, grid_width, minor_grid_width}}{Numeric widths in points.}
-
-\item{\code{crosses}}{\code{"autoZero"}, \code{"min"}, or \code{"max"}.}
-
-\item{\code{crosses_at}}{Numeric crossing value; overrides \code{crosses}.}
-
-\item{\code{label_pos}}{\code{"nextTo"}, \code{"high"}, \code{"low"}, or
+      \item{\code{cross_between}}{\code{"between"} or \code{"midCat"}.}
+      \item{\code{line_width, grid_width, minor_grid_width}}{Numeric widths in points.}
+      \item{\code{crosses}}{\code{"autoZero"}, \code{"min"}, or \code{"max"}.}
+      \item{\code{crosses_at}}{Numeric crossing value; overrides \code{crosses}.}
+      \item{\code{label_pos}}{\code{"nextTo"}, \code{"high"}, \code{"low"}, or
 \code{"none"}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("bar")$set_y_axis(
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("bar")$set_y_axis(
   min        = 0,
   max        = 1000,
   major      = 200,
@@ -511,64 +450,60 @@ string.}
   grid_color = "DDDDDD"
 )
 }
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_data_label_style"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_data_label_style}{}}}
-\subsection{Method \code{set_data_label_style()}}{
-Configure global data label defaults for all series.
+\subsection{\code{EncharterBase$set_data_label_style()}}{
+  Configure global data label defaults for all series.
 
 Per-series overrides can be set via the \code{show_val}/\code{show_cat}
 arguments in \verb{$add_series()}.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_data_label_style(
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_data_label_style(
   show_val = TRUE,
   show_cat = FALSE,
   show_legend_key = FALSE,
   pos = "t",
   ...
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{show_val}}{Logical; show the data point value. Default \code{TRUE}.}
-
-\item{\code{show_cat}}{Logical; show the category name. Default \code{FALSE}.}
-
-\item{\code{show_legend_key}}{Logical; show the series color swatch next to each
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{show_val}}{Logical; show the data point value. Default \code{TRUE}.}
+      \item{\code{show_cat}}{Logical; show the category name. Default \code{FALSE}.}
+      \item{\code{show_legend_key}}{Logical; show the series color swatch next to each
 label. Default \code{FALSE}.}
-
-\item{\code{pos}}{Label position: \code{"t"} (top, default), \code{"b"}
+      \item{\code{pos}}{Label position: \code{"t"} (top, default), \code{"b"}
 (bottom), \code{"l"}, \code{"r"}, \code{"ctr"}, \code{"inEnd"},
 \code{"outEnd"}, \code{"bestFit"}.}
-
-\item{\code{...}}{Additional font style arguments passed to the label text
+      \item{\code{...}}{Additional font style arguments passed to the label text
 properties (e.g. \code{font_size}, \code{font_color}, \code{bold}).}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("bar")$set_data_label_style(show_val = TRUE, pos = "outEnd", font_size = 9)
 }
-\if{html}{\out{</div>}}
+    \if{html}{\out{</div>}}
+  }
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("bar")$set_data_label_style(show_val = TRUE, pos = "outEnd", font_size = 9)
-}
-\if{html}{\out{</div>}}
 
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_legend_style"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_legend_style}{}}}
-\subsection{Method \code{set_legend_style()}}{
-Configure the chart legend.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_legend_style(
+\subsection{\code{EncharterBase$set_legend_style()}}{
+  Configure the chart legend.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_legend_style(
   pos = "t",
   align = "ctr",
   overlay = FALSE,
@@ -577,133 +512,124 @@ Configure the chart legend.
   bold = NULL,
   italic = NULL,
   color = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{pos}}{Legend position: \code{"t"}, \code{"b"}, \code{"l"},
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{pos}}{Legend position: \code{"t"}, \code{"b"}, \code{"l"},
 \code{"r"} (default), or \code{"none"} to hide.}
-
-\item{\code{align}}{Legend alignment relative to the chart: \code{"ctr"}
+      \item{\code{align}}{Legend alignment relative to the chart: \code{"ctr"}
 (default), \code{"min"}, or \code{"max"}.}
-
-\item{\code{overlay}}{Logical; if \code{TRUE} the legend overlaps the plot area.}
-
-\item{\code{font_size}}{Numeric font size in points.}
-
-\item{\code{font_name}}{Font typeface name.}
-
-\item{\code{bold, italic}}{Logical font style.}
-
-\item{\code{color}}{Six-digit hex color for the legend text.}
+      \item{\code{overlay}}{Logical; if \code{TRUE} the legend overlaps the plot area.}
+      \item{\code{font_size}}{Numeric font size in points.}
+      \item{\code{font_name}}{Font typeface name.}
+      \item{\code{bold, italic}}{Logical font style.}
+      \item{\code{color}}{Six-digit hex color for the legend text.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("line")$set_legend_style(pos = "b", font_size = 9)
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("line")$set_legend_style(pos = "b", font_size = 9)
-}
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_chart_style"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_chart_style}{}}}
-\subsection{Method \code{set_chart_style()}}{
-Style the outer chart area (background and border).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_chart_style(fill = "FFFFFF", line = NULL, line_width = 1)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{fill}}{Six-digit hex color for the chart background.
+\subsection{\code{EncharterBase$set_chart_style()}}{
+  Style the outer chart area (background and border).
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_chart_style(fill = "FFFFFF", line = NULL, line_width = 1)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{fill}}{Six-digit hex color for the chart background.
 Default \code{"FFFFFF"}.}
-
-\item{\code{line}}{Six-digit hex color for the chart border. \code{NULL} for no
+      \item{\code{line}}{Six-digit hex color for the chart border. \code{NULL} for no
 border.}
+      \item{\code{line_width}}{Numeric border width in points. Default \code{1}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("bar")$set_chart_style(fill = "F5F5F5", line = "CCCCCC", line_width = 0.5)
+}
+    \if{html}{\out{</div>}}
+  }
+}
 
-\item{\code{line_width}}{Numeric border width in points. Default \code{1}.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("bar")$set_chart_style(fill = "F5F5F5", line = "CCCCCC", line_width = 0.5)
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-set_plot_style"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_plot_style}{}}}
-\subsection{Method \code{set_plot_style()}}{
-Style the inner plot area (background and border).
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$set_plot_style(fill = NULL, line = NULL, line_width = 1)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{fill}}{Six-digit hex color for the plot area background.
+\subsection{\code{EncharterBase$set_plot_style()}}{
+  Style the inner plot area (background and border).
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$set_plot_style(fill = NULL, line = NULL, line_width = 1)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{fill}}{Six-digit hex color for the plot area background.
 \code{NULL} for transparent.}
-
-\item{\code{line}}{Six-digit hex color for the plot area border.}
-
-\item{\code{line_width}}{Numeric border width in points. Default \code{1}.}
+      \item{\code{line}}{Six-digit hex color for the plot area border.}
+      \item{\code{line_width}}{Numeric border width in points. Default \code{1}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("line")$set_plot_style(fill = "FAFAFA")
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("line")$set_plot_style(fill = "FAFAFA")
-}
-\if{html}{\out{</div>}}
-
+    \if{html}{\out{</div>}}
+  }
 }
 
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-print"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-print}{}}}
-\subsection{Method \code{print()}}{
-Print a summary of the chart object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$print()}\if{html}{\out{</div>}}
+\subsection{\code{EncharterBase$print()}}{
+  Print a summary of the chart object.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$print()}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("line")
+}
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{ec("line")
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-EncharterBase-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-EncharterBase-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{EncharterBase$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{EncharterBase$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{EncharterBase$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

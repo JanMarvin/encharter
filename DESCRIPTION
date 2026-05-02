@@ -23,6 +23,5 @@ Suggests:
     testthat (>= 3.0.0),
     viridisLite
 Config/testthat/edition: 3
-Config/roxygen2/version: 7.3.3.9000
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0
 Roxygen: list(markdown = TRUE)
