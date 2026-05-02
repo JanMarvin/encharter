@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml)
 [![codecov](https://codecov.io/gh/JanMarvin/encharter/graph/badge.svg?token=JMMBBBHPTG)](https://app.codecov.io/gh/JanMarvin/encharter)
 [![r-universe](https://janmarvin.r-universe.dev/badges/encharter)](https://janmarvin.r-universe.dev/encharter)
+[![CRAN status](https://www.r-pkg.org/badges/version/encharter)](https://cran.r-project.org/package=encharter)
+
 <!-- badges: end -->
 
 > Experimental package that is still in development.
@@ -28,8 +30,13 @@ The package covers both the standard OOXML chart types (bar, line, scatter, pie,
 
 ## Installation
 
-`encharter` requires `openxlsx2` (>= 1.26).
+You can install the last stable release from CRAN:
 
+```
+install.packages('encharter')
+```
+
+Or you can install development versions via r-universe:
 ```r
 install.packages(
   "encharter",
@@ -42,6 +49,8 @@ Or from GitHub directly:
 ```r
 remotes::install_github("JanMarvin/encharter")
 ```
+
+`encharter` requires `openxlsx2` (>= 1.26).
 
 ---
 
@@ -82,7 +91,7 @@ knitr::include_graphics("inst/img/man_1.jpg")
 
 Series data is referenced by cell range strings. There are two ways to write these.
 
-**By hand**, using standard Excel notation — sheet name, column, and row, all absolute:
+**By hand**, using standard spreadsheet notation — sheet name, column, and row, all absolute:
 
 ```r
 chart$add_series(
@@ -106,7 +115,7 @@ chart$add_series(
 
 Both approaches produce the same OOXML output. The manual approach is more explicit and easier to read when the ranges are simple and fixed. `wb_data()` pays off when building charts programmatically or when the source range is determined at runtime, and feels more native to R.
 
-There are trade-offs to both. With the range approach it is possible to assign a custom series name that is not itself a cell reference — in the `wb_data()` approach the name must correspond to a column in the data object. Multi-level legends, where Excel groups entries across two rows (for example, an age group label spanning a male and female series), are only achievable with the range approach. On the other hand, some features like drop-down lines require construction with `wb_data()` objects. The examples below use both approaches interchangeably to show that they are equivalent; a comment marks each switch.
+There are trade-offs to both. With the range approach it is possible to assign a custom series name that is not itself a cell reference — in the `wb_data()` approach the name must correspond to a column in the data object. Multi-level legends, where spreadsheet groups entries across two rows (for example, an age group label spanning a male and female series), are only achievable with the range approach. On the other hand, some features like drop-down lines require construction with `wb_data()` objects. The examples below use both approaches interchangeably to show that they are equivalent; a comment marks each switch.
 
 ### `wb_color()` and `fmt_txt()`
 
@@ -570,8 +579,8 @@ chart$set_disp_blanks("gap")    # default
 ## Notes
 
 - `encharter` is relatively young and does not yet validate all input against the OOXML standard. For example, a label position like `"outEnd"` works correctly on bar charts but may produce unexpected results on line charts, as no check for chart-type compatibility is in place. Test your output before using it in important files.
-- Series cell references use standard Excel notation: `"Sheet1!$A$2:$A$10"`. The sheet name is required.
-- For extended chart types (waterfall, treemap, etc.), Excel uses a different XML schema internally (`chartEx`). `encharter` handles this transparently — `ec("waterfall")` returns a `ChartEx` object rather than a `Chart` object, but the interface is the same.
+- Series cell references use standard spreadsheet notation: `"Sheet1!$A$2:$A$10"`. The sheet name is required.
+- For extended chart types (waterfall, treemap, etc.), OOXML uses a different XML schema internally (`chartEx`). `encharter` handles this transparently — `ec("waterfall")` returns a `ChartEx` object rather than a `Chart` object, but the interface is the same.
 - Radar charts accept `filled = TRUE` in `add_series()` to fill the polygon interior.
 - Bubble charts require a third data range for bubble sizes, passed as `weight` in `add_series()`.
 - Bar direction (vertical column vs horizontal bar) is set via `dir = "col"` (default) or `dir = "bar"` in `add_series()`.

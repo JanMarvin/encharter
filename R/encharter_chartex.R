@@ -289,7 +289,7 @@ ChartEx <- R6::R6Class(
 
           # 3. Binning (Choice: binSize or binCount)
           } else if (length(s$binning) > 0) {
-            # Mapping full names to Excel's internal single-char codes
+            # Mapping full names to OOXML's internal single-char codes
             int_closed <- switch(as.character(s$binning$intervalClosed %||% ""),
                                 "left"  = "l",
                                 "right" = "r",
@@ -305,7 +305,7 @@ ChartEx <- R6::R6Class(
               xml_set_attr(bn, "overflow", as.character(s$binning$overflow))
             }
 
-            # Child Elements use 'val' attribute per Excel XML sample
+            # Child Elements use 'val' attribute per spreadsheet XML sample
             if (!is.null(s$binning$binSize)) {
               xml_add_child(bn, "cx:binSize", val = as.character(s$binning$binSize))
             } else if (!is.null(s$binning$binCount)) {

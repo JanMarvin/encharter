@@ -198,7 +198,7 @@ test_that("date cat_cache emits c:numRef (not strRef) for label", {
   expect_match(x, "<c:cat>.*<c:numRef>", perl = TRUE)
 })
 
-test_that("date cat_cache emits correct Excel serial numbers", {
+test_that("date cat_cache emits correct OOXML serial numbers", {
   wb <- make_wb(stock_df)
   wd <- openxlsx2::wb_data(wb, sheet = "Sheet1")
 
@@ -206,7 +206,7 @@ test_that("date cat_cache emits correct Excel serial numbers", {
   ch$add_series(name = High, label = Date, data = wd)
   x <- xml_str(ch)
 
-  # 2020-01-01 = Excel serial 43831
+  # 2020-01-01 = OOXML serial 43831
   expected_serial <- as.character(
     openxlsx2::convert_to_excel_date(data.frame(d = stock_df$Date[1]))[[1]]
   )

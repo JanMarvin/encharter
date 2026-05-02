@@ -6,6 +6,9 @@
 [![R-CMD-check](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/JanMarvin/encharter/actions/workflows/check-standard.yaml)
 [![codecov](https://codecov.io/gh/JanMarvin/encharter/graph/badge.svg?token=JMMBBBHPTG)](https://app.codecov.io/gh/JanMarvin/encharter)
 [![r-universe](https://janmarvin.r-universe.dev/badges/encharter)](https://janmarvin.r-universe.dev/encharter)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/encharter)](https://cran.r-project.org/package=encharter)
+
 <!-- badges: end -->
 
 > Experimental package that is still in development.
@@ -28,7 +31,11 @@ waterfall, treemap, sunburst, box-and-whisker, funnel, and region map.
 
 ## Installation
 
-`encharter` requires `openxlsx2` (\>= 1.26).
+You can install the last stable release from CRAN:
+
+    install.packages('encharter')
+
+Or you can install development versions via r-universe:
 
 ``` r
 install.packages(
@@ -42,6 +49,8 @@ Or from GitHub directly:
 ``` r
 remotes::install_github("JanMarvin/encharter")
 ```
+
+`encharter` requires `openxlsx2` (\>= 1.26).
 
 ------------------------------------------------------------------------
 
@@ -77,23 +86,19 @@ wb <- wb_workbook() |>
 Because R6 objects mutate in place, there is no need to reassign after
 each method call.
 
-<div class="figure">
-
-<img src="inst/img/man_1.jpg" alt="Fig 1: Our first `encharter` chart" width="1272" />
-<p class="caption">
-
-Fig 1: Our first `encharter` chart
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_1.jpg" alt="Fig 1: Our first encharter chart" />
+<figcaption aria-hidden="true">Fig 1: Our first <code>encharter</code>
+chart</figcaption>
+</figure>
 
 ### Specifying data ranges
 
 Series data is referenced by cell range strings. There are two ways to
 write these.
 
-**By hand**, using standard Excel notation — sheet name, column, and
-row, all absolute:
+**By hand**, using standard spreadsheet notation — sheet name, column,
+and row, all absolute:
 
 ``` r
 chart$add_series(
@@ -125,10 +130,10 @@ source range is determined at runtime, and feels more native to R.
 There are trade-offs to both. With the range approach it is possible to
 assign a custom series name that is not itself a cell reference — in the
 `wb_data()` approach the name must correspond to a column in the data
-object. Multi-level legends, where Excel groups entries across two rows
-(for example, an age group label spanning a male and female series), are
-only achievable with the range approach. On the other hand, some
-features like drop-down lines require construction with `wb_data()`
+object. Multi-level legends, where spreadsheet groups entries across two
+rows (for example, an age group label spanning a male and female
+series), are only achievable with the range approach. On the other hand,
+some features like drop-down lines require construction with `wb_data()`
 objects. The examples below use both approaches interchangeably to show
 that they are equivalent; a comment marks each switch.
 
@@ -227,15 +232,12 @@ wb <- wb |>
 if (interactive()) wb$open()
 ```
 
-<div class="figure">
-
-<img src="inst/img/man_2.jpg" alt="Fig 2: The initial chart with styling" width="878" />
-<p class="caption">
-
-Fig 2: The initial chart with styling
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_2.jpg"
+alt="Fig 2: The initial chart with styling" />
+<figcaption aria-hidden="true">Fig 2: The initial chart with
+styling</figcaption>
+</figure>
 
 ------------------------------------------------------------------------
 
@@ -306,15 +308,10 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Line", graph = chart, dims = "E1:N18")
 ```
 
-<div class="figure">
-
-<img src="inst/img/man_line.jpg" alt="Fig 3: The line chart" width="1800" />
-<p class="caption">
-
-Fig 3: The line chart
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_line.jpg" alt="Fig 3: The line chart" />
+<figcaption aria-hidden="true">Fig 3: The line chart</figcaption>
+</figure>
 
 ------------------------------------------------------------------------
 
@@ -364,15 +361,10 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Bar", graph = chart, dims = "G1:P18")
 ```
 
-<div class="figure">
-
-<img src="inst/img/man_bar_1.jpg" alt="Fig 4: The bar chart" width="1840" />
-<p class="caption">
-
-Fig 4: The bar chart
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_bar_1.jpg" alt="Fig 4: The bar chart" />
+<figcaption aria-hidden="true">Fig 4: The bar chart</figcaption>
+</figure>
 
 ------------------------------------------------------------------------
 
@@ -412,15 +404,10 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Stacked", graph = chart, dims = "G1:P18")
 ```
 
-<div class="figure">
-
-<img src="inst/img/man_bar_2.jpg" alt="Fig 5: The stacked bar chart" width="1852" />
-<p class="caption">
-
-Fig 5: The stacked bar chart
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_bar_2.jpg" alt="Fig 5: The stacked bar chart" />
+<figcaption aria-hidden="true">Fig 5: The stacked bar chart</figcaption>
+</figure>
 
 ------------------------------------------------------------------------
 
@@ -480,15 +467,10 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Combo", graph = chart, dims = "E1:N18")
 ```
 
-<div class="figure">
-
-<img src="inst/img/man_combo.jpg" alt="Fig 6: The combo chart" width="1670" />
-<p class="caption">
-
-Fig 6: The combo chart
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_combo.jpg" alt="Fig 6: The combo chart" />
+<figcaption aria-hidden="true">Fig 6: The combo chart</figcaption>
+</figure>
 
 ------------------------------------------------------------------------
 
@@ -541,15 +523,10 @@ coef(lm(CloseRate ~ AvgDeal, data = df_scatter))
 #> 0.183476102 0.006631492
 ```
 
-<div class="figure">
-
-<img src="inst/img/man_scatter.jpg" alt="Fig 7: The scatter chart" width="1726" />
-<p class="caption">
-
-Fig 7: The scatter chart
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_scatter.jpg" alt="Fig 7: The scatter chart" />
+<figcaption aria-hidden="true">Fig 7: The scatter chart</figcaption>
+</figure>
 
 ------------------------------------------------------------------------
 
@@ -586,15 +563,11 @@ chart$add_series(
 wb <- wb_add_encharter(wb, sheet = "Waterfall", graph = chart, dims = "D1:M18")
 ```
 
-<div class="figure">
-
-<img src="inst/img/man_waterfall.jpg" alt="Fig 8: The waterfall chart" width="1652" />
-<p class="caption">
-
-Fig 8: The waterfall chart
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_waterfall.jpg"
+alt="Fig 8: The waterfall chart" />
+<figcaption aria-hidden="true">Fig 8: The waterfall chart</figcaption>
+</figure>
 
 ------------------------------------------------------------------------
 
@@ -635,15 +608,12 @@ chart$add_series(
 wb <- wb_add_encharter(wb, sheet = "BoxWhisker", graph = chart, dims = "D1:M22")
 ```
 
-<div class="figure">
-
-<img src="inst/img/man_boxwhisker.jpg" alt="Fig 9: The box and whisker chart" width="1568" />
-<p class="caption">
-
-Fig 9: The box and whisker chart
-</p>
-
-</div>
+<figure>
+<img src="inst/img/man_boxwhisker.jpg"
+alt="Fig 9: The box and whisker chart" />
+<figcaption aria-hidden="true">Fig 9: The box and whisker
+chart</figcaption>
+</figure>
 
 ------------------------------------------------------------------------
 
@@ -677,9 +647,9 @@ chart$set_disp_blanks("gap")    # default
   `"outEnd"` works correctly on bar charts but may produce unexpected
   results on line charts, as no check for chart-type compatibility is in
   place. Test your output before using it in important files.
-- Series cell references use standard Excel notation:
+- Series cell references use standard spreadsheet notation:
   `"Sheet1!$A$2:$A$10"`. The sheet name is required.
-- For extended chart types (waterfall, treemap, etc.), Excel uses a
+- For extended chart types (waterfall, treemap, etc.), OOXML uses a
   different XML schema internally (`chartEx`). `encharter` handles this
   transparently — `ec("waterfall")` returns a `ChartEx` object rather
   than a `Chart` object, but the interface is the same.

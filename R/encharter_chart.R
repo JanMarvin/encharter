@@ -940,7 +940,7 @@ Chart <- R6::R6Class(
             cat_node <- xml_add_child(ser, "c:cat")
 
             if (!is.null(s$cat_cache) && inherits(s$cat_cache, c("Date", "POSIXt"))) {
-              # Date/datetime categories -> numRef with Excel serial conversion
+              # Date/datetime categories -> numRef with OOXML serial conversion
               ref_node <- xml_add_child(cat_node, "c:numRef")
               xml_add_child(ref_node, "c:f", s$label)
               private$render_num_cache(ref_node, s$cat_cache)
@@ -1263,7 +1263,7 @@ Chart <- R6::R6Class(
     },
 
     # Emit a c:numCache block into ref_node.
-    # Date/POSIXt values are converted to Excel serials via convert_to_excel_date.
+    # Date/POSIXt values are converted to OOXML serials via convert_to_excel_date.
     # Plain numeric values are written as-is.
     render_num_cache = function(ref_node, vals) {
       cache <- xml_add_child(ref_node, "c:numCache")
