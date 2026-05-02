@@ -50,7 +50,7 @@ supported by standard Office Open XML chart types."><!-- mathjax --><script src=
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create an Encharter Chart</h1>
-    <small class="dont-index">Source: <a href="https://github.com/JanMarvin/encharter/blob/v0.9.0/R/encharter.R" class="external-link"><code>R/encharter.R</code></a>, <a href="https://github.com/JanMarvin/encharter/blob/v0.9.0/R/encharter_chart.R" class="external-link"><code>R/encharter_chart.R</code></a>, <a href="https://github.com/JanMarvin/encharter/blob/v0.9.0/R/encharter_chartex.R" class="external-link"><code>R/encharter_chartex.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/JanMarvin/encharter/blob/main/R/encharter.R" class="external-link"><code>R/encharter.R</code></a>, <a href="https://github.com/JanMarvin/encharter/blob/main/R/encharter_chart.R" class="external-link"><code>R/encharter_chart.R</code></a>, <a href="https://github.com/JanMarvin/encharter/blob/main/R/encharter_chartex.R" class="external-link"><code>R/encharter_chartex.R</code></a></small>
     <div class="hidden name"><code>encharter.Rd</code></div>
     </div>
 
@@ -110,7 +110,7 @@ integrates with <code>openxlsx2</code> for workbook generation.</p>
     </div>
     <div id="super-class">
     <h2>Super class</h2>
-    <p><code><a href="EncharterBase.html">encharter::EncharterBase</a></code> -&gt; <code>Chart</code></p>
+    <p><code><a href="EncharterBase.html">EncharterBase</a></code> -&gt; <code>Chart</code></p>
     </div>
     <div id="public-fields">
     <h2>Public fields</h2>
@@ -118,47 +118,47 @@ integrates with <code>openxlsx2</code> for workbook generation.</p>
 <dd><p>List containing text and style for the secondary X-axis.</p></dd>
 
 
-<dt><code>y2_title</code></dt>
+    <dt><code>y2_title</code></dt>
 <dd><p>List containing text and style for the secondary Y-axis.</p></dd>
 
 
-<dt><code>first_slice_ang</code></dt>
+    <dt><code>first_slice_ang</code></dt>
 <dd><p>Integer. Rotation of the first slice (0-360).</p></dd>
 
 
-<dt><code>expansion</code></dt>
+    <dt><code>expansion</code></dt>
 <dd><p>Integer. Size of the expansion for pie charts.</p></dd>
 
 
-<dt><code>hole_size</code></dt>
+    <dt><code>hole_size</code></dt>
 <dd><p>Integer. Size of the hole for doughnut charts (0-90).</p></dd>
 
 
-<dt><code>show_data_table</code></dt>
+    <dt><code>show_data_table</code></dt>
 <dd><p>Logical if a data table should be added.</p></dd>
 
 
-<dt><code>drop_lines</code></dt>
+    <dt><code>drop_lines</code></dt>
 <dd><p>Logical; show lines from points to the axis.</p></dd>
 
 
-<dt><code>high_low_lines</code></dt>
+    <dt><code>high_low_lines</code></dt>
 <dd><p>Logical; show lines between max/min points.</p></dd>
 
 
-<dt><code>up_down_bars</code></dt>
+    <dt><code>up_down_bars</code></dt>
 <dd><p>Logical; show bars between first and last series.</p></dd>
 
 
-<dt><code>bubble_scale</code></dt>
+    <dt><code>bubble_scale</code></dt>
 <dd><p>Numeric; the scale factor for bubbles (default 100).</p></dd>
 
 
-<dt><code>show_neg_bubbles</code></dt>
+    <dt><code>show_neg_bubbles</code></dt>
 <dd><p>Logical; whether to show bubbles with negative values.</p></dd>
 
 
-<dt><code>disp_blanks_as</code></dt>
+    <dt><code>disp_blanks_as</code></dt>
 <dd><p>Character; "gap", "span", or "zero".</p></dd>
 
 
@@ -169,8 +169,7 @@ integrates with <code>openxlsx2</code> for workbook generation.</p>
 
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
-
-<ul><li><p><a href="#method-Chart-new"><code>Chart$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-Chart-initialize"><code>Chart$new()</code></a></p></li>
 <li><p><a href="#method-Chart-set_x2_title"><code>Chart$set_x2_title()</code></a></p></li>
 <li><p><a href="#method-Chart-set_y2_title"><code>Chart$set_y2_title()</code></a></p></li>
 <li><p><a href="#method-Chart-set_y2_axis"><code>Chart$set_y2_axis()</code></a></p></li>
@@ -182,24 +181,22 @@ integrates with <code>openxlsx2</code> for workbook generation.</p>
 <li><p><a href="#method-Chart-add_series"><code>Chart$add_series()</code></a></p></li>
 <li><p><a href="#method-Chart-render"><code>Chart$render()</code></a></p></li>
 <li><p><a href="#method-Chart-clone"><code>Chart$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href="EncharterBase.html#method-print"><code>encharter::EncharterBase$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href="EncharterBase.html#method-set_chart_style"><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href="EncharterBase.html#method-set_chart_title"><code>encharter::EncharterBase$set_chart_title()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href="EncharterBase.html#method-set_data_label_style"><code>encharter::EncharterBase$set_data_label_style()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href="EncharterBase.html#method-set_legend_style"><code>encharter::EncharterBase$set_legend_style()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href="EncharterBase.html#method-set_plot_style"><code>encharter::EncharterBase$set_plot_style()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_axis"><a href="EncharterBase.html#method-set_x_axis"><code>encharter::EncharterBase$set_x_axis()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href="EncharterBase.html#method-set_x_title"><code>encharter::EncharterBase$set_x_title()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_axis"><a href="EncharterBase.html#method-set_y_axis"><code>encharter::EncharterBase$set_y_axis()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href="EncharterBase.html#method-set_y_title"><code>encharter::EncharterBase$set_y_title()</code></a></span></li>
-</ul></details></p><hr><a id="method-Chart-new"></a><div class="section">
-<h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href="EncharterBase.html#method-print"><code>EncharterBase$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href="EncharterBase.html#method-set_chart_style"><code>EncharterBase$set_chart_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href="EncharterBase.html#method-set_chart_title"><code>EncharterBase$set_chart_title()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href="EncharterBase.html#method-set_data_label_style"><code>EncharterBase$set_data_label_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href="EncharterBase.html#method-set_legend_style"><code>EncharterBase$set_legend_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href="EncharterBase.html#method-set_plot_style"><code>EncharterBase$set_plot_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_axis"><a href="EncharterBase.html#method-set_x_axis"><code>EncharterBase$set_x_axis()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href="EncharterBase.html#method-set_x_title"><code>EncharterBase$set_x_title()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_axis"><a href="EncharterBase.html#method-set_y_axis"><code>EncharterBase$set_y_axis()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href="EncharterBase.html#method-set_y_title"><code>EncharterBase$set_y_title()</code></a></span></li>
+</ul></details></p><hr><a id="method-Chart-initialize"></a><div class="section">
+<h3 id="chart-new-"><code>Chart$new()</code><a class="anchor" aria-label="anchor" href="#chart-new-"></a></h3>
 <p>Initialize a new Chart object.</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/encharter.html">Chart</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>Initial chart type (e.g., "lineChart", "barChart", "pieChart").</p></dd>
@@ -208,8 +205,10 @@ integrates with <code>openxlsx2</code> for workbook generation.</p>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Chart-set_x2_title"></a><div class="section">
-<h3 id="method-set-x-title-">Method <code>set_x2_title()</code><a class="anchor" aria-label="anchor" href="#method-set-x-title-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Chart-set_x2_title"></a><div class="section">
+<h3 id="chart-set-x-title-"><code>Chart$set_x2_title()</code><a class="anchor" aria-label="anchor" href="#chart-set-x-title-"></a></h3>
 <p>Set the secondary X-axis title.</p>
 <p>Only takes effect if at least one series has been assigned to the
 secondary X-axis via <code>add_series(secondary = "x")</code>. Issues a warning
@@ -226,54 +225,45 @@ and returns <code>self</code> silently otherwise.</p><div class="section">
 <span>  line <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-1">Arguments<a class="anchor" aria-label="anchor" href="#arguments-1"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>text</code></dt>
 <dd><p>Title string.</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Numeric font size in points.</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name.</p></dd>
 
-
-<dt><code>font_color</code></dt>
+      <dt><code>font_color</code></dt>
 <dd><p>Six-digit hex color for the title text.</p></dd>
 
-
-<dt><code>bold, italic</code></dt>
+      <dt><code>bold, italic</code></dt>
 <dd><p>Logical font style.</p></dd>
 
-
-<dt><code>fill</code></dt>
+      <dt><code>fill</code></dt>
 <dd><p>Six-digit hex color for the title background box.</p></dd>
 
-
-<dt><code>line</code></dt>
+      <dt><code>line</code></dt>
 <dd><p>Six-digit hex color for the title border.</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Numeric border width in points.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"scatter"</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span>, secondary <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">set_x2_title</span><span class="op">(</span><span class="st">"Secondary X"</span>, font_color <span class="op">=</span> <span class="st">"888888"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-Chart-set_y2_title"></a><div class="section">
-<h3 id="method-set-y-title-">Method <code>set_y2_title()</code><a class="anchor" aria-label="anchor" href="#method-set-y-title-"></a></h3>
+<p></p><hr><a id="method-Chart-set_y2_title"></a><div class="section">
+<h3 id="chart-set-y-title-"><code>Chart$set_y2_title()</code><a class="anchor" aria-label="anchor" href="#chart-set-y-title-"></a></h3>
 <p>Set the secondary Y-axis title.</p>
 <p>Only takes effect if at least one series has been assigned to the
 secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
@@ -290,45 +280,35 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  line <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  line_width <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>text</code></dt>
 <dd><p>Title string.</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Numeric font size in points.</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name.</p></dd>
 
-
-<dt><code>font_color</code></dt>
+      <dt><code>font_color</code></dt>
 <dd><p>Six-digit hex color for the title text.</p></dd>
 
-
-<dt><code>bold, italic</code></dt>
+      <dt><code>bold, italic</code></dt>
 <dd><p>Logical font style.</p></dd>
 
-
-<dt><code>fill</code></dt>
+      <dt><code>fill</code></dt>
 <dd><p>Six-digit hex color for the title background box.</p></dd>
 
-
-<dt><code>line</code></dt>
+      <dt><code>line</code></dt>
 <dd><p>Six-digit hex color for the title border.</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Numeric border width in points.</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span><span class="op">)</span><span class="op">$</span></span>
@@ -336,9 +316,10 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  <span class="fu">set_y2_title</span><span class="op">(</span><span class="st">"Growth Rate (%)"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
+</div>
 
-</div><p></p><hr><a id="method-Chart-set_y2_axis"></a><div class="section">
-<h3 id="method-set-y-axis-">Method <code>set_y2_axis()</code><a class="anchor" aria-label="anchor" href="#method-set-y-axis-"></a></h3>
+<p></p><hr><a id="method-Chart-set_y2_axis"></a><div class="section">
+<h3 id="chart-set-y-axis-"><code>Chart$set_y2_axis()</code><a class="anchor" aria-label="anchor" href="#chart-set-y-axis-"></a></h3>
 <p>Set Secondary Y-axis scaling, units, and format.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_y2_axis</span><span class="op">(</span></span>
@@ -372,107 +353,85 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  crosses_at <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_pos <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>min</code></dt>
 <dd><p>Minimum value for the axis.</p></dd>
 
-
-<dt><code>max</code></dt>
+      <dt><code>max</code></dt>
 <dd><p>Maximum value for the axis.</p></dd>
 
-
-<dt><code>major</code></dt>
+      <dt><code>major</code></dt>
 <dd><p>Numeric value for major unit interval.</p></dd>
 
-
-<dt><code>minor</code></dt>
+      <dt><code>minor</code></dt>
 <dd><p>Numeric value for minor unit interval.</p></dd>
 
-
-<dt><code>major_time</code></dt>
+      <dt><code>major_time</code></dt>
 <dd><p>Time unit for major steps ("days", "months", "years"). Used for date axes.</p></dd>
 
-
-<dt><code>minor_time</code></dt>
+      <dt><code>minor_time</code></dt>
 <dd><p>Time unit for minor steps ("days", "months", "years"). Used for date axes.</p></dd>
 
-
-<dt><code>base_time</code></dt>
+      <dt><code>base_time</code></dt>
 <dd><p>Base time unit for date axes ("days", "months", "years").</p></dd>
 
-
-<dt><code>major_tick, minor_tick</code></dt>
+      <dt><code>major_tick, minor_tick</code></dt>
 <dd><p>Tick marks for major and minor ("cross", "in", "none", "out").</p></dd>
 
-
-<dt><code>format</code></dt>
+      <dt><code>format</code></dt>
 <dd><p>A number format string (e.g., "#,##0" or "yyyy-mm-dd").</p></dd>
 
-
-<dt><code>log_base</code></dt>
+      <dt><code>log_base</code></dt>
 <dd><p>Base for logarithmic scaling (e.g., 10).</p></dd>
 
-
-<dt><code>color, font_color</code></dt>
+      <dt><code>color, font_color</code></dt>
 <dd><p>Hex color for the axis lines and label (or independent label color).</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name (e.g., "Arial", "Calibri").</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Font size for the axis labels.</p></dd>
 
-
-<dt><code>bold</code></dt>
+      <dt><code>bold</code></dt>
 <dd><p>Logical; if <code>TRUE</code>, axis labels will be bold.</p></dd>
 
-
-<dt><code>italic</code></dt>
+      <dt><code>italic</code></dt>
 <dd><p>Logical; if <code>TRUE</code>, axis labels will be italicized.</p></dd>
 
-
-<dt><code>rotation</code></dt>
+      <dt><code>rotation</code></dt>
 <dd><p>Rotation in degrees.</p></dd>
 
-
-<dt><code>grid_color, minor_grid_color</code></dt>
+      <dt><code>grid_color, minor_grid_color</code></dt>
 <dd><p>Hex color for the grid lines.</p></dd>
 
-
-<dt><code>grid_lines, minor_grid_lines</code></dt>
+      <dt><code>grid_lines, minor_grid_lines</code></dt>
 <dd><p>Logical. Show or hide grid lines.</p></dd>
 
-
-<dt><code>cross_between</code></dt>
+      <dt><code>cross_between</code></dt>
 <dd><p>Specifies how the value axis crosses the category axis ('between' or 'midCat').</p></dd>
 
-
-<dt><code>line_width, grid_width, minor_grid_width</code></dt>
+      <dt><code>line_width, grid_width, minor_grid_width</code></dt>
 <dd><p>Numeric. Change the width of the axis and grid lines.</p></dd>
 
-
-<dt><code>crosses</code></dt>
+      <dt><code>crosses</code></dt>
 <dd><p>Intersection: "autoZero" (default), "min" (start), or "max" (end).</p></dd>
 
-
-<dt><code>crosses_at</code></dt>
+      <dt><code>crosses_at</code></dt>
 <dd><p>Numeric axis value for intersection. Overrides 'crosses'.</p></dd>
 
-
-<dt><code>label_pos</code></dt>
+      <dt><code>label_pos</code></dt>
 <dd><p>Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Chart-set_x2_axis"></a><div class="section">
-<h3 id="method-set-x-axis-">Method <code>set_x2_axis()</code><a class="anchor" aria-label="anchor" href="#method-set-x-axis-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Chart-set_x2_axis"></a><div class="section">
+<h3 id="chart-set-x-axis-"><code>Chart$set_x2_axis()</code><a class="anchor" aria-label="anchor" href="#chart-set-x-axis-"></a></h3>
 <p>Set Secondary X-axis scaling, units, and format.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_x2_axis</span><span class="op">(</span></span>
@@ -506,113 +465,89 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  crosses_at <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label_pos <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>min</code></dt>
 <dd><p>Minimum value for the axis.</p></dd>
 
-
-<dt><code>max</code></dt>
+      <dt><code>max</code></dt>
 <dd><p>Maximum value for the axis.</p></dd>
 
-
-<dt><code>major</code></dt>
+      <dt><code>major</code></dt>
 <dd><p>Numeric value for major unit interval.</p></dd>
 
-
-<dt><code>minor</code></dt>
+      <dt><code>minor</code></dt>
 <dd><p>Numeric value for minor unit interval.</p></dd>
 
-
-<dt><code>major_time</code></dt>
+      <dt><code>major_time</code></dt>
 <dd><p>Time unit for major steps ("days", "months", "years"). Used for date axes.</p></dd>
 
-
-<dt><code>minor_time</code></dt>
+      <dt><code>minor_time</code></dt>
 <dd><p>Time unit for minor steps ("days", "months", "years"). Used for date axes.</p></dd>
 
-
-<dt><code>base_time</code></dt>
+      <dt><code>base_time</code></dt>
 <dd><p>Base time unit for date axes ("days", "months", "years").</p></dd>
 
-
-<dt><code>major_tick, minor_tick</code></dt>
+      <dt><code>major_tick, minor_tick</code></dt>
 <dd><p>Tick marks for major and minor ("cross", "in", "none", "out").</p></dd>
 
-
-<dt><code>format</code></dt>
+      <dt><code>format</code></dt>
 <dd><p>A number format string (e.g., "#,##0" or "yyyy-mm-dd").</p></dd>
 
-
-<dt><code>log_base</code></dt>
+      <dt><code>log_base</code></dt>
 <dd><p>Base for logarithmic scaling (e.g., 10).</p></dd>
 
-
-<dt><code>color, font_color</code></dt>
+      <dt><code>color, font_color</code></dt>
 <dd><p>Hex color for the axis lines and label (or independent label color).</p></dd>
 
-
-<dt><code>font_name</code></dt>
+      <dt><code>font_name</code></dt>
 <dd><p>Font typeface name (e.g., "Arial", "Calibri").</p></dd>
 
-
-<dt><code>font_size</code></dt>
+      <dt><code>font_size</code></dt>
 <dd><p>Font size for the axis labels.</p></dd>
 
-
-<dt><code>bold</code></dt>
+      <dt><code>bold</code></dt>
 <dd><p>Logical; if <code>TRUE</code>, axis labels will be bold.</p></dd>
 
-
-<dt><code>italic</code></dt>
+      <dt><code>italic</code></dt>
 <dd><p>Logical; if <code>TRUE</code>, axis labels will be italicized.</p></dd>
 
-
-<dt><code>rotation</code></dt>
+      <dt><code>rotation</code></dt>
 <dd><p>Rotation in degrees.</p></dd>
 
-
-<dt><code>grid_color, minor_grid_color</code></dt>
+      <dt><code>grid_color, minor_grid_color</code></dt>
 <dd><p>Hex color for the grid lines.</p></dd>
 
-
-<dt><code>grid_lines, minor_grid_lines</code></dt>
+      <dt><code>grid_lines, minor_grid_lines</code></dt>
 <dd><p>Logical. Show or hide grid lines.</p></dd>
 
-
-<dt><code>cross_between</code></dt>
+      <dt><code>cross_between</code></dt>
 <dd><p>Specifies how the value axis crosses the category axis ('between' or 'midCat').</p></dd>
 
-
-<dt><code>line_width, grid_width, minor_grid_width</code></dt>
+      <dt><code>line_width, grid_width, minor_grid_width</code></dt>
 <dd><p>Numeric. Change the width of the axis and grid lines.</p></dd>
 
-
-<dt><code>crosses</code></dt>
+      <dt><code>crosses</code></dt>
 <dd><p>Intersection: "autoZero" (default), "min" (start), or "max" (end).</p></dd>
 
-
-<dt><code>crosses_at</code></dt>
+      <dt><code>crosses_at</code></dt>
 <dd><p>Numeric axis value for intersection. Overrides 'crosses'.</p></dd>
 
-
-<dt><code>label_pos</code></dt>
+      <dt><code>label_pos</code></dt>
 <dd><p>Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Chart-set_data_table"></a><div class="section">
-<h3 id="method-set-data-table-">Method <code>set_data_table()</code><a class="anchor" aria-label="anchor" href="#method-set-data-table-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Chart-set_data_table"></a><div class="section">
+<h3 id="chart-set-data-table-"><code>Chart$set_data_table()</code><a class="anchor" aria-label="anchor" href="#chart-set-data-table-"></a></h3>
 <p>Set the data table.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_data_table</span><span class="op">(</span>show <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>show</code></dt>
 <dd><p>Logical TRUE or FALSE.</p></dd>
@@ -621,61 +556,56 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Chart-set_pie_options"></a><div class="section">
-<h3 id="method-set-pie-options-">Method <code>set_pie_options()</code><a class="anchor" aria-label="anchor" href="#method-set-pie-options-"></a></h3>
-
-<div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_pie_options</span><span class="op">(</span>rotation <span class="op">=</span> <span class="cn">NULL</span>, expansion <span class="op">=</span> <span class="cn">NULL</span>, hole_size <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
-<div class="section">
+<p></p><hr><a id="method-Chart-set_pie_options"></a><div class="section">
+<h3 id="chart-set-pie-options-"><code>Chart$set_pie_options()</code><a class="anchor" aria-label="anchor" href="#chart-set-pie-options-"></a></h3>
+<p></p><div class="section">
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_pie_options</span><span class="op">(</span>rotation <span class="op">=</span> <span class="cn">NULL</span>, expansion <span class="op">=</span> <span class="cn">NULL</span>, hole_size <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>rotation</code></dt>
 <dd><p>The angle of the first slice in degrees, from 0 to 360.
 This rotates the chart clockwise.</p></dd>
 
-
-<dt><code>expansion</code></dt>
+      <dt><code>expansion</code></dt>
 <dd><p>Sets the expansion, from 0 to 400.</p></dd>
 
-
-<dt><code>hole_size</code></dt>
+      <dt><code>hole_size</code></dt>
 <dd><p>Set the hole size of (only doughnut charts), from 0 to 90.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Chart-set_bubble_options"></a><div class="section">
-<h3 id="method-set-bubble-options-">Method <code>set_bubble_options()</code><a class="anchor" aria-label="anchor" href="#method-set-bubble-options-"></a></h3>
-
-<div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_bubble_options</span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">100</span>, show_neg <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
-<div class="section">
+<p></p><hr><a id="method-Chart-set_bubble_options"></a><div class="section">
+<h3 id="chart-set-bubble-options-"><code>Chart$set_bubble_options()</code><a class="anchor" aria-label="anchor" href="#chart-set-bubble-options-"></a></h3>
+<p></p><div class="section">
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_bubble_options</span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">100</span>, show_neg <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
 <h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>scale</code></dt>
 <dd><p>The scale factor for bubbles, from 0 to 300 (expressed as a percentage).</p></dd>
 
-
-<dt><code>show_neg</code></dt>
+      <dt><code>show_neg</code></dt>
 <dd><p>Logical; if <code>TRUE</code>, bubbles with negative values will be displayed on the chart.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Chart-set_disp_blanks"></a><div class="section">
-<h3 id="method-set-disp-blanks-">Method <code>set_disp_blanks()</code><a class="anchor" aria-label="anchor" href="#method-set-disp-blanks-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Chart-set_disp_blanks"></a><div class="section">
+<h3 id="chart-set-disp-blanks-"><code>Chart$set_disp_blanks()</code><a class="anchor" aria-label="anchor" href="#chart-set-disp-blanks-"></a></h3>
 <p>Set missing value behavior ("gap", "span", "zero").</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_disp_blanks</span><span class="op">(</span>val <span class="op">=</span> <span class="st">"gap"</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>val</code></dt>
 <dd><p>Character. One of "gap" (break), "span" (continue), or "zero" (drop).</p></dd>
@@ -684,8 +614,10 @@ This rotates the chart clockwise.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Chart-add_series"></a><div class="section">
-<h3 id="method-add-series-">Method <code>add_series()</code><a class="anchor" aria-label="anchor" href="#method-add-series-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Chart-add_series"></a><div class="section">
+<h3 id="chart-add-series-"><code>Chart$add_series()</code><a class="anchor" aria-label="anchor" href="#chart-add-series-"></a></h3>
 <p>Add a data series to the chart with independent styling.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
@@ -716,107 +648,81 @@ This rotates the chart clockwise.</p></dd>
 <span>  error_bars <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  trendline <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Cell range or string for series name.</p></dd>
 
-
-<dt><code>data</code></dt>
+      <dt><code>data</code></dt>
 <dd><p>Cell range for series values.</p></dd>
 
-
-<dt><code>label</code></dt>
+      <dt><code>label</code></dt>
 <dd><p>Cell range for category labels.</p></dd>
 
-
-<dt><code>weight</code></dt>
+      <dt><code>weight</code></dt>
 <dd><p>Cell range for bubble sizes (bubbleChart only).</p></dd>
 
-
-<dt><code>color</code></dt>
+      <dt><code>color</code></dt>
 <dd><p>Primary Hex color for the series (used as default for line and markers).</p></dd>
 
-
-<dt><code>type</code></dt>
+      <dt><code>type</code></dt>
 <dd><p>Chart type for this specific series (for combo charts).</p></dd>
 
-
-<dt><code>secondary</code></dt>
+      <dt><code>secondary</code></dt>
 <dd><p>Logical. Set to TRUE to move series to secondary axis.</p></dd>
 
-
-<dt><code>dir</code></dt>
+      <dt><code>dir</code></dt>
 <dd><p>Bar direction ("col" or "bar").</p></dd>
 
-
-<dt><code>grouping</code></dt>
+      <dt><code>grouping</code></dt>
 <dd><p>Chart grouping ("standard", "stacked", "percentStacked").</p></dd>
 
-
-<dt><code>overlap</code></dt>
+      <dt><code>overlap</code></dt>
 <dd><p>Integer between -100 and 100 for bar charts.</p></dd>
 
-
-<dt><code>gap_width</code></dt>
+      <dt><code>gap_width</code></dt>
 <dd><p>Integer between 0 and 500 for bar charts.</p></dd>
 
-
-<dt><code>smooth</code></dt>
+      <dt><code>smooth</code></dt>
 <dd><p>Logical. Enable line smoothing for line/scatter charts.</p></dd>
 
-
-<dt><code>show_line</code></dt>
+      <dt><code>show_line</code></dt>
 <dd><p>Logical. Show the line connecting points.</p></dd>
 
-
-<dt><code>marker</code></dt>
+      <dt><code>marker</code></dt>
 <dd><p>Marker type ("none", "circle", "square", "diamond", "triangle").</p></dd>
 
-
-<dt><code>marker_size</code></dt>
+      <dt><code>marker_size</code></dt>
 <dd><p>Integer size of marker.</p></dd>
 
-
-<dt><code>marker_fill</code></dt>
+      <dt><code>marker_fill</code></dt>
 <dd><p>Hex color for the interior of the marker. Defaults to <code>color</code>.</p></dd>
 
-
-<dt><code>marker_line</code></dt>
+      <dt><code>marker_line</code></dt>
 <dd><p>Hex color for the marker border. Defaults to <code>color</code>.</p></dd>
 
-
-<dt><code>marker_line_width</code></dt>
+      <dt><code>marker_line_width</code></dt>
 <dd><p>Numeric width of the marker border.</p></dd>
 
-
-<dt><code>show_val</code></dt>
+      <dt><code>show_val</code></dt>
 <dd><p>Logical. Override global label settings for this series (show value).</p></dd>
 
-
-<dt><code>show_cat</code></dt>
+      <dt><code>show_cat</code></dt>
 <dd><p>Logical. Override global label settings for this series (show category).</p></dd>
 
-
-<dt><code>line_type</code></dt>
+      <dt><code>line_type</code></dt>
 <dd><p>Line style: "dashed", "dotted", "dashDot", or "solid".</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Numeric width of the connecting line.</p></dd>
 
-
-<dt><code>line_color</code></dt>
+      <dt><code>line_color</code></dt>
 <dd><p>Hex color for the connecting line. Defaults to <code>color</code>.</p></dd>
 
-
-<dt><code>filled</code></dt>
+      <dt><code>filled</code></dt>
 <dd><p>Logical; for radar charts, fills the interior area. Default FALSE.</p></dd>
 
-
-<dt><code>error_bars</code></dt>
+      <dt><code>error_bars</code></dt>
 <dd><p>A list of error bar properties:</p><ul><li><p><code>type</code>: The error value type (<code>ST_ErrValType</code>).
 Must be one of: <code>"fixedVal"</code> (Fixed Value), <code>"percentage"</code> (Percentage),
 <code>"stdDev"</code> (Standard Deviation), <code>"stdErr"</code> (Standard Error),
@@ -826,8 +732,7 @@ or <code>"cust"</code> (Custom).</p></li>
 <li><p><code>color</code>: Hex color code for the bars (e.g., "FF0000").</p></li>
 </ul></dd>
 
-
-<dt><code>trendline</code></dt>
+      <dt><code>trendline</code></dt>
 <dd><p>A list of regression line properties:</p><ul><li><p><code>type</code>: The regression type (<code>ST_TrendlineType</code>).
 Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential),
 <code>"log"</code> (Logarithmic), <code>"movingAvg"</code> (Moving Average),
@@ -842,36 +747,35 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-Chart-render"></a><div class="section">
-<h3 id="method-render-">Method <code>render()</code><a class="anchor" aria-label="anchor" href="#method-render-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Chart-render"></a><div class="section">
+<h3 id="chart-render-"><code>Chart$render()</code><a class="anchor" aria-label="anchor" href="#chart-render-"></a></h3>
 <p>Generate the final XML string for the chart.</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">render</span><span class="op">(</span></span>
 <span>  u_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"53178645"</span>, <span class="st">"60812428"</span>, <span class="st">"64752656"</span>, <span class="st">"81893617"</span>, <span class="st">"90007639"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>u_ids</code></dt>
 <dd><p>five unique ids</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns">Returns<a class="anchor" aria-label="anchor" href="#returns"></a></h4>
 <p>A character string containing the OOXML chart definition.</p>
 </div>
 
-</div><p></p><hr><a id="method-Chart-clone"></a><div class="section">
-<h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
+</div>
+
+<p></p><hr><a id="method-Chart-clone"></a><div class="section">
+<h3 id="chart-clone-"><code>Chart$clone()</code><a class="anchor" aria-label="anchor" href="#chart-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -882,10 +786,11 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 
 </div>
 
+
     </div>
     <div id="super-class">
     <h2>Super class</h2>
-    <p><code><a href="EncharterBase.html">encharter::EncharterBase</a></code> -&gt; <code>ChartEx</code></p>
+    <p><code><a href="EncharterBase.html">EncharterBase</a></code> -&gt; <code>ChartEx</code></p>
     </div>
     <div id="public-fields">
     <h2>Public fields</h2>
@@ -893,7 +798,7 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <dd><p>color</p></dd>
 
 
-<dt><code>style_xml</code></dt>
+    <dt><code>style_xml</code></dt>
 <dd><p>style</p></dd>
 
 
@@ -904,43 +809,41 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 
 <div class="section">
 <h3 id="public-methods-1">Public methods<a class="anchor" aria-label="anchor" href="#public-methods-1"></a></h3>
-
-<ul><li><p><a href="#method-ChartEx-new"><code>ChartEx$new()</code></a></p></li>
+<p></p><ul><li><p><a href="#method-ChartEx-initialize"><code>ChartEx$new()</code></a></p></li>
 <li><p><a href="#method-ChartEx-add_series"><code>ChartEx$add_series()</code></a></p></li>
 <li><p><a href="#method-ChartEx-render"><code>ChartEx$render()</code></a></p></li>
 <li><p><a href="#method-ChartEx-clone"><code>ChartEx$clone()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href="EncharterBase.html#method-print"><code>encharter::EncharterBase$print()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href="EncharterBase.html#method-set_chart_style"><code>encharter::EncharterBase$set_chart_style()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href="EncharterBase.html#method-set_chart_title"><code>encharter::EncharterBase$set_chart_title()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href="EncharterBase.html#method-set_data_label_style"><code>encharter::EncharterBase$set_data_label_style()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href="EncharterBase.html#method-set_legend_style"><code>encharter::EncharterBase$set_legend_style()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href="EncharterBase.html#method-set_plot_style"><code>encharter::EncharterBase$set_plot_style()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_axis"><a href="EncharterBase.html#method-set_x_axis"><code>encharter::EncharterBase$set_x_axis()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href="EncharterBase.html#method-set_x_title"><code>encharter::EncharterBase$set_x_title()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_axis"><a href="EncharterBase.html#method-set_y_axis"><code>encharter::EncharterBase$set_y_axis()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href="EncharterBase.html#method-set_y_title"><code>encharter::EncharterBase$set_y_title()</code></a></span></li>
-</ul></details></p><hr><a id="method-ChartEx-new"></a><div class="section">
-<h3 id="method-new--1">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new--1"></a></h3>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href="EncharterBase.html#method-print"><code>EncharterBase$print()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_style"><a href="EncharterBase.html#method-set_chart_style"><code>EncharterBase$set_chart_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_chart_title"><a href="EncharterBase.html#method-set_chart_title"><code>EncharterBase$set_chart_title()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_data_label_style"><a href="EncharterBase.html#method-set_data_label_style"><code>EncharterBase$set_data_label_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_legend_style"><a href="EncharterBase.html#method-set_legend_style"><code>EncharterBase$set_legend_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_plot_style"><a href="EncharterBase.html#method-set_plot_style"><code>EncharterBase$set_plot_style()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_axis"><a href="EncharterBase.html#method-set_x_axis"><code>EncharterBase$set_x_axis()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_x_title"><a href="EncharterBase.html#method-set_x_title"><code>EncharterBase$set_x_title()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_axis"><a href="EncharterBase.html#method-set_y_axis"><code>EncharterBase$set_y_axis()</code></a></span></li>
+  <li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="set_y_title"><a href="EncharterBase.html#method-set_y_title"><code>EncharterBase$set_y_title()</code></a></span></li>
+</ul></details></p><hr><a id="method-ChartEx-initialize"></a><div class="section">
+<h3 id="chartex-new-"><code>ChartEx$new()</code><a class="anchor" aria-label="anchor" href="#chartex-new-"></a></h3>
 <p>Create a new ChartEx object.</p><div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/encharter.html">ChartEx</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>Initial chart type (e.g., "waterfall", "treemap").</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-1">Returns<a class="anchor" aria-label="anchor" href="#returns-1"></a></h4>
 <p>A new <code>ChartEx</code> object.</p>
 </div>
 
-</div><p></p><hr><a id="method-ChartEx-add_series"></a><div class="section">
-<h3 id="method-add-series--1">Method <code>add_series()</code><a class="anchor" aria-label="anchor" href="#method-add-series--1"></a></h3>
+</div>
+
+<p></p><hr><a id="method-ChartEx-add_series"></a><div class="section">
+<h3 id="chartex-add-series-"><code>ChartEx$add_series()</code><a class="anchor" aria-label="anchor" href="#chartex-add-series-"></a></h3>
 <p>Add a data series to the chart.</p><div class="section">
 <h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
@@ -958,100 +861,84 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <span>  visibility <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parent_label <span class="op">=</span> <span class="st">"overlapping"</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Cell range for the series name.</p></dd>
 
-
-<dt><code>data</code></dt>
+      <dt><code>data</code></dt>
 <dd><p>Cell range for the numeric values.</p></dd>
 
-
-<dt><code>label</code></dt>
+      <dt><code>label</code></dt>
 <dd><p>Cell range for the category labels.</p></dd>
 
-
-<dt><code>type</code></dt>
+      <dt><code>type</code></dt>
 <dd><p>Type of chart (waterfall, sunburst, treemap, regionMap).</p></dd>
 
-
-<dt><code>color</code></dt>
+      <dt><code>color</code></dt>
 <dd><p>Hex color or "auto".</p></dd>
 
-
-<dt><code>line_color</code></dt>
+      <dt><code>line_color</code></dt>
 <dd><p>Border color.</p></dd>
 
-
-<dt><code>line_width</code></dt>
+      <dt><code>line_width</code></dt>
 <dd><p>Border width.</p></dd>
 
-
-<dt><code>gap_width</code></dt>
+      <dt><code>gap_width</code></dt>
 <dd><p>Integer between 0 and 500.</p></dd>
 
-
-<dt><code>subtotals</code></dt>
+      <dt><code>subtotals</code></dt>
 <dd><p>Numeric vector of indices to treat as subtotals (Waterfall only).</p></dd>
 
-
-<dt><code>statistics</code></dt>
+      <dt><code>statistics</code></dt>
 <dd><p>Quartile method: "inclusive" or "exclusive".</p></dd>
 
-
-<dt><code>binning</code></dt>
+      <dt><code>binning</code></dt>
 <dd><p>A list for Histogram/BoxWhisker:
 <code>binSize</code> (numeric), <code>binCount</code> (integer), <code>intervalClosed</code> ("left", "right"),
 <code>underflow</code> (numeric or "auto"), <code>overflow</code> (numeric or "auto").</p></dd>
 
-
-<dt><code>visibility</code></dt>
+      <dt><code>visibility</code></dt>
 <dd><p>A named list of logicals for BoxWhisker/Waterfall:
 <code>connectorLines</code>, <code>meanLine</code>, <code>meanMarker</code>, <code>nonoutliers</code>, <code>outliers</code>.</p></dd>
 
-
-<dt><code>parent_label</code></dt>
+      <dt><code>parent_label</code></dt>
 <dd><p>Treemap label style: "overlapping", "banner", or "none".</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-ChartEx-render"></a><div class="section">
-<h3 id="method-render--1">Method <code>render()</code><a class="anchor" aria-label="anchor" href="#method-render--1"></a></h3>
+</div>
+
+<p></p><hr><a id="method-ChartEx-render"></a><div class="section">
+<h3 id="chartex-render-"><code>ChartEx$render()</code><a class="anchor" aria-label="anchor" href="#chartex-render-"></a></h3>
 <p>Render the internal XML for writing to a file.</p><div class="section">
 <h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">render</span><span class="op">(</span>id_start <span class="op">=</span> <span class="fl">1</span>, guid <span class="op">=</span> <span class="st">"{C59B1284-E301-0D0F-1B20-FD96A66D6E43}"</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>id_start</code></dt>
 <dd><p>Numeric starting ID for XML data references.</p></dd>
 
-
-<dt><code>guid</code></dt>
+      <dt><code>guid</code></dt>
 <dd><p>a guid</p></dd>
 
 
 </dl><p></p></div>
-</div>
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="returns-2">Returns<a class="anchor" aria-label="anchor" href="#returns-2"></a></h4>
 <p>A list containing the XML and attribute mappings.</p>
 </div>
 
-</div><p></p><hr><a id="method-ChartEx-clone"></a><div class="section">
-<h3 id="method-clone--1">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone--1"></a></h3>
+</div>
+
+<p></p><hr><a id="method-ChartEx-clone"></a><div class="section">
+<h3 id="chartex-clone-"><code>ChartEx$clone()</code><a class="anchor" aria-label="anchor" href="#chartex-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
 <h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
-</div>
-
-<div class="section">
+</div><p></p><div class="section">
 <h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
@@ -1061,6 +948,7 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 </div>
 
 </div>
+
 
     </div>
 
@@ -1083,7 +971,7 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `Chart$set_x2_title`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `Chart$set_x2_title()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"scatter"</span><span class="op">)</span><span class="op">$</span></span></span>
@@ -1091,7 +979,7 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <span class="r-in"><span>  <span class="fu">set_x2_title</span><span class="op">(</span><span class="st">"Secondary X"</span>, font_color <span class="op">=</span> <span class="st">"888888"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
-<span class="r-in"><span><span class="co">## Method `Chart$set_y2_title`</span></span></span>
+<span class="r-in"><span><span class="co">## Method `Chart$set_y2_title()`</span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span></span></span>
