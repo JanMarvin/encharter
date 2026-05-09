@@ -84,7 +84,7 @@ wb <- wb_workbook() |>
 Because R6 objects mutate in place, there is no need to reassign after
 each method call.
 
-![Fig 1: Our first \`encharter\` chart](reference/figures/man_1.jpg)
+![Fig 1: Our first \`encharter\` chart](reference/figures/man_1.png)
 
 Fig 1: Our first `encharter` chart
 
@@ -246,7 +246,7 @@ wb <- wb |>
 if (interactive()) wb$open()
 ```
 
-![Fig 2: The initial chart with styling](reference/figures/man_2.jpg)
+![Fig 2: The initial chart with styling](reference/figures/man_2.png)
 
 Fig 2: The initial chart with styling
 
@@ -321,7 +321,7 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Line", graph = chart, dims = "E1:N18")
 ```
 
-![Fig 3: The line chart](reference/figures/man_line.jpg)
+![Fig 3: The line chart](reference/figures/man_line.png)
 
 Fig 3: The line chart
 
@@ -374,7 +374,7 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Bar", graph = chart, dims = "G1:P18")
 ```
 
-![Fig 4: The bar chart](reference/figures/man_bar_1.jpg)
+![Fig 4: The bar chart](reference/figures/man_bar_1.png)
 
 Fig 4: The bar chart
 
@@ -417,7 +417,7 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Stacked", graph = chart, dims = "G1:P18")
 ```
 
-![Fig 5: The stacked bar chart](reference/figures/man_bar_2.jpg)
+![Fig 5: The stacked bar chart](reference/figures/man_bar_2.png)
 
 Fig 5: The stacked bar chart
 
@@ -480,7 +480,7 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Combo", graph = chart, dims = "E1:N18")
 ```
 
-![Fig 6: The combo chart](reference/figures/man_combo.jpg)
+![Fig 6: The combo chart](reference/figures/man_combo.png)
 
 Fig 6: The combo chart
 
@@ -536,7 +536,7 @@ coef(lm(CloseRate ~ AvgDeal, data = df_scatter))
 #> 0.183476102 0.006631492
 ```
 
-![Fig 7: The scatter chart](reference/figures/man_scatter.jpg)
+![Fig 7: The scatter chart](reference/figures/man_scatter.png)
 
 Fig 7: The scatter chart
 
@@ -576,7 +576,7 @@ chart$add_series(
 wb <- wb_add_encharter(wb, sheet = "Waterfall", graph = chart, dims = "D1:M18")
 ```
 
-![Fig 8: The waterfall chart](reference/figures/man_waterfall.jpg)
+![Fig 8: The waterfall chart](reference/figures/man_waterfall.png)
 
 Fig 8: The waterfall chart
 
@@ -621,7 +621,7 @@ wb <- wb_add_encharter(wb, sheet = "BoxWhisker", graph = chart, dims = "D1:M22")
 ```
 
 ![Fig 9: The box and whisker
-chart](reference/figures/man_boxwhisker.jpg)
+chart](reference/figures/man_boxwhisker.png)
 
 Fig 9: The box and whisker chart
 
