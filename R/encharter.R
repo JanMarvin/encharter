@@ -45,6 +45,50 @@ ENCHARTER_EXTENDED <- c(
 #'
 #' @return An R6 object of class `Chart` or `ChartEx`.
 #'
+#' @section Further examples:
+#' Additional runnable example scripts ship in `inst/examples`. Each file
+#' defines a single function (named after the file) that builds a workbook
+#' and opens it in interactive sessions. List or run them with:
+#'
+#' ```
+#' list.files(system.file("examples", package = "encharter"))
+#' source(system.file("examples", "Bar_Line_Chart.R", package = "encharter"))
+#' ```
+#'
+#' The available files are:
+#'
+#'   * `01_Chart_examples.R` — tour of standard + extended types in one wb
+#'   * `All_chartex.R` — every ChartEx type (waterfall, sunburst, treemap, ...)
+#'   * `Axis_labels.R` — negative-value bar with axis crossing logic
+#'   * `BW_with_args.R` — box-whisker visibility toggles
+#'   * `Bar_Area_Chart.R` — bars + area combo
+#'   * `Bar_Line_Chart.R` — bars + dashed line on secondary axis
+#'   * `Bar_Line_and_Data_Table.R` — date axis + data table below chart
+#'   * `Bar_Line_and_Line.R` — two independent line/bar demos
+#'   * `Bar_chart2.R` — area-base combo with chart/plot styling
+#'   * `Bubble_Doughnut.R` — doughnut + bubble on one sheet
+#'   * `Chart_and_plot_style.R` — chart-area vs plot-area styling
+#'   * `Droplines_highlowlines_updownbars.R` — line adornments
+#'   * `Histogram_with_args.R` — histogram via clusteredColumn binning
+#'   * `Label_Grouping.R` — multi-level category labels
+#'   * `Line.R` — line with markers and global data labels
+#'   * `Pie.R` — pie with viridis palette
+#'   * `Radar_chart.R` — standard vs filled radar
+#'   * `Scatter.R` — markers-only scatter
+#'   * `Seatbelts.R` — Seatbelts time series with rolling rates
+#'   * `StockCharts.R` — stockChart with high/low and up/down bars
+#'   * `Styled_Bars.R` — heavy series + axis + grid styling
+#'   * `Surface_Plot.R` — surface (contour) plot from a matrix
+#'   * `Treemap_with_args.R` — treemap with parent_label = "banner"
+#'   * `Trendline_and_errorbars.R` — series error bars + linear trendline
+#'   * `Waterfall.R` — financial bridge with subtotal
+#'   * `Waterfall2.R` — waterfall with date X-axis
+#'   * `Waterfall3.R` — fully themed waterfall
+#'   * `line_scatterplot.R` — multi-species scatter from iris
+#'
+#' Run all of them in one session with `run_all_examples()` (defined in
+#' `inst/examples/run_all_examples.R`).
+#'
 #' @examples
 #' # Standard line chart
 #' ec("lineChart")

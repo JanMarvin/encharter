@@ -1,27 +1,34 @@
-library(openxlsx2)
-library(encharter)
+# Demonstrates the difference between chart-area styling (set_chart_style:
+# the outer ChartSpace, here a light grey EDF2F7 fill with a thick dark
+# 2D3748 border) and plot-area styling (set_plot_style: just the inner plot
+# rect, white with a thin CBD5E0 border). Single line series. Chart at E2:M20.
 
-# 1. Create a styled chart
-chart <- ec("lineChart")
-chart$add_series(name = "S1!$B$1", data = "S1!$B$2:$B$5")
+chart_and_plot_style <- function() {
+  require(openxlsx2)
+  require(encharter)
 
-# Set Chart Background and Border (ChartSpace)
-chart$set_chart_style(
-  fill = "EDF2F7", # Light grey background
-  line = "2D3748", # Dark blue/grey border
-  line_width =  2.3  # Thick border
-)
+  chart <- ec("lineChart")
+  chart$add_series(name = "S1!$B$1", data = "S1!$B$2:$B$5")
 
-# Set Plot Area Background (PlotArea)
-chart$set_plot_style(
-  fill = "FFFFFF",   # White plot area
-  line = "CBD5E0", # Subtle plot border
-  line_width = 1     # Thin border
-)
+  chart$set_chart_style(
+    fill       = "EDF2F7",
+    line       = "2D3748",
+    line_width = 2.3
+  )
 
-xml <- as.character(chart$render())
+  chart$set_plot_style(
+    fill       = "FFFFFF",
+    line       = "CBD5E0",
+    line_width = 1
+  )
 
-# 3. Visual Verification
-wb <- wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)$
-  add_chart_xml(xml = xml, dims = "E2:M20")
-wb$open()
+  xml <- as.character(chart$render())
+
+  wb <- wb_workbook()$add_worksheet("S1")$add_data(x = mtcars)$
+    add_chart_xml(xml = xml, dims = "E2:M20")
+
+  if (interactive()) wb$open()
+  invisible(wb)
+}
+
+chart_and_plot_style()

@@ -1,75 +1,65 @@
-rm(list = ls())
+# Combo chart: two clustered bars (Product A, Product B) plus an area series
+# (Market Trend, green 70AD47) on the secondary axis. Title in Times New Roman
+# bold, legend at the bottom, italic X-axis font (Calibri), bold Y-axis font
+# (Arial). Chart at E2:M20.
 
-library(openxlsx2)
-library(encharter)
+bar_area_chart <- function() {
+  require(openxlsx2)
+  require(encharter)
 
+  combo_chart <- ec("barChart")
 
-# 1. Initialize with Area Chart as the default base
-combo_chart <- ec("barChart")
+  combo_chart$add_series(
+    name     = "Sheet1!$B$1",
+    data     = "Sheet1!$B$2:$B$6",
+    label    = "Sheet1!$A$2:$A$6",
+    color    = "4472C4",
+    type     = "barChart",
+    grouping = "clustered"
+  )
 
-# 2. Add two series for the "Stacked" effect
-# Note: In OOXML, Bar/Column charts use the same 'barChart' node.
-combo_chart$add_series(
-  name = "Sheet1!$B$1",
-  data = "Sheet1!$B$2:$B$6",
-  label =  "Sheet1!$A$2:$A$6",
-  color = "4472C4",
-  type = "barChart",
-  grouping = "clustered"
-)
+  combo_chart$add_series(
+    name     = "Sheet1!$C$1",
+    data     = "Sheet1!$C$2:$C$6",
+    label    = "Sheet1!$A$2:$A$6",
+    color    = "A5A5A5",
+    type     = "barChart",
+    grouping = "clustered"
+  )
 
-combo_chart$add_series(
-  name = "Sheet1!$C$1",
-  data = "Sheet1!$C$2:$C$6",
-  label =  "Sheet1!$A$2:$A$6",
-  color = "A5A5A5",
-  type = "barChart",
-  grouping = "clustered"
-)
+  combo_chart$add_series(
+    name      = "Sheet1!$D$1",
+    data      = "Sheet1!$D$2:$D$6",
+    color     = "70AD47",
+    type      = "areaChart",
+    secondary = TRUE
+  )
 
-# 3. Add an Area Chart series as an overlay
-combo_chart$add_series(
-  name = "Sheet1!$D$1",
-  data = "Sheet1!$D$2:$D$6",
-  color = "70AD47",
-  type = "areaChart", # This will render in its own node
-  secondary = TRUE
-)
+  combo_chart$set_chart_title("Inventory vs Market Trend",
+                              font_name = "Times New Roman", bold = TRUE)
+  combo_chart$set_legend_style(pos = "b", font_size = 10)
+  combo_chart$set_x_title("Months")
+  combo_chart$set_y_title("Values")
+  combo_chart$set_y2_title("Also Values")
+  combo_chart$set_x_axis(bold = FALSE, italic = TRUE,
+                         font_name = "Calibri", font_size = 12)
+  combo_chart$set_y_axis(bold = TRUE, italic = FALSE,
+                         font_name = "Arial", font_size = 12)
 
-# 4. Final Polish
-combo_chart$set_chart_title("Inventory vs Market Trend", font_name = "Times New Roman", bold = TRUE)
-combo_chart$set_legend_style(pos = "b", font_size = 10) # Put legend at the bottom
-combo_chart$set_x_title("Months")
-combo_chart$set_y_title("Values")
-combo_chart$set_y2_title("Also Values")
-combo_chart$set_x_axis(bold = FALSE, italic = TRUE, font_name = "Calibri", font_size = 12)
-combo_chart$set_y_axis(bold = TRUE, italic = FALSE, font_name = "Arial", font_size = 12)
+  chart_data <- data.frame(
+    Month        = c("Jan", "Feb", "Mar", "Apr", "May"),
+    Product_A    = c(45, 52, 30, 48, 60),
+    Product_B    = c(25, 30, 45, 40, 35),
+    Market_Trend = c(80, 85, 90, 100, 110)
+  )
 
-# 5. Generate XML
-chart_xml <- combo_chart$render()
+  wb <- wb_workbook() |>
+    wb_add_worksheet("Sheet1") |>
+    wb_add_data(x = chart_data) |>
+    wb_add_encharter(dims = "E2:M20", graph = combo_chart)
 
-# Create the dataset
-chart_data <- data.frame(
-  Month = c("Jan", "Feb", "Mar", "Apr", "May"),
-  Product_A = c(45, 52, 30, 48, 60),
-  Product_B = c(25, 30, 45, 40, 35),
-  Market_Trend = c(80, 85, 90, 100, 110)
-)
+  if (interactive()) wb$open()
+  invisible(wb)
+}
 
-# breaks with area charts
-# combo_chart$set_data_label_style(
-#   show_val = TRUE, show_cat = TRUE, show_legend_key = FALSE, color = wb_color("black")
-# )
-
-# Reference for your Chart series:
-# Month:        "Sheet1!$A$2:$A$6" (Category)
-# Product A:    "Sheet1!$B$2:$B$6" (Value)
-# Product B:    "Sheet1!$C$2:$C$6" (Value)
-# Market Trend: "Sheet1!$D$2:$D$6" (Value)
-
-wb <- wb_workbook() |>
-  wb_add_worksheet("Sheet1") |>
-  wb_add_data(x = chart_data) |>
-  openxlsx2::wb_add_encharter(dims = "E2:M20", graph = combo_chart)
-
-wb$open()
+bar_area_chart()

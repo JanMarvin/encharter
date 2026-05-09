@@ -1,38 +1,39 @@
-rm(list = ls())
-library(openxlsx2)
-library(encharter)
+# Surface (contour) plot built from a 5x5 data frame. Each row of the matrix
+# becomes a series whose data is one row of values; categories are the
+# column-header X labels. Loop emits five series (rows 2..6 of the sheet).
+# Chart at H2:P25.
 
-# 1. Create a Matrix of data (e.g., a 5x5 grid of elevations/values)
-# Columns will be the X-axis, Rows will be the Y-axis
-surface_data <- data.frame(
-  Y_Axis = c("Y1", "Y2", "Y3", "Y4", "Y5"),
-  X1 = c(10, 20, 30, 20, 10),
-  X2 = c(20, 40, 60, 40, 20),
-  X3 = c(30, 60, 90, 60, 30),
-  X4 = c(20, 40, 60, 40, 20),
-  X5 = c(10, 20, 30, 20, 10)
-)
+surface_plot <- function() {
+  require(openxlsx2)
+  require(encharter)
 
-# 2. Setup the Chart
-# We use "surfaceChart" type.
-contour_plot <- ec("surfaceChart")
-
-for (i in 2:6) {
-  contour_plot$add_series(
-    # Header: Single cell for the Y-axis label (e.g., A2, A3...)
-    name = paste0("Sheet1!$A$", i),
-    # Data: A single row of values (e.g., B2:F2, B3:F3...)
-    data   = paste0("Sheet1!$B$", i, ":$F$", i),
-    # Category: The shared X-axis labels (B1:F1)
-    label  = "Sheet1!$B$1:$F$1",
-    type   = "surfaceChart"
+  surface_data <- data.frame(
+    Y_Axis = c("Y1", "Y2", "Y3", "Y4", "Y5"),
+    X1 = c(10, 20, 30, 20, 10),
+    X2 = c(20, 40, 60, 40, 20),
+    X3 = c(30, 60, 90, 60, 30),
+    X4 = c(20, 40, 60, 40, 20),
+    X5 = c(10, 20, 30, 20, 10)
   )
+
+  contour_plot <- ec("surfaceChart")
+
+  for (i in 2:6) {
+    contour_plot$add_series(
+      name  = paste0("Sheet1!$A$", i),
+      data  = paste0("Sheet1!$B$", i, ":$F$", i),
+      label = "Sheet1!$B$1:$F$1",
+      type  = "surfaceChart"
+    )
+  }
+
+  wb <- wb_workbook() |>
+    wb_add_worksheet("Sheet1") |>
+    wb_add_data(x = surface_data, col_names = TRUE) |>
+    wb_add_encharter(dims = "H2:P25", graph = contour_plot)
+
+  if (interactive()) wb$open()
+  invisible(wb)
 }
 
-# 3. Create Workbook
-wb <- wb_workbook() |>
-  wb_add_worksheet("Sheet1") |>
-  wb_add_data(x = surface_data, col_names = TRUE) |>
-  openxlsx2::wb_add_encharter(dims = "H2:P25", graph = contour_plot)
-
-wb$open()
+surface_plot()

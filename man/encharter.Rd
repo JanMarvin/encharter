@@ -60,6 +60,52 @@ the underlying XML required for the \code{add_chart_xml} method.
 This class uses XML to manipulate the underlying XML structure and
 integrates with \code{openxlsx2} for workbook generation.
 }
+\section{Further examples}{
+
+Additional runnable example scripts ship in \code{inst/examples}. Each file
+defines a single function (named after the file) that builds a workbook
+and opens it in interactive sessions. List or run them with:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{list.files(system.file("examples", package = "encharter"))
+source(system.file("examples", "Bar_Line_Chart.R", package = "encharter"))
+}\if{html}{\out{</div>}}
+
+The available files are:
+\itemize{
+\item \verb{01_Chart_examples.R} — tour of standard + extended types in one wb
+\item \code{All_chartex.R} — every ChartEx type (waterfall, sunburst, treemap, ...)
+\item \code{Axis_labels.R} — negative-value bar with axis crossing logic
+\item \code{BW_with_args.R} — box-whisker visibility toggles
+\item \code{Bar_Area_Chart.R} — bars + area combo
+\item \code{Bar_Line_Chart.R} — bars + dashed line on secondary axis
+\item \code{Bar_Line_and_Data_Table.R} — date axis + data table below chart
+\item \code{Bar_Line_and_Line.R} — two independent line/bar demos
+\item \code{Bar_chart2.R} — area-base combo with chart/plot styling
+\item \code{Bubble_Doughnut.R} — doughnut + bubble on one sheet
+\item \code{Chart_and_plot_style.R} — chart-area vs plot-area styling
+\item \code{Droplines_highlowlines_updownbars.R} — line adornments
+\item \code{Histogram_with_args.R} — histogram via clusteredColumn binning
+\item \code{Label_Grouping.R} — multi-level category labels
+\item \code{Line.R} — line with markers and global data labels
+\item \code{Pie.R} — pie with viridis palette
+\item \code{Radar_chart.R} — standard vs filled radar
+\item \code{Scatter.R} — markers-only scatter
+\item \code{Seatbelts.R} — Seatbelts time series with rolling rates
+\item \code{StockCharts.R} — stockChart with high/low and up/down bars
+\item \code{Styled_Bars.R} — heavy series + axis + grid styling
+\item \code{Surface_Plot.R} — surface (contour) plot from a matrix
+\item \code{Treemap_with_args.R} — treemap with parent_label = "banner"
+\item \code{Trendline_and_errorbars.R} — series error bars + linear trendline
+\item \code{Waterfall.R} — financial bridge with subtotal
+\item \code{Waterfall2.R} — waterfall with date X-axis
+\item \code{Waterfall3.R} — fully themed waterfall
+\item \code{line_scatterplot.R} — multi-species scatter from iris
+}
+
+Run all of them in one session with \code{run_all_examples()} (defined in
+\code{inst/examples/run_all_examples.R}).
+}
+
 \examples{
 # Standard line chart
 ec("lineChart")

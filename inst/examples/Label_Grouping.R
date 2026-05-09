@@ -1,37 +1,38 @@
-library(openxlsx2)
-library(encharter)
+# Multi-level category labels on a bar chart. The label range spans two
+# columns (A:B) so spreadsheet software groups categories by Status and
+# Gender. To make the grouping render cleanly only the first row of each
+# category carries the label, and merge_cells() merges A2:A3 and A4:A5 in
+# the source data. Chart at E2:M20, dark blue 003C63 bars.
 
-# 1. Prepare Data
-# Note: For spreadsheet software to group them nicely, only the first row
-# of each category should have the label (e.g., "Smoker").
-plot_data <- data.frame(
-  Status = c("Smoker", "", "Non-Smoker", ""),
-  Gender = c("Male", "Female", "Male", "Female"),
-  Value  = c(25, 22, 15, 18)
-)
+label_grouping <- function() {
+  require(openxlsx2)
+  require(encharter)
 
-# 2. Create Workbook and add data
-wb <- wb_workbook()$add_worksheet("data")$add_data(x = plot_data)
-wb$merge_cells(dims = "A2:A3;A4:A5")
+  plot_data <- data.frame(
+    Status = c("Smoker", "", "Non-Smoker", ""),
+    Gender = c("Male", "Female", "Male", "Female"),
+    Value  = c(25, 22, 15, 18)
+  )
 
-# 3. Build the Chart
-my_chart <- ec("barChart")
-my_chart$set_chart_title("Smokers by Gender", bold = TRUE)
+  wb <- wb_workbook()$add_worksheet("data")$add_data(x = plot_data)
+  wb$merge_cells(dims = "A2:A3;A4:A5")
 
-my_chart$add_series(
-  name = "Prevalence",
-  # The values are in column C
-  data   = "data!$C$2:$C$5",
-  # The CATEGORIES span TWO columns (A and B)
-  # This creates the multi-level hierarchy
-  label  = "data!$A$2:$B$5",
-  color  = wb_color("#003C63"),
-  type   = "barChart"
-)
+  my_chart <- ec("barChart")
+  my_chart$set_chart_title("Smokers by Gender", bold = TRUE)
 
-# 4. Render and Add to Workbook
-chart_xml <- my_chart$render()
-wb$add_chart_xml(xml = chart_xml, dims = "E2:M20")
+  my_chart$add_series(
+    name  = "Prevalence",
+    data  = "data!$C$2:$C$5",
+    label = "data!$A$2:$B$5",
+    color = wb_color("#003C63"),
+    type  = "barChart"
+  )
 
-# Open to view
-wb_open(wb)
+  chart_xml <- my_chart$render()
+  wb$add_chart_xml(xml = chart_xml, dims = "E2:M20")
+
+  if (interactive()) wb_open(wb)
+  invisible(wb)
+}
+
+label_grouping()
