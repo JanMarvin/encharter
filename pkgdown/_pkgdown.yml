@@ -1,0 +1,16 @@
+url: https://janmarvin.github.io/encharter/
+
+template:
+  bootstrap: 5
+  light-switch: true
+
+development:
+  mode: auto
+
+reference:
+  - title: Chart construction
+    contents:
+      - encharter
+  - title: Chart classes
+    contents:
+      - EncharterBase

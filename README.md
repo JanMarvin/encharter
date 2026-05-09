@@ -86,11 +86,15 @@ wb <- wb_workbook() |>
 Because R6 objects mutate in place, there is no need to reassign after
 each method call.
 
-<figure>
-<img src="inst/img/man_1.jpg" alt="Fig 1: Our first encharter chart" />
-<figcaption aria-hidden="true">Fig 1: Our first <code>encharter</code>
-chart</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_1.jpg" alt="Fig 1: Our first `encharter` chart" width="1272" />
+<p class="caption">
+
+Fig 1: Our first `encharter` chart
+</p>
+
+</div>
 
 ### Specifying data ranges
 
@@ -232,12 +236,15 @@ wb <- wb |>
 if (interactive()) wb$open()
 ```
 
-<figure>
-<img src="inst/img/man_2.jpg"
-alt="Fig 2: The initial chart with styling" />
-<figcaption aria-hidden="true">Fig 2: The initial chart with
-styling</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_2.jpg" alt="Fig 2: The initial chart with styling" width="878" />
+<p class="caption">
+
+Fig 2: The initial chart with styling
+</p>
+
+</div>
 
 ------------------------------------------------------------------------
 
@@ -308,10 +315,15 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Line", graph = chart, dims = "E1:N18")
 ```
 
-<figure>
-<img src="inst/img/man_line.jpg" alt="Fig 3: The line chart" />
-<figcaption aria-hidden="true">Fig 3: The line chart</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_line.jpg" alt="Fig 3: The line chart" width="1800" />
+<p class="caption">
+
+Fig 3: The line chart
+</p>
+
+</div>
 
 ------------------------------------------------------------------------
 
@@ -361,10 +373,15 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Bar", graph = chart, dims = "G1:P18")
 ```
 
-<figure>
-<img src="inst/img/man_bar_1.jpg" alt="Fig 4: The bar chart" />
-<figcaption aria-hidden="true">Fig 4: The bar chart</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_bar_1.jpg" alt="Fig 4: The bar chart" width="1840" />
+<p class="caption">
+
+Fig 4: The bar chart
+</p>
+
+</div>
 
 ------------------------------------------------------------------------
 
@@ -404,10 +421,15 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Stacked", graph = chart, dims = "G1:P18")
 ```
 
-<figure>
-<img src="inst/img/man_bar_2.jpg" alt="Fig 5: The stacked bar chart" />
-<figcaption aria-hidden="true">Fig 5: The stacked bar chart</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_bar_2.jpg" alt="Fig 5: The stacked bar chart" width="1852" />
+<p class="caption">
+
+Fig 5: The stacked bar chart
+</p>
+
+</div>
 
 ------------------------------------------------------------------------
 
@@ -467,10 +489,15 @@ chart$set_legend_style(pos = "bottom")
 wb <- wb_add_encharter(wb, sheet = "Combo", graph = chart, dims = "E1:N18")
 ```
 
-<figure>
-<img src="inst/img/man_combo.jpg" alt="Fig 6: The combo chart" />
-<figcaption aria-hidden="true">Fig 6: The combo chart</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_combo.jpg" alt="Fig 6: The combo chart" width="1670" />
+<p class="caption">
+
+Fig 6: The combo chart
+</p>
+
+</div>
 
 ------------------------------------------------------------------------
 
@@ -523,10 +550,15 @@ coef(lm(CloseRate ~ AvgDeal, data = df_scatter))
 #> 0.183476102 0.006631492
 ```
 
-<figure>
-<img src="inst/img/man_scatter.jpg" alt="Fig 7: The scatter chart" />
-<figcaption aria-hidden="true">Fig 7: The scatter chart</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_scatter.jpg" alt="Fig 7: The scatter chart" width="1726" />
+<p class="caption">
+
+Fig 7: The scatter chart
+</p>
+
+</div>
 
 ------------------------------------------------------------------------
 
@@ -563,11 +595,15 @@ chart$add_series(
 wb <- wb_add_encharter(wb, sheet = "Waterfall", graph = chart, dims = "D1:M18")
 ```
 
-<figure>
-<img src="inst/img/man_waterfall.jpg"
-alt="Fig 8: The waterfall chart" />
-<figcaption aria-hidden="true">Fig 8: The waterfall chart</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_waterfall.jpg" alt="Fig 8: The waterfall chart" width="1652" />
+<p class="caption">
+
+Fig 8: The waterfall chart
+</p>
+
+</div>
 
 ------------------------------------------------------------------------
 
@@ -608,12 +644,15 @@ chart$add_series(
 wb <- wb_add_encharter(wb, sheet = "BoxWhisker", graph = chart, dims = "D1:M22")
 ```
 
-<figure>
-<img src="inst/img/man_boxwhisker.jpg"
-alt="Fig 9: The box and whisker chart" />
-<figcaption aria-hidden="true">Fig 9: The box and whisker
-chart</figcaption>
-</figure>
+<div class="figure">
+
+<img src="inst/img/man_boxwhisker.jpg" alt="Fig 9: The box and whisker chart" width="1568" />
+<p class="caption">
+
+Fig 9: The box and whisker chart
+</p>
+
+</div>
 
 ------------------------------------------------------------------------
 
