@@ -112,6 +112,46 @@ the underlying XML required for the <code>add_chart_xml</code> method.</p>
 integrates with <code>openxlsx2</code> for workbook generation.</p>
     </div>
     <div class="section level2">
+    <h2 id="further-examples">Further examples<a class="anchor" aria-label="anchor" href="#further-examples"></a></h2>
+
+
+<p>Additional runnable example scripts ship in <code>inst/examples</code>. Each file
+defines a single function (named after the file) that builds a workbook
+and opens it in interactive sessions. List or run them with:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">list.files</span>(<span class="fu">system.file</span>(<span class="st">"examples"</span>, <span class="at">package =</span> <span class="st">"encharter"</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">system.file</span>(<span class="st">"examples"</span>, <span class="st">"Bar_Line_Chart.R"</span>, <span class="at">package =</span> <span class="st">"encharter"</span>))</span></code></pre><p></p></div>
+<p>The available files are:</p><ul><li><p><code>01_Chart_examples.R</code> — tour of standard + extended types in one wb</p></li>
+<li><p><code>All_chartex.R</code> — every ChartEx type (waterfall, sunburst, treemap, ...)</p></li>
+<li><p><code>Axis_labels.R</code> — negative-value bar with axis crossing logic</p></li>
+<li><p><code>BW_with_args.R</code> — box-whisker visibility toggles</p></li>
+<li><p><code>Bar_Area_Chart.R</code> — bars + area combo</p></li>
+<li><p><code>Bar_Line_Chart.R</code> — bars + dashed line on secondary axis</p></li>
+<li><p><code>Bar_Line_and_Data_Table.R</code> — date axis + data table below chart</p></li>
+<li><p><code>Bar_Line_and_Line.R</code> — two independent line/bar demos</p></li>
+<li><p><code>Bar_chart2.R</code> — area-base combo with chart/plot styling</p></li>
+<li><p><code>Bubble_Doughnut.R</code> — doughnut + bubble on one sheet</p></li>
+<li><p><code>Chart_and_plot_style.R</code> — chart-area vs plot-area styling</p></li>
+<li><p><code>Droplines_highlowlines_updownbars.R</code> — line adornments</p></li>
+<li><p><code>Histogram_with_args.R</code> — histogram via clusteredColumn binning</p></li>
+<li><p><code>Label_Grouping.R</code> — multi-level category labels</p></li>
+<li><p><code>Line.R</code> — line with markers and global data labels</p></li>
+<li><p><code>Pie.R</code> — pie with viridis palette</p></li>
+<li><p><code>Radar_chart.R</code> — standard vs filled radar</p></li>
+<li><p><code>Scatter.R</code> — markers-only scatter</p></li>
+<li><p><code>Seatbelts.R</code> — Seatbelts time series with rolling rates</p></li>
+<li><p><code>StockCharts.R</code> — stockChart with high/low and up/down bars</p></li>
+<li><p><code>Styled_Bars.R</code> — heavy series + axis + grid styling</p></li>
+<li><p><code>Surface_Plot.R</code> — surface (contour) plot from a matrix</p></li>
+<li><p><code>Treemap_with_args.R</code> — treemap with parent_label = "banner"</p></li>
+<li><p><code>Trendline_and_errorbars.R</code> — series error bars + linear trendline</p></li>
+<li><p><code>Waterfall.R</code> — financial bridge with subtotal</p></li>
+<li><p><code>Waterfall2.R</code> — waterfall with date X-axis</p></li>
+<li><p><code>Waterfall3.R</code> — fully themed waterfall</p></li>
+<li><p><code>line_scatterplot.R</code> — multi-species scatter from iris</p></li>
+</ul><p>Run all of them in one session with <code>run_all_examples()</code> (defined in
+<code>inst/examples/run_all_examples.R</code>).</p>
+    </div>
+    <div class="section level2">
     <h2 id="super-class">Super class<a class="anchor" aria-label="anchor" href="#super-class"></a></h2>
     <p><code><a href="EncharterBase.html">EncharterBase</a></code> -&gt; <code>Chart</code></p>
     </div>
