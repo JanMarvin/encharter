@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 760" width="680" height="760" role="img">
+  <title>encharter</title>
+  <desc>encharter hex sticker. A clustered bar chart with a dashed trend line over a faded OOXML chart definition. The package name runs vertically along the Y axis.</desc>
+  <defs>
+    <linearGradient id="bgfade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c2f44"/>
+      <stop offset="1" stop-color="#0d1622"/>
+    </linearGradient>
+    <clipPath id="hexclip">
+      <path d="M340 40 L620 200 L620 520 L340 680 L60 520 L60 200 Z"/>
+    </clipPath>
+  </defs>
+  <path d="M340 40 L620 200 L620 520 L340 680 L60 520 L60 200 Z" fill="url(#bgfade)" stroke="#5a8fbf" stroke-width="9" stroke-linejoin="round"/>
+  <g clip-path="url(#hexclip)">
+    <g font-family="Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#365578" opacity="0.35">
+      <text x="100" y="115">&lt;c:chartSpace&gt;</text>
+      <text x="240" y="115">&lt;c:chart&gt;</text>
+      <text x="340" y="115">&lt;c:plotArea&gt;</text>
+      <text x="450" y="115">&lt;c:barChart&gt;</text>
+      <text x="100" y="145">&lt;c:grouping val="clustered"/&gt;</text>
+      <text x="340" y="145">&lt;c:varyColors val="0"/&gt;</text>
+      <text x="100" y="175">&lt;c:ser&gt;</text>
+      <text x="180" y="175">&lt;c:idx val="0"/&gt;</text>
+      <text x="320" y="175">&lt;c:order val="0"/&gt;</text>
+      <text x="450" y="175">&lt;c:val&gt;</text>
+      <text x="100" y="205">&lt;c:numRef&gt;</text>
+      <text x="230" y="205">&lt;c:f&gt;Sheet1!$B$2:$E$2&lt;/c:f&gt;</text>
+      <text x="500" y="205">&lt;c:numCache&gt;</text>
+      <text x="100" y="555">&lt;c:pt idx="0"&gt;&lt;c:v&gt;12&lt;/c:v&gt;&lt;/c:pt&gt;</text>
+      <text x="380" y="555">&lt;c:pt idx="1"&gt;&lt;c:v&gt;28&lt;/c:v&gt;&lt;/c:pt&gt;</text>
+      <text x="100" y="585">&lt;c:pt idx="2"&gt;&lt;c:v&gt;9&lt;/c:v&gt;&lt;/c:pt&gt;</text>
+      <text x="380" y="585">&lt;c:pt idx="3"&gt;&lt;c:v&gt;34&lt;/c:v&gt;&lt;/c:pt&gt;</text>
+      <text x="100" y="615">&lt;/c:numCache&gt;</text>
+      <text x="240" y="615">&lt;/c:numRef&gt;</text>
+      <text x="360" y="615">&lt;/c:val&gt;</text>
+      <text x="100" y="645">&lt;c:trendline&gt;</text>
+      <text x="230" y="645">&lt;c:trendlineType val="poly"/&gt;</text>
+      <text x="450" y="645">&lt;c:order val="3"/&gt;</text>
+      <text x="100" y="675">&lt;/c:trendline&gt;</text>
+      <text x="240" y="675">&lt;/c:ser&gt;</text>
+      <text x="360" y="675">&lt;/c:barChart&gt;</text>
+      <text x="480" y="675">&lt;/c:plotArea&gt;</text>
+    </g>
+    <line x1="180" y1="500" x2="560" y2="500" stroke="#f0f4f9" stroke-width="3" stroke-linecap="round"/>
+    <line x1="180" y1="500" x2="180" y2="240" stroke="#f0f4f9" stroke-width="3" stroke-linecap="round"/>
+    <rect x="208" y="404" width="62" height="96"  fill="#4472C4"/>
+    <rect x="292" y="324" width="62" height="176" fill="#ED7D31"/>
+    <rect x="376" y="436" width="62" height="64"  fill="#70AD47"/>
+    <rect x="460" y="284" width="62" height="216" fill="#FFC000"/>
+    <polyline points="239,404 323,324 407,436 491,284" fill="none" stroke="#f0f4f9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 7"/>
+    <g fill="#f0f4f9" stroke="#1c2f44" stroke-width="1.5">
+      <circle cx="239" cy="404" r="6"/>
+      <circle cx="323" cy="324" r="6"/>
+      <circle cx="407" cy="436" r="6"/>
+      <circle cx="491" cy="284" r="6"/>
+    </g>
+    <g font-family="Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#9bb5cf" text-anchor="middle">
+      <text x="239" y="522">Q1</text>
+      <text x="323" y="522">Q2</text>
+      <text x="407" y="522">Q3</text>
+      <text x="491" y="522">Q4</text>
+    </g>
+    <text transform="translate(130, 370) rotate(-90)" text-anchor="middle"
+          font-family="'Lato', 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif"
+          font-weight="700" font-size="40" fill="#f0f4f9" letter-spacing="1">encharter</text>
+  </g>
+</svg>
