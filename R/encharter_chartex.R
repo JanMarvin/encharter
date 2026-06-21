@@ -94,15 +94,15 @@ ChartEx <- R6::R6Class(
         h_idx <- which(col_names == h_label)
         if (length(h_idx) > 0) {
           h_idx  <- h_idx[1]
-          name <- if (has_header) sprintf("'%s'!%s", wb_sheet, wb_dims[1, h_idx]) else NULL
-          data   <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[start_row, h_idx], wb_dims[nrow(wb_dims), h_idx])
+          name <- if (has_header) sprintf("%s!%s", wb_sheet, wb_dims[1, h_idx]) else NULL
+          data   <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, h_idx], wb_dims[nrow(wb_dims), h_idx])
         }
 
         # 3. Resolve Category (label)
         c_idx <- which(col_names == c_label)
         if (length(c_idx) > 0) {
           c_idx <- c_idx[1]
-          label <- sprintf("'%s'!%s:%s", wb_sheet, wb_dims[start_row, c_idx], wb_dims[nrow(wb_dims), c_idx])
+          label <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, c_idx], wb_dims[nrow(wb_dims), c_idx])
         }
       }
 

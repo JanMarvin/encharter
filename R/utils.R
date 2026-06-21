@@ -9,6 +9,24 @@ deparse1 <- function(expr, collapse = " ", width.cutoff = 500L, ...) {
 #' @noRd
 `%||%` <- function(a, b) if (!is.null(a)) a else b
 
+xml_escape <- function(x) {
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  x <- gsub(">", "&gt;", x, fixed = TRUE)
+  x <- gsub('"', "&quot;", x, fixed = TRUE)
+  x <- gsub("'", "&apos;", x, fixed = TRUE)
+  x
+}
+
+xml_unescape <- function(x) {
+  x <- gsub("&amp;", "&", x, fixed = TRUE)
+  x <- gsub("&lt;", "<", x, fixed = TRUE)
+  x <- gsub("&gt;", ">", x, fixed = TRUE)
+  x <- gsub("&quot;", '"', x, fixed = TRUE)
+  x <- gsub("&apos;", "'", x, fixed = TRUE)
+  x
+}
+
 to_abs_ref <- function(x) {
   # If it's NULL, length 0, or doesn't look like a reference (no !), return as-is
   if (is.null(x) || length(x) == 0 || !any(grepl("!", x))) {
@@ -21,6 +39,8 @@ to_abs_ref <- function(x) {
     # Split to keep sheet name separate from coordinates
     parts <- strsplit(ref, "!", fixed = TRUE)[[1]]
     sheet <- gsub("^'|'$", "", parts[1]) # Clean existing quotes
+    # unescape for wb_data() and escape afterwards
+    sheet <- xml_escape(xml_unescape(sheet))
     range <- parts[2]
 
     # Only add $ to coordinates, not the sheet name

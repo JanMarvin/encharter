@@ -70,3 +70,27 @@ test_that("print works", {
   expect_true(any(grepl("Type: barChart", output)))
   expect_true(any(grepl("'Standard'!\\$B\\$2", output)))
 })
+
+test_that("escaping works", {
+  bp <- ec("barplot")$
+    add_series(
+      name = "Data&Chart!$B$1", data = "Data&Chart!$B$2:$B$13",
+      label = "Data&Chart!$A$2:$A$13", color = "4472C4"
+    )
+
+  expect_equal(bp$series_data[[1]]$name, "'Data&amp;Chart'!$B$1")
+  expect_equal(bp$series_data[[1]]$data,"'Data&amp;Chart'!$B$2:$B$13")
+  expect_equal(bp$series_data[[1]]$label, "'Data&amp;Chart'!$A$2:$A$13")
+
+  wf <- ec("waterfall")$
+    add_series(
+      name = "Data&Chart!$B$1",
+      data = "Data&Chart!$B$2:$B$13",
+      label = "Data&Chart!$A$2:$A$13",
+      color = "4472C4"
+    )
+
+  expect_equal(wf$series_data[[1]]$name, "'Data&amp;Chart'!$B$1")
+  expect_equal(wf$series_data[[1]]$data,"'Data&amp;Chart'!$B$2:$B$13")
+  expect_equal(wf$series_data[[1]]$label, "'Data&amp;Chart'!$A$2:$A$13")
+})

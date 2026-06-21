@@ -1,7 +1,7 @@
 Package: encharter
 Type: Package
 Title: Enhanced Office Open XML Charting for 'openxlsx2'
-Version: 0.9
+Version: 0.9.1
 Language: en-US
 Authors@R: c(
     person("Jan Marvin", "Garbuszus", email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut", "cre"))
