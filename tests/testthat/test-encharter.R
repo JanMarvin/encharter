@@ -79,7 +79,7 @@ test_that("escaping works", {
     )
 
   expect_equal(bp$series_data[[1]]$name, "'Data&amp;Chart'!$B$1")
-  expect_equal(bp$series_data[[1]]$data,"'Data&amp;Chart'!$B$2:$B$13")
+  expect_equal(bp$series_data[[1]]$data, "'Data&amp;Chart'!$B$2:$B$13")
   expect_equal(bp$series_data[[1]]$label, "'Data&amp;Chart'!$A$2:$A$13")
 
   wf <- ec("waterfall")$
@@ -91,6 +91,6 @@ test_that("escaping works", {
     )
 
   expect_equal(wf$series_data[[1]]$name, "'Data&amp;Chart'!$B$1")
-  expect_equal(wf$series_data[[1]]$data,"'Data&amp;Chart'!$B$2:$B$13")
+  expect_equal(wf$series_data[[1]]$data, "'Data&amp;Chart'!$B$2:$B$13")
   expect_equal(wf$series_data[[1]]$label, "'Data&amp;Chart'!$A$2:$A$13")
 })
