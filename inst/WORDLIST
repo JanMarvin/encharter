@@ -5,11 +5,13 @@ Calibri
 ChartEx
 OOXML
 OpenXML
+Seatbelts
 Treemap
 XPath
 autoZero
 barChart
 bubbleChart
+clusteredColumn
 codecov
 dashDot
 guid
@@ -28,7 +30,11 @@ percentStacked
 pieChart
 pugi
 regionMap
+runnable
+stockChart
 summarises
 treemap
+trendline
+wb
 yyyy
 ’s
