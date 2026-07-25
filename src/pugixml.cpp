@@ -150,9 +150,9 @@ extern "C" {
       if (child.type() == pugi::node_element) children.push_back(child);
     }
 
-    SEXP out = PROTECT(Rf_allocVector(VECSXP, children.size()));
+    SEXP out = PROTECT(Rf_allocVector(VECSXP, static_cast<R_xlen_t>(children.size())));
     for (size_t i = 0; i < children.size(); i++) {
-      SET_VECTOR_ELT(out, i, wrap_node_raw(children[i], node_ptr));
+      SET_VECTOR_ELT(out, static_cast<R_xlen_t>(i), wrap_node_raw(children[static_cast<std::size_t>(i)], node_ptr));
     }
 
     SEXP cls = PROTECT(Rf_allocVector(STRSXP, 2));
