@@ -1090,6 +1090,7 @@ Chart <- R6::R6Class(
       xml_add_child(scaling, "c:orientation", val = "minMax")
       if (!is.null(params$max)) xml_add_child(scaling, "c:max", val = as.character(params$max))
       if (!is.null(params$min)) xml_add_child(scaling, "c:min", val = as.character(params$min))
+      if (!is.null(params$log_base)) xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
 
       # 2. Basic Properties
       xml_add_child(ax, "c:delete", val = delete)
@@ -1185,6 +1186,7 @@ Chart <- R6::R6Class(
       xml_add_child(scaling, "c:orientation", val = "minMax")
       if (!is.null(params$max)) xml_add_child(scaling, "c:max", val = as.character(params$max))
       if (!is.null(params$min)) xml_add_child(scaling, "c:min", val = as.character(params$min))
+      if (!is.null(params$log_base)) xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
 
       # 2. Delete and Position
       xml_add_child(ax, "c:delete", val = delete)
