@@ -1255,7 +1255,7 @@ Chart <- R6::R6Class(
       xml_add_child(ax, "c:axId", val = as.character(id))
 
       scaling <- xml_add_child(ax, "c:scaling")
-      xml_add_child(scaling, "c:orientation", val = "minMax") #delete?
+      xml_add_child(scaling, "c:orientation", val = "minMax")
 
       xml_add_child(ax, "c:delete", val = "0")
       xml_add_child(ax, "c:axPos", val = "b")
