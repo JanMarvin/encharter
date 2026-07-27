@@ -24,3 +24,4 @@ Garbuszus J (2026). *encharter: Enhanced Office Open XML Charting for
 ## Additional details
 
     Jan Marvin Garbuszus
+    Jennifer Beckman
