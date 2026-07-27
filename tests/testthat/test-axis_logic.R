@@ -64,7 +64,7 @@ test_that("Chart: Combo charts and Secondary Axis", {
 
 test_that("Chart: scaling", {
   chart <- Chart$new("scatterChart")
-  chart$add_series(name = "S1!$A$1:$A$100", data = "S1!$B$1:$B$100")
+  chart$add_series(name = "dat!$A$1:$A$100", data = "dat!$B$1:$B$100")
   chart$set_x_axis(log_base = 10)
   chart$set_y_axis(min = -1)
 
