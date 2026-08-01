@@ -25,7 +25,7 @@ supported by standard Office Open XML chart types."><meta property="og:image" co
 
     <a class="navbar-brand me-2" href="../index.html">encharter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@ supported by standard Office Open XML chart types."><meta property="og:image" co
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/JanMarvin/encharter/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -376,6 +377,7 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  minor_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_base <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rev <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  font_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -426,6 +428,9 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 
       <dt><code>log_base</code></dt>
 <dd><p>Base for logarithmic scaling (e.g., 10).</p></dd>
+
+      <dt><code>rev</code></dt>
+<dd><p>Logical to reverse the value order</p></dd>
 
       <dt><code>color, font_color</code></dt>
 <dd><p>Hex color for the axis lines and label (or independent label color).</p></dd>
@@ -488,6 +493,7 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  minor_tick <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  log_base <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rev <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  font_name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -538,6 +544,9 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 
       <dt><code>log_base</code></dt>
 <dd><p>Base for logarithmic scaling (e.g., 10).</p></dd>
+
+      <dt><code>rev</code></dt>
+<dd><p>Logical to reverse the value order</p></dd>
 
       <dt><code>color, font_color</code></dt>
 <dd><p>Hex color for the axis lines and label (or independent label color).</p></dd>

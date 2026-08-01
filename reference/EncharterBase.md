@@ -304,6 +304,7 @@ Set primary X-axis scaling, tick marks, and label formatting.
       minor_tick = NULL,
       format = NULL,
       log_base = NULL,
+      rev = NULL,
       color = NULL,
       font_name = NULL,
       font_size = NULL,
@@ -355,6 +356,10 @@ Set primary X-axis scaling, tick marks, and label formatting.
 - `log_base`:
 
   Numeric base for logarithmic scaling (e.g. `10`).
+
+- `rev`:
+
+  Logical to reverse the value order
 
 - `color`:
 
@@ -445,6 +450,7 @@ Set primary Y-axis scaling, tick marks, and label formatting.
       minor_tick = NULL,
       format = NULL,
       log_base = NULL,
+      rev = NULL,
       color = NULL,
       font_name = NULL,
       font_size = NULL,
@@ -494,6 +500,10 @@ Set primary Y-axis scaling, tick marks, and label formatting.
 - `log_base`:
 
   Numeric base for logarithmic scaling.
+
+- `rev`:
+
+  Logical to reverse the value order
 
 - `color`:
 

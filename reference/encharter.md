@@ -391,6 +391,7 @@ Set Secondary Y-axis scaling, units, and format.
       minor_tick = NULL,
       format = NULL,
       log_base = NULL,
+      rev = NULL,
       color = NULL,
       font_name = NULL,
       font_size = NULL,
@@ -454,6 +455,10 @@ Set Secondary Y-axis scaling, units, and format.
 - `log_base`:
 
   Base for logarithmic scaling (e.g., 10).
+
+- `rev`:
+
+  Logical to reverse the value order
 
 - `color, font_color`:
 
@@ -529,6 +534,7 @@ Set Secondary X-axis scaling, units, and format.
       minor_tick = NULL,
       format = NULL,
       log_base = NULL,
+      rev = NULL,
       color = NULL,
       font_name = NULL,
       font_size = NULL,
@@ -592,6 +598,10 @@ Set Secondary X-axis scaling, units, and format.
 - `log_base`:
 
   Base for logarithmic scaling (e.g., 10).
+
+- `rev`:
+
+  Logical to reverse the value order
 
 - `color, font_color`:
 
