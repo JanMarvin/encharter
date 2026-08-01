@@ -332,6 +332,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   minor_tick = NULL,
   format = NULL,
   log_base = NULL,
+  rev = NULL,
   color = NULL,
   font_name = NULL,
   font_size = NULL,
@@ -366,6 +367,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+      \item{\code{rev}}{Logical to reverse the value order}
       \item{\code{color, font_color}}{Hex color for the axis lines and label (or independent label color).}
       \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
       \item{\code{font_size}}{Font size for the axis labels.}
@@ -403,6 +405,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   minor_tick = NULL,
   format = NULL,
   log_base = NULL,
+  rev = NULL,
   color = NULL,
   font_name = NULL,
   font_size = NULL,
@@ -437,6 +440,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{major_tick, minor_tick}}{Tick marks for major and minor ("cross", "in", "none", "out").}
       \item{\code{format}}{A number format string (e.g., "#,##0" or "yyyy-mm-dd").}
       \item{\code{log_base}}{Base for logarithmic scaling (e.g., 10).}
+      \item{\code{rev}}{Logical to reverse the value order}
       \item{\code{color, font_color}}{Hex color for the axis lines and label (or independent label color).}
       \item{\code{font_name}}{Font typeface name (e.g., "Arial", "Calibri").}
       \item{\code{font_size}}{Font size for the axis labels.}

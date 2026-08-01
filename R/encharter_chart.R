@@ -146,6 +146,7 @@ Chart <- R6::R6Class(
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
+    #' @param rev Logical to reverse the value order
     #' @param color,font_color Hex color for the axis lines and label (or independent label color).
     #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
@@ -162,7 +163,7 @@ Chart <- R6::R6Class(
     set_y2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                            major_time = NULL, minor_time = NULL, base_time = NULL,
                            major_tick = NULL, minor_tick = NULL,
-                           format = NULL, log_base = NULL, color = NULL,
+                           format = NULL, log_base = NULL, rev = NULL, color = NULL,
                            font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                            font_color = NULL, rotation =  NULL,
                            grid_color = NULL, grid_lines = NULL,
@@ -173,7 +174,7 @@ Chart <- R6::R6Class(
           "y2",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
-          minor_tick = minor_tick, format = format, log_base = log_base, color = color,
+          minor_tick = minor_tick, format = format, log_base = log_base, rev = rev, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
           font_color = font_color, rotation = rotation, grid_color = grid_color, grid_lines = grid_lines,
           minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
@@ -194,6 +195,7 @@ Chart <- R6::R6Class(
     #' @param base_time Base time unit for date axes ("days", "months", "years").
     #' @param format A number format string (e.g., "#,##0" or "yyyy-mm-dd").
     #' @param log_base Base for logarithmic scaling (e.g., 10).
+    #' @param rev Logical to reverse the value order
     #' @param color,font_color Hex color for the axis lines and label (or independent label color).
     #' @param font_size Font size for the axis labels.
     #' @param bold Logical; if `TRUE`, axis labels will be bold.
@@ -210,7 +212,7 @@ Chart <- R6::R6Class(
     set_x2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                            major_time = NULL, minor_time = NULL, base_time = NULL,
                            major_tick = NULL, minor_tick = NULL,
-                           format = NULL, log_base = NULL, color = NULL,
+                           format = NULL, log_base = NULL, rev = NULL, color = NULL,
                            font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                            font_color = NULL, rotation =  NULL,
                            grid_color = NULL, grid_lines = NULL,
@@ -222,7 +224,7 @@ Chart <- R6::R6Class(
           "x2",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
-          minor_tick = minor_tick, format = format, log_base = log_base, color = color,
+          minor_tick = minor_tick, format = format, log_base = log_base, rev = rev, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
           font_color = font_color, rotation = rotation, grid_color = grid_color, grid_lines = grid_lines,
           minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
@@ -1087,7 +1089,7 @@ Chart <- R6::R6Class(
       # 1. Identity and Scaling (EG_AxShared Start)
       xml_add_child(ax, "c:axId", val = id)
       scaling <- xml_add_child(ax, "c:scaling")
-      xml_add_child(scaling, "c:orientation", val = "minMax")
+      xml_add_child(scaling, "c:orientation", val = ifelse(isTRUE(params$rev), "maxMin", "minMax"))
       if (!is.null(params$max)) xml_add_child(scaling, "c:max", val = as.character(params$max))
       if (!is.null(params$min)) xml_add_child(scaling, "c:min", val = as.character(params$min))
       if (!is.null(params$log_base)) xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
@@ -1183,7 +1185,7 @@ Chart <- R6::R6Class(
       # 1. Identity and Scaling
       xml_add_child(ax, "c:axId", val = id)
       scaling <- xml_add_child(ax, "c:scaling")
-      xml_add_child(scaling, "c:orientation", val = "minMax")
+      xml_add_child(scaling, "c:orientation", val = ifelse(isTRUE(params$rev), "maxMin", "minMax"))
       if (!is.null(params$max)) xml_add_child(scaling, "c:max", val = as.character(params$max))
       if (!is.null(params$min)) xml_add_child(scaling, "c:min", val = as.character(params$min))
       if (!is.null(params$log_base)) xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
@@ -1255,7 +1257,7 @@ Chart <- R6::R6Class(
       xml_add_child(ax, "c:axId", val = as.character(id))
 
       scaling <- xml_add_child(ax, "c:scaling")
-      xml_add_child(scaling, "c:orientation", val = "minMax")
+      xml_add_child(scaling, "c:orientation", val = "minMax") # needs rev?
 
       xml_add_child(ax, "c:delete", val = "0")
       xml_add_child(ax, "c:axPos", val = "b")

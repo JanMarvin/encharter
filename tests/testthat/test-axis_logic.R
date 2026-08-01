@@ -78,6 +78,25 @@ test_that("Chart: scaling", {
     x = seq(1, 10000, by = 100),
     y = runif(100)
   )
+
+  ## reverse axis order
+  wb <- openxlsx2::wb_workbook()$add_worksheet("dat")$add_data(x = df)$
+    add_encharter(graph = chart)
+
+  chart <- Chart$new("scatterChart")
+  chart$add_series(name = "dat!$A$1:$A$100", data = "dat!$B$1:$B$100")
+  chart$set_x_axis(rev = TRUE)
+  chart$set_y_axis(min = -1)
+
+  # Check for log scaling
+  xml <- as.character(chart$render())
+  expect_match(xml, "c:orientation val=\"maxMin\"/>")
+
+  # Check for valid XML
+  df <- data.frame(
+    x = seq(1, 10000, by = 100),
+    y = runif(100)
+  )
   wb <- openxlsx2::wb_workbook()$add_worksheet("dat")$add_data(x = df)$
     add_encharter(graph = chart)
 })
