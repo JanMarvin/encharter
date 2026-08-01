@@ -294,6 +294,7 @@ and style parameters. Modified via \verb{$set_x_axis()}, etc.}
   minor_tick = NULL,
   format = NULL,
   log_base = NULL,
+  rev = NULL,
   color = NULL,
   font_name = NULL,
   font_size = NULL,
@@ -330,6 +331,7 @@ is set by \code{major_time}/\code{minor_time}.}
       \item{\code{format}}{Number or date format string (e.g. \code{"#,##0"},
 \code{"yyyy-mm-dd"}).}
       \item{\code{log_base}}{Numeric base for logarithmic scaling (e.g. \code{10}).}
+      \item{\code{rev}}{Logical to reverse the value order}
       \item{\code{color}}{Six-digit hex color for the axis line.}
       \item{\code{font_name}}{Font typeface name for tick labels.}
       \item{\code{font_size}}{Numeric label font size in points.}
@@ -388,6 +390,7 @@ the axis line, major grid lines, and minor grid lines respectively.}
   minor_tick = NULL,
   format = NULL,
   log_base = NULL,
+  rev = NULL,
   color = NULL,
   font_name = NULL,
   font_size = NULL,
@@ -421,6 +424,7 @@ the axis line, major grid lines, and minor grid lines respectively.}
 \code{"in"}, \code{"out"}, or \code{"none"}.}
       \item{\code{format}}{Number format string.}
       \item{\code{log_base}}{Numeric base for logarithmic scaling.}
+      \item{\code{rev}}{Logical to reverse the value order}
       \item{\code{color}}{Six-digit hex color for the axis line.}
       \item{\code{font_name}}{Font typeface name.}
       \item{\code{font_size}}{Numeric label font size in points.}

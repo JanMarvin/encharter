@@ -179,10 +179,10 @@ EncharterBase <- R6::R6Class(
     #'   `y`, `y2`). Each entry is a named list of scaling, formatting,
     #'   and style parameters. Modified via `$set_x_axis()`, etc.
     axis_params = list(
-      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = TRUE,  minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
-      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
+      x  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, rev = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      x2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, rev = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y  = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, rev = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = TRUE,  minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo"),
+      y2 = list(min = NULL, max = NULL, major = NULL, minor = NULL, major_time = NULL, minor_time = NULL, base_time = NULL, major_tick = NULL, minor_tick = NULL, format = NULL, log_base = NULL, rev = NULL, color = "000000", font_name = NULL, font_size = NULL, bold = NULL, italic = NULL, font_color = "000000", rotation =  NULL, grid_color = "D9D9D9", grid_lines = FALSE, minor_grid_lines = FALSE, minor_grid_color = "F2F2F2", cross_between = "between", line_width = 1, grid_width = 1, minor_grid_width = 0.5, crosses = NULL, crosses_at = NULL, label_pos = "nextTo")
     ),
 
     #' @description Set the chart's main title.
@@ -254,6 +254,7 @@ EncharterBase <- R6::R6Class(
     #' @param format Number or date format string (e.g. `"#,##0"`,
     #'   `"yyyy-mm-dd"`).
     #' @param log_base Numeric base for logarithmic scaling (e.g. `10`).
+    #' @param rev Logical to reverse the value order
     #' @param color Six-digit hex color for the axis line.
     #' @param font_color Six-digit hex color for axis tick labels. Defaults to
     #'   `color` when not set.
@@ -287,7 +288,7 @@ EncharterBase <- R6::R6Class(
     set_x_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           major_tick = NULL, minor_tick = NULL,
-                          format = NULL, log_base = NULL, color = NULL,
+                          format = NULL, log_base = NULL, rev = NULL, color = NULL,
                           font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           font_color = NULL, rotation =  NULL,
                           grid_color = NULL, grid_lines = NULL,
@@ -298,7 +299,7 @@ EncharterBase <- R6::R6Class(
           "x",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
-          minor_tick = minor_tick, format = format, log_base = log_base, color = color,
+          minor_tick = minor_tick, format = format, log_base = log_base, rev = rev, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
           font_color = font_color, rotation = rotation, grid_color = grid_color, grid_lines = grid_lines,
           minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
@@ -318,6 +319,7 @@ EncharterBase <- R6::R6Class(
     #'   `"in"`, `"out"`, or `"none"`.
     #' @param format Number format string.
     #' @param log_base Numeric base for logarithmic scaling.
+    #' @param rev Logical to reverse the value order
     #' @param color Six-digit hex color for the axis line.
     #' @param font_color Six-digit hex color for axis tick labels.
     #' @param font_size Numeric label font size in points.
@@ -345,7 +347,7 @@ EncharterBase <- R6::R6Class(
     set_y_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                           major_time = NULL, minor_time = NULL, base_time = NULL,
                           major_tick = NULL, minor_tick = NULL,
-                          format = NULL, log_base = NULL, color = NULL,
+                          format = NULL, log_base = NULL, rev = NULL, color = NULL,
                           font_name = NULL, font_size = NULL, bold = NULL, italic = NULL,
                           font_color = NULL, rotation =  NULL,
                           grid_color = NULL, grid_lines = NULL,
@@ -356,7 +358,7 @@ EncharterBase <- R6::R6Class(
           "y",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
           minor_time = minor_time, base_time = base_time, major_tick = major_tick,
-          minor_tick = minor_tick, format = format, log_base = log_base, color = color,
+          minor_tick = minor_tick, format = format, log_base = log_base, rev = rev, color = color,
           font_name = font_name, font_size = font_size, bold = bold, italic = italic,
           font_color = font_color, rotation = rotation, grid_color = grid_color, grid_lines = grid_lines,
           minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
@@ -482,7 +484,7 @@ EncharterBase <- R6::R6Class(
     set_axis_params = function(which, min, max, major, minor,
                                major_time, minor_time, base_time,
                                major_tick, minor_tick,
-                               format, log_base, color,
+                               format, log_base, rev, color,
                                font_name, font_size, bold, italic,
                                font_color, rotation,
                                grid_color, grid_lines,
@@ -504,7 +506,7 @@ EncharterBase <- R6::R6Class(
         min = min, max = max, major = major, minor = minor,
         major_time = major_time, minor_time = minor_time, base_time = base_time,
         major_tick = major_tick, minor_tick = minor_tick,
-        format = format, log_base = log_base, color = color,
+        format = format, log_base = log_base, rev = rev, color = color,
         font_name = font_name, font_size = font_size, bold = bold, italic = italic,
         font_color = font_color, rotation = rotation,
         grid_color = grid_color, grid_lines = grid_lines,
