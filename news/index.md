@@ -2,6 +2,8 @@
 
 ## encharter 0.10
 
+CRAN release: 2026-08-04
+
 ### New features
 
 - Support for `rev` to reverse axis

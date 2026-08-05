@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/JanMarvin/encharter/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/JanMarvin/encharter/blob/v0.10/DESCRIPTION)
 
 Garbuszus J (2026). *encharter: Enhanced Office Open XML Charting for
 'openxlsx2'*. R package version 0.10,
