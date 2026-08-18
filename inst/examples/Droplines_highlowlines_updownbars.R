@@ -24,14 +24,14 @@ droplines_etc <- function() {
   ch <- encharter(type = "lineChart")
 
   ch$add_series(
-    name  = Open,
+    name  = "Open",
     data  = dat,
-    label = Day,
+    label = "Day",
     color = "4F81BD"
   )
 
   ch$add_series(
-    name  = Close,
+    name  = "Close",
     data  = dat,
     color = "C0504D"
   )
