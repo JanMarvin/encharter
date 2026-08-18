@@ -15,18 +15,24 @@ droplines_etc <- function() {
     Close = c(115, 105, 125, 110, 130)
   )
 
+  wb <- wb_workbook() |>
+    wb_add_worksheet("Sheet1") |>
+    wb_add_data(x = df)
+
+  dat <- wb_data(wb)
+
   ch <- encharter(type = "lineChart")
 
   ch$add_series(
-    name  = "Sheet1!$B$1",
-    data  = "Sheet1!$B$2:$B$6",
-    label = "Sheet1!$A$2:$A$6",
+    name  = Open,
+    data  = dat,
+    label = Day,
     color = "4F81BD"
   )
 
   ch$add_series(
-    name  = "Sheet1!$C$1",
-    data  = "Sheet1!$C$2:$C$6",
+    name  = Close,
+    data  = dat,
     color = "C0504D"
   )
 
@@ -34,9 +40,7 @@ droplines_etc <- function() {
   ch$high_low_lines <- TRUE
   ch$up_down_bars   <- TRUE
 
-  wb <- wb_workbook() |>
-    wb_add_worksheet("Sheet1") |>
-    wb_add_data(x = df) |>
+  wb <- wb |>
     wb_add_encharter(dims = "E2:M20", graph = ch)
 
   if (interactive()) wb_open(wb)
