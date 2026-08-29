@@ -25,7 +25,7 @@ supported by standard Office Open XML chart types."><meta property="og:image" co
 
     <a class="navbar-brand me-2" href="../index.html">encharter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,6 +99,11 @@ aliases are accepted (see Details).</p></dd>
 <code>"point"</code></p></li>
 <li><p><strong>Pie/Doughnut:</strong> <code>"pieChart"</code>, <code>"pie"</code>,
 <code>"doughnutChart"</code>, <code>"doughnut"</code></p></li>
+<li><p><strong>Pie of Pie / Bar of Pie:</strong> <code>"ofPieChart"</code>, <code>"pieOfPie"</code>,
+<code>"barOfPie"</code> (the latter preselects the bar subtype; see
+<code>$set_of_pie_options()</code>)</p></li>
+<li><p><strong>3D:</strong> <code>"bar3DChart"</code>, <code>"line3DChart"</code>, <code>"pie3DChart"</code>,
+<code>"area3DChart"</code>, <code>"surface3DChart"</code> (see <code>$set_3d_options()</code>)</p></li>
 <li><p><strong>Extended (ChartEx):</strong> <code>"waterfall"</code>, <code>"treemap"</code>,
 <code>"sunburst"</code>, <code>"regionMap"</code>,
 <code>"boxWhisker"</code> / <code>"boxplot"</code>, <code>"funnel"</code></p></li>
@@ -135,6 +140,8 @@ and opens it in interactive sessions. List or run them with:</p>
 <li><p><code>Histogram_with_args.R</code> — histogram via clusteredColumn binning</p></li>
 <li><p><code>Label_Grouping.R</code> — multi-level category labels</p></li>
 <li><p><code>Line.R</code> — line with markers and global data labels</p></li>
+<li><p><code>New_chart_types.R</code> — 0.11 showcase: pie/bar of pie, all 3D types,
+display units, tick skips, directional error bars</p></li>
 <li><p><code>Pie.R</code> — pie with viridis palette</p></li>
 <li><p><code>Radar_chart.R</code> — standard vs filled radar</p></li>
 <li><p><code>Scatter.R</code> — markers-only scatter</p></li>
@@ -205,6 +212,43 @@ and opens it in interactive sessions. List or run them with:</p>
 <dd><p>Character; "gap", "span", or "zero".</p></dd>
 
 
+    <dt><code>of_pie_type</code></dt>
+<dd><p>Character; subtype of <code>ofPieChart</code>: "pie" or "bar".</p></dd>
+
+
+    <dt><code>second_pie_size</code></dt>
+<dd><p>Integer; size of the second pie/bar plot as a
+percentage (5-200) for <code>ofPieChart</code>.</p></dd>
+
+
+    <dt><code>split_type</code></dt>
+<dd><p>Character; how points are split into the second plot
+for <code>ofPieChart</code>: "auto", "cust", "percent", "pos", or "val".</p></dd>
+
+
+    <dt><code>split_pos</code></dt>
+<dd><p>Numeric; split threshold, or point indices (0-based)
+when <code>split_type = "cust"</code>.</p></dd>
+
+
+    <dt><code>view3d</code></dt>
+<dd><p>Named list of 3D view parameters (<code>rot_x</code>, <code>rot_y</code>,
+<code>perspective</code>, <code>depth_percent</code>, <code>h_percent</code>, <code>right_angle_axes</code>).</p></dd>
+
+
+    <dt><code>gap_depth</code></dt>
+<dd><p>Integer; gap depth percentage (0-500) for 3D charts.</p></dd>
+
+
+    <dt><code>bar_shape</code></dt>
+<dd><p>Character; bar shape for <code>bar3DChart</code>: "box",
+"cylinder", "cone", "coneToMax", "pyramid", or "pyramidToMax".</p></dd>
+
+
+    <dt><code>size_represents</code></dt>
+<dd><p>Character; bubble size meaning, "area" or "w".</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -219,6 +263,8 @@ and opens it in interactive sessions. List or run them with:</p>
 <li><p><a href="#method-Chart-set_x2_axis"><code>Chart$set_x2_axis()</code></a></p></li>
 <li><p><a href="#method-Chart-set_data_table"><code>Chart$set_data_table()</code></a></p></li>
 <li><p><a href="#method-Chart-set_pie_options"><code>Chart$set_pie_options()</code></a></p></li>
+<li><p><a href="#method-Chart-set_of_pie_options"><code>Chart$set_of_pie_options()</code></a></p></li>
+<li><p><a href="#method-Chart-set_3d_options"><code>Chart$set_3d_options()</code></a></p></li>
 <li><p><a href="#method-Chart-set_bubble_options"><code>Chart$set_bubble_options()</code></a></p></li>
 <li><p><a href="#method-Chart-set_disp_blanks"><code>Chart$set_disp_blanks()</code></a></p></li>
 <li><p><a href="#method-Chart-add_series"><code>Chart$add_series()</code></a></p></li>
@@ -395,7 +441,10 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  minor_grid_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  crosses <span class="op">=</span> <span class="st">"max"</span>,</span>
 <span>  crosses_at <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  label_pos <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  label_pos <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tick_lbl_skip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tick_mark_skip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  disp_units <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
@@ -471,6 +520,12 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
       <dt><code>label_pos</code></dt>
 <dd><p>Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".</p></dd>
 
+      <dt><code>tick_lbl_skip, tick_mark_skip</code></dt>
+<dd><p>Integer (&gt;= 1); label/tick every n-th category (category axes only).</p></dd>
+
+      <dt><code>disp_units</code></dt>
+<dd><p>Display units: a built-in unit string (e.g. "thousands") or a positive number (value axes only).</p></dd>
+
 
 </dl><p></p></div>
 </div>
@@ -511,7 +566,10 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
 <span>  minor_grid_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  crosses <span class="op">=</span> <span class="st">"max"</span>,</span>
 <span>  crosses_at <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  label_pos <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  label_pos <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tick_lbl_skip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tick_mark_skip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  disp_units <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
@@ -587,6 +645,12 @@ secondary Y-axis via <code>add_series(secondary = TRUE)</code> or
       <dt><code>label_pos</code></dt>
 <dd><p>Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".</p></dd>
 
+      <dt><code>tick_lbl_skip, tick_mark_skip</code></dt>
+<dd><p>Integer (&gt;= 1); label/tick every n-th category (category axes only).</p></dd>
+
+      <dt><code>disp_units</code></dt>
+<dd><p>Display units: a built-in unit string (e.g. "thousands") or a positive number (value axes only).</p></dd>
+
 
 </dl><p></p></div>
 </div>
@@ -632,18 +696,120 @@ This rotates the chart clockwise.</p></dd>
 
 </div>
 
+<p></p><hr><a id="method-Chart-set_of_pie_options"></a><div class="section">
+<h3 id="chart-set-of-pie-options-"><code>Chart$set_of_pie_options()</code><a class="anchor" aria-label="anchor" href="#chart-set-of-pie-options-"></a></h3>
+<p>Configure the Pie of Pie / Bar of Pie chart
+(<code>ofPieChart</code>).</p><div class="section">
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_of_pie_options</span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  second_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  split_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  split_pos <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>type</code></dt>
+<dd><p>Subtype: <code>"pie"</code> (Pie of Pie, default) or <code>"bar"</code>
+(Bar of Pie).</p></dd>
+
+      <dt><code>second_size</code></dt>
+<dd><p>Size of the second plot as a percentage of the main
+pie, from 5 to 200. Default 75.</p></dd>
+
+      <dt><code>split_type</code></dt>
+<dd><p>How data points are assigned to the second plot:
+<code>"auto"</code> (default), <code>"percent"</code>, <code>"pos"</code> (last n
+points), <code>"val"</code> (values below threshold), or <code>"cust"</code>.</p></dd>
+
+      <dt><code>split_pos</code></dt>
+<dd><p>Numeric split threshold for <code>"percent"</code>,
+<code>"pos"</code>, and <code>"val"</code>; for <code>"cust"</code> a vector of
+0-based point indices to move to the second plot.</p></dd>
+
+
+</dl><p></p></div>
+</div><p></p><div class="section">
+<h4 id="examples-2">Examples<a class="anchor" aria-label="anchor" href="#examples-2"></a></h4>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"ofPieChart"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_of_pie_options</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span>, split_type <span class="op">=</span> <span class="st">"pos"</span>, split_pos <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+</div>
+
+<p></p><hr><a id="method-Chart-set_3d_options"></a><div class="section">
+<h3 id="chart-set-d-options-"><code>Chart$set_3d_options()</code><a class="anchor" aria-label="anchor" href="#chart-set-d-options-"></a></h3>
+<p>Configure the 3D view and 3D-only chart options. Only
+takes effect for the 3D chart types (<code>bar3DChart</code>,
+<code>line3DChart</code>, <code>pie3DChart</code>, <code>area3DChart</code>,
+<code>surface3DChart</code>) and <code>surfaceChart</code>.</p><div class="section">
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_3d_options</span><span class="op">(</span></span>
+<span>  rot_x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  rot_y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  perspective <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  depth_percent <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  h_percent <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  right_angle_axes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gap_depth <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shape <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>rot_x</code></dt>
+<dd><p>Rotation around the X-axis in degrees, from -90 to 90.</p></dd>
+
+      <dt><code>rot_y</code></dt>
+<dd><p>Rotation around the Y-axis in degrees, from 0 to 360.</p></dd>
+
+      <dt><code>perspective</code></dt>
+<dd><p>Perspective in half-degrees, from 0 to 240 (ignored
+when <code>right_angle_axes = TRUE</code>).</p></dd>
+
+      <dt><code>depth_percent</code></dt>
+<dd><p>Depth as a percentage of chart width, 20 to 2000.</p></dd>
+
+      <dt><code>h_percent</code></dt>
+<dd><p>Height as a percentage of chart width, 5 to 500.</p></dd>
+
+      <dt><code>right_angle_axes</code></dt>
+<dd><p>Logical; render axes at right angles instead of
+in perspective.</p></dd>
+
+      <dt><code>gap_depth</code></dt>
+<dd><p>Gap depth percentage between series, 0 to 500
+(bar/line/area 3D).</p></dd>
+
+      <dt><code>shape</code></dt>
+<dd><p>Bar shape for <code>bar3DChart</code>: <code>"box"</code> (default),
+<code>"cylinder"</code>, <code>"cone"</code>, <code>"coneToMax"</code>,
+<code>"pyramid"</code>, or <code>"pyramidToMax"</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div><p></p><div class="section">
+<h4 id="examples-3">Examples<a class="anchor" aria-label="anchor" href="#examples-3"></a></h4>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"bar3DChart"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_3d_options</span><span class="op">(</span>rot_x <span class="op">=</span> <span class="fl">20</span>, rot_y <span class="op">=</span> <span class="fl">30</span>, shape <span class="op">=</span> <span class="st">"cylinder"</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+</div>
+
 <p></p><hr><a id="method-Chart-set_bubble_options"></a><div class="section">
 <h3 id="chart-set-bubble-options-"><code>Chart$set_bubble_options()</code><a class="anchor" aria-label="anchor" href="#chart-set-bubble-options-"></a></h3>
 <p></p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_bubble_options</span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">100</span>, show_neg <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_bubble_options</span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">100</span>, show_neg <span class="op">=</span> <span class="cn">FALSE</span>, size_represents <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>scale</code></dt>
 <dd><p>The scale factor for bubbles, from 0 to 300 (expressed as a percentage).</p></dd>
 
       <dt><code>show_neg</code></dt>
 <dd><p>Logical; if <code>TRUE</code>, bubbles with negative values will be displayed on the chart.</p></dd>
+
+      <dt><code>size_represents</code></dt>
+<dd><p>What the bubble size encodes: <code>"area"</code>
+(default in Excel) or <code>"w"</code> (width/diameter). <code>NULL</code> omits the
+element.</p></dd>
 
 
 </dl><p></p></div>
@@ -654,10 +820,10 @@ This rotates the chart clockwise.</p></dd>
 <p></p><hr><a id="method-Chart-set_disp_blanks"></a><div class="section">
 <h3 id="chart-set-disp-blanks-"><code>Chart$set_disp_blanks()</code><a class="anchor" aria-label="anchor" href="#chart-set-disp-blanks-"></a></h3>
 <p>Set missing value behavior ("gap", "span", "zero").</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">set_disp_blanks</span><span class="op">(</span>val <span class="op">=</span> <span class="st">"gap"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>val</code></dt>
 <dd><p>Character. One of "gap" (break), "span" (continue), or "zero" (drop).</p></dd>
 
@@ -670,7 +836,7 @@ This rotates the chart clockwise.</p></dd>
 <p></p><hr><a id="method-Chart-add_series"></a><div class="section">
 <h3 id="chart-add-series-"><code>Chart$add_series()</code><a class="anchor" aria-label="anchor" href="#chart-add-series-"></a></h3>
 <p>Add a data series to the chart with independent styling.</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
@@ -697,10 +863,11 @@ This rotates the chart clockwise.</p></dd>
 <span>  line_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  filled <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  error_bars <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  trendline <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  trendline <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  invert_if_negative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
+<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Cell range or string for series name.</p></dd>
 
@@ -780,6 +947,8 @@ Must be one of: <code>"fixedVal"</code> (Fixed Value), <code>"percentage"</code>
 or <code>"cust"</code> (Custom).</p></li>
 <li><p><code>value</code>: The numeric value for the error bars (e.g., 10 for 10% or 5 for fixed units).</p></li>
 <li><p><code>direction</code>: Direction of bars. One of <code>"both"</code>, <code>"plus"</code>, or <code>"minus"</code>.</p></li>
+<li><p><code>axis</code>: Error direction axis, <code>"y"</code> (default) or <code>"x"</code> (horizontal
+bars, scatter charts).</p></li>
 <li><p><code>color</code>: Hex color code for the bars (e.g., "FF0000").</p></li>
 </ul></dd>
 
@@ -790,9 +959,16 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <code>"poly"</code> (Polynomial), or <code>"power"</code> (Power).</p></li>
 <li><p><code>order</code>: Required for <code>"poly"</code>; an integer between 2 and 6.</p></li>
 <li><p><code>period</code>: Required for <code>"movingAvg"</code>; an integer representing the window size.</p></li>
+<li><p><code>forward</code>, <code>backward</code>: Numeric; extrapolate the line n periods
+forwards/backwards.</p></li>
+<li><p><code>intercept</code>: Numeric; force the line through a fixed y-intercept.</p></li>
 <li><p><code>color</code>: Hex color code for the line.</p></li>
 <li><p><code>show_r2</code>: Logical; if <code>TRUE</code>, displays the R-squared value on the chart.</p></li>
 </ul></dd>
+
+      <dt><code>invert_if_negative</code></dt>
+<dd><p>Logical; bar charts only. Invert the fill for
+negative values. Default <code>FALSE</code>.</p></dd>
 
 
 </dl><p></p></div>
@@ -803,12 +979,12 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <p></p><hr><a id="method-Chart-render"></a><div class="section">
 <h3 id="chart-render-"><code>Chart$render()</code><a class="anchor" aria-label="anchor" href="#chart-render-"></a></h3>
 <p>Generate the final XML string for the chart.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">render</span><span class="op">(</span></span>
 <span>  u_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"53178645"</span>, <span class="st">"60812428"</span>, <span class="st">"64752656"</span>, <span class="st">"81893617"</span>, <span class="st">"90007639"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
+<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>u_ids</code></dt>
 <dd><p>five unique ids</p></dd>
 
@@ -824,10 +1000,10 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <p></p><hr><a id="method-Chart-clone"></a><div class="section">
 <h3 id="chart-clone-"><code>Chart$clone()</code><a class="anchor" aria-label="anchor" href="#chart-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-12">Arguments<a class="anchor" aria-label="anchor" href="#arguments-12"></a></h4>
+<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -853,6 +1029,11 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <dd><p>style</p></dd>
 
 
+    <dt><code>region_colors</code></dt>
+<dd><p>Internal; color scale entries for region maps set
+via <code>set_region_map_colors()</code>.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -861,6 +1042,9 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <div class="section">
 <h3 id="public-methods-1">Public methods<a class="anchor" aria-label="anchor" href="#public-methods-1"></a></h3>
 <p></p><ul><li><p><a href="#method-ChartEx-initialize"><code>ChartEx$new()</code></a></p></li>
+<li><p><a href="#method-ChartEx-set_waterfall_colors"><code>ChartEx$set_waterfall_colors()</code></a></p></li>
+<li><p><a href="#method-ChartEx-set_color_cycle"><code>ChartEx$set_color_cycle()</code></a></p></li>
+<li><p><a href="#method-ChartEx-set_region_map_colors"><code>ChartEx$set_region_map_colors()</code></a></p></li>
 <li><p><a href="#method-ChartEx-add_series"><code>ChartEx$add_series()</code></a></p></li>
 <li><p><a href="#method-ChartEx-render"><code>ChartEx$render()</code></a></p></li>
 <li><p><a href="#method-ChartEx-clone"><code>ChartEx$clone()</code></a></p></li>
@@ -877,10 +1061,10 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 </ul></details></p><hr><a id="method-ChartEx-initialize"></a><div class="section">
 <h3 id="chartex-new-"><code>ChartEx$new()</code><a class="anchor" aria-label="anchor" href="#chartex-new-"></a></h3>
 <p>Create a new ChartEx object.</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/encharter.html">ChartEx</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
+<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>Initial chart type (e.g., "waterfall", "treemap").</p></dd>
 
@@ -893,10 +1077,105 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 
 </div>
 
+<p></p><hr><a id="method-ChartEx-set_waterfall_colors"></a><div class="section">
+<h3 id="chartex-set-waterfall-colors-"><code>ChartEx$set_waterfall_colors()</code><a class="anchor" aria-label="anchor" href="#chartex-set-waterfall-colors-"></a></h3>
+<p>Set the semantic waterfall colors (also used as the
+first colors of the chart's color cycle). ChartEx charts derive both
+the point fills and the legend keys from the chart's color style
+part (<code>colors{n}.xml</code>); waterfall maps Increase, Decrease, and
+Total to the first three entries of that cycle. This method
+replaces those entries, so the bars and the legend stay consistent.
+For individual outlier points (e.g. an "unexpected decrease"), pass
+a per-point <code>color</code> vector to <code>add_series()</code> instead.</p><div class="section">
+<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">set_waterfall_colors</span><span class="op">(</span>increase <span class="op">=</span> <span class="cn">NULL</span>, decrease <span class="op">=</span> <span class="cn">NULL</span>, total <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>increase</code></dt>
+<dd><p>Fill for rising values: hex, an R color name, or
+<code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">openxlsx2::wb_color()</a></code> (theme colors supported).</p></dd>
+
+      <dt><code>decrease</code></dt>
+<dd><p>Fill for falling values.</p></dd>
+
+      <dt><code>total</code></dt>
+<dd><p>Fill for subtotal/total points.</p></dd>
+
+
+</dl><p></p></div>
+</div><p></p><div class="section">
+<h4 id="examples-4">Examples<a class="anchor" aria-label="anchor" href="#examples-4"></a></h4>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"waterfall"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span>, subtotals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">set_waterfall_colors</span><span class="op">(</span>increase <span class="op">=</span> <span class="st">"70AD47"</span>, decrease <span class="op">=</span> <span class="st">"C00000"</span>, total <span class="op">=</span> <span class="st">"A6A6A6"</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+</div>
+
+<p></p><hr><a id="method-ChartEx-set_color_cycle"></a><div class="section">
+<h3 id="chartex-set-color-cycle-"><code>ChartEx$set_color_cycle()</code><a class="anchor" aria-label="anchor" href="#chartex-set-color-cycle-"></a></h3>
+<p>Set the chart's color cycle (the color style part,
+<code>colors{n}.xml</code>). ChartEx charts derive series, category, and
+legend colors from this cycle: treemap and sunburst color their
+top-level categories from it, box &amp; whisker and histogram color
+their series, funnel and Pareto take their first colors from it.
+The first <code>length(colors)</code> cycle entries are replaced in order; if
+more colors are given than the part contains, the cycle is
+extended. Remaining entries and the brightness variations are kept.</p><div class="section">
+<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">set_color_cycle</span><span class="op">(</span><span class="va">colors</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-17">Arguments<a class="anchor" aria-label="anchor" href="#arguments-17"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>colors</code></dt>
+<dd><p>Character vector of colors (hex or R color names), or a
+list which may also contain <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">openxlsx2::wb_color()</a></code> values
+(theme colors supported).</p></dd>
+
+
+</dl><p></p></div>
+</div><p></p><div class="section">
+<h4 id="examples-5">Examples<a class="anchor" aria-label="anchor" href="#examples-5"></a></h4>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"treemap"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">set_color_cycle</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C00000"</span>, <span class="st">"4472C4"</span>, <span class="st">"70AD47"</span>, <span class="st">"FFC000"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+</div>
+
+<p></p><hr><a id="method-ChartEx-set_region_map_colors"></a><div class="section">
+<h3 id="chartex-set-region-map-colors-"><code>ChartEx$set_region_map_colors()</code><a class="anchor" aria-label="anchor" href="#chartex-set-region-map-colors-"></a></h3>
+<p>Set the color scale of a region map. Written as the
+series' <code>cx:valueColors</code> element, which drives both the map shading
+and the legend's color scale. Only applied to <code>regionMap</code> series.</p><div class="section">
+<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">set_region_map_colors</span><span class="op">(</span><span class="va">min</span>, <span class="va">max</span>, mid <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>min</code></dt>
+<dd><p>Color for the smallest values (hex, R color name, or
+<code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">openxlsx2::wb_color()</a></code>).</p></dd>
+
+      <dt><code>max</code></dt>
+<dd><p>Color for the largest values.</p></dd>
+
+      <dt><code>mid</code></dt>
+<dd><p>Optional middle color for a three-color scale.</p></dd>
+
+
+</dl><p></p></div>
+</div><p></p><div class="section">
+<h4 id="examples-6">Examples<a class="anchor" aria-label="anchor" href="#examples-6"></a></h4>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"regionMap"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span><span class="op">)</span><span class="op">$</span></span>
+<span>  <span class="fu">set_region_map_colors</span><span class="op">(</span>min <span class="op">=</span> <span class="st">"FFF2CC"</span>, max <span class="op">=</span> <span class="st">"C00000"</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+</div>
+
 <p></p><hr><a id="method-ChartEx-add_series"></a><div class="section">
 <h3 id="chartex-add-series-"><code>ChartEx$add_series()</code><a class="anchor" aria-label="anchor" href="#chartex-add-series-"></a></h3>
 <p>Add a data series to the chart.</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
@@ -913,7 +1192,7 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <span>  parent_label <span class="op">=</span> <span class="st">"overlapping"</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
+<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Cell range for the series name.</p></dd>
 
@@ -965,10 +1244,10 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <p></p><hr><a id="method-ChartEx-render"></a><div class="section">
 <h3 id="chartex-render-"><code>ChartEx$render()</code><a class="anchor" aria-label="anchor" href="#chartex-render-"></a></h3>
 <p>Render the internal XML for writing to a file.</p><div class="section">
-<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
+<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">render</span><span class="op">(</span>id_start <span class="op">=</span> <span class="fl">1</span>, guid <span class="op">=</span> <span class="st">"{C59B1284-E301-0D0F-1B20-FD96A66D6E43}"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
+<h4 id="arguments-20">Arguments<a class="anchor" aria-label="anchor" href="#arguments-20"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>id_start</code></dt>
 <dd><p>Numeric starting ID for XML data references.</p></dd>
 
@@ -987,10 +1266,10 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <p></p><hr><a id="method-ChartEx-clone"></a><div class="section">
 <h3 id="chartex-clone-"><code>ChartEx$clone()</code><a class="anchor" aria-label="anchor" href="#chartex-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
+<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
+<h4 id="arguments-21">Arguments<a class="anchor" aria-label="anchor" href="#arguments-21"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -1037,6 +1316,42 @@ Must be one of: <code>"linear"</code> (Linear), <code>"exp"</code> (Exponential)
 <span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!A1:A10"</span><span class="op">)</span><span class="op">$</span></span></span>
 <span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B1:B10"</span>, secondary <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">$</span></span></span>
 <span class="r-in"><span>  <span class="fu">set_y2_title</span><span class="op">(</span><span class="st">"Growth Rate (%)"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `Chart$set_of_pie_options()`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"ofPieChart"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_of_pie_options</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bar"</span>, split_type <span class="op">=</span> <span class="st">"pos"</span>, split_pos <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `Chart$set_3d_options()`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"bar3DChart"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_3d_options</span><span class="op">(</span>rot_x <span class="op">=</span> <span class="fl">20</span>, rot_y <span class="op">=</span> <span class="fl">30</span>, shape <span class="op">=</span> <span class="st">"cylinder"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `ChartEx$set_waterfall_colors()`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"waterfall"</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span>, subtotals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">set_waterfall_colors</span><span class="op">(</span>increase <span class="op">=</span> <span class="st">"70AD47"</span>, decrease <span class="op">=</span> <span class="st">"C00000"</span>, total <span class="op">=</span> <span class="st">"A6A6A6"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `ChartEx$set_color_cycle()`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"treemap"</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">set_color_cycle</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C00000"</span>, <span class="st">"4472C4"</span>, <span class="st">"70AD47"</span>, <span class="st">"FFC000"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `ChartEx$set_region_map_colors()`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"regionMap"</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span><span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">set_region_map_colors</span><span class="op">(</span>min <span class="op">=</span> <span class="st">"FFF2CC"</span>, max <span class="op">=</span> <span class="st">"C00000"</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

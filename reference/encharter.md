@@ -46,6 +46,13 @@ An R6 object of class `Chart` or `ChartEx`.
 - **Pie/Doughnut:** `"pieChart"`, `"pie"`, `"doughnutChart"`,
   `"doughnut"`
 
+- **Pie of Pie / Bar of Pie:** `"ofPieChart"`, `"pieOfPie"`,
+  `"barOfPie"` (the latter preselects the bar subtype; see
+  `$set_of_pie_options()`)
+
+- **3D:** `"bar3DChart"`, `"line3DChart"`, `"pie3DChart"`,
+  `"area3DChart"`, `"surface3DChart"` (see `$set_3d_options()`)
+
 - **Extended (ChartEx):** `"waterfall"`, `"treemap"`, `"sunburst"`,
   `"regionMap"`, `"boxWhisker"` / `"boxplot"`, `"funnel"`
 
@@ -100,6 +107,9 @@ The available files are:
 - `Label_Grouping.R` — multi-level category labels
 
 - `Line.R` — line with markers and global data labels
+
+- `New_chart_types.R` — 0.11 showcase: pie/bar of pie, all 3D types,
+  display units, tick skips, directional error bars
 
 - `Pie.R` — pie with viridis palette
 
@@ -185,6 +195,43 @@ Run all of them in one session with `run_all_examples()` (defined in
 
   Character; "gap", "span", or "zero".
 
+- `of_pie_type`:
+
+  Character; subtype of `ofPieChart`: "pie" or "bar".
+
+- `second_pie_size`:
+
+  Integer; size of the second pie/bar plot as a percentage (5-200) for
+  `ofPieChart`.
+
+- `split_type`:
+
+  Character; how points are split into the second plot for `ofPieChart`:
+  "auto", "cust", "percent", "pos", or "val".
+
+- `split_pos`:
+
+  Numeric; split threshold, or point indices (0-based) when
+  `split_type = "cust"`.
+
+- `view3d`:
+
+  Named list of 3D view parameters (`rot_x`, `rot_y`, `perspective`,
+  `depth_percent`, `h_percent`, `right_angle_axes`).
+
+- `gap_depth`:
+
+  Integer; gap depth percentage (0-500) for 3D charts.
+
+- `bar_shape`:
+
+  Character; bar shape for `bar3DChart`: "box", "cylinder", "cone",
+  "coneToMax", "pyramid", or "pyramidToMax".
+
+- `size_represents`:
+
+  Character; bubble size meaning, "area" or "w".
+
 ## Methods
 
 ### Public methods
@@ -202,6 +249,10 @@ Run all of them in one session with `run_all_examples()` (defined in
 - [`Chart$set_data_table()`](#method-Chart-set_data_table)
 
 - [`Chart$set_pie_options()`](#method-Chart-set_pie_options)
+
+- [`Chart$set_of_pie_options()`](#method-Chart-set_of_pie_options)
+
+- [`Chart$set_3d_options()`](#method-Chart-set_3d_options)
 
 - [`Chart$set_bubble_options()`](#method-Chart-set_bubble_options)
 
@@ -409,7 +460,10 @@ Set Secondary Y-axis scaling, units, and format.
       minor_grid_width = NULL,
       crosses = "max",
       crosses_at = NULL,
-      label_pos = NULL
+      label_pos = NULL,
+      tick_lbl_skip = NULL,
+      tick_mark_skip = NULL,
+      disp_units = NULL
     )
 
 #### Arguments
@@ -513,6 +567,15 @@ Set Secondary Y-axis scaling, units, and format.
 
   Label position: "nextTo" (default), "low" (edge of chart), "high"
   (opposite edge), or "none".
+
+- `tick_lbl_skip, tick_mark_skip`:
+
+  Integer (\>= 1); label/tick every n-th category (category axes only).
+
+- `disp_units`:
+
+  Display units: a built-in unit string (e.g. "thousands") or a positive
+  number (value axes only).
 
 ------------------------------------------------------------------------
 
@@ -552,7 +615,10 @@ Set Secondary X-axis scaling, units, and format.
       minor_grid_width = NULL,
       crosses = "max",
       crosses_at = NULL,
-      label_pos = NULL
+      label_pos = NULL,
+      tick_lbl_skip = NULL,
+      tick_mark_skip = NULL,
+      disp_units = NULL
     )
 
 #### Arguments
@@ -656,6 +722,15 @@ Set Secondary X-axis scaling, units, and format.
 
   Label position: "nextTo" (default), "low" (edge of chart), "high"
   (opposite edge), or "none".
+
+- `tick_lbl_skip, tick_mark_skip`:
+
+  Integer (\>= 1); label/tick every n-th category (category axes only).
+
+- `disp_units`:
+
+  Display units: a built-in unit string (e.g. "thousands") or a positive
+  number (value axes only).
 
 ------------------------------------------------------------------------
 
@@ -698,11 +773,113 @@ Set the data table.
 
 ------------------------------------------------------------------------
 
+### `Chart$set_of_pie_options()`
+
+Configure the Pie of Pie / Bar of Pie chart (`ofPieChart`).
+
+#### Usage
+
+    Chart$set_of_pie_options(
+      type = NULL,
+      second_size = NULL,
+      split_type = NULL,
+      split_pos = NULL
+    )
+
+#### Arguments
+
+- `type`:
+
+  Subtype: `"pie"` (Pie of Pie, default) or `"bar"` (Bar of Pie).
+
+- `second_size`:
+
+  Size of the second plot as a percentage of the main pie, from 5
+  to 200. Default 75.
+
+- `split_type`:
+
+  How data points are assigned to the second plot: `"auto"` (default),
+  `"percent"`, `"pos"` (last n points), `"val"` (values below
+  threshold), or `"cust"`.
+
+- `split_pos`:
+
+  Numeric split threshold for `"percent"`, `"pos"`, and `"val"`; for
+  `"cust"` a vector of 0-based point indices to move to the second plot.
+
+#### Examples
+
+    ec("ofPieChart")$set_of_pie_options(type = "bar", split_type = "pos", split_pos = 3)
+
+------------------------------------------------------------------------
+
+### `Chart$set_3d_options()`
+
+Configure the 3D view and 3D-only chart options. Only takes effect for
+the 3D chart types (`bar3DChart`, `line3DChart`, `pie3DChart`,
+`area3DChart`, `surface3DChart`) and `surfaceChart`.
+
+#### Usage
+
+    Chart$set_3d_options(
+      rot_x = NULL,
+      rot_y = NULL,
+      perspective = NULL,
+      depth_percent = NULL,
+      h_percent = NULL,
+      right_angle_axes = NULL,
+      gap_depth = NULL,
+      shape = NULL
+    )
+
+#### Arguments
+
+- `rot_x`:
+
+  Rotation around the X-axis in degrees, from -90 to 90.
+
+- `rot_y`:
+
+  Rotation around the Y-axis in degrees, from 0 to 360.
+
+- `perspective`:
+
+  Perspective in half-degrees, from 0 to 240 (ignored when
+  `right_angle_axes = TRUE`).
+
+- `depth_percent`:
+
+  Depth as a percentage of chart width, 20 to 2000.
+
+- `h_percent`:
+
+  Height as a percentage of chart width, 5 to 500.
+
+- `right_angle_axes`:
+
+  Logical; render axes at right angles instead of in perspective.
+
+- `gap_depth`:
+
+  Gap depth percentage between series, 0 to 500 (bar/line/area 3D).
+
+- `shape`:
+
+  Bar shape for `bar3DChart`: `"box"` (default), `"cylinder"`, `"cone"`,
+  `"coneToMax"`, `"pyramid"`, or `"pyramidToMax"`.
+
+#### Examples
+
+    ec("bar3DChart")$set_3d_options(rot_x = 20, rot_y = 30, shape = "cylinder")
+
+------------------------------------------------------------------------
+
 ### `Chart$set_bubble_options()`
 
 #### Usage
 
-    Chart$set_bubble_options(scale = 100, show_neg = FALSE)
+    Chart$set_bubble_options(scale = 100, show_neg = FALSE, size_represents = NULL)
 
 #### Arguments
 
@@ -715,6 +892,11 @@ Set the data table.
 
   Logical; if `TRUE`, bubbles with negative values will be displayed on
   the chart.
+
+- `size_represents`:
+
+  What the bubble size encodes: `"area"` (default in Excel) or `"w"`
+  (width/diameter). `NULL` omits the element.
 
 ------------------------------------------------------------------------
 
@@ -766,7 +948,8 @@ Add a data series to the chart with independent styling.
       line_color = NULL,
       filled = FALSE,
       error_bars = FALSE,
-      trendline = FALSE
+      trendline = FALSE,
+      invert_if_negative = FALSE
     )
 
 #### Arguments
@@ -884,6 +1067,9 @@ Add a data series to the chart with independent styling.
   - `direction`: Direction of bars. One of `"both"`, `"plus"`, or
     `"minus"`.
 
+  - `axis`: Error direction axis, `"y"` (default) or `"x"` (horizontal
+    bars, scatter charts).
+
   - `color`: Hex color code for the bars (e.g., "FF0000").
 
 - `trendline`:
@@ -900,10 +1086,20 @@ Add a data series to the chart with independent styling.
   - `period`: Required for `"movingAvg"`; an integer representing the
     window size.
 
+  - `forward`, `backward`: Numeric; extrapolate the line n periods
+    forwards/backwards.
+
+  - `intercept`: Numeric; force the line through a fixed y-intercept.
+
   - `color`: Hex color code for the line.
 
   - `show_r2`: Logical; if `TRUE`, displays the R-squared value on the
     chart.
+
+- `invert_if_negative`:
+
+  Logical; bar charts only. Invert the fill for negative values. Default
+  `FALSE`.
 
 ------------------------------------------------------------------------
 
@@ -958,11 +1154,22 @@ The objects of this class are cloneable with this method.
 
   style
 
+- `region_colors`:
+
+  Internal; color scale entries for region maps set via
+  `set_region_map_colors()`.
+
 ## Methods
 
 ### Public methods
 
 - [`ChartEx$new()`](#method-ChartEx-initialize)
+
+- [`ChartEx$set_waterfall_colors()`](#method-ChartEx-set_waterfall_colors)
+
+- [`ChartEx$set_color_cycle()`](#method-ChartEx-set_color_cycle)
+
+- [`ChartEx$set_region_map_colors()`](#method-ChartEx-set_region_map_colors)
 
 - [`ChartEx$add_series()`](#method-ChartEx-add_series)
 
@@ -1002,6 +1209,110 @@ Create a new ChartEx object.
 #### Returns
 
 A new `ChartEx` object.
+
+------------------------------------------------------------------------
+
+### `ChartEx$set_waterfall_colors()`
+
+Set the semantic waterfall colors (also used as the first colors of the
+chart's color cycle). ChartEx charts derive both the point fills and the
+legend keys from the chart's color style part (`colors{n}.xml`);
+waterfall maps Increase, Decrease, and Total to the first three entries
+of that cycle. This method replaces those entries, so the bars and the
+legend stay consistent. For individual outlier points (e.g. an
+"unexpected decrease"), pass a per-point `color` vector to
+`add_series()` instead.
+
+#### Usage
+
+    ChartEx$set_waterfall_colors(increase = NULL, decrease = NULL, total = NULL)
+
+#### Arguments
+
+- `increase`:
+
+  Fill for rising values: hex, an R color name, or
+  [`openxlsx2::wb_color()`](https://janmarvin.github.io/openxlsx2/reference/wb_color.html)
+  (theme colors supported).
+
+- `decrease`:
+
+  Fill for falling values.
+
+- `total`:
+
+  Fill for subtotal/total points.
+
+#### Examples
+
+    ec("waterfall")$
+      add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7", subtotals = c(0, 5))$
+      set_waterfall_colors(increase = "70AD47", decrease = "C00000", total = "A6A6A6")
+
+------------------------------------------------------------------------
+
+### `ChartEx$set_color_cycle()`
+
+Set the chart's color cycle (the color style part, `colors{n}.xml`).
+ChartEx charts derive series, category, and legend colors from this
+cycle: treemap and sunburst color their top-level categories from it,
+box & whisker and histogram color their series, funnel and Pareto take
+their first colors from it. The first `length(colors)` cycle entries are
+replaced in order; if more colors are given than the part contains, the
+cycle is extended. Remaining entries and the brightness variations are
+kept.
+
+#### Usage
+
+    ChartEx$set_color_cycle(colors)
+
+#### Arguments
+
+- `colors`:
+
+  Character vector of colors (hex or R color names), or a list which may
+  also contain
+  [`openxlsx2::wb_color()`](https://janmarvin.github.io/openxlsx2/reference/wb_color.html)
+  values (theme colors supported).
+
+#### Examples
+
+    ec("treemap")$
+      add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+      set_color_cycle(c("C00000", "4472C4", "70AD47", "FFC000"))
+
+------------------------------------------------------------------------
+
+### `ChartEx$set_region_map_colors()`
+
+Set the color scale of a region map. Written as the series'
+`cx:valueColors` element, which drives both the map shading and the
+legend's color scale. Only applied to `regionMap` series.
+
+#### Usage
+
+    ChartEx$set_region_map_colors(min, max, mid = NULL)
+
+#### Arguments
+
+- `min`:
+
+  Color for the smallest values (hex, R color name, or
+  [`openxlsx2::wb_color()`](https://janmarvin.github.io/openxlsx2/reference/wb_color.html)).
+
+- `max`:
+
+  Color for the largest values.
+
+- `mid`:
+
+  Optional middle color for a three-color scale.
+
+#### Examples
+
+    ec("regionMap")$
+      add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+      set_region_map_colors(min = "FFF2CC", max = "C00000")
 
 ------------------------------------------------------------------------
 
@@ -1159,4 +1470,40 @@ ec("line")$
   add_series(data = "Sheet1!A1:A10")$
   add_series(data = "Sheet1!B1:B10", secondary = TRUE)$
   set_y2_title("Growth Rate (%)")
+
+## ------------------------------------------------
+## Method `Chart$set_of_pie_options()`
+## ------------------------------------------------
+
+ec("ofPieChart")$set_of_pie_options(type = "bar", split_type = "pos", split_pos = 3)
+
+## ------------------------------------------------
+## Method `Chart$set_3d_options()`
+## ------------------------------------------------
+
+ec("bar3DChart")$set_3d_options(rot_x = 20, rot_y = 30, shape = "cylinder")
+
+## ------------------------------------------------
+## Method `ChartEx$set_waterfall_colors()`
+## ------------------------------------------------
+
+ec("waterfall")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7", subtotals = c(0, 5))$
+  set_waterfall_colors(increase = "70AD47", decrease = "C00000", total = "A6A6A6")
+
+## ------------------------------------------------
+## Method `ChartEx$set_color_cycle()`
+## ------------------------------------------------
+
+ec("treemap")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+  set_color_cycle(c("C00000", "4472C4", "70AD47", "FFC000"))
+
+## ------------------------------------------------
+## Method `ChartEx$set_region_map_colors()`
+## ------------------------------------------------
+
+ec("regionMap")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+  set_region_map_colors(min = "FFF2CC", max = "C00000")
 ```

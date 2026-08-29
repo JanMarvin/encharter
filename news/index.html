@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">encharter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,28 @@
       <small>Source: <a href="https://github.com/JanMarvin/encharter/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.11" id="encharter-011-development">encharter 0.11 (development)<a class="anchor" aria-label="anchor" href="#encharter-011-development"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-11">New features<a class="anchor" aria-label="anchor" href="#new-features-0-11"></a></h3>
+<ul><li><p>Complete coverage of the ECMA-376 plot area chart types. Newly supported: <code>ofPieChart</code> (Pie of Pie / Bar of Pie, incl. <code>barOfPie</code> alias and <code>$set_of_pie_options()</code> for subtype, second plot size, and split logic) and the 3D types <code>bar3DChart</code>, <code>line3DChart</code>, <code>pie3DChart</code>, <code>area3DChart</code>, and <code>surface3DChart</code> with a new <code>$set_3d_options()</code> for the 3D view (rotation, perspective, height/depth percent, right-angle axes, gap depth, bar shape).</p></li>
+<li><p>New niche axis options: <code>tick_lbl_skip</code>, <code>tick_mark_skip</code> (category axes) and <code>disp_units</code> (value axes, built-in units like <code>"thousands"</code> or a custom numeric unit) on all <code>set_*_axis()</code> methods.</p></li>
+<li><p><code>$set_data_label_style()</code> gains <code>show_ser_name</code>, <code>show_percent</code>, <code>show_bubble_size</code>, and a <code>format</code> number format string (the latter now also works for ChartEx labels).</p></li>
+<li><p>Input validation against the OOXML schema (ECMA-376 dml-chart.xsd). Values that would produce files Excel repairs or refuses to load now error at input time (e.g. <code>overlap</code> outside -100..100, <code>gap_width</code> &gt; 500, <code>marker_size</code> outside 2..72, <code>log_base</code> outside 2..1000, polynomial trendline <code>order</code> outside 2..6). Structural problems Excel bails on despite valid XML are warned about at render time (stock charts without 3-4 series, pie types combined with axis-based types, log scale with non-positive minimum). Harmless out-of-schema values that Excel renders fine (e.g. <code>hole_size = 0</code>) remain accepted.</p></li>
+<li><p>Colors are validated at input time; R color names (e.g. <code>"red"</code>, <code>"steelblue"</code>) are now converted to hex instead of silently rendering black.</p></li>
+<li><p><code>ChartEx$set_waterfall_colors(increase, decrease, total)</code> sets the semantic waterfall colors by replacing the first three entries of the chart’s color style part (<code>colors{n}.xml</code>), which is what waterfall maps Increase, Decrease, and Total onto. Both the bars and the legend keys reflect the colors. Accepts hex, R color names, and <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">openxlsx2::wb_color()</a></code> including theme colors. Use a per-point <code>color</code> vector in <code>add_series()</code> for individual outliers instead.</p></li>
+<li><p><code>ChartEx$set_color_cycle(colors)</code> replaces (and if needed extends) the color style part’s cycle for all extended chart types: treemap/sunburst category colors, box &amp; whisker and histogram series, funnel and Pareto colors — bars and legend alike. <code>ChartEx$set_region_map_colors(min, max, mid)</code> sets a region map’s two- or three-color scale via the series’ <code>cx:valueColors</code>.</p></li>
+<li><p>Chart options newly covered: trendline <code>forward</code>/<code>backward</code>/<code>intercept</code>, <code>error_bars$axis</code> (<code>"x"</code> error bars on scatter charts), <code>invert_if_negative</code> for bar series, and <code>size_represents</code> (<code>"area"</code>/<code>"w"</code>) in <code>set_bubble_options()</code>.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-0-11">Fixes<a class="anchor" aria-label="anchor" href="#fixes-0-11"></a></h3>
+<ul><li><p><code>error_bars$direction</code> was documented but ignored (always <code>"both"</code>); it is now written to <code>errBarType</code>.</p></li>
+<li><p>ChartEx per-point colors were written as <code>cx:dPt</code> and ignored by Excel; the correct element is <code>cx:dataPt</code>, so passing a color vector (e.g. a corporate palette) to <code>add_series()</code> now colors extended charts the same way it colors standard charts.</p></li>
+<li><p>Legend settings that are valid for standard charts no longer produce broken ChartEx XML: <code>pos = "tr"</code> maps to <code>"t"</code> and side-style <code>align</code> values map onto the chartex <code>min</code>/<code>ctr</code>/<code>max</code> enum.</p></li>
+<li><p>ChartEx axes emitted <code>cx:spPr</code> before the gridline/tick/label elements; <code>CT_Axis</code> places it after <code>tickLabels</code> and <code>numFmt</code>. Excel tolerated the old order, but SDK-based validation (e.g. OOXMLValidator) flags it. Output changes for chartex axes: identical elements, schema order. A structural chartex validator driven by the Open XML SDK schema data ships in <code>inst/tools/cx_structure_check.py</code>.</p></li>
+<li><p>Color name resolution is delegated to <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">openxlsx2::wb_color()</a></code> instead of a separate implementation.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.10" id="encharter-010">encharter 0.10<a class="anchor" aria-label="anchor" href="#encharter-010"></a></h2><p class="text-muted">CRAN release: 2026-08-04</p>
 <div class="section level3">

@@ -17,7 +17,7 @@ encharter() instead."><meta property="og:image" content="https://janmarvin.githu
 
     <a class="navbar-brand me-2" href="../index.html">encharter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.10</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.11</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -333,7 +333,10 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 <span>  minor_grid_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  crosses <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  crosses_at <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  label_pos <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  label_pos <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tick_lbl_skip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tick_mark_skip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  disp_units <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
@@ -414,6 +417,21 @@ the axis line, major grid lines, and minor grid lines respectively.</p></dd>
 <dd><p>Tick label position: <code>"nextTo"</code> (default),
 <code>"high"</code>, <code>"low"</code>, or <code>"none"</code>.</p></dd>
 
+      <dt><code>tick_lbl_skip</code></dt>
+<dd><p>Integer (&gt;= 1); draw a tick label only every n-th
+category (category axes only).</p></dd>
+
+      <dt><code>tick_mark_skip</code></dt>
+<dd><p>Integer (&gt;= 1); draw a tick mark only every n-th
+category (category axes only).</p></dd>
+
+      <dt><code>disp_units</code></dt>
+<dd><p>Display units for value axes: a built-in unit string
+(<code>"hundreds"</code>, <code>"thousands"</code>, <code>"tenThousands"</code>,
+<code>"hundredThousands"</code>, <code>"millions"</code>, <code>"tenMillions"</code>,
+<code>"hundredMillions"</code>, <code>"billions"</code>, <code>"trillions"</code>) or a
+positive number for a custom unit.</p></dd>
+
 
 </dl><p></p></div>
 </div><p></p><div class="section">
@@ -463,7 +481,10 @@ the axis line, major grid lines, and minor grid lines respectively.</p></dd>
 <span>  minor_grid_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  crosses <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  crosses_at <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  label_pos <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  label_pos <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tick_lbl_skip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tick_mark_skip <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  disp_units <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
 <h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
@@ -534,6 +555,15 @@ string.</p></dd>
 <dd><p><code>"nextTo"</code>, <code>"high"</code>, <code>"low"</code>, or
 <code>"none"</code>.</p></dd>
 
+      <dt><code>tick_lbl_skip, tick_mark_skip</code></dt>
+<dd><p>Integer (&gt;= 1); label/tick every
+n-th category (category axes only).</p></dd>
+
+      <dt><code>disp_units</code></dt>
+<dd><p>Display units: a built-in unit string (e.g.
+<code>"thousands"</code>, <code>"millions"</code>) or a positive number for a custom
+unit. Value axes only.</p></dd>
+
 
 </dl><p></p></div>
 </div><p></p><div class="section">
@@ -561,6 +591,10 @@ arguments in <code>$add_series()</code>.</p><div class="section">
 <span>  show_cat <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  show_legend_key <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pos <span class="op">=</span> <span class="st">"t"</span>,</span>
+<span>  show_ser_name <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  show_percent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  show_bubble_size <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
@@ -579,6 +613,21 @@ label. Default <code>FALSE</code>.</p></dd>
 <dd><p>Label position: <code>"t"</code> (top, default), <code>"b"</code>
 (bottom), <code>"l"</code>, <code>"r"</code>, <code>"ctr"</code>, <code>"inEnd"</code>,
 <code>"outEnd"</code>, <code>"bestFit"</code>.</p></dd>
+
+      <dt><code>show_ser_name</code></dt>
+<dd><p>Logical; show the series name. Default <code>FALSE</code>.</p></dd>
+
+      <dt><code>show_percent</code></dt>
+<dd><p>Logical; show the percentage (pie-type charts).
+Default <code>FALSE</code>.</p></dd>
+
+      <dt><code>show_bubble_size</code></dt>
+<dd><p>Logical; show the bubble size (bubble charts).
+Default <code>FALSE</code>.</p></dd>
+
+      <dt><code>format</code></dt>
+<dd><p>Number format string for the labels (e.g. <code>"#,##0"</code>,
+<code>"0.0%"</code>).</p></dd>
 
       <dt><code>...</code></dt>
 <dd><p>Additional font style arguments passed to the label text

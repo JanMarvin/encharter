@@ -322,7 +322,10 @@ Set primary X-axis scaling, tick marks, and label formatting.
       minor_grid_width = NULL,
       crosses = NULL,
       crosses_at = NULL,
-      label_pos = NULL
+      label_pos = NULL,
+      tick_lbl_skip = NULL,
+      tick_mark_skip = NULL,
+      disp_units = NULL
     )
 
 #### Arguments
@@ -420,6 +423,23 @@ Set primary X-axis scaling, tick marks, and label formatting.
   Tick label position: `"nextTo"` (default), `"high"`, `"low"`, or
   `"none"`.
 
+- `tick_lbl_skip`:
+
+  Integer (\>= 1); draw a tick label only every n-th category (category
+  axes only).
+
+- `tick_mark_skip`:
+
+  Integer (\>= 1); draw a tick mark only every n-th category (category
+  axes only).
+
+- `disp_units`:
+
+  Display units for value axes: a built-in unit string (`"hundreds"`,
+  `"thousands"`, `"tenThousands"`, `"hundredThousands"`, `"millions"`,
+  `"tenMillions"`, `"hundredMillions"`, `"billions"`, `"trillions"`) or
+  a positive number for a custom unit.
+
 #### Examples
 
     ec("line")$set_x_axis(
@@ -468,7 +488,10 @@ Set primary Y-axis scaling, tick marks, and label formatting.
       minor_grid_width = NULL,
       crosses = NULL,
       crosses_at = NULL,
-      label_pos = NULL
+      label_pos = NULL,
+      tick_lbl_skip = NULL,
+      tick_mark_skip = NULL,
+      disp_units = NULL
     )
 
 #### Arguments
@@ -557,6 +580,15 @@ Set primary Y-axis scaling, tick marks, and label formatting.
 
   `"nextTo"`, `"high"`, `"low"`, or `"none"`.
 
+- `tick_lbl_skip, tick_mark_skip`:
+
+  Integer (\>= 1); label/tick every n-th category (category axes only).
+
+- `disp_units`:
+
+  Display units: a built-in unit string (e.g. `"thousands"`,
+  `"millions"`) or a positive number for a custom unit. Value axes only.
+
 #### Examples
 
     ec("bar")$set_y_axis(
@@ -584,6 +616,10 @@ in `$add_series()`.
       show_cat = FALSE,
       show_legend_key = FALSE,
       pos = "t",
+      show_ser_name = FALSE,
+      show_percent = FALSE,
+      show_bubble_size = FALSE,
+      format = NULL,
       ...
     )
 
@@ -606,6 +642,22 @@ in `$add_series()`.
 
   Label position: `"t"` (top, default), `"b"` (bottom), `"l"`, `"r"`,
   `"ctr"`, `"inEnd"`, `"outEnd"`, `"bestFit"`.
+
+- `show_ser_name`:
+
+  Logical; show the series name. Default `FALSE`.
+
+- `show_percent`:
+
+  Logical; show the percentage (pie-type charts). Default `FALSE`.
+
+- `show_bubble_size`:
+
+  Logical; show the bubble size (bubble charts). Default `FALSE`.
+
+- `format`:
+
+  Number format string for the labels (e.g. `"#,##0"`, `"0.0%"`).
 
 - `...`:
 
