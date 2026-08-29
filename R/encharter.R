@@ -4,7 +4,18 @@
 ENCHARTER_STANDARD <- c(
   "barChart", "lineChart", "areaChart", "scatterChart",
   "pieChart", "doughnutChart", "radarChart", "bubbleChart",
-  "stockChart", "surfaceChart"
+  "stockChart", "surfaceChart", "ofPieChart",
+  "bar3DChart", "line3DChart", "pie3DChart", "area3DChart", "surface3DChart"
+)
+
+#' @noRd
+ENCHARTER_3D <- c(
+  "bar3DChart", "line3DChart", "pie3DChart", "area3DChart", "surface3DChart"
+)
+
+#' @noRd
+ENCHARTER_PIE_FAMILY <- c(
+  "pieChart", "doughnutChart", "pie3DChart", "ofPieChart"
 )
 
 #' @noRd
@@ -34,6 +45,11 @@ ENCHARTER_EXTENDED <- c(
 #'     `"point"`
 #'   * **Pie/Doughnut:** `"pieChart"`, `"pie"`,
 #'     `"doughnutChart"`, `"doughnut"`
+#'   * **Pie of Pie / Bar of Pie:** `"ofPieChart"`, `"pieOfPie"`,
+#'     `"barOfPie"` (the latter preselects the bar subtype; see
+#'     `$set_of_pie_options()`)
+#'   * **3D:** `"bar3DChart"`, `"line3DChart"`, `"pie3DChart"`,
+#'     `"area3DChart"`, `"surface3DChart"` (see `$set_3d_options()`)
 #'   * **Extended (ChartEx):** `"waterfall"`, `"treemap"`,
 #'     `"sunburst"`, `"regionMap"`,
 #'     `"boxWhisker"` / `"boxplot"`, `"funnel"`
@@ -72,6 +88,8 @@ ENCHARTER_EXTENDED <- c(
 #'   * `Histogram_with_args.R` — histogram via clusteredColumn binning
 #'   * `Label_Grouping.R` — multi-level category labels
 #'   * `Line.R` — line with markers and global data labels
+#'   * `New_chart_types.R` — 0.11 showcase: pie/bar of pie, all 3D types,
+#'     display units, tick skips, directional error bars
 #'   * `Pie.R` — pie with viridis palette
 #'   * `Radar_chart.R` — standard vs filled radar
 #'   * `Scatter.R` — markers-only scatter
@@ -102,6 +120,7 @@ ENCHARTER_EXTENDED <- c(
 #' @export
 encharter <- function(type = "lineChart") {
 
+  type_raw <- tolower(as.character(type))
   type <- normalize_encharter_type(type)
   match.arg(as.character(type), choices = c(ENCHARTER_STANDARD, ENCHARTER_EXTENDED))
 
@@ -111,6 +130,9 @@ encharter <- function(type = "lineChart") {
 
   if (type %in% ENCHARTER_STANDARD) {
     ec <- Chart$new(type = type)
+    if (length(type_raw) == 1 && type_raw %in% c("barofpie", "barof")) {
+      ec$of_pie_type <- "bar"
+    }
   }
 
   ec
@@ -277,6 +299,15 @@ EncharterBase <- R6::R6Class(
     #'   `crosses` when supplied.
     #' @param label_pos Tick label position: `"nextTo"` (default),
     #'   `"high"`, `"low"`, or `"none"`.
+    #' @param tick_lbl_skip Integer (>= 1); draw a tick label only every n-th
+    #'   category (category axes only).
+    #' @param tick_mark_skip Integer (>= 1); draw a tick mark only every n-th
+    #'   category (category axes only).
+    #' @param disp_units Display units for value axes: a built-in unit string
+    #'   (`"hundreds"`, `"thousands"`, `"tenThousands"`,
+    #'   `"hundredThousands"`, `"millions"`, `"tenMillions"`,
+    #'   `"hundredMillions"`, `"billions"`, `"trillions"`) or a
+    #'   positive number for a custom unit.
     #' @examples
     #' ec("line")$set_x_axis(
     #'   min = 0, max = 12,
@@ -294,7 +325,8 @@ EncharterBase <- R6::R6Class(
                           grid_color = NULL, grid_lines = NULL,
                           minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                          crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+                          crosses = NULL, crosses_at = NULL, label_pos = NULL,
+                          tick_lbl_skip = NULL, tick_mark_skip = NULL, disp_units = NULL) {
         private$set_axis_params(
           "x",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
@@ -305,7 +337,9 @@ EncharterBase <- R6::R6Class(
           minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
-          label_pos = label_pos
+          label_pos = label_pos,
+          tick_lbl_skip = tick_lbl_skip, tick_mark_skip = tick_mark_skip,
+          disp_units = disp_units
         )
     },
 
@@ -335,6 +369,11 @@ EncharterBase <- R6::R6Class(
     #' @param crosses_at Numeric crossing value; overrides `crosses`.
     #' @param label_pos `"nextTo"`, `"high"`, `"low"`, or
     #'   `"none"`.
+    #' @param tick_lbl_skip,tick_mark_skip Integer (>= 1); label/tick every
+    #'   n-th category (category axes only).
+    #' @param disp_units Display units: a built-in unit string (e.g.
+    #'   `"thousands"`, `"millions"`) or a positive number for a custom
+    #'   unit. Value axes only.
     #' @examples
     #' ec("bar")$set_y_axis(
     #'   min        = 0,
@@ -353,7 +392,8 @@ EncharterBase <- R6::R6Class(
                           grid_color = NULL, grid_lines = NULL,
                           minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                           line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                          crosses = NULL, crosses_at = NULL, label_pos = NULL) {
+                          crosses = NULL, crosses_at = NULL, label_pos = NULL,
+                          tick_lbl_skip = NULL, tick_mark_skip = NULL, disp_units = NULL) {
         private$set_axis_params(
           "y",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
@@ -364,7 +404,9 @@ EncharterBase <- R6::R6Class(
           minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
-          label_pos = label_pos
+          label_pos = label_pos,
+          tick_lbl_skip = tick_lbl_skip, tick_mark_skip = tick_mark_skip,
+          disp_units = disp_units
         )
     },
 
@@ -380,14 +422,35 @@ EncharterBase <- R6::R6Class(
     #' @param pos Label position: `"t"` (top, default), `"b"`
     #'   (bottom), `"l"`, `"r"`, `"ctr"`, `"inEnd"`,
     #'   `"outEnd"`, `"bestFit"`.
+    #' @param show_ser_name Logical; show the series name. Default `FALSE`.
+    #' @param show_percent Logical; show the percentage (pie-type charts).
+    #'   Default `FALSE`.
+    #' @param show_bubble_size Logical; show the bubble size (bubble charts).
+    #'   Default `FALSE`.
+    #' @param format Number format string for the labels (e.g. `"#,##0"`,
+    #'   `"0.0%"`).
     #' @param ... Additional font style arguments passed to the label text
     #'   properties (e.g. `font_size`, `font_color`, `bold`).
     #' @examples
     #' ec("bar")$set_data_label_style(show_val = TRUE, pos = "outEnd", font_size = 9)
-    set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "t", ...) {
+    set_data_label_style = function(show_val = TRUE, show_cat = FALSE, show_legend_key = FALSE, pos = "t",
+                                    show_ser_name = FALSE, show_percent = FALSE, show_bubble_size = FALSE,
+                                    format = NULL, ...) {
       pos <- normalize_encharter_string(pos)
       pos <- private$validate_input(pos, c("t", "b", "l", "r", "ctr", "inEnd", "outEnd", "bestFit", "none"), "pos")
-      self$label_params <- list(show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key, pos = pos, style = list(...))
+      check_bool(show_val, "show_val")
+      check_bool(show_cat, "show_cat")
+      check_bool(show_legend_key, "show_legend_key")
+      check_bool(show_ser_name, "show_ser_name")
+      check_bool(show_percent, "show_percent")
+      check_bool(show_bubble_size, "show_bubble_size")
+      check_format(format)
+      self$label_params <- list(
+        show_val = show_val, show_cat = show_cat, show_legend_key = show_legend_key,
+        show_ser_name = show_ser_name, show_percent = show_percent,
+        show_bubble_size = show_bubble_size,
+        pos = pos, format = format, style = list(...)
+      )
       invisible(self)
     },
 
@@ -406,6 +469,10 @@ EncharterBase <- R6::R6Class(
     set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
       pos <- normalize_encharter_string(pos)
       align <- normalize_encharter_string(align)
+      pos <- check_choice(pos, c("t", "b", "l", "r", "tr", "none"), "pos") %||% "t"
+      check_bool(overlay, "overlay")
+      check_num(font_size, "font_size", min = 0, exclusive_min = TRUE)
+      color <- check_color(color, "color")
       self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
                                  style = list(font_size = font_size, font_name = font_name, bold = bold, italic = italic, color = color))
       invisible(self)
@@ -490,7 +557,9 @@ EncharterBase <- R6::R6Class(
                                grid_color, grid_lines,
                                minor_grid_color, minor_grid_lines, cross_between,
                                line_width, grid_width, minor_grid_width,
-                               crosses, crosses_at, label_pos) {
+                               crosses, crosses_at, label_pos,
+                               tick_lbl_skip = NULL, tick_mark_skip = NULL,
+                               disp_units = NULL) {
 
       crosses    <- private$validate_input(crosses,    c("autoZero", "min", "max"), "crosses")
       label_pos  <- private$validate_input(label_pos,  c("nextTo", "high", "low", "none"), "label_pos")
@@ -501,6 +570,11 @@ EncharterBase <- R6::R6Class(
                       "lgDashDot", "sysDash", "sysDot", "dashed", "dotted")
       if (is.character(grid_lines))       private$validate_input(grid_lines,       DASH_TYPES, "grid_lines")
       if (is.character(minor_grid_lines)) private$validate_input(minor_grid_lines, DASH_TYPES, "minor_grid_lines")
+
+      color            <- check_color(color, "color")
+      font_color       <- check_color(font_color, "font_color")
+      grid_color       <- check_color(grid_color, "grid_color")
+      minor_grid_color <- check_color(minor_grid_color, "minor_grid_color")
 
       params <- list(
         min = min, max = max, major = major, minor = minor,
@@ -513,8 +587,12 @@ EncharterBase <- R6::R6Class(
         minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
         cross_between = cross_between,
         line_width = line_width, grid_width = grid_width, minor_grid_width = minor_grid_width,
-        crosses = crosses, crosses_at = crosses_at, label_pos = label_pos
+        crosses = crosses, crosses_at = crosses_at, label_pos = label_pos,
+        tick_lbl_skip = tick_lbl_skip, tick_mark_skip = tick_mark_skip,
+        disp_units = disp_units
       )
+
+      check_axis_params(params)
 
       self$axis_params[[which]] <- modifyList(
         self$axis_params[[which]],

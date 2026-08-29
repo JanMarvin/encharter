@@ -22,6 +22,10 @@ ChartEx <- R6::R6Class(
     #' @field style_xml style
     style_xml = character(),
 
+    #' @field region_colors Internal; color scale entries for region maps set
+    #'   via `set_region_map_colors()`.
+    region_colors = NULL,
+
     #' @description Create a new ChartEx object.
     #' @return A new `ChartEx` object.
     #' @param type Initial chart type (e.g., "waterfall", "treemap").
@@ -42,6 +46,78 @@ ChartEx <- R6::R6Class(
       )
       self$legend_params <- list(pos = "t", align = "ctr", overlay = "0", style = list())
       self$label_params <- list(show = FALSE)
+    },
+
+    #' @description Set the semantic waterfall colors (also used as the
+    #'   first colors of the chart's color cycle). ChartEx charts derive both
+    #'   the point fills and the legend keys from the chart's color style
+    #'   part (`colors{n}.xml`); waterfall maps Increase, Decrease, and
+    #'   Total to the first three entries of that cycle. This method
+    #'   replaces those entries, so the bars and the legend stay consistent.
+    #'   For individual outlier points (e.g. an "unexpected decrease"), pass
+    #'   a per-point `color` vector to `add_series()` instead.
+    #' @param increase Fill for rising values: hex, an R color name, or
+    #'   `openxlsx2::wb_color()` (theme colors supported).
+    #' @param decrease Fill for falling values.
+    #' @param total Fill for subtotal/total points.
+    #' @examples
+    #' ec("waterfall")$
+    #'   add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7", subtotals = c(0, 5))$
+    #'   set_waterfall_colors(increase = "70AD47", decrease = "C00000", total = "A6A6A6")
+    set_waterfall_colors = function(increase = NULL, decrease = NULL, total = NULL) {
+      cols <- Filter(Negate(is.null), list(increase = increase, decrease = decrease, total = total))
+      if (length(cols) == 0) return(invisible(self))
+      slot <- c(increase = 1L, decrease = 2L, total = 3L)
+      entries <- lapply(names(cols), function(nm) private$color_style_entry(private$check_cycle_color(cols[[nm]], nm), nm))
+      private$patch_color_cycle(slot[names(cols)], unlist(entries), extend = FALSE)
+      invisible(self)
+    },
+
+    #' @description Set the chart's color cycle (the color style part,
+    #'   `colors{n}.xml`). ChartEx charts derive series, category, and
+    #'   legend colors from this cycle: treemap and sunburst color their
+    #'   top-level categories from it, box & whisker and histogram color
+    #'   their series, funnel and Pareto take their first colors from it.
+    #'   The first `length(colors)` cycle entries are replaced in order; if
+    #'   more colors are given than the part contains, the cycle is
+    #'   extended. Remaining entries and the brightness variations are kept.
+    #' @param colors Character vector of colors (hex or R color names), or a
+    #'   list which may also contain `openxlsx2::wb_color()` values
+    #'   (theme colors supported).
+    #' @examples
+    #' ec("treemap")$
+    #'   add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+    #'   set_color_cycle(c("C00000", "4472C4", "70AD47", "FFC000"))
+    set_color_cycle = function(colors) {
+      if (length(colors) == 0) {
+        stop("'colors' must contain at least one color", call. = FALSE)
+      }
+      if (!is.list(colors)) colors <- as.list(colors)
+      entries <- vapply(seq_along(colors), function(i) {
+        private$color_style_entry(private$check_cycle_color(colors[[i]], sprintf("colors[%d]", i)), "colors")
+      }, character(1))
+      private$patch_color_cycle(seq_along(entries), entries, extend = TRUE)
+      invisible(self)
+    },
+
+    #' @description Set the color scale of a region map. Written as the
+    #'   series' `cx:valueColors` element, which drives both the map shading
+    #'   and the legend's color scale. Only applied to `regionMap` series.
+    #' @param min Color for the smallest values (hex, R color name, or
+    #'   `openxlsx2::wb_color()`).
+    #' @param max Color for the largest values.
+    #' @param mid Optional middle color for a three-color scale.
+    #' @examples
+    #' ec("regionMap")$
+    #'   add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+    #'   set_region_map_colors(min = "FFF2CC", max = "C00000")
+    set_region_map_colors = function(min, max, mid = NULL) {
+      self$region_colors <- list(
+        min = private$check_cycle_color(min, "min"),
+        mid = if (!is.null(mid)) private$check_cycle_color(mid, "mid"),
+        max = private$check_cycle_color(max, "max")
+      )
+      invisible(self)
     },
 
     #' @description Add a data series to the chart.
@@ -73,6 +149,23 @@ ChartEx <- R6::R6Class(
         ENCHARTER_EXTENDED,
         "series type"
       )
+
+      color        <- check_color(color, "color")
+      line_color   <- check_color(line_color, "line_color")
+      check_num(line_width, "line_width", min = 0)
+      check_num(gap_width, "gap_width", min = 0)
+      statistics   <- check_choice(statistics, c("inclusive", "exclusive"), "statistics")
+      parent_label <- check_choice(parent_label, c("overlapping", "banner", "none"), "parent_label") %||% "overlapping"
+      if (is.list(binning)) {
+        check_choice(as.character(binning$intervalClosed %||% "l"), c("l", "r", "left", "right"), "binning$intervalClosed")
+        check_num(binning$binSize, "binning$binSize", min = 0, exclusive_min = TRUE)
+        check_num(binning$binCount, "binning$binCount", min = 1, integer = TRUE)
+      }
+      if (is.numeric(subtotals)) {
+        if (anyNA(subtotals) || any(subtotals < 0) || any(subtotals != trunc(subtotals))) {
+          stop("'subtotals' must be a vector of non-negative point indices", call. = FALSE)
+        }
+      }
 
       if (is.null(color)) {
         color_idx <- (length(self$series_data) %% length(self$palette)) + 1
@@ -233,9 +326,22 @@ ChartEx <- R6::R6Class(
           if (!is.null(s$line_color)) private$render_color(xml_add_child(spPr_ser, "a:ln", w = as.character(round(s$line_width * 12700))), s$line_color)
         }
 
+        if (s$type == "regionMap" && !is.null(self$region_colors)) {
+          rc <- self$region_colors
+          vc <- xml_add_child(ser, "cx:valueColors")
+          private$render_color_core(xml_add_child(vc, "cx:minColor"), rc$min)
+          if (!is.null(rc$mid)) {
+            private$render_color_core(xml_add_child(vc, "cx:midColor"), rc$mid)
+          }
+          private$render_color_core(xml_add_child(vc, "cx:maxColor"), rc$max)
+          xml_add_child(ser, "cx:valueColorPositions",
+                        count = as.character(2L + !is.null(rc$mid)))
+        }
+
         if (length(s$color) > 1) {
+          # CT_Series: per-point colors live in <cx:dataPt idx=".."> elements
           for (j in seq_along(s$color)) {
-            dPt <- xml_add_child(ser, "cx:dPt", idx = as.character(j - 1))
+            dPt <- xml_add_child(ser, "cx:dataPt", idx = as.character(j - 1))
             spPr <- xml_add_child(dPt, "cx:spPr")
             private$render_color_core(xml_add_child(spPr, "a:solidFill"), s$color[j])
           }
@@ -385,11 +491,18 @@ ChartEx <- R6::R6Class(
       # 2. Legends & Titles
       legend_node <- xml_find_first(self$xml, "//cx:legend")
       l_pos <- self$legend_params$pos %||% "t"
+      if (l_pos == "tr") l_pos <- "t"
+      l_align <- switch(self$legend_params$align %||% "ctr",
+        "l" = "min", "t" = "min",
+        "r" = "max", "b" = "max",
+        "min" = "min", "max" = "max",
+        "ctr"
+      )
       if (l_pos == "none") {
         xml_remove(legend_node)
       } else {
         xml_set_attr(legend_node, "pos", l_pos)
-        xml_set_attr(legend_node, "align", self$legend_params$align %||% "ctr")
+        xml_set_attr(legend_node, "align", l_align)
         xml_set_attr(legend_node, "overlay", self$legend_params$overlay %||% "0")
         if (any(!vapply(self$legend_params$style, is.null, logical(1)))) private$apply_legend_text_style(legend_node, self$legend_params$style)
       }
@@ -414,6 +527,77 @@ ChartEx <- R6::R6Class(
     }
   ),
   private = list(
+
+    # Validates one cycle/scale color: single, concrete (no "auto"/"none").
+    check_cycle_color = function(val, name) {
+      if (inherits(val, "wbColour")) return(val)
+      val <- check_color(val, name)
+      if (length(val) != 1) stop(sprintf("'%s' must be a single color", name), call. = FALSE)
+      if (val %in% c("auto", "none")) {
+        stop(sprintf("'%s' must be a concrete color, not \"%s\"", name, val), call. = FALSE)
+      }
+      val
+    },
+
+    # Replaces entries of the colorStyle part's color cycle. `slots` are
+    # 1-based positions, `entries` the ready-made color elements. With
+    # extend = TRUE, slots beyond the existing entries are appended before
+    # the <cs:variation> block.
+    patch_color_cycle = function(slots, entries, extend = FALSE) {
+      head_end <- regexpr("<cs:variation", self$color_xml, fixed = TRUE)
+      if (head_end < 0) head_end <- nchar(self$color_xml) + 1L
+      head <- substr(self$color_xml, 1L, head_end - 1L)
+      tail <- substr(self$color_xml, head_end, nchar(self$color_xml))
+
+      m <- gregexpr("<a:(?:schemeClr|srgbClr|sysClr|prstClr|scrgbClr|hslClr)\\b[^>]*/>", head)[[1]]
+      n_have <- if (m[1] < 0) 0L else length(m)
+      if (!extend && (n_have < max(slots))) {
+        stop("the chart's color style part must contain at least three color entries", call. = FALSE)
+      }
+      if (max(slots) > n_have && !extend) {
+        stop("color cycle has fewer entries than requested", call. = FALSE)
+      }
+
+      # replace existing slots from the back (keeps offsets valid), then
+      # append any slots beyond the current cycle in ascending order
+      repl <- which(slots <= n_have)
+      for (i in repl[order(slots[repl], decreasing = TRUE)]) {
+        k <- slots[i]
+        head <- paste0(
+          substr(head, 1L, m[k] - 1L),
+          entries[i],
+          substr(head, m[k] + attr(m, "match.length")[k], nchar(head))
+        )
+      }
+      app <- which(slots > n_have)
+      for (i in app[order(slots[app])]) {
+        head <- paste0(head, entries[i], "\n")
+      }
+      self$color_xml <- paste0(head, tail)
+    },
+
+    # Builds a single color element for the colorStyle part: schemeClr for
+    # theme wb_color()s, srgbClr for everything else.
+    color_style_entry = function(val, name) {
+      if (inherits(val, "wbColour")) {
+        ty <- names(val)
+        if (!is.null(ty) && ty == "theme") {
+          theme_map <- c(
+            "bg1", "tx1", "bg2", "tx2",
+            "accent1", "accent2", "accent3", "accent4", "accent5", "accent6",
+            "hlink", "folHlink", "phClr",
+            "dk1", "lt1", "dk2", "lt2"
+          )
+          v <- as.character(val)
+          if (!v %in% theme_map) v <- theme_map[as.integer(v) + 1]
+          return(sprintf('<a:schemeClr val="%s"/>', v))
+        }
+        hex <- toupper(as.character(val[1]))
+        hex <- sub("^FF([0-9A-F]{6})$", "\\1", hex)
+        return(sprintf('<a:srgbClr val="%s"/>', hex))
+      }
+      sprintf('<a:srgbClr val="%s"/>', val)
+    },
 
     is_ref = function(x) {
       if (is.null(x) || is.na(x) || x == "") return(FALSE)
@@ -510,16 +694,7 @@ ChartEx <- R6::R6Class(
         private$add_rich_text(xml_add_child(ax, "cx:title"), title, title_style)
       }
 
-      # 4. Axis Line Style (spPr)
-      axSpPr <- xml_add_child(ax, "cx:spPr")
-      # Use line_width if provided (converted to EMUs), else default 0.75pt
-      w_val <- if (!is.null(s$line_width)) as.character(round(s$line_width * 12700)) else "9525"
-      ln <- xml_add_child(axSpPr, "a:ln", w = w_val)
-      # Wrap color in solidFill to prevent XML errors
-      ln_fill <- xml_add_child(ln, "a:solidFill")
-      private$render_color_core(ln_fill, s$color %||% "000000")
-
-      # 5. Gridlines (Aligned with Chart logic)
+      # 4. Gridlines (Aligned with Chart logic)
       if (!is.null(s$grid_lines) && !isFALSE(s$grid_lines)) {
         g <- xml_add_child(ax, "cx:majorGridlines")
         sp <- xml_add_child(g, "cx:spPr")
@@ -533,15 +708,24 @@ ChartEx <- R6::R6Class(
         if (!is.null(dash_val)) xml_add_child(ln, "a:prstDash", val = dash_val)
       }
 
-      # 6. Ticks and Labels
+      # 5. Ticks and Labels
       if (!is.null(s$major_tick)) xml_add_child(ax, "cx:majorTickMarks", type = s$major_tick)
       xml_add_child(ax, "cx:tickLabels")
 
-      # 7. Styling (txPr) - MUST BE LAST
-      # Number Format (NEW: mapping s$format from axis_params)
+      # 6. Number Format (mapping s$format from axis_params)
       if (!is.null(s$format)) {
         xml_add_child(ax, "cx:numFmt", formatCode = as.character(s$format), sourceLinked = "0")
       }
+
+      # 7. Axis Line Style. CT_Axis sequence places spPr after tickLabels and
+      # numFmt, directly before txPr.
+      axSpPr <- xml_add_child(ax, "cx:spPr")
+      # Use line_width if provided (converted to EMUs), else default 0.75pt
+      w_val <- if (!is.null(s$line_width)) as.character(round(s$line_width * 12700)) else "9525"
+      ln <- xml_add_child(axSpPr, "a:ln", w = w_val)
+      # Wrap color in solidFill to prevent XML errors
+      ln_fill <- xml_add_child(ln, "a:solidFill")
+      private$render_color_core(ln_fill, s$color %||% "000000")
 
       # 8. Text Styling (txPr) - MUST BE LAST
       private$apply_axis_style(ax, s)

@@ -97,6 +97,25 @@ normalize_encharter_type <- function(type) {
     # stock
     "stock"           = "stockChart",
     "stockchart"      = "stockChart",
+    # pie of pie / bar of pie
+    "ofpie"           = "ofPieChart",
+    "ofpiechart"      = "ofPieChart",
+    "pieof"           = "ofPieChart",
+    "pieofpie"        = "ofPieChart",
+    "barofpie"        = "ofPieChart",
+    "barof"           = "ofPieChart",
+    # 3D
+    "bar3d"           = "bar3DChart",
+    "bar3dchart"      = "bar3DChart",
+    "column3d"        = "bar3DChart",
+    "line3d"          = "line3DChart",
+    "line3dchart"     = "line3DChart",
+    "pie3d"           = "pie3DChart",
+    "pie3dchart"      = "pie3DChart",
+    "area3d"          = "area3DChart",
+    "area3dchart"     = "area3DChart",
+    "surface3d"       = "surface3DChart",
+    "surface3dchart"  = "surface3DChart",
     # extended
     "box"             = "boxWhisker",
     "boxplot"         = "boxWhisker",

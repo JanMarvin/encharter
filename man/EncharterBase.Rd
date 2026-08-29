@@ -312,7 +312,10 @@ and style parameters. Modified via \verb{$set_x_axis()}, etc.}
   minor_grid_width = NULL,
   crosses = NULL,
   crosses_at = NULL,
-  label_pos = NULL
+  label_pos = NULL,
+  tick_lbl_skip = NULL,
+  tick_mark_skip = NULL,
+  disp_units = NULL
 )}
     \if{html}{\out{</div>}}
   }
@@ -354,6 +357,15 @@ the axis line, major grid lines, and minor grid lines respectively.}
 \code{crosses} when supplied.}
       \item{\code{label_pos}}{Tick label position: \code{"nextTo"} (default),
 \code{"high"}, \code{"low"}, or \code{"none"}.}
+      \item{\code{tick_lbl_skip}}{Integer (>= 1); draw a tick label only every n-th
+category (category axes only).}
+      \item{\code{tick_mark_skip}}{Integer (>= 1); draw a tick mark only every n-th
+category (category axes only).}
+      \item{\code{disp_units}}{Display units for value axes: a built-in unit string
+(\code{"hundreds"}, \code{"thousands"}, \code{"tenThousands"},
+\code{"hundredThousands"}, \code{"millions"}, \code{"tenMillions"},
+\code{"hundredMillions"}, \code{"billions"}, \code{"trillions"}) or a
+positive number for a custom unit.}
     }
     \if{html}{\out{</div>}}
   }
@@ -408,7 +420,10 @@ the axis line, major grid lines, and minor grid lines respectively.}
   minor_grid_width = NULL,
   crosses = NULL,
   crosses_at = NULL,
-  label_pos = NULL
+  label_pos = NULL,
+  tick_lbl_skip = NULL,
+  tick_mark_skip = NULL,
+  disp_units = NULL
 )}
     \if{html}{\out{</div>}}
   }
@@ -440,6 +455,11 @@ string.}
       \item{\code{crosses_at}}{Numeric crossing value; overrides \code{crosses}.}
       \item{\code{label_pos}}{\code{"nextTo"}, \code{"high"}, \code{"low"}, or
 \code{"none"}.}
+      \item{\code{tick_lbl_skip, tick_mark_skip}}{Integer (>= 1); label/tick every
+n-th category (category axes only).}
+      \item{\code{disp_units}}{Display units: a built-in unit string (e.g.
+\code{"thousands"}, \code{"millions"}) or a positive number for a custom
+unit. Value axes only.}
     }
     \if{html}{\out{</div>}}
   }
@@ -473,6 +493,10 @@ arguments in \verb{$add_series()}.
   show_cat = FALSE,
   show_legend_key = FALSE,
   pos = "t",
+  show_ser_name = FALSE,
+  show_percent = FALSE,
+  show_bubble_size = FALSE,
+  format = NULL,
   ...
 )}
     \if{html}{\out{</div>}}
@@ -487,6 +511,13 @@ label. Default \code{FALSE}.}
       \item{\code{pos}}{Label position: \code{"t"} (top, default), \code{"b"}
 (bottom), \code{"l"}, \code{"r"}, \code{"ctr"}, \code{"inEnd"},
 \code{"outEnd"}, \code{"bestFit"}.}
+      \item{\code{show_ser_name}}{Logical; show the series name. Default \code{FALSE}.}
+      \item{\code{show_percent}}{Logical; show the percentage (pie-type charts).
+Default \code{FALSE}.}
+      \item{\code{show_bubble_size}}{Logical; show the bubble size (bubble charts).
+Default \code{FALSE}.}
+      \item{\code{format}}{Number format string for the labels (e.g. \code{"#,##0"},
+\code{"0.0\%"}).}
       \item{\code{...}}{Additional font style arguments passed to the label text
 properties (e.g. \code{font_size}, \code{font_color}, \code{bold}).}
     }

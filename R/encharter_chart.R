@@ -40,6 +40,28 @@ Chart <- R6::R6Class(
     show_neg_bubbles = FALSE,
     #' @field disp_blanks_as Character; "gap", "span", or "zero".
     disp_blanks_as = "gap",
+    #' @field of_pie_type Character; subtype of `ofPieChart`: "pie" or "bar".
+    of_pie_type = "pie",
+    #' @field second_pie_size Integer; size of the second pie/bar plot as a
+    #'   percentage (5-200) for `ofPieChart`.
+    second_pie_size = NULL,
+    #' @field split_type Character; how points are split into the second plot
+    #'   for `ofPieChart`: "auto", "cust", "percent", "pos", or "val".
+    split_type = NULL,
+    #' @field split_pos Numeric; split threshold, or point indices (0-based)
+    #'   when `split_type = "cust"`.
+    split_pos = NULL,
+    #' @field view3d Named list of 3D view parameters (`rot_x`, `rot_y`,
+    #'   `perspective`, `depth_percent`, `h_percent`, `right_angle_axes`).
+    view3d = list(rot_x = NULL, rot_y = NULL, perspective = NULL,
+                  depth_percent = NULL, h_percent = NULL, right_angle_axes = NULL),
+    #' @field gap_depth Integer; gap depth percentage (0-500) for 3D charts.
+    gap_depth = NULL,
+    #' @field bar_shape Character; bar shape for `bar3DChart`: "box",
+    #'   "cylinder", "cone", "coneToMax", "pyramid", or "pyramidToMax".
+    bar_shape = NULL,
+    #' @field size_represents Character; bubble size meaning, "area" or "w".
+    size_represents = NULL,
 
     #' @description Initialize a new Chart object.
     #' @param type Initial chart type (e.g., "lineChart", "barChart", "pieChart").
@@ -160,6 +182,8 @@ Chart <- R6::R6Class(
     #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
     #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
+    #' @param tick_lbl_skip,tick_mark_skip Integer (>= 1); label/tick every n-th category (category axes only).
+    #' @param disp_units Display units: a built-in unit string (e.g. "thousands") or a positive number (value axes only).
     set_y2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                            major_time = NULL, minor_time = NULL, base_time = NULL,
                            major_tick = NULL, minor_tick = NULL,
@@ -169,7 +193,8 @@ Chart <- R6::R6Class(
                            grid_color = NULL, grid_lines = NULL,
                            minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                           crosses = "max", crosses_at = NULL, label_pos = NULL) {
+                           crosses = "max", crosses_at = NULL, label_pos = NULL,
+                           tick_lbl_skip = NULL, tick_mark_skip = NULL, disp_units = NULL) {
         private$set_axis_params(
           "y2",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
@@ -180,7 +205,9 @@ Chart <- R6::R6Class(
           minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
-          label_pos = label_pos
+          label_pos = label_pos,
+          tick_lbl_skip = tick_lbl_skip, tick_mark_skip = tick_mark_skip,
+          disp_units = disp_units
         )
     },
 
@@ -209,6 +236,8 @@ Chart <- R6::R6Class(
     #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
     #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
+    #' @param tick_lbl_skip,tick_mark_skip Integer (>= 1); label/tick every n-th category (category axes only).
+    #' @param disp_units Display units: a built-in unit string (e.g. "thousands") or a positive number (value axes only).
     set_x2_axis = function(min = NULL, max = NULL, major = NULL, minor = NULL,
                            major_time = NULL, minor_time = NULL, base_time = NULL,
                            major_tick = NULL, minor_tick = NULL,
@@ -218,7 +247,8 @@ Chart <- R6::R6Class(
                            grid_color = NULL, grid_lines = NULL,
                            minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                           crosses = "max", crosses_at = NULL, label_pos = NULL) {
+                           crosses = "max", crosses_at = NULL, label_pos = NULL,
+                           tick_lbl_skip = NULL, tick_mark_skip = NULL, disp_units = NULL) {
 
         private$set_axis_params(
           "x2",
@@ -230,7 +260,9 @@ Chart <- R6::R6Class(
           minor_grid_color = minor_grid_color, minor_grid_lines = minor_grid_lines,
           cross_between = cross_between, line_width = line_width, grid_width = grid_width,
           minor_grid_width = minor_grid_width, crosses = crosses, crosses_at = crosses_at,
-          label_pos = label_pos
+          label_pos = label_pos,
+          tick_lbl_skip = tick_lbl_skip, tick_mark_skip = tick_mark_skip,
+          disp_units = disp_units
         )
     },
 
@@ -247,6 +279,9 @@ Chart <- R6::R6Class(
     #' @param hole_size Set the hole size of (only doughnut charts), from 0 to 90.
     set_pie_options  = function(rotation = NULL, expansion = NULL, hole_size = NULL) {
 
+      check_num(rotation, "rotation", min = 0, max = 360, integer = TRUE)
+      check_num(expansion, "expansion", min = 0, integer = TRUE)
+
       if (!is.null(rotation)) {
         self$first_slice_ang <- rotation
       }
@@ -260,9 +295,94 @@ Chart <- R6::R6Class(
       invisible(self)
     },
 
+    #' @description Configure the Pie of Pie / Bar of Pie chart
+    #'   (`ofPieChart`).
+    #' @param type Subtype: `"pie"` (Pie of Pie, default) or `"bar"`
+    #'   (Bar of Pie).
+    #' @param second_size Size of the second plot as a percentage of the main
+    #'   pie, from 5 to 200. Default 75.
+    #' @param split_type How data points are assigned to the second plot:
+    #'   `"auto"` (default), `"percent"`, `"pos"` (last n
+    #'   points), `"val"` (values below threshold), or `"cust"`.
+    #' @param split_pos Numeric split threshold for `"percent"`,
+    #'   `"pos"`, and `"val"`; for `"cust"` a vector of
+    #'   0-based point indices to move to the second plot.
+    #' @examples
+    #' ec("ofPieChart")$set_of_pie_options(type = "bar", split_type = "pos", split_pos = 3)
+    set_of_pie_options = function(type = NULL, second_size = NULL,
+                                  split_type = NULL, split_pos = NULL) {
+      type <- check_choice(type, c("pie", "bar"), "type")
+      check_num(second_size, "second_size", min = 5, max = 200)
+      split_type <- check_choice(split_type, c("auto", "cust", "percent", "pos", "val"), "split_type")
+
+      if (!is.null(split_pos)) {
+        if (identical(split_type %||% self$split_type, "cust")) {
+          if (!is.numeric(split_pos) || anyNA(split_pos) || any(split_pos < 0) ||
+              any(split_pos != trunc(split_pos))) {
+            stop("'split_pos' must be a vector of non-negative point indices for split_type = \"cust\"", call. = FALSE)
+          }
+        } else {
+          check_num(split_pos, "split_pos", min = 0, exclusive_min = TRUE)
+        }
+      }
+
+      if (!is.null(type))        self$of_pie_type     <- type
+      if (!is.null(second_size)) self$second_pie_size <- second_size
+      if (!is.null(split_type))  self$split_type      <- split_type
+      if (!is.null(split_pos))   self$split_pos       <- split_pos
+      invisible(self)
+    },
+
+    #' @description Configure the 3D view and 3D-only chart options. Only
+    #'   takes effect for the 3D chart types (`bar3DChart`,
+    #'   `line3DChart`, `pie3DChart`, `area3DChart`,
+    #'   `surface3DChart`) and `surfaceChart`.
+    #' @param rot_x Rotation around the X-axis in degrees, from -90 to 90.
+    #' @param rot_y Rotation around the Y-axis in degrees, from 0 to 360.
+    #' @param perspective Perspective in half-degrees, from 0 to 240 (ignored
+    #'   when `right_angle_axes = TRUE`).
+    #' @param depth_percent Depth as a percentage of chart width, 20 to 2000.
+    #' @param h_percent Height as a percentage of chart width, 5 to 500.
+    #' @param right_angle_axes Logical; render axes at right angles instead of
+    #'   in perspective.
+    #' @param gap_depth Gap depth percentage between series, 0 to 500
+    #'   (bar/line/area 3D).
+    #' @param shape Bar shape for `bar3DChart`: `"box"` (default),
+    #'   `"cylinder"`, `"cone"`, `"coneToMax"`,
+    #'   `"pyramid"`, or `"pyramidToMax"`.
+    #' @examples
+    #' ec("bar3DChart")$set_3d_options(rot_x = 20, rot_y = 30, shape = "cylinder")
+    set_3d_options = function(rot_x = NULL, rot_y = NULL, perspective = NULL,
+                              depth_percent = NULL, h_percent = NULL,
+                              right_angle_axes = NULL,
+                              gap_depth = NULL, shape = NULL) {
+      check_num(rot_x, "rot_x", min = -90, max = 90, integer = TRUE)
+      check_num(rot_y, "rot_y", min = 0, max = 360, integer = TRUE)
+      check_num(perspective, "perspective", min = 0, max = 240, integer = TRUE)
+      check_num(depth_percent, "depth_percent", min = 20, max = 2000, integer = TRUE)
+      check_num(h_percent, "h_percent", min = 5, max = 500, integer = TRUE)
+      check_bool(right_angle_axes, "right_angle_axes")
+      check_num(gap_depth, "gap_depth", min = 0, max = 500, integer = TRUE)
+      shape <- check_choice(shape, c("box", "cylinder", "cone", "coneToMax", "pyramid", "pyramidToMax"), "shape")
+
+      new_view <- list(rot_x = rot_x, rot_y = rot_y, perspective = perspective,
+                       depth_percent = depth_percent, h_percent = h_percent,
+                       right_angle_axes = right_angle_axes)
+      self$view3d <- modifyList(self$view3d, Filter(Negate(is.null), new_view))
+      if (!is.null(gap_depth)) self$gap_depth <- gap_depth
+      if (!is.null(shape))     self$bar_shape <- shape
+      invisible(self)
+    },
+
     #' @param scale The scale factor for bubbles, from 0 to 300 (expressed as a percentage).
     #' @param show_neg Logical; if `TRUE`, bubbles with negative values will be displayed on the chart.
-    set_bubble_options = function(scale = 100, show_neg = FALSE) {
+    #' @param size_represents What the bubble size encodes: `"area"`
+    #'   (default in Excel) or `"w"` (width/diameter). `NULL` omits the
+    #'   element.
+    set_bubble_options = function(scale = 100, show_neg = FALSE, size_represents = NULL) {
+      check_num(scale, "scale", min = 0, max = 300)
+      check_bool(show_neg, "show_neg")
+      self$size_represents <- check_choice(size_represents, c("area", "w"), "size_represents")
       self$bubble_scale <- scale
       self$show_neg_bubbles <- show_neg
       invisible(self)
@@ -308,6 +428,8 @@ Chart <- R6::R6Class(
     #'     or `"cust"` (Custom).
     #'   * `value`: The numeric value for the error bars (e.g., 10 for 10% or 5 for fixed units).
     #'   * `direction`: Direction of bars. One of `"both"`, `"plus"`, or `"minus"`.
+    #'   * `axis`: Error direction axis, `"y"` (default) or `"x"` (horizontal
+    #'     bars, scatter charts).
     #'   * `color`: Hex color code for the bars (e.g., "FF0000").
     #'
     #' @param trendline A list of regression line properties:
@@ -318,9 +440,14 @@ Chart <- R6::R6Class(
     #'     `"poly"` (Polynomial), or `"power"` (Power).
     #'   * `order`: Required for `"poly"`; an integer between 2 and 6.
     #'   * `period`: Required for `"movingAvg"`; an integer representing the window size.
+    #'   * `forward`, `backward`: Numeric; extrapolate the line n periods
+    #'     forwards/backwards.
+    #'   * `intercept`: Numeric; force the line through a fixed y-intercept.
     #'   * `color`: Hex color code for the line.
     #'   * `show_r2`: Logical; if `TRUE`, displays the R-squared value on the chart.
     #'
+    #' @param invert_if_negative Logical; bar charts only. Invert the fill for
+    #'   negative values. Default `FALSE`.
     add_series = function(name = NULL, data, label = NULL, weight = NULL,
                           color = "4472C4", type = NULL,
                           secondary = FALSE, dir = "col", grouping = "standard",
@@ -331,7 +458,8 @@ Chart <- R6::R6Class(
                           marker_line_width = 0.75,
                           show_val = NULL, show_cat = NULL,
                           line_type = NULL, line_width = 1, line_color = NULL,
-                          filled = FALSE, error_bars = FALSE, trendline = FALSE) {
+                          filled = FALSE, error_bars = FALSE, trendline = FALSE,
+                          invert_if_negative = FALSE) {
 
       type <- normalize_encharter_type(type)
       private$validate_input(
@@ -362,6 +490,20 @@ Chart <- R6::R6Class(
         c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
         "line_type"
       )
+
+      # Schema range validation (ECMA-376 dml-chart.xsd)
+      check_num(overlap, "overlap", min = -100, max = 100, integer = TRUE)   # ST_Overlap
+      check_num(gap_width, "gap_width", min = 0, max = 500, integer = TRUE) # ST_GapAmount
+      check_num(marker_size, "marker_size", min = 2, max = 72, integer = TRUE) # ST_MarkerSize
+      check_num(line_width, "line_width", min = 0)
+      check_num(marker_line_width, "marker_line_width", min = 0)
+      check_trendline(trendline)
+      check_bool(invert_if_negative, "invert_if_negative")
+      check_error_bars(error_bars)
+      color       <- check_color(color, "color")
+      line_color  <- check_color(line_color, "line_color")
+      marker_fill <- check_color(marker_fill, "marker_fill")
+      marker_line <- check_color(marker_line, "marker_line")
 
       sec_val <- if (isTRUE(secondary)) "y"
         else if (isFALSE(secondary)) "none"
@@ -456,6 +598,7 @@ Chart <- R6::R6Class(
         gap_width = gap_width,
         error_bars  = error_bars,
         trendline = trendline,
+        invert_if_negative = invert_if_negative,
 
         # GROUPED STYLING: Line
         line = list(
@@ -513,12 +656,8 @@ Chart <- R6::R6Class(
       }
       xml_add_child(chart_root, "c:autoTitleDeleted", val = if (is.null(self$chart_title$text)) "1" else "0")
 
-      if (self$type == "surfaceChart") {
-        v3d <- xml_add_child(chart_root, "c:view3D")
-        xml_add_child(v3d, "c:rotX", val = "90")
-        xml_add_child(v3d, "c:rotY", val = "0")
-        xml_add_child(v3d, "c:rAngAx", val = "0")
-        xml_add_child(v3d, "c:perspective", val = "0")
+      if (self$type %in% c("surfaceChart", ENCHARTER_3D)) {
+        private$render_view3d(chart_root)
       }
 
       plot_area <- xml_add_child(chart_root, "c:plotArea")
@@ -534,6 +673,30 @@ Chart <- R6::R6Class(
       private$current_idx <- 0
       combos <- unique(lapply(self$series_data, function(x) list(type = x$type, sec_type = x$sec_type)))
 
+      # Structural sanity checks: schema-valid combinations that Excel
+      # nevertheless refuses to display.
+      ser_types <- vapply(self$series_data, function(x) x$type, character(1))
+      is_3d <- any(ser_types %in% ENCHARTER_3D)
+      if (any(ser_types %in% ENCHARTER_PIE_FAMILY) && !all(ser_types %in% ENCHARTER_PIE_FAMILY)) {
+        warning("Excel cannot combine pie-type charts (pie, doughnut, ofPie) with axis-based chart types in one plot area.", call. = FALSE)
+      }
+      n_stock <- sum(ser_types == "stockChart")
+      if (n_stock > 0 && (n_stock < 3 || n_stock > 4)) {
+        warning(sprintf("stockChart requires 3 or 4 series (High-Low-Close or Open-High-Low-Close), got %d. Excel will refuse to display the chart.", n_stock), call. = FALSE)
+      }
+      if (is_3d && length(unique(ser_types)) > 1) {
+        warning("3D chart types cannot be combined with other chart types in one plot area.", call. = FALSE)
+      }
+      if (is_3d && any(vapply(self$series_data, function(x) !identical(x$sec_type, "none"), logical(1)))) {
+        warning("Secondary axes are not supported for 3D chart types; the series are placed on the primary axes.", call. = FALSE)
+      }
+      for (ax_name in c("x", "y", "x2", "y2")) {
+        p <- self$axis_params[[ax_name]]
+        if (!is.null(p$log_base) && !is.null(p$min) && p$min <= 0) {
+          warning(sprintf("Axis '%s': a logarithmic scale requires a positive 'min'.", ax_name), call. = FALSE)
+        }
+      }
+
       has_axes <- FALSE
       for (combo in combos) {
         sub_series <- Filter(function(x) x$type == combo$type && x$sec_type == combo$sec_type, self$series_data)
@@ -545,18 +708,24 @@ Chart <- R6::R6Class(
         # Note: sec_type is "none" or "y"/"x"/"xy" based on your add_series logic
         val_id <- if (combo$sec_type %in% c("y", "xy")) id_sec_val else id_prim_val
 
-        # Keep your surface logic
-        ser_ax_id <- if (self$type == "surfaceChart") id_ser_ax else NULL
+        # 3D charts only support the primary axis system
+        if (combo$type %in% ENCHARTER_3D) {
+          cat_id <- id_prim_cat
+          val_id <- id_prim_val
+        }
+
+        # Surface and 3D chart groups reference a third (series) axis
+        ser_ax_id <- if (combo$type %in% c("surfaceChart", "bar3DChart", "line3DChart", "area3DChart", "surface3DChart")) id_ser_ax else NULL
 
         private$render_series_node(plot_area, sub_series, combo$type, cat_id, val_id, ser_ax_id)
 
-        if (!combo$type %in% c("pieChart", "doughnutChart")) has_axes <- TRUE
+        if (!combo$type %in% ENCHARTER_PIE_FAMILY) has_axes <- TRUE
       }
 
       if (has_axes) {
-        # 1. Pre-scan
-        needs_sec_y <- any(vapply(self$series_data, function(x) x$sec_type %in% c("y", "xy"), FALSE))
-        needs_sec_x <- any(vapply(self$series_data, function(x) x$sec_type %in% c("x", "xy"), FALSE))
+        # 1. Pre-scan (3D charts only support the primary axis system)
+        needs_sec_y <- !is_3d && any(vapply(self$series_data, function(x) x$sec_type %in% c("y", "xy"), FALSE))
+        needs_sec_x <- !is_3d && any(vapply(self$series_data, function(x) x$sec_type %in% c("x", "xy"), FALSE))
 
         # 2. Primary X-Axis (Bottom)
         # Always rendered
@@ -594,7 +763,7 @@ Chart <- R6::R6Class(
           }
         }
 
-        if (self$type == "surfaceChart") {
+        if (self$type %in% c("surfaceChart", "bar3DChart", "line3DChart", "area3DChart", "surface3DChart")) {
           private$render_ser_ax(plot_area, id_ser_ax, id_prim_val)
         }
       }
@@ -628,6 +797,40 @@ Chart <- R6::R6Class(
 
   private = list(
     current_idx = 0,
+
+    # Emits <c:view3D> for surfaceChart and the 3D chart types.
+    # Sequence per CT_View3D: rotX, hPercent, rotY, depthPercent, rAngAx,
+    # perspective. User values from self$view3d override the per-type defaults.
+    render_view3d = function(chart_root) {
+      v <- self$view3d
+
+      defaults <- switch(self$type,
+        "surfaceChart"   = list(rot_x = 90, rot_y = 0,  right_angle_axes = FALSE, perspective = 0),
+        "pie3DChart"     = list(rot_x = 30, rot_y = 0,  right_angle_axes = FALSE, perspective = 30),
+        "surface3DChart" = list(rot_x = 15, rot_y = 20, right_angle_axes = FALSE, perspective = 30),
+        # bar3DChart, line3DChart, area3DChart
+        list(rot_x = 15, rot_y = 20, right_angle_axes = TRUE, perspective = NULL)
+      )
+
+      rot_x <- v$rot_x %||% defaults$rot_x
+      rot_y <- v$rot_y %||% defaults$rot_y
+      r_ang <- v$right_angle_axes %||% defaults$right_angle_axes
+      persp <- v$perspective %||% defaults$perspective
+
+      v3d <- xml_add_child(chart_root, "c:view3D")
+      xml_add_child(v3d, "c:rotX", val = as.character(rot_x))
+      if (!is.null(v$h_percent)) {
+        xml_add_child(v3d, "c:hPercent", val = as.character(v$h_percent))
+      }
+      xml_add_child(v3d, "c:rotY", val = as.character(rot_y))
+      if (!is.null(v$depth_percent)) {
+        xml_add_child(v3d, "c:depthPercent", val = as.character(v$depth_percent))
+      }
+      xml_add_child(v3d, "c:rAngAx", val = if (isTRUE(r_ang)) "1" else "0")
+      if (!is.null(persp)) {
+        xml_add_child(v3d, "c:perspective", val = as.character(persp))
+      }
+    },
 
     is_ref = function(x) {
       if (is.null(x) || x == "") return(FALSE)
@@ -695,7 +898,12 @@ Chart <- R6::R6Class(
         xml_add_child(c_node, "c:scatterStyle", val = "lineMarker")
       }
 
-      if (type == "barChart") {
+      if (type == "ofPieChart") {
+        # CT_OfPieChart: ofPieType is the mandatory first element
+        xml_add_child(c_node, "c:ofPieType", val = self$of_pie_type %||% "pie")
+      }
+
+      if (type %in% c("barChart", "bar3DChart")) {
         xml_add_child(c_node, "c:barDir", val = sub_series[[1]]$dir %||% "col")
         xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
@@ -705,17 +913,19 @@ Chart <- R6::R6Class(
         xml_add_child(c_node, "c:radarStyle", val = radar_val)
       }
 
-      if (type == "surfaceChart") {
+      if (type %in% c("surfaceChart", "surface3DChart")) {
         surface_val <- if (isTRUE(sub_series[[1]]$filled)) "1" else "0"
         xml_add_child(c_node, "c:wireframe", val = surface_val)
       }
 
-      if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart", "barChart", "radarChart", "stockChart", "surfaceChart")) {
+      if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart", "barChart", "radarChart", "stockChart", "surfaceChart",
+                       "bar3DChart", "pie3DChart", "ofPieChart", "surface3DChart")) {
+        # lineChart, areaChart, line3DChart, area3DChart
         xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
       }
 
-      if (!type %in% c("stockChart", "surfaceChart")) {
-        vary_val <- if (type %in% c("pieChart", "doughnutChart")) "1" else "0"
+      if (!type %in% c("stockChart", "surfaceChart", "surface3DChart")) {
+        vary_val <- if (type %in% ENCHARTER_PIE_FAMILY) "1" else "0"
         xml_add_child(c_node, "c:varyColors", val = vary_val)
       }
 
@@ -743,12 +953,12 @@ Chart <- R6::R6Class(
         }
 
         # spPr (Series Styling)
-        if (!type %in% c("pieChart", "doughnutChart")) {
+        if (!type %in% ENCHARTER_PIE_FAMILY) {
           sp <- xml_add_child(ser, "c:spPr")
-          if (type %in% c("barChart", "areaChart", "bubbleChart")) {
+          if (type %in% c("barChart", "areaChart", "bubbleChart", "bar3DChart", "area3DChart")) {
             color <- s$line$color %||% s$color %||% "auto"
             private$render_color_core(xml_add_child(sp, "a:solidFill"), color)
-          } else if (type %in% c("lineChart", "scatterChart", "stockChart")) {
+          } else if (type %in% c("lineChart", "scatterChart", "stockChart", "line3DChart")) {
             # If show_line is FALSE, we must explicitly tell OOXML not to draw the line
             if (isFALSE(s$line$show)) {
               ln <- xml_add_child(sp, "a:ln")
@@ -757,6 +967,11 @@ Chart <- R6::R6Class(
               private$render_line_style(sp, s$line)
             }
           }
+        }
+
+        # CT_BarSer: invertIfNegative follows spPr
+        if (type %in% c("barChart", "bar3DChart") && isTRUE(s$invert_if_negative)) {
+          xml_add_child(ser, "c:invertIfNegative", val = "1")
         }
         # --- EG_SerShared End ---
 
@@ -774,14 +989,14 @@ Chart <- R6::R6Class(
           }
         }
 
-        if (type %in% c("pieChart", "doughnutChart")) {
+        if (type %in% ENCHARTER_PIE_FAMILY) {
           if (!is.null(self$expansion)) {
             xml_add_child(ser, "c:explosion", val = as.character(self$expansion))
           }
         }
 
         # 4. dPt (Data Points)
-        if (type %in% c("bubbleChart", "pieChart", "doughnutChart")) {
+        if (type %in% c("bubbleChart", ENCHARTER_PIE_FAMILY)) {
           palette <- s$line$color %||% self$palette
           # for (i in (seq_along(palette) - 1L)) {
           #   dPt <- xml_add_child(ser, "c:dPt")
@@ -814,35 +1029,42 @@ Chart <- R6::R6Class(
         lp <- s$label_params %||% self$label_params
 
         # Only enter if lp exists AND at least one show flag is TRUE
-        if (!is.null(lp) && (isTRUE(lp$show_val) || isTRUE(lp$show_cat) || isTRUE(lp$show_legend_key))) {
+        if (!is.null(lp) && (isTRUE(lp$show_val) || isTRUE(lp$show_cat) || isTRUE(lp$show_legend_key) ||
+                             isTRUE(lp$show_ser_name) || isTRUE(lp$show_percent) || isTRUE(lp$show_bubble_size))) {
 
           dLbls <- xml_add_child(ser, "c:dLbls")
 
-          # A. txPr (Styling)
+          # A. numFmt (must precede spPr/txPr per EG_DLblShared)
+          if (!is.null(lp$format)) {
+            xml_add_child(dLbls, "c:numFmt", formatCode = lp$format, sourceLinked = "0")
+          }
+
+          # B. txPr (Styling)
           if (length(lp$style) > 0) {
             private$apply_text_style(dLbls, lp$style)
           }
 
-          # B. dLblPos
+          # C. dLblPos (not allowed on 3D chart groups)
           final_pos <- lp$pos
           if (type == "barChart") {
             if (final_pos == "t")      final_pos <- "outEnd"
             else if (final_pos == "b") final_pos <- "inBase"
-          } else if (type %in% c("pieChart", "doughnutChart")) {
+          } else if (type %in% c("pieChart", "doughnutChart", "ofPieChart")) {
             final_pos <- "bestFit"
           }
+          if (type %in% ENCHARTER_3D) final_pos <- NULL
 
           if (!is.null(final_pos)) {
             xml_add_child(dLbls, "c:dLblPos", val = final_pos)
           }
 
-          # C. show flags
+          # D. show flags
           xml_add_child(dLbls, "c:showLegendKey",  val = if (isTRUE(lp$show_legend_key)) "1" else "0")
           xml_add_child(dLbls, "c:showVal",        val = if (isTRUE(lp$show_val)) "1" else "0")
           xml_add_child(dLbls, "c:showCatName",    val = if (isTRUE(lp$show_cat)) "1" else "0")
-          xml_add_child(dLbls, "c:showSerName",    val = "0")
-          xml_add_child(dLbls, "c:showPercent",    val = "0")
-          xml_add_child(dLbls, "c:showBubbleSize", val = "0")
+          xml_add_child(dLbls, "c:showSerName",    val = if (isTRUE(lp$show_ser_name)) "1" else "0")
+          xml_add_child(dLbls, "c:showPercent",    val = if (isTRUE(lp$show_percent)) "1" else "0")
+          xml_add_child(dLbls, "c:showBubbleSize", val = if (isTRUE(lp$show_bubble_size)) "1" else "0")
         }
 
         # 1. Trendline (Basic)
@@ -868,7 +1090,12 @@ Chart <- R6::R6Class(
           if (!is.null(s$trendline$order)) xml_add_child(tl, "c:order", val = as.character(s$trendline$order))
           if (!is.null(s$trendline$period)) xml_add_child(tl, "c:period", val = as.character(s$trendline$period))
 
-          # 5. dispRSqr (R-Squared) - Must come AFTER trendlineType
+          # 5. forward / backward extrapolation and fixed intercept
+          if (!is.null(s$trendline$forward)) xml_add_child(tl, "c:forward", val = as.character(s$trendline$forward))
+          if (!is.null(s$trendline$backward)) xml_add_child(tl, "c:backward", val = as.character(s$trendline$backward))
+          if (!is.null(s$trendline$intercept)) xml_add_child(tl, "c:intercept", val = as.character(s$trendline$intercept))
+
+          # 6. dispRSqr (R-Squared) - Must come AFTER trendlineType
           if (isFALSE(s$trendline$show_r2)) {
             xml_add_child(tl, "c:dispRSqr", val = "0")
           }
@@ -883,9 +1110,9 @@ Chart <- R6::R6Class(
         if (is.list(s$error_bars)) {
           eb <- xml_add_child(ser, "c:errBars")
 
-          # Required: direction (y) and types
-          xml_add_child(eb, "c:errDir", val = "y")
-          xml_add_child(eb, "c:errBarType", val = "both")
+          # Required: direction axis (x for horizontal bars on scatter) and types
+          xml_add_child(eb, "c:errDir", val = s$error_bars$axis %||% "y")
+          xml_add_child(eb, "c:errBarType", val = s$error_bars$direction %||% "both")
           xml_add_child(eb, "c:errValType", val = s$error_bars$type %||% "fixedVal")
 
           # Required: the value itself
@@ -1028,6 +1255,9 @@ Chart <- R6::R6Class(
         # xml_add_child(c_node, "c:bubble3D", val = "0")
         xml_add_child(c_node, "c:bubbleScale", val = as.character(self$bubble_scale))
         xml_add_child(c_node, "c:showNegBubbles", val = as.character(as.numeric(self$show_neg_bubbles)))
+        if (!is.null(self$size_represents)) {
+          xml_add_child(c_node, "c:sizeRepresents", val = self$size_represents)
+        }
       }
 
       # gapWidth and overlap MUST follow <c:ser> but come before <c:axId>
@@ -1038,6 +1268,45 @@ Chart <- R6::R6Class(
         if (!is.null(sub_series[[1]]$overlap)) {
           xml_add_child(c_node, "c:overlap", val = as.character(sub_series[[1]]$overlap))
         }
+      }
+
+      # CT_Bar3DChart: gapWidth?, gapDepth?, shape? (no overlap)
+      if (type == "bar3DChart") {
+        if (!is.null(sub_series[[1]]$gap_width)) {
+          xml_add_child(c_node, "c:gapWidth", val = as.character(sub_series[[1]]$gap_width))
+        }
+        if (!is.null(self$gap_depth)) {
+          xml_add_child(c_node, "c:gapDepth", val = as.character(self$gap_depth))
+        }
+        if (!is.null(self$bar_shape)) {
+          xml_add_child(c_node, "c:shape", val = self$bar_shape)
+        }
+      }
+
+      if (type %in% c("line3DChart", "area3DChart") && !is.null(self$gap_depth)) {
+        xml_add_child(c_node, "c:gapDepth", val = as.character(self$gap_depth))
+      }
+
+      # CT_OfPieChart: gapWidth?, splitType?, splitPos?, custSplit?,
+      # secondPieSize?, serLines*
+      if (type == "ofPieChart") {
+        gw <- sub_series[[1]]$gap_width %||% 100
+        xml_add_child(c_node, "c:gapWidth", val = as.character(gw))
+        if (!is.null(self$split_type)) {
+          xml_add_child(c_node, "c:splitType", val = self$split_type)
+          if (identical(self$split_type, "cust")) {
+            if (!is.null(self$split_pos)) {
+              cs <- xml_add_child(c_node, "c:custSplit")
+              for (idx in self$split_pos) {
+                xml_add_child(cs, "c:secondPiePt", val = as.character(idx))
+              }
+            }
+          } else if (!is.null(self$split_pos)) {
+            xml_add_child(c_node, "c:splitPos", val = as.character(self$split_pos))
+          }
+        }
+        xml_add_child(c_node, "c:secondPieSize", val = as.character(self$second_pie_size %||% 75))
+        xml_add_child(c_node, "c:serLines")
       }
 
       # doughnutChart holeSize
@@ -1051,10 +1320,11 @@ Chart <- R6::R6Class(
       }
 
       # 4. AXIS IDS (Must be the last elements in Bar/Line/Scatter)
-      if (type %in% c("bubbleChart", "lineChart", "areaChart", "barChart", "scatterChart", "radarChart", "stockChart", "surfaceChart")) {
+      if (type %in% c("bubbleChart", "lineChart", "areaChart", "barChart", "scatterChart", "radarChart", "stockChart", "surfaceChart",
+                      "bar3DChart", "line3DChart", "area3DChart", "surface3DChart")) {
         xml_add_child(c_node, "c:axId", val = as.character(cat_id))
         xml_add_child(c_node, "c:axId", val = as.character(val_id))
-        if (type == "surfaceChart") {
+        if (type %in% c("surfaceChart", "bar3DChart", "line3DChart", "area3DChart", "surface3DChart")) {
           xml_add_child(c_node, "c:axId", val = as.character(ser_id))
         }
       }
@@ -1175,6 +1445,7 @@ Chart <- R6::R6Class(
         xml_add_child(ax, "c:auto", val = "1")
         xml_add_child(ax, "c:lblOffset", val = "100")
         if (!is.null(params$tick_lbl_skip)) xml_add_child(ax, "c:tickLblSkip", val = as.character(params$tick_lbl_skip))
+        if (!is.null(params$tick_mark_skip)) xml_add_child(ax, "c:tickMarkSkip", val = as.character(params$tick_mark_skip))
         xml_add_child(ax, "c:noMultiLvlLbl", val = "0")
       }
     },
@@ -1250,6 +1521,14 @@ Chart <- R6::R6Class(
       # 8. Units (End of ValAx)
       if (!is.null(params$major)) xml_add_child(ax, "c:majorUnit", val = as.character(params$major))
       if (!is.null(params$minor)) xml_add_child(ax, "c:minorUnit", val = as.character(params$minor))
+      if (!is.null(params$disp_units)) {
+        du <- xml_add_child(ax, "c:dispUnits")
+        if (is.numeric(params$disp_units)) {
+          xml_add_child(du, "c:custUnit", val = as.character(params$disp_units))
+        } else {
+          xml_add_child(du, "c:builtInUnit", val = params$disp_units)
+        }
+      }
     },
 
     render_ser_ax = function(parent, id, cross_id) {

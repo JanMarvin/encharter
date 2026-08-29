@@ -44,6 +44,11 @@ supported by standard Office Open XML chart types.
 \code{"point"}
 \item \strong{Pie/Doughnut:} \code{"pieChart"}, \code{"pie"},
 \code{"doughnutChart"}, \code{"doughnut"}
+\item \strong{Pie of Pie / Bar of Pie:} \code{"ofPieChart"}, \code{"pieOfPie"},
+\code{"barOfPie"} (the latter preselects the bar subtype; see
+\verb{$set_of_pie_options()})
+\item \strong{3D:} \code{"bar3DChart"}, \code{"line3DChart"}, \code{"pie3DChart"},
+\code{"area3DChart"}, \code{"surface3DChart"} (see \verb{$set_3d_options()})
 \item \strong{Extended (ChartEx):} \code{"waterfall"}, \code{"treemap"},
 \code{"sunburst"}, \code{"regionMap"},
 \code{"boxWhisker"} / \code{"boxplot"}, \code{"funnel"}
@@ -87,6 +92,8 @@ The available files are:
 \item \code{Histogram_with_args.R} — histogram via clusteredColumn binning
 \item \code{Label_Grouping.R} — multi-level category labels
 \item \code{Line.R} — line with markers and global data labels
+\item \code{New_chart_types.R} — 0.11 showcase: pie/bar of pie, all 3D types,
+display units, tick skips, directional error bars
 \item \code{Pie.R} — pie with viridis palette
 \item \code{Radar_chart.R} — standard vs filled radar
 \item \code{Scatter.R} — markers-only scatter
@@ -133,6 +140,42 @@ ec("line")$
   add_series(data = "Sheet1!A1:A10")$
   add_series(data = "Sheet1!B1:B10", secondary = TRUE)$
   set_y2_title("Growth Rate (\%)")
+
+## ------------------------------------------------
+## Method `Chart$set_of_pie_options()`
+## ------------------------------------------------
+
+ec("ofPieChart")$set_of_pie_options(type = "bar", split_type = "pos", split_pos = 3)
+
+## ------------------------------------------------
+## Method `Chart$set_3d_options()`
+## ------------------------------------------------
+
+ec("bar3DChart")$set_3d_options(rot_x = 20, rot_y = 30, shape = "cylinder")
+
+## ------------------------------------------------
+## Method `ChartEx$set_waterfall_colors()`
+## ------------------------------------------------
+
+ec("waterfall")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7", subtotals = c(0, 5))$
+  set_waterfall_colors(increase = "70AD47", decrease = "C00000", total = "A6A6A6")
+
+## ------------------------------------------------
+## Method `ChartEx$set_color_cycle()`
+## ------------------------------------------------
+
+ec("treemap")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+  set_color_cycle(c("C00000", "4472C4", "70AD47", "FFC000"))
+
+## ------------------------------------------------
+## Method `ChartEx$set_region_map_colors()`
+## ------------------------------------------------
+
+ec("regionMap")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+  set_region_map_colors(min = "FFF2CC", max = "C00000")
 }
 \section{Super class}{
 \code{\link[encharter:EncharterBase]{EncharterBase}} -> \code{Chart}
@@ -163,6 +206,27 @@ ec("line")$
     \item{\code{show_neg_bubbles}}{Logical; whether to show bubbles with negative values.}
 
     \item{\code{disp_blanks_as}}{Character; "gap", "span", or "zero".}
+
+    \item{\code{of_pie_type}}{Character; subtype of \code{ofPieChart}: "pie" or "bar".}
+
+    \item{\code{second_pie_size}}{Integer; size of the second pie/bar plot as a
+percentage (5-200) for \code{ofPieChart}.}
+
+    \item{\code{split_type}}{Character; how points are split into the second plot
+for \code{ofPieChart}: "auto", "cust", "percent", "pos", or "val".}
+
+    \item{\code{split_pos}}{Numeric; split threshold, or point indices (0-based)
+when \code{split_type = "cust"}.}
+
+    \item{\code{view3d}}{Named list of 3D view parameters (\code{rot_x}, \code{rot_y},
+\code{perspective}, \code{depth_percent}, \code{h_percent}, \code{right_angle_axes}).}
+
+    \item{\code{gap_depth}}{Integer; gap depth percentage (0-500) for 3D charts.}
+
+    \item{\code{bar_shape}}{Character; bar shape for \code{bar3DChart}: "box",
+"cylinder", "cone", "coneToMax", "pyramid", or "pyramidToMax".}
+
+    \item{\code{size_represents}}{Character; bubble size meaning, "area" or "w".}
   }
   \if{html}{\out{</div>}}
 }
@@ -176,6 +240,8 @@ ec("line")$
     \item \href{#method-Chart-set_x2_axis}{\code{Chart$set_x2_axis()}}
     \item \href{#method-Chart-set_data_table}{\code{Chart$set_data_table()}}
     \item \href{#method-Chart-set_pie_options}{\code{Chart$set_pie_options()}}
+    \item \href{#method-Chart-set_of_pie_options}{\code{Chart$set_of_pie_options()}}
+    \item \href{#method-Chart-set_3d_options}{\code{Chart$set_3d_options()}}
     \item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
     \item \href{#method-Chart-set_disp_blanks}{\code{Chart$set_disp_blanks()}}
     \item \href{#method-Chart-add_series}{\code{Chart$add_series()}}
@@ -350,7 +416,10 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   minor_grid_width = NULL,
   crosses = "max",
   crosses_at = NULL,
-  label_pos = NULL
+  label_pos = NULL,
+  tick_lbl_skip = NULL,
+  tick_mark_skip = NULL,
+  disp_units = NULL
 )}
     \if{html}{\out{</div>}}
   }
@@ -381,6 +450,8 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
       \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
       \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
+      \item{\code{tick_lbl_skip, tick_mark_skip}}{Integer (>= 1); label/tick every n-th category (category axes only).}
+      \item{\code{disp_units}}{Display units: a built-in unit string (e.g. "thousands") or a positive number (value axes only).}
     }
     \if{html}{\out{</div>}}
   }
@@ -423,7 +494,10 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   minor_grid_width = NULL,
   crosses = "max",
   crosses_at = NULL,
-  label_pos = NULL
+  label_pos = NULL,
+  tick_lbl_skip = NULL,
+  tick_mark_skip = NULL,
+  disp_units = NULL
 )}
     \if{html}{\out{</div>}}
   }
@@ -454,6 +528,8 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
       \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
       \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
+      \item{\code{tick_lbl_skip, tick_mark_skip}}{Integer (>= 1); label/tick every n-th category (category axes only).}
+      \item{\code{disp_units}}{Display units: a built-in unit string (e.g. "thousands") or a positive number (value axes only).}
     }
     \if{html}{\out{</div>}}
   }
@@ -500,12 +576,101 @@ This rotates the chart clockwise.}
 }
 
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_of_pie_options"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_of_pie_options}{}}}
+\subsection{\code{Chart$set_of_pie_options()}}{
+  Configure the Pie of Pie / Bar of Pie chart
+(\code{ofPieChart}).
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Chart$set_of_pie_options(
+  type = NULL,
+  second_size = NULL,
+  split_type = NULL,
+  split_pos = NULL
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{type}}{Subtype: \code{"pie"} (Pie of Pie, default) or \code{"bar"}
+(Bar of Pie).}
+      \item{\code{second_size}}{Size of the second plot as a percentage of the main
+pie, from 5 to 200. Default 75.}
+      \item{\code{split_type}}{How data points are assigned to the second plot:
+\code{"auto"} (default), \code{"percent"}, \code{"pos"} (last n
+points), \code{"val"} (values below threshold), or \code{"cust"}.}
+      \item{\code{split_pos}}{Numeric split threshold for \code{"percent"},
+\code{"pos"}, and \code{"val"}; for \code{"cust"} a vector of
+0-based point indices to move to the second plot.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("ofPieChart")$set_of_pie_options(type = "bar", split_type = "pos", split_pos = 3)
+}
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_3d_options"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_3d_options}{}}}
+\subsection{\code{Chart$set_3d_options()}}{
+  Configure the 3D view and 3D-only chart options. Only
+takes effect for the 3D chart types (\code{bar3DChart},
+\code{line3DChart}, \code{pie3DChart}, \code{area3DChart},
+\code{surface3DChart}) and \code{surfaceChart}.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Chart$set_3d_options(
+  rot_x = NULL,
+  rot_y = NULL,
+  perspective = NULL,
+  depth_percent = NULL,
+  h_percent = NULL,
+  right_angle_axes = NULL,
+  gap_depth = NULL,
+  shape = NULL
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{rot_x}}{Rotation around the X-axis in degrees, from -90 to 90.}
+      \item{\code{rot_y}}{Rotation around the Y-axis in degrees, from 0 to 360.}
+      \item{\code{perspective}}{Perspective in half-degrees, from 0 to 240 (ignored
+when \code{right_angle_axes = TRUE}).}
+      \item{\code{depth_percent}}{Depth as a percentage of chart width, 20 to 2000.}
+      \item{\code{h_percent}}{Height as a percentage of chart width, 5 to 500.}
+      \item{\code{right_angle_axes}}{Logical; render axes at right angles instead of
+in perspective.}
+      \item{\code{gap_depth}}{Gap depth percentage between series, 0 to 500
+(bar/line/area 3D).}
+      \item{\code{shape}}{Bar shape for \code{bar3DChart}: \code{"box"} (default),
+\code{"cylinder"}, \code{"cone"}, \code{"coneToMax"},
+\code{"pyramid"}, or \code{"pyramidToMax"}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("bar3DChart")$set_3d_options(rot_x = 20, rot_y = 30, shape = "cylinder")
+}
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-set_bubble_options"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-set_bubble_options}{}}}
 \subsection{\code{Chart$set_bubble_options()}}{
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
-    \preformatted{Chart$set_bubble_options(scale = 100, show_neg = FALSE)}
+    \preformatted{Chart$set_bubble_options(scale = 100, show_neg = FALSE, size_represents = NULL)}
     \if{html}{\out{</div>}}
   }
   \subsection{Arguments}{
@@ -513,6 +678,9 @@ This rotates the chart clockwise.}
     \describe{
       \item{\code{scale}}{The scale factor for bubbles, from 0 to 300 (expressed as a percentage).}
       \item{\code{show_neg}}{Logical; if \code{TRUE}, bubbles with negative values will be displayed on the chart.}
+      \item{\code{size_represents}}{What the bubble size encodes: \code{"area"}
+(default in Excel) or \code{"w"} (width/diameter). \code{NULL} omits the
+element.}
     }
     \if{html}{\out{</div>}}
   }
@@ -570,7 +738,8 @@ This rotates the chart clockwise.}
   line_color = NULL,
   filled = FALSE,
   error_bars = FALSE,
-  trendline = FALSE
+  trendline = FALSE,
+  invert_if_negative = FALSE
 )}
     \if{html}{\out{</div>}}
   }
@@ -609,6 +778,8 @@ Must be one of: \code{"fixedVal"} (Fixed Value), \code{"percentage"} (Percentage
 or \code{"cust"} (Custom).
 \item \code{value}: The numeric value for the error bars (e.g., 10 for 10\% or 5 for fixed units).
 \item \code{direction}: Direction of bars. One of \code{"both"}, \code{"plus"}, or \code{"minus"}.
+\item \code{axis}: Error direction axis, \code{"y"} (default) or \code{"x"} (horizontal
+bars, scatter charts).
 \item \code{color}: Hex color code for the bars (e.g., "FF0000").
 }}
       \item{\code{trendline}}{A list of regression line properties:
@@ -619,9 +790,14 @@ Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
 \code{"poly"} (Polynomial), or \code{"power"} (Power).
 \item \code{order}: Required for \code{"poly"}; an integer between 2 and 6.
 \item \code{period}: Required for \code{"movingAvg"}; an integer representing the window size.
+\item \code{forward}, \code{backward}: Numeric; extrapolate the line n periods
+forwards/backwards.
+\item \code{intercept}: Numeric; force the line through a fixed y-intercept.
 \item \code{color}: Hex color code for the line.
 \item \code{show_r2}: Logical; if \code{TRUE}, displays the R-squared value on the chart.
 }}
+      \item{\code{invert_if_negative}}{Logical; bar charts only. Invert the fill for
+negative values. Default \code{FALSE}.}
     }
     \if{html}{\out{</div>}}
   }
@@ -680,6 +856,9 @@ Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
     \item{\code{color_xml}}{color}
 
     \item{\code{style_xml}}{style}
+
+    \item{\code{region_colors}}{Internal; color scale entries for region maps set
+via \code{set_region_map_colors()}.}
   }
   \if{html}{\out{</div>}}
 }
@@ -687,6 +866,9 @@ Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
 \subsection{Public methods}{
   \itemize{
     \item \href{#method-ChartEx-initialize}{\code{ChartEx$new()}}
+    \item \href{#method-ChartEx-set_waterfall_colors}{\code{ChartEx$set_waterfall_colors()}}
+    \item \href{#method-ChartEx-set_color_cycle}{\code{ChartEx$set_color_cycle()}}
+    \item \href{#method-ChartEx-set_region_map_colors}{\code{ChartEx$set_region_map_colors()}}
     \item \href{#method-ChartEx-add_series}{\code{ChartEx$add_series()}}
     \item \href{#method-ChartEx-render}{\code{ChartEx$render()}}
     \item \href{#method-ChartEx-clone}{\code{ChartEx$clone()}}
@@ -725,6 +907,111 @@ Must be one of: \code{"linear"} (Linear), \code{"exp"} (Exponential),
   }
   \subsection{Returns}{
     A new \code{ChartEx} object.
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ChartEx-set_waterfall_colors"></a>}}
+\if{latex}{\out{\hypertarget{method-ChartEx-set_waterfall_colors}{}}}
+\subsection{\code{ChartEx$set_waterfall_colors()}}{
+  Set the semantic waterfall colors (also used as the
+first colors of the chart's color cycle). ChartEx charts derive both
+the point fills and the legend keys from the chart's color style
+part (\verb{colors\{n\}.xml}); waterfall maps Increase, Decrease, and
+Total to the first three entries of that cycle. This method
+replaces those entries, so the bars and the legend stay consistent.
+For individual outlier points (e.g. an "unexpected decrease"), pass
+a per-point \code{color} vector to \code{add_series()} instead.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ChartEx$set_waterfall_colors(increase = NULL, decrease = NULL, total = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{increase}}{Fill for rising values: hex, an R color name, or
+\code{openxlsx2::wb_color()} (theme colors supported).}
+      \item{\code{decrease}}{Fill for falling values.}
+      \item{\code{total}}{Fill for subtotal/total points.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("waterfall")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7", subtotals = c(0, 5))$
+  set_waterfall_colors(increase = "70AD47", decrease = "C00000", total = "A6A6A6")
+}
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ChartEx-set_color_cycle"></a>}}
+\if{latex}{\out{\hypertarget{method-ChartEx-set_color_cycle}{}}}
+\subsection{\code{ChartEx$set_color_cycle()}}{
+  Set the chart's color cycle (the color style part,
+\verb{colors\{n\}.xml}). ChartEx charts derive series, category, and
+legend colors from this cycle: treemap and sunburst color their
+top-level categories from it, box & whisker and histogram color
+their series, funnel and Pareto take their first colors from it.
+The first \code{length(colors)} cycle entries are replaced in order; if
+more colors are given than the part contains, the cycle is
+extended. Remaining entries and the brightness variations are kept.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ChartEx$set_color_cycle(colors)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{colors}}{Character vector of colors (hex or R color names), or a
+list which may also contain \code{openxlsx2::wb_color()} values
+(theme colors supported).}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("treemap")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+  set_color_cycle(c("C00000", "4472C4", "70AD47", "FFC000"))
+}
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ChartEx-set_region_map_colors"></a>}}
+\if{latex}{\out{\hypertarget{method-ChartEx-set_region_map_colors}{}}}
+\subsection{\code{ChartEx$set_region_map_colors()}}{
+  Set the color scale of a region map. Written as the
+series' \code{cx:valueColors} element, which drives both the map shading
+and the legend's color scale. Only applied to \code{regionMap} series.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ChartEx$set_region_map_colors(min, max, mid = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{min}}{Color for the smallest values (hex, R color name, or
+\code{openxlsx2::wb_color()}).}
+      \item{\code{max}}{Color for the largest values.}
+      \item{\code{mid}}{Optional middle color for a three-color scale.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{ec("regionMap")$
+  add_series(data = "Sheet1!B2:B7", label = "Sheet1!A2:A7")$
+  set_region_map_colors(min = "FFF2CC", max = "C00000")
+}
+    \if{html}{\out{</div>}}
   }
 }
 
