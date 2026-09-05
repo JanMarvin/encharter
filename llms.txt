@@ -1,7 +1,5 @@
 # encharter
 
-> Experimental package that is still in development.
-
 `encharter` is the charting companion to
 [`openxlsx2`](https://janmarvin.github.io/openxlsx2/). It is treated as
 a first-class citizen there:
