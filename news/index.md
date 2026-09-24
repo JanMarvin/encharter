@@ -9,17 +9,30 @@
   [`ec_load()`](https://janmarvin.github.io/encharter/reference/encharter_load.md)
   read a chart from a workbook back into a `Chart` or `ChartEx` object,
   so charts can be reloaded, modified and added again. Charts written by
-  Excel load as well. New `$update_series()` on both classes to change
-  an existing series. Loading has seen limited testing; unusual charts
-  may not survive a round trip unchanged.
+  other applications load as well. New `$update_series()` on both
+  classes to change an existing series. Loading has seen limited
+  testing; unusual charts may not survive a round trip unchanged.
+
+- Chart templates:
+  [`encharter_to_crtx()`](https://janmarvin.github.io/encharter/reference/encharter_crtx.md)
+  /
+  [`ec_to_crtx()`](https://janmarvin.github.io/encharter/reference/encharter_crtx.md)
+  save a `Chart` as a chart template (`.crtx`),
+  [`encharter_from_crtx()`](https://janmarvin.github.io/encharter/reference/encharter_crtx.md)
+  /
+  [`ec_from_crtx()`](https://janmarvin.github.io/encharter/reference/encharter_crtx.md)
+  read one into a `Chart` whose `$add_series()` picks up the template’s
+  series styling, and `$apply_crtx()` copies a template’s styling onto
+  an existing chart.
 
 - [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
   `Chart` and `ChartEx` objects draw the chart with grid, following what
-  Excel renders from the written OOXML: automatic axis scaling, primary
-  and secondary axes, tick marks, gridlines, legend, data labels,
-  trendlines, error bars, and the extended types waterfall,
-  box-and-whisker, histogram, Pareto, funnel, treemap and sunburst. 3D,
-  stock, surface, pie-of-pie and region map charts are not drawn.
+  a spreadsheet application renders from the written OOXML: automatic
+  axis scaling, primary and secondary axes, tick marks, gridlines,
+  legend, data labels, trendlines, error bars, and the extended types
+  waterfall, box-and-whisker, histogram, Pareto, funnel, treemap and
+  sunburst. 3D, stock, surface, pie-of-pie and region map charts are not
+  drawn.
 
 ## encharter 0.11
 

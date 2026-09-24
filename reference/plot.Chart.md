@@ -53,9 +53,9 @@ from
 or are read from `wb`. Series added with plain range strings and all
 `ChartEx` objects need `wb`.
 
-Axis scaling follows Excel's rules for automatic axes; fonts, spacing
-and the exact placement of labels differ from Excel. Number formats are
-approximated for common codes (`0`, `0.00`, `#,##0`, `0%`, date
+Axis scaling follows the rules for automatic axes; fonts, spacing and
+the exact placement of labels differ from the original. Number formats
+are approximated for common codes (`0`, `0.00`, `#,##0`, `0%`, date
 formats).
 
 ## Examples

@@ -109,6 +109,9 @@ The available files are:
 - `Load_and_extend.R` — load a chart back from a workbook and extend its
   range
 
+- `Chart_template.R` — save a chart as a .crtx template, read and apply
+  it
+
 - `Line.R` — line with markers and global data labels
 
 - `New_chart_types.R` — 0.11 showcase: pie/bar of pie, all 3D types,
@@ -235,6 +238,11 @@ Run all of them in one session with `run_all_examples()` (defined in
 
   Character; bubble size meaning, "area" or "w".
 
+- `template`:
+
+  List of series styles from a chart template; see
+  [`encharter_from_crtx()`](https://janmarvin.github.io/encharter/reference/encharter_crtx.md).
+
 ## Methods
 
 ### Public methods
@@ -262,6 +270,8 @@ Run all of them in one session with `run_all_examples()` (defined in
 - [`Chart$set_disp_blanks()`](#method-Chart-set_disp_blanks)
 
 - [`Chart$add_series()`](#method-Chart-add_series)
+
+- [`Chart$apply_crtx()`](#method-Chart-apply_crtx)
 
 - [`Chart$update_series()`](#method-Chart-update_series)
 
@@ -1105,6 +1115,29 @@ Add a data series to the chart with independent styling.
 
   Logical; bar charts only. Invert the fill for negative values. Default
   `FALSE`.
+
+------------------------------------------------------------------------
+
+### `Chart$apply_crtx()`
+
+Apply the styling of a chart template (`.crtx`) to this chart: chart and
+plot area, title and legend style, axes, and the styling of the series
+in order. Series data, ranges and titles are kept. Series added
+afterwards take the template styling as well.
+
+#### Usage
+
+    Chart$apply_crtx(path)
+
+#### Arguments
+
+- `path`:
+
+  Path of the `.crtx` file.
+
+#### Returns
+
+The chart, invisibly.
 
 ------------------------------------------------------------------------
 
