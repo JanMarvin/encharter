@@ -116,8 +116,8 @@ the primary Y-axis title.}
 \code{fill} (hex), \code{line} (hex), \code{line_width} (numeric).}
 
     \item{\code{label_params}}{Named list of global data label defaults:
-\code{show_val}, \code{show_cat}, \code{show_legend_key} (logicals),
-\code{pos} (character), \code{style} (list).}
+\code{show_val}, \code{show_cat}, \code{show_legend_key}, \code{leader_lines} (logicals),
+\code{pos}, \code{sep}, \code{fill} (character), \code{style} (list).}
 
     \item{\code{legend_params}}{Named list of legend defaults:
 \code{pos} (character), \code{overlay} ("0"/"1"), \code{style} (list).}

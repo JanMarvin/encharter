@@ -242,6 +242,13 @@ when \code{split_type = "cust"}.}
 
     \item{\code{template}}{List of series styles from a chart template; see
 \code{\link[=encharter_from_crtx]{encharter_from_crtx()}}.}
+
+    \item{\code{plot_layout}}{Fixed position of the plot area as fractions of the
+chart (\code{x}, \code{y}, \code{w}, \code{h}, \code{target}), or \code{NULL} for automatic layout.}
+
+    \item{\code{text_style}}{Default text properties of the chart (\code{font_size},
+\code{font_name}, \code{font_color}, \code{bold}, \code{italic}), used by text without
+its own.}
   }
   \if{html}{\out{</div>}}
 }

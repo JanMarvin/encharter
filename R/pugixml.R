@@ -17,11 +17,19 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
 
   new_node <- .Call(C_pugi_add_child, target, .name, as.integer(.where))
 
+  # the document is serialized without escaping, so attribute values and
+  # text are escaped here; entities that are already there stay as they are
+  escape <- function(x) {
+    x <- gsub("&(?!(amp|lt|gt|quot|apos|#[0-9]+|#x[0-9A-Fa-f]+);)", "&amp;", x, perl = TRUE)
+    x <- gsub("<", "&lt;", x, fixed = TRUE)
+    gsub("\"", "&quot;", x, fixed = TRUE)
+  }
+
   args <- list(...)
   if (length(args) > 0) {
     arg_names <- names(args)
     for (i in seq_along(args)) {
-      val <- as.character(args[[i]])
+      val <- escape(as.character(args[[i]]))
       if (is.null(arg_names) || arg_names[i] == "") {
         .Call(C_pugi_set_text, new_node, val)
       } else {
@@ -31,7 +39,7 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
   }
 
   if (!is.null(.value)) {
-    .Call(C_pugi_set_text, new_node, as.character(.value))
+    .Call(C_pugi_set_text, new_node, escape(as.character(.value)))
   }
   new_node
 }

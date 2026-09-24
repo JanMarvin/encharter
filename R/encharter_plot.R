@@ -16,6 +16,8 @@ ENCHARTER_THEME_HEX <- c(
 # workbook's theme part and restores the Office defaults afterwards
 plot_state <- new.env(parent = emptyenv())
 plot_state$theme <- ENCHARTER_THEME_HEX
+plot_state$chart_size <- c(480, 300)
+plot_state$text_style <- list()
 
 plot_set_theme <- function(wb) {
   theme <- ENCHARTER_THEME_HEX
@@ -117,6 +119,11 @@ plot_pch <- function(symbol) {
 }
 
 plot_gpar_text <- function(style, default_size, default_col = "#000000") {
+  # text without its own properties takes the chart defaults; titles keep
+  # their larger size
+  ts <- plot_state$text_style
+  style <- Filter(Negate(is.null), style %||% list())
+  style <- utils::modifyList(ts[setdiff(names(ts), if (default_size > 10) "font_size")], style)
   face <- if (isTRUE(style$bold) && isTRUE(style$italic)) "bold.italic"
     else if (isTRUE(style$bold)) "bold"
     else if (isTRUE(style$italic)) "italic"
@@ -155,24 +162,79 @@ plot_format <- function(x, format = NULL) {
   }
   if (is.character(x)) return(x)
   fmt <- format %||% "General"
-  fmt <- sub(";.*$", "", fmt)
-  is_pct <- grepl("%", fmt)
-  if (is_pct) x <- x * 100
-  big <- if (grepl(",", fmt)) "," else ""
-  dec <- regmatches(fmt, regexpr("\\.0+", fmt))
-  digits <- if (length(dec)) nchar(dec) - 1L else 0L
-  if (fmt == "General") {
-    out <- formatC(x, digits = 10, format = "fg", big.mark = big)
-    has_dec <- grepl(".", out, fixed = TRUE)
-    out[has_dec] <- sub("\\.?0+$", "", out[has_dec])
-  } else if (grepl("[0#]", fmt)) {
-    out <- formatC(x, format = "f", digits = digits, big.mark = big)
-  } else {
-    out <- format(x, trim = TRUE)
+  # sections: positive;negative;zero — the negative section shows the
+  # magnitude, its sign comes from the format itself; an empty section hides
+  # the value
+  sections <- strsplit(paste0(fmt, ";"), ";", fixed = TRUE)[[1]]
+  out <- rep("", length(x))
+  for (k in seq_along(x)) {
+    v <- x[k]
+    if (is.na(v)) next
+    sec <- if (length(sections) >= 3 && v == 0) sections[3] else if (length(sections) >= 2 && v < 0) sections[2] else sections[1]
+    if (length(sections) >= 2 && v < 0) v <- -v
+    if (!nzchar(sec)) next
+    if (sec == "General") {
+      txt <- formatC(v, digits = 10, format = "fg")
+      if (grepl(".", txt, fixed = TRUE)) txt <- sub("\\.?0+$", "", txt)
+      out[k] <- trimws(txt)
+      next
+    }
+    # split the section into literal text around the digit pattern
+    chars <- strsplit(sec, "")[[1]]
+    pre <- ""
+    post <- ""
+    pattern <- ""
+    pct <- FALSE
+    i <- 1
+    while (i <= length(chars)) {
+      ch <- chars[i]
+      lit <- ""
+      if (ch == "\\") {
+        lit <- if (i < length(chars)) chars[i + 1] else ""
+        i <- i + 2
+      } else if (ch == "\"") {
+        j <- i + 1
+        while (j <= length(chars) && chars[j] != "\"") j <- j + 1
+        lit <- paste(chars[seq_len(j - i - 1) + i], collapse = "")
+        i <- j + 1
+      } else if (ch %in% c("#", "0", "?", ",", ".")) {
+        pattern <- paste0(pattern, ch)
+        i <- i + 1
+        next
+      } else if (ch %in% c("_", "*")) {
+        lit <- if (ch == "_") " " else ""
+        i <- i + 2
+      } else if (ch == "[") {
+        j <- i
+        while (j <= length(chars) && chars[j] != "]") j <- j + 1
+        i <- j + 1
+        next
+      } else if (ch == "%") {
+        pct <- TRUE
+        lit <- "%"
+        i <- i + 1
+      } else if (ch %in% c("E", "e")) {
+        i <- i + 1
+        next
+      } else {
+        lit <- ch
+        i <- i + 1
+      }
+      if (nzchar(pattern)) post <- paste0(post, lit) else pre <- paste0(pre, lit)
+    }
+    if (pct) v <- v * 100
+    if (!nzchar(pattern)) {
+      out[k] <- paste0(pre, post)
+      next
+    }
+    big <- if (grepl(",", pattern, fixed = TRUE)) "," else ""
+    dec <- regmatches(pattern, regexpr("\\.[0#?]+", pattern))
+    digits <- if (length(dec)) nchar(dec) - 1L else 0L
+    # halves round away from zero, as in spreadsheets
+    v <- sign(v) * floor(abs(v) * 10^digits + 0.5 + 1e-9) / 10^digits
+    txt <- formatC(v, format = "f", digits = digits, big.mark = big)
+    out[k] <- paste0(pre, trimws(txt), post)
   }
-  out <- trimws(out)
-  if (is_pct) out <- paste0(out, "%")
-  out[is.na(x)] <- ""
   out
 }
 
@@ -531,7 +593,7 @@ plot_draw_error_bars <- function(x, y, s, horizontal = FALSE) {
 }
 
 # Data label text for a point
-plot_label_text <- function(lp, cat, val, pct = NULL, name = NULL, sep = ", ") {
+plot_label_text <- function(lp, cat, val, pct = NULL, name = NULL, sep = lp$sep %||% ", ") {
   parts <- character()
   if (isTRUE(lp$show_ser_name) && !is.null(name)) parts <- c(parts, name)
   if (isTRUE(lp$show_cat)) parts <- c(parts, plot_format(cat))
@@ -578,7 +640,11 @@ plot_cartesian <- function(chart, series) {
   # A date axis places the points by date in date_unit units (days, months or
   # years, as set or as inferred from the spacing of the dates). Each unit
   # is one slot; points and bars sit in the middle of their slot.
-  is_date <- !is_xy && inherits(cats, c("Date", "POSIXt")) && !horizontal
+  # a date axis needs referenced date categories; literal dates and
+  # multi-level categories are text
+  px_auto <- chart$axis_params$x$auto
+  is_date <- !is_xy && inherits(cats, c("Date", "POSIXt")) && !horizontal && !isFALSE(px_auto) &&
+    !is.null(series[[1]]$label) && is.null(series[[1]]$cat_levels)
   if (is_date) {
     px_date <- chart$axis_params$x
     dates <- as.Date(cats)
@@ -775,8 +841,24 @@ plot_cartesian <- function(chart, series) {
   y2_labels <- if (is.null(y2)) NULL else plot_format(y2_ticks / disp_divisor(py2), py2$format %||% if (pct_sec) "0%" else NULL)
   x2_ticks <- if (is.null(x2)) NULL else plot_ticks(x2)
   x2_labels <- if (is.null(x2)) NULL else plot_format(x2_ticks, px2$format)
-  if (identical(px$label_pos, "none")) x_labels <- rep("", length(x_labels))
-  if (identical(py$label_pos, "none")) y_labels <- rep("", length(y_labels))
+  if (identical(px$label_pos, "none") || isTRUE(px$delete)) x_labels <- rep("", length(x_labels))
+  # category labels wrap to the room they have: the left margin of a
+  # horizontal bar chart, the category slot of a vertical one
+  if (!is_xy && !is_date && rot_x == 0 && length(x_labels)) {
+    chart_wd <- plot_state$chart_size[1]
+    room <- if (horizontal) {
+      if (identical(chart$plot_layout$target, "inner")) chart$plot_layout$x * chart_wd - 10 else chart_wd / 3
+    } else {
+      chart_wd * (chart$plot_layout$w %||% 0.85) / max(1, n_slots) * (px$tick_lbl_skip %||% 1) - 4
+    }
+    gp_tmp <- plot_gpar_text(px, 10)
+    for (i in seq_along(x_labels)) {
+      if (!grepl(" ", x_labels[i], fixed = TRUE)) next
+      wide <- grid::convertWidth(grid::grobWidth(grid::textGrob(x_labels[i], gp = gp_tmp)), "points", valueOnly = TRUE)
+      if (wide > room) x_labels[i] <- paste(plot_title_lines(list(text = x_labels[i], style = px), 10, room), collapse = "\n")
+    }
+  }
+  if (identical(py$label_pos, "none") || isTRUE(py$delete)) y_labels <- rep("", length(y_labels))
 
   x_gp <- plot_gpar_text(px, 10, "#000000")
   x2_gp <- plot_gpar_text(px2, 10, "#000000")
@@ -804,7 +886,11 @@ plot_cartesian <- function(chart, series) {
     y2_w <- if (is.null(y2)) 0 else text_w(y2_labels, y2_gp) + 8
     left_w <- if (y_side == "left") y_w else 4
     right_w <- max(4, if (y_side == "right") y_w else 0) + y2_w
+    # labels may span several lines
     lab_h <- text_h(x_gp)
+    if (length(x_labels)) {
+      lab_h <- max(lab_h, vapply(x_labels, function(l) grid::convertHeight(grid::grobHeight(grid::textGrob(l, gp = x_gp)), "points", valueOnly = TRUE), numeric(1)))
+    }
     lab_w <- text_w(x_labels, x_gp)
     bottom_h <- if (rot_x != 0) abs(sin(rot_x * pi / 180)) * lab_w + abs(cos(rot_x * pi / 180)) * lab_h + 8 else lab_h + 8
     outer_levels <- if (!is_xy && !is_date && is.data.frame(series[[1]]$cat_levels)) ncol(series[[1]]$cat_levels) - 1 else 0
@@ -834,6 +920,14 @@ plot_cartesian <- function(chart, series) {
     if (crosses == "max") return(l[2])
     if (!is.null(sc$log)) return(l[1])
     min(max(0, l[1]), l[2])
+  }
+
+  # with a fixed inner plot area the labels sit outside the given rectangle
+  if (identical(chart$plot_layout$target, "inner")) {
+    left_w <- 0
+    right_w <- 0
+    top_h <- 0
+    bottom_h <- 0
   }
 
   # ---- viewport for the plot area ----
@@ -977,20 +1071,35 @@ plot_cartesian <- function(chart, series) {
                                    width = grid::unit(abs(yv[i] - b[i]), "native"), height = grid::unit(w, "native"))
               else list(x = grid::unit(left[i], "native"), y = grid::unit(min(b[i], yv[i]), "native"),
                         width = grid::unit(w, "native"), height = grid::unit(abs(yv[i] - b[i]), "native"))
-        # render() writes invertIfNegative only when it is TRUE and never
-        # val="0"; Excel treats the missing element as TRUE and draws negative
-        # bars white with a black outline, so that is what the file shows
-        inverted <- v[i] < 0
+        # inverted negative bars are white with a black outline; single
+        # points may carry their own fill
+        inverted <- v[i] < 0 && isTRUE(s$invert_if_negative)
+        pt_fill <- fill
+        border <- s$border
+        for (p in s$points) {
+          if (p$idx != i - 1) next
+          pt_fill <- plot_color(p$color, fill)
+          if (!is.null(p$border)) border <- p$border
+        }
+        if (is.na(pt_fill) && !is.list(border)) next
+        border_col <- if (inverted) "#000000" else if (is.list(border)) plot_color(border$color, NA) else NA
         grid::grid.rect(x = pt$x, y = pt$y, width = pt$width, height = pt$height, just = c("left", "bottom"),
-                        gp = grid::gpar(fill = if (inverted) "#FFFFFF" else fill, col = if (inverted) "#000000" else NA, lwd = 1))
+                        gp = grid::gpar(fill = if (inverted) "#FFFFFF" else pt_fill, col = border_col,
+                                        lwd = (if (is.list(border)) border$width %||% 0.75 else 0.75) * 96 / 72))
       }
       centers <- left + w / 2
       plot_draw_error_bars(if (horizontal) centers else centers, yv, s, horizontal = horizontal)
-      if (plot_labels_on(lp)) {
+      # a series may carry its own label settings
+      slp <- s$label_params %||% lp
+      if (plot_labels_on(slp) || length(s$point_labels)) {
         for (i in seq_along(v)) {
           if (!is.finite(yv[i])) next
-          pos <- lp$pos %||% "t"
-          txt <- plot_label_text(lp, cats[i], s$values[i], name = s$label_text)
+          # a point may have its own label settings or no label at all
+          plp <- slp
+          for (p in s$point_labels) if (p$idx == i - 1) plp <- if (isTRUE(p$delete)) NULL else utils::modifyList(slp, p[!vapply(p, is.null, logical(1))])
+          if (is.null(plp) || !plot_labels_on(plp)) next
+          pos <- plp$pos %||% "t"
+          txt <- plot_label_text(plp, cats[i], s$values[i], name = s$label_text)
           outward <- if (v[i] >= 0) c("center", "bottom") else c("center", "top")
           inward  <- if (v[i] >= 0) c("center", "top") else c("center", "bottom")
           if (pos %in% c("t", "outEnd")) {
@@ -1008,9 +1117,9 @@ plot_cartesian <- function(chart, series) {
           }
           if (horizontal) {
             hj <- c(if (just[2] == "bottom") "left" else if (just[2] == "top") "right" else "center", "center")
-            labels_pending[[length(labels_pending) + 1]] <- list(x = yy, y = centers[i], txt = txt, just = hj)
+            labels_pending[[length(labels_pending) + 1]] <- list(x = yy, y = centers[i], txt = txt, just = hj, gp = plot_gpar_text(plp$style, 9, "#000000"), dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align)
           } else {
-            labels_pending[[length(labels_pending) + 1]] <- list(x = centers[i], y = yy, txt = txt, just = just)
+            labels_pending[[length(labels_pending) + 1]] <- list(x = centers[i], y = yy, txt = txt, just = just, gp = plot_gpar_text(plp$style, 9, "#000000"), dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align)
           }
         }
       }
@@ -1060,17 +1169,29 @@ plot_cartesian <- function(chart, series) {
         ok <- is.finite(yv) & is.finite(xs)
         a <- at(xs[ok], yv[ok])
         plot_draw_markers(a$x, a$y, m, col)
+        # single points with a marker of their own
+        for (p in s$points) {
+          if (is.null(p$marker) || p$idx + 1 > length(xs) || !ok[p$idx + 1]) next
+          pm <- utils::modifyList(m, p$marker[!vapply(p$marker, is.null, logical(1))])
+          if (identical(pm$symbol, "none")) next
+          a1 <- at(xs[p$idx + 1], yv[p$idx + 1])
+          plot_draw_markers(a1$x, a1$y, pm, plot_color(p$color, col))
+        }
         if (is.list(s$error_bars) && identical(s$error_bars$axis, "x")) plot_draw_error_bars(yv, xs, s, horizontal = !horizontal)
         else plot_draw_error_bars(xs, yv, s, horizontal = horizontal)
       }
-      if (plot_labels_on(lp)) {
+      slp <- s$label_params %||% lp
+      if (plot_labels_on(slp) || length(s$point_labels)) {
         for (i in seq_along(v)) {
           if (!is.finite(yv[i]) || !is.finite(xs[i])) next
-          txt <- plot_label_text(lp, if (is_xy) xs[i] else cats[i], s$values[i], name = s$label_text)
-          pos <- lp$pos %||% "t"
+          plp <- slp
+          for (p in s$point_labels) if (p$idx == i - 1) plp <- if (isTRUE(p$delete)) NULL else utils::modifyList(slp, p[!vapply(p, is.null, logical(1))])
+          if (is.null(plp) || !plot_labels_on(plp)) next
+          txt <- plot_label_text(plp, if (is_xy) xs[i] else cats[i], s$values[i], name = s$label_text)
+          pos <- plp$pos %||% "t"
           just <- switch(pos, b = c("center", "top"), l = c("right", "center"), r = c("left", "center"), ctr = c("center", "center"), c("center", "bottom"))
           off <- switch(pos, b = c(0, -4), l = c(-4, 0), r = c(4, 0), ctr = c(0, 0), c(0, 4))
-          labels_pending[[length(labels_pending) + 1]] <- list(x = xs[i], y = yv[i], txt = txt, just = just, off = off)
+          labels_pending[[length(labels_pending) + 1]] <- list(x = xs[i], y = yv[i], txt = txt, just = just, off = off, gp = plot_gpar_text(plp$style, 9, "#000000"), dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align)
         }
       }
       if (is.list(s$trendline)) {
@@ -1146,11 +1267,42 @@ plot_cartesian <- function(chart, series) {
   }
 
   for (l in labels_pending) {
+    # a data label wraps when it is wider than a fifth of the chart
+    if (grepl(" ", l$txt, fixed = TRUE)) {
+      room <- plot_state$chart_size[1] / 5
+      if (grid::convertWidth(grid::grobWidth(grid::textGrob(l$txt, gp = l$gp %||% label_gp)), "points", valueOnly = TRUE) > room) {
+        l$txt <- paste(plot_title_lines(list(text = l$txt, style = list(font_size = (l$gp %||% label_gp)$fontsize)), 9, room), collapse = "\n")
+      }
+    }
     off <- l$off %||% c(0, if (l$just[2] == "bottom") 3 else if (l$just[2] == "top") -3 else 0)
     if (horizontal && is.null(l$off)) off <- c(if (l$just[1] == "left") 3 else if (l$just[1] == "right") -3 else 0, 0)
+    # manual offsets are fractions of the chart size, y downwards
+    off <- off + c((l$dx %||% 0) * plot_state$chart_size[1], -(l$dy %||% 0) * plot_state$chart_size[2])
     push_scale(list(sec_type = l$sec), clip = FALSE)
-    grid::grid.text(l$txt, x = grid::unit(l$x, "native") + grid::unit(off[1], "points"),
-                    y = grid::unit(l$y, "native") + grid::unit(off[2], "points"), just = l$just, gp = label_gp)
+    lx <- grid::unit(l$x, "native") + grid::unit(off[1], "points")
+    ly <- grid::unit(l$y, "native") + grid::unit(off[2], "points")
+    if (!is.null(l$fill)) {
+      # label background
+      tg <- grid::textGrob(l$txt, gp = l$gp %||% label_gp)
+      grid::grid.rect(x = lx, y = ly, width = grid::grobWidth(tg) + grid::unit(4, "points"), height = grid::grobHeight(tg) + grid::unit(3, "points"),
+                      just = l$just, gp = grid::gpar(fill = plot_color(l$fill, NA), col = NA))
+    }
+    if (grepl("\n", l$txt, fixed = TRUE) && !is.null(l$align)) {
+      # the lines of a wrapped label are aligned within the label box
+      w <- grid::grobWidth(grid::textGrob(l$txt, gp = l$gp %||% label_gp))
+      shift <- switch(l$just[1], left = 0, right = 1, 0.5)
+      if (l$align == "l") {
+        lx <- lx - shift * w
+        l$just[1] <- "left"
+      } else if (l$align == "r") {
+        lx <- lx + (1 - shift) * w
+        l$just[1] <- "right"
+      } else {
+        lx <- lx + (0.5 - shift) * w
+        l$just[1] <- "center"
+      }
+    }
+    grid::grid.text(l$txt, x = lx, y = ly, just = l$just, gp = l$gp %||% label_gp)
     grid::upViewport()
   }
 
@@ -1182,10 +1334,11 @@ plot_cartesian <- function(chart, series) {
   x_line_gp <- plot_axis_gp_line(px)
   y_line_gp <- plot_axis_gp_line(py)
 
-  # category / x axis
+  # category / x axis; a deleted axis is not drawn at all
   x_label_pos <- px$label_pos %||% "nextTo"
   x_major <- tick_ends(px$major_tick %||% "cross", 4, -1)
-  if (horizontal) {
+  if (isTRUE(px$delete)) {
+  } else if (horizontal) {
     grid::grid.lines(x = grid::unit(c(x_cross, x_cross), "native"), y = grid::unit(c(0, 1), "npc"), gp = x_line_gp)
     lab_x <- switch(x_label_pos, low = grid::unit(0, "npc"), high = grid::unit(1, "npc"), grid::unit(x_cross, "native"))
     for (i in seq_along(x_ticks)) {
@@ -1257,6 +1410,7 @@ plot_cartesian <- function(chart, series) {
   # value axes. `side` is where the axis sits; for the primary axis of a
   # scatter chart the line is at the crossing value instead of the edge.
   draw_val_axis <- function(sc, p, ticks, labels, gp, side, line_gp, at_cross = FALSE) {
+    if (isTRUE(p$delete)) return(invisible())
     outward <- if (side %in% c("right", "top")) 1 else -1
     major <- tick_ends(p$major_tick %||% "cross", 4, outward)
     minor <- tick_ends(p$minor_tick %||% "cross", 2, outward)
@@ -1289,7 +1443,7 @@ plot_cartesian <- function(chart, series) {
     draw_val_axis(y2, py2, y2_ticks, y2_labels, y2_gp, if (horizontal) "top" else "right", plot_axis_gp_line(py2))
     grid::upViewport()
   }
-  if (!is.null(x2) && !horizontal) {
+  if (!is.null(x2) && !horizontal && !isTRUE(px2$delete)) {
     push_scale(list(sec_type = "x"), clip = FALSE)
     x2_line_gp <- plot_axis_gp_line(px2)
     x2_major <- tick_ends(px2$major_tick %||% "cross", 4, 1)
@@ -1493,7 +1647,11 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   }
   if (length(chart$series_data) == 0) stop("The chart has no series.", call. = FALSE)
   plot_set_theme(wb)
-  on.exit(plot_set_theme(NULL), add = TRUE)
+  plot_state$text_style <- chart$text_style
+  on.exit({
+    plot_set_theme(NULL)
+    plot_state$text_style <- list()
+  }, add = TRUE)
   types <- unique(vapply(chart$series_data, function(s) s$type, character(1)))
   bad <- setdiff(types, ENCHARTER_PLOT_TYPES)
   if (length(bad)) {
@@ -1515,6 +1673,7 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
 
   chart_w <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE) - 16
   title_h <- plot_title_height(chart$chart_title, 14, chart_w)
+  plot_state$chart_size <- c(chart_w + 16, grid::convertHeight(grid::unit(1, "npc"), "points", valueOnly = TRUE))
 
   draw_body <- function() {
     if (types[1] %in% c("pieChart", "doughnutChart")) plot_pie(chart, series)
@@ -1584,11 +1743,21 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
     grid::upViewport(2)
   }
 
-  grid::pushViewport(grid::viewport(layout.pos.row = 3, layout.pos.col = 2))
-  grid::pushViewport(grid::viewport(width = grid::unit(1, "npc") - grid::unit(2 * pad, "points"),
-                                    height = grid::unit(1, "npc") - grid::unit(pad, "points")))
-  draw_body()
-  grid::upViewport(2)
+  if (!is.null(chart$plot_layout) && !types[1] %in% c("pieChart", "doughnutChart", "radarChart")) {
+    # the plot area sits at its fixed position within the chart
+    ml <- chart$plot_layout
+    grid::upViewport()
+    grid::pushViewport(grid::viewport(x = ml$x, y = 1 - ml$y - ml$h, width = ml$w, height = ml$h, just = c("left", "bottom")))
+    draw_body()
+    grid::upViewport()
+    grid::pushViewport(grid::viewport(layout = layout))
+  } else {
+    grid::pushViewport(grid::viewport(layout.pos.row = 3, layout.pos.col = 2))
+    grid::pushViewport(grid::viewport(width = grid::unit(1, "npc") - grid::unit(2 * pad, "points"),
+                                      height = grid::unit(1, "npc") - grid::unit(pad, "points")))
+    draw_body()
+    grid::upViewport(2)
+  }
 
   if (!is.null(legend)) {
     row <- switch(legend$pos, t = 2, b = 4, 3)
