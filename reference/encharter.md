@@ -106,6 +106,9 @@ The available files are:
 
 - `Label_Grouping.R` — multi-level category labels
 
+- `Load_and_extend.R` — load a chart back from a workbook and extend its
+  range
+
 - `Line.R` — line with markers and global data labels
 
 - `New_chart_types.R` — 0.11 showcase: pie/bar of pie, all 3D types,
@@ -259,6 +262,8 @@ Run all of them in one session with `run_all_examples()` (defined in
 - [`Chart$set_disp_blanks()`](#method-Chart-set_disp_blanks)
 
 - [`Chart$add_series()`](#method-Chart-add_series)
+
+- [`Chart$update_series()`](#method-Chart-update_series)
 
 - [`Chart$render()`](#method-Chart-render)
 
@@ -1103,6 +1108,67 @@ Add a data series to the chart with independent styling.
 
 ------------------------------------------------------------------------
 
+### `Chart$update_series()`
+
+Change an existing series. Takes the arguments of `add_series()`;
+arguments that are not supplied keep their current value. With a
+[`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html)
+object as `data` and no `name`, the column is found from the series'
+current header (or data) cell, so
+`update_series(data = wb_data(wb), label = Month)` re-points every
+series at the current extent of the data.
+
+#### Usage
+
+    Chart$update_series(
+      index = NULL,
+      name = NULL,
+      data = NULL,
+      label = NULL,
+      weight = NULL,
+      color = NULL,
+      type = NULL,
+      secondary = NULL,
+      dir = NULL,
+      grouping = NULL,
+      overlap = NULL,
+      gap_width = NULL,
+      smooth = NULL,
+      show_line = NULL,
+      marker = NULL,
+      marker_size = NULL,
+      marker_fill = NULL,
+      marker_line = NULL,
+      marker_line_width = NULL,
+      line_type = NULL,
+      line_width = NULL,
+      line_color = NULL,
+      filled = NULL,
+      error_bars = NULL,
+      trendline = NULL,
+      invert_if_negative = NULL
+    )
+
+#### Arguments
+
+- `index`:
+
+  Integer vector of series to update. Default: all series.
+
+- `name, data, label, weight, color, type, secondary, dir, grouping, overlap, gap_width, smooth, show_line, marker, marker_size, marker_fill, marker_line, marker_line_width, line_type, line_width, line_color, filled, error_bars, trendline, invert_if_negative`:
+
+  See `add_series()`.
+
+#### Examples
+
+    wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+      x = data.frame(Month = month.abb[1:6], Sales = 1:6))
+    chart <- ec("line")$add_series(name = Sales, data = openxlsx2::wb_data(wb), label = Month)
+    wb$add_data(x = data.frame(Month = "Jul", Sales = 7), dims = "A8", col_names = FALSE)
+    chart$update_series(data = openxlsx2::wb_data(wb), label = Month, color = "C00000")
+
+------------------------------------------------------------------------
+
 ### `Chart$render()`
 
 Generate the final XML string for the chart.
@@ -1172,6 +1238,8 @@ The objects of this class are cloneable with this method.
 - [`ChartEx$set_region_map_colors()`](#method-ChartEx-set_region_map_colors)
 
 - [`ChartEx$add_series()`](#method-ChartEx-add_series)
+
+- [`ChartEx$update_series()`](#method-ChartEx-update_series)
 
 - [`ChartEx$render()`](#method-ChartEx-render)
 
@@ -1397,6 +1465,44 @@ Add a data series to the chart.
 
 ------------------------------------------------------------------------
 
+### `ChartEx$update_series()`
+
+Change an existing series. Takes the arguments of `add_series()`;
+arguments that are not supplied keep their current value. With a
+[`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html)
+object as `data` and no `name`, the column is found from the series'
+current header (or data) cell.
+
+#### Usage
+
+    ChartEx$update_series(
+      index = NULL,
+      name = NULL,
+      data = NULL,
+      label = NULL,
+      color = NULL,
+      line_color = NULL,
+      line_width = NULL,
+      gap_width = NULL,
+      subtotals = NULL,
+      statistics = NULL,
+      binning = NULL,
+      visibility = NULL,
+      parent_label = NULL
+    )
+
+#### Arguments
+
+- `index`:
+
+  Integer vector of series to update. Default: all series.
+
+- `name, data, label, color, line_color, line_width, gap_width, subtotals, statistics, binning, visibility, parent_label`:
+
+  See `add_series()`.
+
+------------------------------------------------------------------------
+
 ### `ChartEx$render()`
 
 Render the internal XML for writing to a file.
@@ -1482,6 +1588,16 @@ ec("ofPieChart")$set_of_pie_options(type = "bar", split_type = "pos", split_pos 
 ## ------------------------------------------------
 
 ec("bar3DChart")$set_3d_options(rot_x = 20, rot_y = 30, shape = "cylinder")
+
+## ------------------------------------------------
+## Method `Chart$update_series()`
+## ------------------------------------------------
+
+wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+  x = data.frame(Month = month.abb[1:6], Sales = 1:6))
+chart <- ec("line")$add_series(name = Sales, data = openxlsx2::wb_data(wb), label = Month)
+wb$add_data(x = data.frame(Month = "Jul", Sales = 7), dims = "A8", col_names = FALSE)
+chart$update_series(data = openxlsx2::wb_data(wb), label = Month, color = "C00000")
 
 ## ------------------------------------------------
 ## Method `ChartEx$set_waterfall_colors()`

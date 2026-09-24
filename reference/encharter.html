@@ -25,7 +25,7 @@ supported by standard Office Open XML chart types."><meta property="og:image" co
 
     <a class="navbar-brand me-2" href="../index.html">encharter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.11</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,7 @@ supported by standard Office Open XML chart types."><meta property="og:image" co
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create an Encharter Chart</h1>
-      <small class="dont-index">Source: <a href="https://github.com/JanMarvin/encharter/blob/v0.11.0/R/encharter.R" class="external-link"><code>R/encharter.R</code></a>, <a href="https://github.com/JanMarvin/encharter/blob/v0.11.0/R/encharter_chart.R" class="external-link"><code>R/encharter_chart.R</code></a>, <a href="https://github.com/JanMarvin/encharter/blob/v0.11.0/R/encharter_chartex.R" class="external-link"><code>R/encharter_chartex.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/JanMarvin/encharter/blob/main/R/encharter.R" class="external-link"><code>R/encharter.R</code></a>, <a href="https://github.com/JanMarvin/encharter/blob/main/R/encharter_chart.R" class="external-link"><code>R/encharter_chart.R</code></a>, <a href="https://github.com/JanMarvin/encharter/blob/main/R/encharter_chartex.R" class="external-link"><code>R/encharter_chartex.R</code></a></small>
       <div class="d-none name"><code>encharter.Rd</code></div>
     </div>
 
@@ -139,6 +139,7 @@ and opens it in interactive sessions. List or run them with:</p>
 <li><p><code>Droplines_highlowlines_updownbars.R</code> — line adornments</p></li>
 <li><p><code>Histogram_with_args.R</code> — histogram via clusteredColumn binning</p></li>
 <li><p><code>Label_Grouping.R</code> — multi-level category labels</p></li>
+<li><p><code>Load_and_extend.R</code> — load a chart back from a workbook and extend its range</p></li>
 <li><p><code>Line.R</code> — line with markers and global data labels</p></li>
 <li><p><code>New_chart_types.R</code> — 0.11 showcase: pie/bar of pie, all 3D types,
 display units, tick skips, directional error bars</p></li>
@@ -268,6 +269,7 @@ when <code>split_type = "cust"</code>.</p></dd>
 <li><p><a href="#method-Chart-set_bubble_options"><code>Chart$set_bubble_options()</code></a></p></li>
 <li><p><a href="#method-Chart-set_disp_blanks"><code>Chart$set_disp_blanks()</code></a></p></li>
 <li><p><a href="#method-Chart-add_series"><code>Chart$add_series()</code></a></p></li>
+<li><p><a href="#method-Chart-update_series"><code>Chart$update_series()</code></a></p></li>
 <li><p><a href="#method-Chart-render"><code>Chart$render()</code></a></p></li>
 <li><p><a href="#method-Chart-clone"><code>Chart$clone()</code></a></p></li>
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href="EncharterBase.html#method-print"><code>EncharterBase$print()</code></a></span></li>
@@ -976,15 +978,73 @@ negative values. Default <code>FALSE</code>.</p></dd>
 
 </div>
 
+<p></p><hr><a id="method-Chart-update_series"></a><div class="section">
+<h3 id="chart-update-series-"><code>Chart$update_series()</code><a class="anchor" aria-label="anchor" href="#chart-update-series-"></a></h3>
+<p>Change an existing series. Takes the arguments of
+<code>add_series()</code>; arguments that are not supplied keep their current
+value. With a <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code> object as <code>data</code> and no <code>name</code>, the column
+is found from the series' current header (or data) cell, so
+<code>update_series(data = wb_data(wb), label = Month)</code> re-points every
+series at the current extent of the data.</p><div class="section">
+<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">update_series</span><span class="op">(</span></span>
+<span>  index <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  weight <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  secondary <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  grouping <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  overlap <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gap_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  smooth <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_line <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  marker <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  marker_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  marker_fill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  marker_line <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  marker_line_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  filled <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  error_bars <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  trendline <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  invert_if_negative <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>index</code></dt>
+<dd><p>Integer vector of series to update. Default: all series.</p></dd>
+
+      <dt><code>name, data, label, weight, color, type, secondary, dir, grouping, overlap, gap_width, smooth, show_line, marker, marker_size, marker_fill, marker_line, marker_line_width, line_type, line_width, line_color, filled, error_bars, trendline, invert_if_negative</code></dt>
+<dd><p>See <code>add_series()</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div><p></p><div class="section">
+<h4 id="examples-4">Examples<a class="anchor" aria-label="anchor" href="#examples-4"></a></h4>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_workbook.html" class="external-link">wb_workbook</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">add_worksheet</span><span class="op">(</span><span class="st">"Data"</span><span class="op">)</span><span class="op">$</span><span class="fu">add_data</span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="va">month.abb</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, Sales <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span>name <span class="op">=</span> <span class="va">Sales</span>, data <span class="op">=</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span><span class="op">)</span>, label <span class="op">=</span> <span class="va">Month</span><span class="op">)</span></span>
+<span><span class="va">wb</span><span class="op">$</span><span class="fu">add_data</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="st">"Jul"</span>, Sales <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>, dims <span class="op">=</span> <span class="st">"A8"</span>, col_names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">chart</span><span class="op">$</span><span class="fu">update_series</span><span class="op">(</span>data <span class="op">=</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span><span class="op">)</span>, label <span class="op">=</span> <span class="va">Month</span>, color <span class="op">=</span> <span class="st">"C00000"</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+</div>
+
 <p></p><hr><a id="method-Chart-render"></a><div class="section">
 <h3 id="chart-render-"><code>Chart$render()</code><a class="anchor" aria-label="anchor" href="#chart-render-"></a></h3>
 <p>Generate the final XML string for the chart.</p><div class="section">
-<h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
+<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">render</span><span class="op">(</span></span>
 <span>  u_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"53178645"</span>, <span class="st">"60812428"</span>, <span class="st">"64752656"</span>, <span class="st">"81893617"</span>, <span class="st">"90007639"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-13">Arguments<a class="anchor" aria-label="anchor" href="#arguments-13"></a></h4>
+<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>u_ids</code></dt>
 <dd><p>five unique ids</p></dd>
 
@@ -1000,10 +1060,10 @@ negative values. Default <code>FALSE</code>.</p></dd>
 <p></p><hr><a id="method-Chart-clone"></a><div class="section">
 <h3 id="chart-clone-"><code>Chart$clone()</code><a class="anchor" aria-label="anchor" href="#chart-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
+<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Chart</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-14">Arguments<a class="anchor" aria-label="anchor" href="#arguments-14"></a></h4>
+<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -1046,6 +1106,7 @@ via <code>set_region_map_colors()</code>.</p></dd>
 <li><p><a href="#method-ChartEx-set_color_cycle"><code>ChartEx$set_color_cycle()</code></a></p></li>
 <li><p><a href="#method-ChartEx-set_region_map_colors"><code>ChartEx$set_region_map_colors()</code></a></p></li>
 <li><p><a href="#method-ChartEx-add_series"><code>ChartEx$add_series()</code></a></p></li>
+<li><p><a href="#method-ChartEx-update_series"><code>ChartEx$update_series()</code></a></p></li>
 <li><p><a href="#method-ChartEx-render"><code>ChartEx$render()</code></a></p></li>
 <li><p><a href="#method-ChartEx-clone"><code>ChartEx$clone()</code></a></p></li>
 </ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="encharter" data-topic="EncharterBase" data-id="print"><a href="EncharterBase.html#method-print"><code>EncharterBase$print()</code></a></span></li>
@@ -1061,10 +1122,10 @@ via <code>set_region_map_colors()</code>.</p></dd>
 </ul></details></p><hr><a id="method-ChartEx-initialize"></a><div class="section">
 <h3 id="chartex-new-"><code>ChartEx$new()</code><a class="anchor" aria-label="anchor" href="#chartex-new-"></a></h3>
 <p>Create a new ChartEx object.</p><div class="section">
-<h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
+<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/encharter.html">ChartEx</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-15">Arguments<a class="anchor" aria-label="anchor" href="#arguments-15"></a></h4>
+<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>type</code></dt>
 <dd><p>Initial chart type (e.g., "waterfall", "treemap").</p></dd>
 
@@ -1087,10 +1148,10 @@ Total to the first three entries of that cycle. This method
 replaces those entries, so the bars and the legend stay consistent.
 For individual outlier points (e.g. an "unexpected decrease"), pass
 a per-point <code>color</code> vector to <code>add_series()</code> instead.</p><div class="section">
-<h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
+<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">set_waterfall_colors</span><span class="op">(</span>increase <span class="op">=</span> <span class="cn">NULL</span>, decrease <span class="op">=</span> <span class="cn">NULL</span>, total <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-16">Arguments<a class="anchor" aria-label="anchor" href="#arguments-16"></a></h4>
+<h4 id="arguments-17">Arguments<a class="anchor" aria-label="anchor" href="#arguments-17"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>increase</code></dt>
 <dd><p>Fill for rising values: hex, an R color name, or
 <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">openxlsx2::wb_color()</a></code> (theme colors supported).</p></dd>
@@ -1104,7 +1165,7 @@ a per-point <code>color</code> vector to <code>add_series()</code> instead.</p><
 
 </dl><p></p></div>
 </div><p></p><div class="section">
-<h4 id="examples-4">Examples<a class="anchor" aria-label="anchor" href="#examples-4"></a></h4>
+<h4 id="examples-5">Examples<a class="anchor" aria-label="anchor" href="#examples-5"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"waterfall"</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span>, subtotals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">set_waterfall_colors</span><span class="op">(</span>increase <span class="op">=</span> <span class="st">"70AD47"</span>, decrease <span class="op">=</span> <span class="st">"C00000"</span>, total <span class="op">=</span> <span class="st">"A6A6A6"</span><span class="op">)</span></span></code></pre></div><p></p></div>
@@ -1122,10 +1183,10 @@ their series, funnel and Pareto take their first colors from it.
 The first <code>length(colors)</code> cycle entries are replaced in order; if
 more colors are given than the part contains, the cycle is
 extended. Remaining entries and the brightness variations are kept.</p><div class="section">
-<h4 id="usage-16">Usage<a class="anchor" aria-label="anchor" href="#usage-16"></a></h4>
+<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">set_color_cycle</span><span class="op">(</span><span class="va">colors</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-17">Arguments<a class="anchor" aria-label="anchor" href="#arguments-17"></a></h4>
+<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>colors</code></dt>
 <dd><p>Character vector of colors (hex or R color names), or a
 list which may also contain <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">openxlsx2::wb_color()</a></code> values
@@ -1134,7 +1195,7 @@ list which may also contain <code><a href="https://janmarvin.github.io/openxlsx2
 
 </dl><p></p></div>
 </div><p></p><div class="section">
-<h4 id="examples-5">Examples<a class="anchor" aria-label="anchor" href="#examples-5"></a></h4>
+<h4 id="examples-6">Examples<a class="anchor" aria-label="anchor" href="#examples-6"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"treemap"</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">set_color_cycle</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"C00000"</span>, <span class="st">"4472C4"</span>, <span class="st">"70AD47"</span>, <span class="st">"FFC000"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><p></p></div>
@@ -1147,10 +1208,10 @@ list which may also contain <code><a href="https://janmarvin.github.io/openxlsx2
 <p>Set the color scale of a region map. Written as the
 series' <code>cx:valueColors</code> element, which drives both the map shading
 and the legend's color scale. Only applied to <code>regionMap</code> series.</p><div class="section">
-<h4 id="usage-17">Usage<a class="anchor" aria-label="anchor" href="#usage-17"></a></h4>
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">set_region_map_colors</span><span class="op">(</span><span class="va">min</span>, <span class="va">max</span>, mid <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
+<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>min</code></dt>
 <dd><p>Color for the smallest values (hex, R color name, or
 <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_color.html" class="external-link">openxlsx2::wb_color()</a></code>).</p></dd>
@@ -1164,7 +1225,7 @@ and the legend's color scale. Only applied to <code>regionMap</code> series.</p>
 
 </dl><p></p></div>
 </div><p></p><div class="section">
-<h4 id="examples-6">Examples<a class="anchor" aria-label="anchor" href="#examples-6"></a></h4>
+<h4 id="examples-7">Examples<a class="anchor" aria-label="anchor" href="#examples-7"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/encharter.html">ec</a></span><span class="op">(</span><span class="st">"regionMap"</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">add_series</span><span class="op">(</span>data <span class="op">=</span> <span class="st">"Sheet1!B2:B7"</span>, label <span class="op">=</span> <span class="st">"Sheet1!A2:A7"</span><span class="op">)</span><span class="op">$</span></span>
 <span>  <span class="fu">set_region_map_colors</span><span class="op">(</span>min <span class="op">=</span> <span class="st">"FFF2CC"</span>, max <span class="op">=</span> <span class="st">"C00000"</span><span class="op">)</span></span></code></pre></div><p></p></div>
@@ -1175,7 +1236,7 @@ and the legend's color scale. Only applied to <code>regionMap</code> series.</p>
 <p></p><hr><a id="method-ChartEx-add_series"></a><div class="section">
 <h3 id="chartex-add-series-"><code>ChartEx$add_series()</code><a class="anchor" aria-label="anchor" href="#chartex-add-series-"></a></h3>
 <p>Add a data series to the chart.</p><div class="section">
-<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">data</span>,</span>
@@ -1192,7 +1253,7 @@ and the legend's color scale. Only applied to <code>regionMap</code> series.</p>
 <span>  parent_label <span class="op">=</span> <span class="st">"overlapping"</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
+<h4 id="arguments-20">Arguments<a class="anchor" aria-label="anchor" href="#arguments-20"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>Cell range for the series name.</p></dd>
 
@@ -1241,13 +1302,49 @@ and the legend's color scale. Only applied to <code>regionMap</code> series.</p>
 
 </div>
 
+<p></p><hr><a id="method-ChartEx-update_series"></a><div class="section">
+<h3 id="chartex-update-series-"><code>ChartEx$update_series()</code><a class="anchor" aria-label="anchor" href="#chartex-update-series-"></a></h3>
+<p>Change an existing series. Takes the arguments of
+<code>add_series()</code>; arguments that are not supplied keep their current
+value. With a <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code> object as <code>data</code> and no <code>name</code>, the column
+is found from the series' current header (or data) cell.</p><div class="section">
+<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">update_series</span><span class="op">(</span></span>
+<span>  index <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line_color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  line_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gap_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  subtotals <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  statistics <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  binning <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  visibility <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  parent_label <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div><p></p><div class="section">
+<h4 id="arguments-21">Arguments<a class="anchor" aria-label="anchor" href="#arguments-21"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>index</code></dt>
+<dd><p>Integer vector of series to update. Default: all series.</p></dd>
+
+      <dt><code>name, data, label, color, line_color, line_width, gap_width, subtotals, statistics, binning, visibility, parent_label</code></dt>
+<dd><p>See <code>add_series()</code>.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div>
+
 <p></p><hr><a id="method-ChartEx-render"></a><div class="section">
 <h3 id="chartex-render-"><code>ChartEx$render()</code><a class="anchor" aria-label="anchor" href="#chartex-render-"></a></h3>
 <p>Render the internal XML for writing to a file.</p><div class="section">
-<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
+<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">render</span><span class="op">(</span>id_start <span class="op">=</span> <span class="fl">1</span>, guid <span class="op">=</span> <span class="st">"{C59B1284-E301-0D0F-1B20-FD96A66D6E43}"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-20">Arguments<a class="anchor" aria-label="anchor" href="#arguments-20"></a></h4>
+<h4 id="arguments-22">Arguments<a class="anchor" aria-label="anchor" href="#arguments-22"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>id_start</code></dt>
 <dd><p>Numeric starting ID for XML data references.</p></dd>
 
@@ -1266,10 +1363,10 @@ and the legend's color scale. Only applied to <code>regionMap</code> series.</p>
 <p></p><hr><a id="method-ChartEx-clone"></a><div class="section">
 <h3 id="chartex-clone-"><code>ChartEx$clone()</code><a class="anchor" aria-label="anchor" href="#chartex-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
+<h4 id="usage-22">Usage<a class="anchor" aria-label="anchor" href="#usage-22"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">ChartEx</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div><p></p><div class="section">
-<h4 id="arguments-21">Arguments<a class="anchor" aria-label="anchor" href="#arguments-21"></a></h4>
+<h4 id="arguments-23">Arguments<a class="anchor" aria-label="anchor" href="#arguments-23"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -1328,6 +1425,16 @@ and the legend's color scale. Only applied to <code>regionMap</code> series.</p>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">ec</span><span class="op">(</span><span class="st">"bar3DChart"</span><span class="op">)</span><span class="op">$</span><span class="fu">set_3d_options</span><span class="op">(</span>rot_x <span class="op">=</span> <span class="fl">20</span>, rot_y <span class="op">=</span> <span class="fl">30</span>, shape <span class="op">=</span> <span class="st">"cylinder"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `Chart$update_series()`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">wb</span> <span class="op">&lt;-</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_workbook.html" class="external-link">wb_workbook</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">add_worksheet</span><span class="op">(</span><span class="st">"Data"</span><span class="op">)</span><span class="op">$</span><span class="fu">add_data</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="va">month.abb</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span>, Sales <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">chart</span> <span class="op">&lt;-</span> <span class="fu">ec</span><span class="op">(</span><span class="st">"line"</span><span class="op">)</span><span class="op">$</span><span class="fu">add_series</span><span class="op">(</span>name <span class="op">=</span> <span class="va">Sales</span>, data <span class="op">=</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span><span class="op">)</span>, label <span class="op">=</span> <span class="va">Month</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">wb</span><span class="op">$</span><span class="fu">add_data</span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Month <span class="op">=</span> <span class="st">"Jul"</span>, Sales <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>, dims <span class="op">=</span> <span class="st">"A8"</span>, col_names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">chart</span><span class="op">$</span><span class="fu">update_series</span><span class="op">(</span>data <span class="op">=</span> <span class="fu">openxlsx2</span><span class="fu">::</span><span class="fu"><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data</a></span><span class="op">(</span><span class="va">wb</span><span class="op">)</span>, label <span class="op">=</span> <span class="va">Month</span>, color <span class="op">=</span> <span class="st">"C00000"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
 <span class="r-in"><span><span class="co">## Method `ChartEx$set_waterfall_colors()`</span></span></span>
