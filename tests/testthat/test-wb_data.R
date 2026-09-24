@@ -239,8 +239,8 @@ test_that("NA values in data_cache are omitted from pt nodes", {
 
   # Only 3 pt nodes (indices 0, 2, 4) — NAs at index 1 and 3 are skipped
   pt_matches <- gregexpr("<c:pt ", x_str)[[1]]
-  # Filter to only the val cache pts (not label pts)
-  expect_equal(length(pt_matches[pt_matches > 0]), 3L + length(na_df$x))
+  # val cache pts, label cache pts and one pt for the series name cache
+  expect_equal(length(pt_matches[pt_matches > 0]), 3L + length(na_df$x) + 1L)
   # idx="1" and idx="3" should not appear in the val cache
   # (they may appear in label cache so check by value)
   expect_false(grepl(">NA<", x_str))

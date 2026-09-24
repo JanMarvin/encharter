@@ -3,42 +3,41 @@
 \name{encharter_load}
 \alias{encharter_load}
 \alias{ec_load}
-\title{Load a chart from a workbook}
+\title{Load a chart from a workbook into an encharter object}
 \usage{
 encharter_load(wb, chart = 1L, type = NULL)
 
 ec_load(wb, chart = 1L, type = NULL)
 }
 \arguments{
-\item{wb}{A \code{wbWorkbook} with at least one chart.}
+\item{wb}{A \code{wbWorkbook} containing at least one chart.}
 
-\item{chart}{Integer; row of \code{wb$charts}. Default \code{1}.}
+\item{chart}{Integer; the row of \code{wb$charts} to load. Default \code{1}.}
 
-\item{type}{\code{"chart"} or \code{"chartEx"}. By default the type present in the
-row is used; an error is raised if both are present.}
+\item{type}{\code{"chart"} for a standard chart or \code{"chartEx"} for an extended
+chart. The default takes whichever the row holds and errors if it
+holds both.}
 }
 \value{
 A \code{Chart} or \code{ChartEx} object.
 }
 \description{
-Reads a chart from a workbook and returns it as a \code{Chart} or \code{ChartEx}
-object. This is the reverse of \code{\link[openxlsx2:wb_add_encharter]{openxlsx2::wb_add_encharter()}}: series
-references and cached values, styling, axes, titles and legend are
-restored, and the object can be changed and added to a workbook again.
+Reads a chart stored in a workbook and returns it as a \code{Chart} or
+\code{ChartEx} object, the counterpart of \code{\link[openxlsx2:wb_add_encharter]{openxlsx2::wb_add_encharter()}}.
+Series references and cached values, styling, axes, titles and the legend
+are restored, so the object can be modified like any other encharter
+object (\verb{$update_series()} to follow a longer data range, \verb{$add_series()},
+\verb{$set_chart_title()}, ...) and written back with \code{wb_add_encharter()}.
 }
 \details{
-Charts written by encharter are read back completely. Charts written by
-Excel or other software are read as far as encharter has fields for
-their content; manual layouts, per-point formatting outside pie charts,
-theme color modifiers and extension lists are dropped.
+Charts created with encharter are reproduced exactly. Charts written by
+other software load as well; properties encharter has no field for
+(manual layouts, per-point styling outside pie charts, theme color
+modifiers, extension lists) are not carried over.
 
 A workbook loaded from a file can hold a standard chart and an extended
-chart (waterfall, treemap, ...) in the same row of \code{wb$charts}. Use
-\code{type} to select one.
-
-This function is new and has only been tested against the charts in the
-package examples and a few Excel files. Expect rough edges; please report
-charts that do not load or do not render the same after loading.
+chart (waterfall, treemap, ...) in the same row of \code{wb$charts}; use
+\code{type} to pick one in that case.
 }
 \examples{
 library(openxlsx2)
@@ -51,7 +50,7 @@ chart <- ec("line")$set_chart_title("Sales")$
              data = "Data!$B$2:$B$7", marker = "circle")
 wb$add_encharter(dims = "D2:L18", graph = chart)
 
-# append a row and point the chart at the longer range
+# A month later: append a row and point the chart at the longer range
 wb$add_data(x = data.frame(Month = "Jul", Sales = 240), dims = "A8", col_names = FALSE)
 chart <- ec_load(wb)
 chart$update_series(data = wb_data(wb), label = Month)

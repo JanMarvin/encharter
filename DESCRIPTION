@@ -18,7 +18,10 @@ LinkingTo:
     openxlsx2
 Imports:
     R6,
-    openxlsx2 (>= 1.26)
+    grDevices,
+    grid,
+    openxlsx2 (>= 1.26),
+    stats
 Suggests:
     testthat (>= 3.0.0),
     viridisLite

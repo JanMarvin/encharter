@@ -4,6 +4,7 @@ CMD
 Calibri
 ChartEx
 ECMA
+Excel's
 OOXML
 OOXMLValidator
 OpenXML
@@ -24,6 +25,7 @@ dashDot
 dml
 enum
 gridline
+gridlines
 guid
 hardcoding
 img
@@ -50,6 +52,7 @@ summarises
 th
 treemap
 trendline
+trendlines
 validator
 wb
 xsd
