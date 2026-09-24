@@ -176,27 +176,10 @@ ChartEx <- R6::R6Class(
       c_label <- tryCatch(if (is.symbol(substitute(label))) deparse1(substitute(label)) else label, error = function(e) NULL)
 
       if (inherits(data, "wb_data")) {
-        wb_dims    <- attr(data, "dims")
-        wb_sheet   <- attr(data, "sheet")
-        col_names  <- names(data)
-
-        has_header <- nrow(wb_dims) > length(attr(data, "row.names"))
-        start_row  <- if (has_header) 2 else 1
-
-        # 2. Resolve Series Data and Header
-        h_idx <- which(col_names == h_label)
-        if (length(h_idx) > 0) {
-          h_idx  <- h_idx[1]
-          name <- if (has_header) sprintf("%s!%s", wb_sheet, wb_dims[1, h_idx]) else NULL
-          data   <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, h_idx], wb_dims[nrow(wb_dims), h_idx])
-        }
-
-        # 3. Resolve Category (label)
-        c_idx <- which(col_names == c_label)
-        if (length(c_idx) > 0) {
-          c_idx <- c_idx[1]
-          label <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, c_idx], wb_dims[nrow(wb_dims), c_idx])
-        }
+        res <- private$resolve_wb_data(data, h_label, c_label)
+        name  <- res$name
+        data  <- res$data
+        label <- res$label
       }
 
       # 4. Clean and Store
@@ -248,6 +231,82 @@ ChartEx <- R6::R6Class(
         visibility = visibility,
         parent_label = parent_label
       )
+      invisible(self)
+    },
+
+    #' @description Change an existing series. Takes the arguments of
+    #'   `add_series()`; arguments that are not supplied keep their current
+    #'   value. With a `wb_data()` object as `data` and no `name`, the column
+    #'   is found from the series' current header (or data) cell.
+    #' @param index Integer vector of series to update. Default: all series.
+    #' @param name,data,label,color,line_color,line_width,gap_width,subtotals,statistics,binning,visibility,parent_label
+    #'   See `add_series()`.
+    update_series = function(index = NULL, name = NULL, data = NULL, label = NULL, color = NULL,
+                             line_color = NULL, line_width = NULL, gap_width = NULL, subtotals = NULL,
+                             statistics = NULL, binning = NULL, visibility = NULL, parent_label = NULL) {
+
+      n <- length(self$series_data)
+      if (n == 0) stop("The chart has no series to update.", call. = FALSE)
+      if (is.null(index)) index <- seq_len(n)
+      if (!is.numeric(index) || anyNA(index) || any(index < 1) || any(index > n)) {
+        stop(sprintf("'index' must be between 1 and %d.", n), call. = FALSE)
+      }
+
+      h_label <- tryCatch(if (is.symbol(substitute(name))) deparse1(substitute(name)) else name, error = function(e) NULL)
+      c_label <- tryCatch(if (is.symbol(substitute(label))) deparse1(substitute(label)) else label, error = function(e) NULL)
+
+      color        <- check_color(color, "color")
+      line_color   <- check_color(line_color, "line_color")
+      check_num(line_width, "line_width", min = 0)
+      check_num(gap_width, "gap_width", min = 0)
+      statistics   <- check_choice(statistics, c("inclusive", "exclusive"), "statistics")
+      parent_label <- check_choice(parent_label, c("overlapping", "banner", "none"), "parent_label")
+      if (is.numeric(subtotals) && (anyNA(subtotals) || any(subtotals < 0) || any(subtotals != trunc(subtotals)))) {
+        stop("'subtotals' must be a vector of non-negative point indices", call. = FALSE)
+      }
+      if (isTRUE(subtotals)) subtotals <- 0
+
+      for (i in index) {
+        s <- self$series_data[[i]]
+
+        if (inherits(data, "wb_data")) {
+          this_h <- h_label
+          if (is.null(this_h)) {
+            src <- if (!is.na(s$name) && grepl("!.+", s$name)) s$name else s$data
+            cell <- gsub("\\$", "", sub("^.*!", "", src))
+            cell <- sub(":.*$", "", cell)
+            col  <- sub("[0-9]+$", "", cell)
+            dims_cols <- sub("[0-9]+$", "", attr(data, "dims")[1, ])
+            this_h <- names(data)[match(col, dims_cols)]
+          }
+          res <- private$resolve_wb_data(data, this_h, c_label)
+          if (is.null(res$data)) {
+            stop(sprintf("series %d: object '%s' not found in the wb_data object", i, this_h %||% ""), call. = FALSE)
+          }
+          s$name <- private$fix_quote(to_abs_ref(res$name) %||% NA_character_)
+          s$data <- private$fix_quote(to_abs_ref(res$data))
+          if (!is.null(res$label)) s$label <- private$fix_quote(to_abs_ref(res$label))
+        } else {
+          if (!is.null(name))  s$name  <- private$fix_quote(to_abs_ref(name))
+          if (!is.null(data)) {
+            if (!grepl("!", data)) stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
+            s$data <- private$fix_quote(to_abs_ref(data))
+          }
+          if (!is.null(label)) s$label <- private$fix_quote(to_abs_ref(label))
+        }
+
+        if (!is.null(color))        s$color        <- color
+        if (!is.null(line_color))   s$line_color   <- line_color
+        if (!is.null(line_width))   s$line_width   <- line_width
+        if (!is.null(gap_width))    s$gap_width    <- gap_width
+        if (!is.null(subtotals))    s$subtotals    <- subtotals
+        if (!is.null(statistics))   s$statistics   <- statistics
+        if (!is.null(binning))      s$binning      <- binning
+        if (!is.null(visibility))   s$visibility   <- visibility
+        if (!is.null(parent_label)) s$parent_label <- parent_label
+
+        self$series_data[[i]] <- s
+      }
       invisible(self)
     },
 
@@ -399,7 +458,7 @@ ChartEx <- R6::R6Class(
             int_closed <- switch(as.character(s$binning$intervalClosed %||% ""),
                                 "left"  = "l",
                                 "right" = "r",
-                                as.character(s$binning$intervalClosed))
+                                as.character(s$binning$intervalClosed %||% ""))
 
             bn <- xml_add_child(lpr, "cx:binning")
             if (nzchar(int_closed)) xml_set_attr(bn, "intervalClosed", int_closed)
@@ -527,6 +586,34 @@ ChartEx <- R6::R6Class(
     }
   ),
   private = list(
+
+    # Turns a wb_data() object plus column names into sheet references.
+    # Columns that are not found return NULL.
+    resolve_wb_data = function(data, h_label, c_label) {
+      wb_dims   <- attr(data, "dims")
+      wb_sheet  <- attr(data, "sheet")
+      col_names <- names(data)
+      has_header <- nrow(wb_dims) > length(attr(data, "row.names"))
+      start_row  <- if (has_header) 2 else 1
+
+      for (lbl in c(h_label, c_label)) {
+        if (!lbl %in% col_names) stop(sprintf("object '%s' not found in the wb_data object", lbl), call. = FALSE)
+      }
+
+      out <- list(name = NULL, data = NULL, label = NULL)
+      h_idx <- which(col_names == h_label)
+      if (length(h_idx) > 0) {
+        h_idx <- h_idx[1]
+        out$name <- if (has_header) sprintf("%s!%s", wb_sheet, wb_dims[1, h_idx]) else NULL
+        out$data <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, h_idx], wb_dims[nrow(wb_dims), h_idx])
+      }
+      c_idx <- which(col_names == c_label)
+      if (length(c_idx) > 0) {
+        c_idx <- c_idx[1]
+        out$label <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, c_idx], wb_dims[nrow(wb_dims), c_idx])
+      }
+      out
+    },
 
     # Validates one cycle/scale color: single, concrete (no "auto"/"none").
     check_cycle_color = function(val, name) {

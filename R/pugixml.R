@@ -115,6 +115,16 @@ xml_attr <- function(x, attr) {
   .Call(C_pugi_get_attr, x, as.character(attr))
 }
 
+#' Get text content
+#'
+#' @param x A pugi_node or list of nodes.
+#' @return A character vector of text contents.
+#' @keywords internal
+xml_text <- function(x) {
+  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_text, node))))
+  .Call(C_pugi_node_text, x)
+}
+
 #' Set attribute value
 #'
 #' @param x A pugi_node or list of nodes.

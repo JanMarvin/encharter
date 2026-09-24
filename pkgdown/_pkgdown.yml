@@ -11,6 +11,7 @@ reference:
   - title: Chart construction
     contents:
       - encharter
+      - encharter_load
   - title: Chart classes
     contents:
       - EncharterBase

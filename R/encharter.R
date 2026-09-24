@@ -87,6 +87,7 @@ ENCHARTER_EXTENDED <- c(
 #'   * `Droplines_highlowlines_updownbars.R` — line adornments
 #'   * `Histogram_with_args.R` — histogram via clusteredColumn binning
 #'   * `Label_Grouping.R` — multi-level category labels
+#'   * `Load_and_extend.R` — load a chart back from a workbook and extend its range
 #'   * `Line.R` — line with markers and global data labels
 #'   * `New_chart_types.R` — 0.11 showcase: pie/bar of pie, all 3D types,
 #'     display units, tick skips, directional error bars

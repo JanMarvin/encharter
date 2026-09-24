@@ -264,6 +264,11 @@ extern "C" {
     return R_NilValue;
   }
 
+  SEXP pugi_node_text(SEXP node_ptr) {
+    CHECK_NODE(node_ptr)
+    return Rf_mkString(node->text().get());
+  }
+
   // --- Metadata & Serialization ---
 
   SEXP pugi_node_name(SEXP node_ptr) {

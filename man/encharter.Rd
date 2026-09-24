@@ -91,6 +91,7 @@ The available files are:
 \item \code{Droplines_highlowlines_updownbars.R} — line adornments
 \item \code{Histogram_with_args.R} — histogram via clusteredColumn binning
 \item \code{Label_Grouping.R} — multi-level category labels
+\item \code{Load_and_extend.R} — load a chart back from a workbook and extend its range
 \item \code{Line.R} — line with markers and global data labels
 \item \code{New_chart_types.R} — 0.11 showcase: pie/bar of pie, all 3D types,
 display units, tick skips, directional error bars
@@ -152,6 +153,16 @@ ec("ofPieChart")$set_of_pie_options(type = "bar", split_type = "pos", split_pos 
 ## ------------------------------------------------
 
 ec("bar3DChart")$set_3d_options(rot_x = 20, rot_y = 30, shape = "cylinder")
+
+## ------------------------------------------------
+## Method `Chart$update_series()`
+## ------------------------------------------------
+
+wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+  x = data.frame(Month = month.abb[1:6], Sales = 1:6))
+chart <- ec("line")$add_series(name = Sales, data = openxlsx2::wb_data(wb), label = Month)
+wb$add_data(x = data.frame(Month = "Jul", Sales = 7), dims = "A8", col_names = FALSE)
+chart$update_series(data = openxlsx2::wb_data(wb), label = Month, color = "C00000")
 
 ## ------------------------------------------------
 ## Method `ChartEx$set_waterfall_colors()`
@@ -245,6 +256,7 @@ when \code{split_type = "cust"}.}
     \item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
     \item \href{#method-Chart-set_disp_blanks}{\code{Chart$set_disp_blanks()}}
     \item \href{#method-Chart-add_series}{\code{Chart$add_series()}}
+    \item \href{#method-Chart-update_series}{\code{Chart$update_series()}}
     \item \href{#method-Chart-render}{\code{Chart$render()}}
     \item \href{#method-Chart-clone}{\code{Chart$clone()}}
   }
@@ -804,6 +816,68 @@ negative values. Default \code{FALSE}.}
 }
 
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-update_series"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-update_series}{}}}
+\subsection{\code{Chart$update_series()}}{
+  Change an existing series. Takes the arguments of
+\code{add_series()}; arguments that are not supplied keep their current
+value. With a \code{wb_data()} object as \code{data} and no \code{name}, the column
+is found from the series' current header (or data) cell, so
+\code{update_series(data = wb_data(wb), label = Month)} re-points every
+series at the current extent of the data.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Chart$update_series(
+  index = NULL,
+  name = NULL,
+  data = NULL,
+  label = NULL,
+  weight = NULL,
+  color = NULL,
+  type = NULL,
+  secondary = NULL,
+  dir = NULL,
+  grouping = NULL,
+  overlap = NULL,
+  gap_width = NULL,
+  smooth = NULL,
+  show_line = NULL,
+  marker = NULL,
+  marker_size = NULL,
+  marker_fill = NULL,
+  marker_line = NULL,
+  marker_line_width = NULL,
+  line_type = NULL,
+  line_width = NULL,
+  line_color = NULL,
+  filled = NULL,
+  error_bars = NULL,
+  trendline = NULL,
+  invert_if_negative = NULL
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{index}}{Integer vector of series to update. Default: all series.}
+      \item{\code{name, data, label, weight, color, type, secondary, dir, grouping, overlap, gap_width, smooth, show_line, marker, marker_size, marker_fill, marker_line, marker_line_width, line_type, line_width, line_color, filled, error_bars, trendline, invert_if_negative}}{See \code{add_series()}.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Examples}{
+    \if{html}{\out{<div class="r example copy">}}
+    \preformatted{wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+  x = data.frame(Month = month.abb[1:6], Sales = 1:6))
+chart <- ec("line")$add_series(name = Sales, data = openxlsx2::wb_data(wb), label = Month)
+wb$add_data(x = data.frame(Month = "Jul", Sales = 7), dims = "A8", col_names = FALSE)
+chart$update_series(data = openxlsx2::wb_data(wb), label = Month, color = "C00000")
+}
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Chart-render"></a>}}
 \if{latex}{\out{\hypertarget{method-Chart-render}{}}}
 \subsection{\code{Chart$render()}}{
@@ -870,6 +944,7 @@ via \code{set_region_map_colors()}.}
     \item \href{#method-ChartEx-set_color_cycle}{\code{ChartEx$set_color_cycle()}}
     \item \href{#method-ChartEx-set_region_map_colors}{\code{ChartEx$set_region_map_colors()}}
     \item \href{#method-ChartEx-add_series}{\code{ChartEx$add_series()}}
+    \item \href{#method-ChartEx-update_series}{\code{ChartEx$update_series()}}
     \item \href{#method-ChartEx-render}{\code{ChartEx$render()}}
     \item \href{#method-ChartEx-clone}{\code{ChartEx$clone()}}
   }
@@ -1058,6 +1133,43 @@ and the legend's color scale. Only applied to \code{regionMap} series.
       \item{\code{visibility}}{A named list of logicals for BoxWhisker/Waterfall:
 \code{connectorLines}, \code{meanLine}, \code{meanMarker}, \code{nonoutliers}, \code{outliers}.}
       \item{\code{parent_label}}{Treemap label style: "overlapping", "banner", or "none".}
+    }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-ChartEx-update_series"></a>}}
+\if{latex}{\out{\hypertarget{method-ChartEx-update_series}{}}}
+\subsection{\code{ChartEx$update_series()}}{
+  Change an existing series. Takes the arguments of
+\code{add_series()}; arguments that are not supplied keep their current
+value. With a \code{wb_data()} object as \code{data} and no \code{name}, the column
+is found from the series' current header (or data) cell.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ChartEx$update_series(
+  index = NULL,
+  name = NULL,
+  data = NULL,
+  label = NULL,
+  color = NULL,
+  line_color = NULL,
+  line_width = NULL,
+  gap_width = NULL,
+  subtotals = NULL,
+  statistics = NULL,
+  binning = NULL,
+  visibility = NULL,
+  parent_label = NULL
+)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{index}}{Integer vector of series to update. Default: all series.}
+      \item{\code{name, data, label, color, line_color, line_width, gap_width, subtotals, statistics, binning, visibility, parent_label}}{See \code{add_series()}.}
     }
     \if{html}{\out{</div>}}
   }
