@@ -526,8 +526,10 @@ Chart <- R6::R6Class(
       data_vals <- NULL
       cat_vals <- NULL
       z_vals <- NULL
+      name_vals <- NULL
       if (inherits(data, "wb_data")) {
         res <- private$resolve_wb_data(data, h_label, c_label, z_label)
+        name_vals <- if (!is.null(res$name)) h_label
         name      <- res$name
         data      <- res$data
         label     <- res$label
@@ -554,6 +556,7 @@ Chart <- R6::R6Class(
         data      = data,
         label     = label,
         weight    = weight,
+        name_cache = name_vals,
         data_cache = data_vals,
         cat_cache = cat_vals,
         z_cache   = z_vals,
@@ -694,6 +697,7 @@ Chart <- R6::R6Class(
           }
           if (!is.null(res$data)) {
             s$name       <- to_abs_ref(res$name)
+            s$name_cache <- if (!is.null(res$name)) this_h
             s$data       <- to_abs_ref(res$data)
             s$data_cache <- res$data_vals
           }
@@ -706,7 +710,10 @@ Chart <- R6::R6Class(
             s$z_cache <- res$z_vals
           }
         } else {
-          if (!is.null(name)) s$name <- to_abs_ref(name)
+          if (!is.null(name)) {
+            s$name <- to_abs_ref(name)
+            s["name_cache"] <- list(NULL)
+          }
           if (!is.null(data)) {
             if (!grepl("!", data)) stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
             s$data <- to_abs_ref(data)
@@ -1059,7 +1066,8 @@ Chart <- R6::R6Class(
 
       # 1. INITIAL PROPERTIES (Must come before <c:ser>)
       if (type == "scatterChart") {
-        xml_add_child(c_node, "c:scatterStyle", val = "lineMarker")
+        any_smooth <- any(vapply(sub_series, function(x) isTRUE(x$smooth), logical(1)))
+        xml_add_child(c_node, "c:scatterStyle", val = if (any_smooth) "smoothMarker" else "lineMarker")
       }
 
       if (type == "ofPieChart") {
@@ -1115,6 +1123,7 @@ Chart <- R6::R6Class(
             # It's a range reference like Sheet1!$A$1
             strRef <- xml_add_child(tx, "c:strRef")
             xml_add_child(strRef, "c:f", s$name)
+            if (!is.null(s$name_cache)) private$render_str_cache(strRef, s$name_cache)
           } else {
             # It's a literal string
             xml_add_child(tx, "c:v", as.character(s$name))

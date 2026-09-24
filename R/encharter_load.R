@@ -317,11 +317,14 @@ load_label_params <- function(dlbls, type) {
 # Inverse of the per-series part of render_series_node()
 load_series <- function(ser, type, chart) {
   name <- NULL
+  name_cache <- NULL
   tx <- xml_find_first(ser, "./c:tx")
   if (!is_missing(tx)) {
     f <- xml_find_first(tx, "./c:strRef/c:f")
     v <- xml_find_first(tx, "./c:v")
     name <- if (!is_missing(f)) xml_text(f) else if (!is_missing(v)) xml_text(v) else NULL
+    cache <- xml_find_first(tx, "./c:strRef/c:strCache/c:pt/c:v")
+    if (!is_missing(cache)) name_cache <- xml_text(cache)
   }
 
   color <- "4472C4"
@@ -410,6 +413,7 @@ load_series <- function(ser, type, chart) {
     data       = data_ref$ref,
     label      = cat_ref$ref,
     weight     = z_ref$ref,
+    name_cache = name_cache,
     data_cache = data_ref$cache,
     cat_cache  = cat_ref$cache,
     z_cache    = z_ref$cache,
@@ -829,32 +833,31 @@ ec_chart_xml <- function(wb, chart, type) {
   list(xml = xml, is_ex = type == "chartEx")
 }
 
-#' Load a chart from a workbook
+#' Load a chart from a workbook into an encharter object
 #'
 #' @description
-#' Reads a chart from a workbook and returns it as a `Chart` or `ChartEx`
-#' object. This is the reverse of [openxlsx2::wb_add_encharter()]: series
-#' references and cached values, styling, axes, titles and legend are
-#' restored, and the object can be changed and added to a workbook again.
+#' Reads a chart stored in a workbook and returns it as a `Chart` or
+#' `ChartEx` object, the counterpart of [openxlsx2::wb_add_encharter()].
+#' Series references and cached values, styling, axes, titles and the legend
+#' are restored, so the object can be modified like any other encharter
+#' object (`$update_series()` to follow a longer data range, `$add_series()`,
+#' `$set_chart_title()`, ...) and written back with `wb_add_encharter()`.
 #'
 #' @details
-#' Charts written by encharter are read back completely. Charts written by
-#' Excel or other software are read as far as encharter has fields for
-#' their content; manual layouts, per-point formatting outside pie charts,
-#' theme color modifiers and extension lists are dropped.
+#' Charts created with encharter are reproduced exactly. Charts written by
+#' other software load as well; properties encharter has no field for
+#' (manual layouts, per-point styling outside pie charts, theme color
+#' modifiers, extension lists) are not carried over.
 #'
 #' A workbook loaded from a file can hold a standard chart and an extended
-#' chart (waterfall, treemap, ...) in the same row of `wb$charts`. Use
-#' `type` to select one.
+#' chart (waterfall, treemap, ...) in the same row of `wb$charts`; use
+#' `type` to pick one in that case.
 #'
-#' This function is new and has only been tested against the charts in the
-#' package examples and a few Excel files. Expect rough edges; please report
-#' charts that do not load or do not render the same after loading.
-#'
-#' @param wb A `wbWorkbook` with at least one chart.
-#' @param chart Integer; row of `wb$charts`. Default `1`.
-#' @param type `"chart"` or `"chartEx"`. By default the type present in the
-#'   row is used; an error is raised if both are present.
+#' @param wb A `wbWorkbook` containing at least one chart.
+#' @param chart Integer; the row of `wb$charts` to load. Default `1`.
+#' @param type `"chart"` for a standard chart or `"chartEx"` for an extended
+#'   chart. The default takes whichever the row holds and errors if it
+#'   holds both.
 #' @return A `Chart` or `ChartEx` object.
 #' @examples
 #' library(openxlsx2)
@@ -867,7 +870,7 @@ ec_chart_xml <- function(wb, chart, type) {
 #'              data = "Data!$B$2:$B$7", marker = "circle")
 #' wb$add_encharter(dims = "D2:L18", graph = chart)
 #'
-#' # append a row and point the chart at the longer range
+#' # A month later: append a row and point the chart at the longer range
 #' wb$add_data(x = data.frame(Month = "Jul", Sales = 240), dims = "A8", col_names = FALSE)
 #' chart <- ec_load(wb)
 #' chart$update_series(data = wb_data(wb), label = Month)

@@ -44,6 +44,9 @@ load_and_extend <- function() {
 
   wb$add_encharter(dims = "E22:M40", graph = chart)
 
+  # preview without a spreadsheet application
+  plot(chart)
+
   if (interactive()) wb$open()
   invisible(wb)
 }

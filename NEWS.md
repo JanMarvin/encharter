@@ -1,14 +1,19 @@
 # encharter 0.12 (development)
 
-* New `encharter_load()` / `ec_load()` reads a chart from a workbook back
-  into a `Chart` or `ChartEx` object, the reverse of `wb_add_encharter()`.
-  Charts written by encharter round-trip to identical XML; charts from
-  Excel load as far as encharter has fields for their content. New
-  `$update_series()` on both classes changes references and styling of
-  existing series, e.g. `chart$update_series(data = wb_data(wb), label = Month)`
-  to follow a longer data range. Series without a cell reference are now
-  written as literals (`numLit`/`strLit`). Both are new and lightly tested;
-  please report charts that do not load or render differently after loading.
+## New features
+
+* `encharter_load()` / `ec_load()` read a chart from a workbook back into a
+  `Chart` or `ChartEx` object, so charts can be reloaded, modified and added
+  again. Charts written by Excel load as well. New `$update_series()` on both
+  classes to change an existing series. Loading has seen limited testing;
+  unusual charts may not survive a round trip unchanged.
+
+* `plot()` methods for `Chart` and `ChartEx` objects draw the chart with grid,
+  following what Excel renders from the written OOXML: automatic axis scaling,
+  primary and secondary axes, tick marks, gridlines, legend, data labels,
+  trendlines, error bars, and the extended types waterfall, box-and-whisker,
+  histogram, Pareto, funnel, treemap and sunburst. 3D, stock, surface,
+  pie-of-pie and region map charts are not drawn.
 
 # encharter 0.11
 
