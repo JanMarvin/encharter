@@ -270,3 +270,15 @@ test_that("update_series() re-points loaded series at new data", {
   expect_equal(wf2$series_data[[1]]$label, "'Sheet1'!$A$2:$A$8")
   expect_equal(wf2$series_data[[1]]$subtotals, 6)
 })
+
+test_that("luminance modifiers of theme colours survive a round trip", {
+  skip_if_not_installed("openxlsx")
+  wb <- openxlsx2::wb_load(system.file("extdata", "loadExample.xlsx", package = "openxlsx"))
+  chart <- encharter_load(wb, 2)
+  grid_color <- chart$axis_params$y$grid_color
+  expect_equal(attr(grid_color, "lumMod"), 0.15)
+  expect_equal(attr(grid_color, "lumOff"), 0.85)
+  xml <- chart$render(u_ids = paste0("1000", 1:5))
+  expect_match(xml, '<c:majorGridlines><c:spPr><a:ln w="9525"><a:solidFill><a:schemeClr val="tx1"><a:lumMod val="15000"/><a:lumOff val="85000"/>', fixed = TRUE)
+  expect_equal(plot_color(grid_color), "#D9D9D9")
+})

@@ -640,7 +640,12 @@ EncharterBase <- R6::R6Class(
             theme_idx <- as.integer(color_val)
             val_name <- theme_map[as.numeric(theme_idx) + 1]
           }
-          xml_add_child(node, "a:schemeClr", val = val_name)
+          scheme <- xml_add_child(node, "a:schemeClr", val = val_name)
+          # luminance modifiers kept by encharter_load() on theme colours
+          lum_mod <- attr(color_val, "lumMod")
+          lum_off <- attr(color_val, "lumOff")
+          if (!is.null(lum_mod)) xml_add_child(scheme, "a:lumMod", val = as.character(round(lum_mod * 100000)))
+          if (!is.null(lum_off)) xml_add_child(scheme, "a:lumOff", val = as.character(round(lum_off * 100000)))
           return()
         }
 
