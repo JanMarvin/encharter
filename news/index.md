@@ -1,6 +1,27 @@
 # Changelog
 
-## encharter 0.11 (development)
+## encharter 0.12 (development)
+
+- New
+  [`encharter_load()`](https://janmarvin.github.io/encharter/reference/encharter_load.md)
+  /
+  [`ec_load()`](https://janmarvin.github.io/encharter/reference/encharter_load.md)
+  reads a chart from a workbook back into a `Chart` or `ChartEx` object,
+  the reverse of
+  [`wb_add_encharter()`](https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html).
+  Charts written by encharter round-trip to identical XML; charts from
+  Excel load as far as encharter has fields for their content. New
+  `$update_series()` on both classes changes references and styling of
+  existing series,
+  e.g. `chart$update_series(data = wb_data(wb), label = Month)` to
+  follow a longer data range. Series without a cell reference are now
+  written as literals (`numLit`/`strLit`). Both are new and lightly
+  tested; please report charts that do not load or render differently
+  after loading.
+
+## encharter 0.11
+
+CRAN release: 2026-09-05
 
 ### New features
 
