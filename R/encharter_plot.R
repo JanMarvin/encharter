@@ -12,7 +12,7 @@ ENCHARTER_THEME_HEX <- c(
   dk1 = "000000", lt1 = "FFFFFF", dk2 = "44546A", lt2 = "E7E6E6"
 )
 
-# theme colours of the workbook being plotted; plot() sets them from the
+# theme colors of the workbook being plotted; plot() sets them from the
 # workbook's theme part and restores the Office defaults afterwards
 plot_state <- new.env(parent = emptyenv())
 plot_state$theme <- ENCHARTER_THEME_HEX
@@ -83,8 +83,8 @@ plot_color <- function(x, default = "#000000") {
   default
 }
 
-# Excel's automatic point colours: the six accents, then the same accents
-# with the brightness variations of the default colour style
+# Automatic point colors: the six accents, then the same accents
+# with the brightness variations of the default color style
 plot_auto_color <- function(i, palette) {
   if (i <= length(palette)) return(plot_color(palette[i], "#4472C4"))
   accents <- plot_state$theme[paste0("accent", 1:6)]
@@ -132,11 +132,11 @@ plot_gpar_text <- function(style, default_size, default_col = "#000000") {
   )
 }
 
-# Formats numbers roughly the way Excel does for a handful of common format
+# Formats numbers roughly the way a spreadsheet does for a handful of common format
 # codes; everything else falls back to "General".
 plot_format <- function(x, format = NULL) {
   if (inherits(x, c("Date", "POSIXt"))) {
-    # without a format Excel shows the cell's short date, which follows the
+    # without a format the cell's short date is shown, which follows the
     # system locale
     if (is.null(format)) return(format(x, "%x"))
     fmt <- tolower(format)
@@ -176,11 +176,11 @@ plot_format <- function(x, format = NULL) {
   out
 }
 
-# Excel's automatic value axis. The minimum is zero for all-positive data
+# The automatic value axis. The minimum is zero for all-positive data
 # unless the values sit in the upper sixth of their magnitude, the ends are
 # padded by 5% of the range, and the major unit is the power of ten below
 # the padded range, divided by 2, 5 or 10 when the range covers less than
-# 5, 2 or 1 of those units. Checked against Excel for a dozen charts.
+# 5, 2 or 1 of those units. Checked against Excel output for a dozen charts.
 # `pad = FALSE` is used for percent and radar axes, which end exactly at the
 # data maximum.
 plot_scale <- function(lo, hi, params = list(), pad = TRUE) {
@@ -336,10 +336,10 @@ plot_legend <- function(entries, params, style, max_w = Inf) {
         } else {
           grid::grid.rect(x = grid::unit(x + 4, "points"), y = grid::unit(cy, "points"),
                           width = grid::unit(8, "points"), height = grid::unit(8, "points"),
-                          just = c("centre", "centre"), gp = grid::gpar(fill = e$col, col = NA))
+                          just = c("center", "center"), gp = grid::gpar(fill = e$col, col = NA))
         }
         grid::grid.text(e$label, x = grid::unit(x + key_w, "points"), y = grid::unit(cy, "points"),
-                        just = c("left", "centre"), gp = gp)
+                        just = c("left", "center"), gp = gp)
         x <- x + item_w[k]
       }
     }
@@ -347,7 +347,7 @@ plot_legend <- function(entries, params, style, max_w = Inf) {
   list(pos = pos, size = size, draw = draw)
 }
 
-# Title text broken into lines that fit `width` points, like Excel wraps
+# Title text broken into lines that fit `width` points, the way titles wrap
 # a title that is wider than the chart
 plot_title_lines <- function(title, default_size, width) {
   gp <- plot_gpar_text(title$style, default_size)
@@ -409,7 +409,7 @@ plot_draw_markers <- function(x, y, m, series_col) {
   if (is.na(pch)) return(invisible())
   fill <- plot_color(m$fill, series_col)
   line <- plot_color(m$line$color, series_col)
-  # grid draws a symbol at 3/4 of `size`; Excel's size is the diameter in points
+  # grid draws a symbol at 3/4 of `size`; the marker size is the diameter in points
   grid::grid.points(x, y, pch = pch, size = grid::unit((m$size %||% 5) / 0.75, "points"),
                     gp = grid::gpar(col = line, fill = fill, lwd = (m$line$width %||% 0.75) * 96 / 72),
                     default.units = "native")
@@ -440,7 +440,7 @@ plot_trend_curve <- function(x, y, tl, shift = 0) {
   list(x = xs - shift, y = as.numeric(fit))
 }
 
-# Legend text Excel uses for a trendline
+# Legend text of a trendline
 plot_trend_name <- function(tl, series_name) {
   if (!is.null(tl$name)) return(tl$name)
   kind <- switch(tl$type %||% "linear",
@@ -450,7 +450,7 @@ plot_trend_name <- function(tl, series_name) {
   sprintf("%s (%s)", kind, series_name)
 }
 
-# Equation text Excel shows for a trendline, with 4 decimals
+# Equation text of a trendline, with 4 decimals
 plot_trend_equation <- function(x, y, tl) {
   ok <- is.finite(x) & is.finite(y)
   x <- x[ok]
@@ -741,7 +741,7 @@ plot_cartesian <- function(chart, series) {
   } else if (is_date) {
     x_ticks <- seq(0, date_span, by = xa$major)
     x_labels <- plot_format(from_units(x_ticks), px$format)
-    # Excel turns date labels upright when they do not fit side by side
+    # date labels turn upright when they do not fit side by side
     gp_tmp <- plot_gpar_text(px, 10)
     lab_w <- max(vapply(x_labels, function(l) grid::convertWidth(grid::grobWidth(grid::textGrob(l, gp = gp_tmp)), "points", valueOnly = TRUE), numeric(1)))
     avail <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE) / max(1, length(x_ticks))
@@ -914,7 +914,7 @@ plot_cartesian <- function(chart, series) {
     grid::pushViewport(grid::viewport(xscale = xsc, yscale = ysc, clip = if (clip) "on" else "inherit"))
   }
 
-  # Excel fits trendlines against 1, 2, ... on category axes
+  # trendlines are fitted against 1, 2, ... on category axes
   trend_shift <- if (is_xy || is_date) 0 else 0.5
   trend_labels <- list()
   stack_tops <- list()
@@ -991,8 +991,8 @@ plot_cartesian <- function(chart, series) {
           if (!is.finite(yv[i])) next
           pos <- lp$pos %||% "t"
           txt <- plot_label_text(lp, cats[i], s$values[i], name = s$label_text)
-          outward <- if (v[i] >= 0) c("centre", "bottom") else c("centre", "top")
-          inward  <- if (v[i] >= 0) c("centre", "top") else c("centre", "bottom")
+          outward <- if (v[i] >= 0) c("center", "bottom") else c("center", "top")
+          inward  <- if (v[i] >= 0) c("center", "top") else c("center", "bottom")
           if (pos %in% c("t", "outEnd")) {
             yy <- yv[i]
             just <- outward
@@ -1004,10 +1004,10 @@ plot_cartesian <- function(chart, series) {
             just <- inward
           } else {
             yy <- (yv[i] + b[i]) / 2
-            just <- c("centre", "centre")
+            just <- c("center", "center")
           }
           if (horizontal) {
-            hj <- c(if (just[2] == "bottom") "left" else if (just[2] == "top") "right" else "centre", "centre")
+            hj <- c(if (just[2] == "bottom") "left" else if (just[2] == "top") "right" else "center", "center")
             labels_pending[[length(labels_pending) + 1]] <- list(x = yy, y = centers[i], txt = txt, just = hj)
           } else {
             labels_pending[[length(labels_pending) + 1]] <- list(x = centers[i], y = yy, txt = txt, just = just)
@@ -1068,7 +1068,7 @@ plot_cartesian <- function(chart, series) {
           if (!is.finite(yv[i]) || !is.finite(xs[i])) next
           txt <- plot_label_text(lp, if (is_xy) xs[i] else cats[i], s$values[i], name = s$label_text)
           pos <- lp$pos %||% "t"
-          just <- switch(pos, b = c("centre", "top"), l = c("right", "centre"), r = c("left", "centre"), ctr = c("centre", "centre"), c("centre", "bottom"))
+          just <- switch(pos, b = c("center", "top"), l = c("right", "center"), r = c("left", "center"), ctr = c("center", "center"), c("center", "bottom"))
           off <- switch(pos, b = c(0, -4), l = c(-4, 0), r = c(4, 0), ctr = c(0, 0), c(0, 4))
           labels_pending[[length(labels_pending) + 1]] <- list(x = xs[i], y = yv[i], txt = txt, just = just, off = off)
         }
@@ -1090,7 +1090,7 @@ plot_cartesian <- function(chart, series) {
     grid::upViewport()
   }
 
-  # Excel shows equation and R-squared unless they were switched off
+  # equation and R-squared are shown unless they were switched off
   for (tl in trend_labels) {
     show_eq <- !isFALSE(tl$s$trendline$show_eq)
     show_r2 <- !isFALSE(tl$s$trendline$show_r2)
@@ -1098,7 +1098,7 @@ plot_cartesian <- function(chart, series) {
     txt <- plot_trend_equation(tl$xs + trend_shift, tl$s$values, tl$s$trendline)
     if (is.null(txt)) next
     lines <- c(if (show_eq) txt$eq, if (show_r2) txt$r2)
-    # Excel puts the label above the end of the trendline; when that end
+    # the label sits above the end of the trendline; when that end
     # leaves the plot area the label goes to the top left corner instead
     sc <- scale_of(tl$s)
     n_pts <- length(tl$tc$x)
@@ -1189,7 +1189,7 @@ plot_cartesian <- function(chart, series) {
     grid::grid.lines(x = grid::unit(c(x_cross, x_cross), "native"), y = grid::unit(c(0, 1), "npc"), gp = x_line_gp)
     lab_x <- switch(x_label_pos, low = grid::unit(0, "npc"), high = grid::unit(1, "npc"), grid::unit(x_cross, "native"))
     for (i in seq_along(x_ticks)) {
-      grid::grid.text(x_labels[i], x = lab_x - grid::unit(6, "points"), y = grid::unit(x_ticks[i], "native"), just = c("right", "centre"), rot = rot_x, gp = x_gp)
+      grid::grid.text(x_labels[i], x = lab_x - grid::unit(6, "points"), y = grid::unit(x_ticks[i], "native"), just = c("right", "center"), rot = rot_x, gp = x_gp)
     }
     if (!is.null(x_major)) {
       tks <- if (is_xy) tr(x_ticks, xa) else 0:length(cats)
@@ -1200,14 +1200,14 @@ plot_cartesian <- function(chart, series) {
       x_minor <- tick_ends(px$minor_tick %||% "cross", 2, -1)
       if (!is.null(x_minor)) for (t in tr(minor_positions(xa, px), xa)) grid::grid.lines(x = grid::unit(x_cross, "native") + grid::unit(x_minor, "points"), y = grid::unit(c(t, t), "native"), gp = x_line_gp)
     } else {
-      # minor ticks of a category axis sit at the category centres
+      # minor ticks of a category axis sit at the category centers
       x_minor <- tick_ends(px$minor_tick %||% "cross", 3, -1)
       if (!is.null(x_minor)) for (t in seq_along(cats) - 0.5) grid::grid.lines(x = grid::unit(x_cross, "native") + grid::unit(x_minor, "points"), y = grid::unit(c(t, t), "native"), gp = x_line_gp)
     }
   } else {
     grid::grid.lines(x = grid::unit(c(0, 1), "npc"), y = grid::unit(c(x_cross, x_cross), "native"), gp = x_line_gp)
     lab_y <- switch(x_label_pos, low = grid::unit(0, "npc"), high = grid::unit(1, "npc"), grid::unit(x_cross, "native"))
-    just <- if (rot_x > 0) c("right", "top") else if (rot_x < 0) c("left", "top") else c("centre", "top")
+    just <- if (rot_x > 0) c("right", "top") else if (rot_x < 0) c("left", "top") else c("center", "top")
     gap <- if (rot_x != 0) 10 else 6
     for (i in seq_along(x_ticks)) {
       grid::grid.text(x_labels[i], x = grid::unit(tr(x_ticks[i], xa), "native"), y = lab_y - grid::unit(gap, "points"), just = just, rot = rot_x, gp = x_gp)
@@ -1221,7 +1221,7 @@ plot_cartesian <- function(chart, series) {
       x_minor <- tick_ends(px$minor_tick %||% "cross", 2, -1)
       if (!is.null(x_minor)) for (t in tr(minor_positions(xa, px), xa)) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(x_cross, "native") + grid::unit(x_minor, "points"), gp = x_line_gp)
     } else if (!is_date) {
-      # minor ticks of a category axis sit at the category centres
+      # minor ticks of a category axis sit at the category centers
       x_minor <- tick_ends(px$minor_tick %||% "cross", 3, -1)
       if (!is.null(x_minor)) for (t in seq_len(n_slots) - 0.5) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(x_cross, "native") + grid::unit(x_minor, "points"), gp = x_line_gp)
     }
@@ -1231,7 +1231,7 @@ plot_cartesian <- function(chart, series) {
       if (!is.null(x_minor)) for (t in seq(0, date_span, by = minor_step)) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(x_cross, "native") + grid::unit(x_minor, "points"), gp = x_line_gp)
     }
     # outer levels of multi-level categories: one row per level below the
-    # inner labels, each group centred over its span with separator lines
+    # inner labels, each group centered over its span with separator lines
     if (outer_levels > 0) {
       lv <- series[[1]]$cat_levels
       row_h <- text_h(x_gp) + 6
@@ -1245,7 +1245,7 @@ plot_cartesian <- function(chart, series) {
         y_row <- lab_y - grid::unit(6 + depth * row_h, "points")
         for (g in seq_along(starts)) {
           grid::grid.text(labels[starts[g]], x = grid::unit((starts[g] - 1 + ends[g]) / 2, "native"),
-                          y = y_row, just = c("centre", "top"), gp = x_gp)
+                          y = y_row, just = c("center", "top"), gp = x_gp)
         }
         for (b in c(starts - 1, nrow(lv))) {
           grid::grid.lines(x = grid::unit(c(b, b), "native"), y = lab_y - grid::unit(c(0, 6 + depth * row_h + text_h(x_gp)), "points"), gp = x_line_gp)
@@ -1268,7 +1268,7 @@ plot_cartesian <- function(chart, series) {
         t <- tr(ticks[i], sc)
         if (!is.null(major)) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = yy + grid::unit(major, "points"), gp = line_gp)
         grid::grid.text(labels[i], x = grid::unit(t, "native"), y = yy + grid::unit(6 * outward, "points"),
-                        just = c("centre", if (outward > 0) "bottom" else "top"), gp = gp)
+                        just = c("center", if (outward > 0) "bottom" else "top"), gp = gp)
       }
       if (!is.null(minor)) for (t in minors) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = yy + grid::unit(minor, "points"), gp = line_gp)
     } else {
@@ -1278,7 +1278,7 @@ plot_cartesian <- function(chart, series) {
         t <- tr(ticks[i], sc)
         if (!is.null(major)) grid::grid.lines(x = xx + grid::unit(major, "points"), y = grid::unit(c(t, t), "native"), gp = line_gp)
         grid::grid.text(labels[i], x = xx + grid::unit(6 * outward, "points"), y = grid::unit(t, "native"),
-                        just = c(if (outward > 0) "left" else "right", "centre"), gp = gp)
+                        just = c(if (outward > 0) "left" else "right", "center"), gp = gp)
       }
       if (!is.null(minor)) for (t in minors) grid::grid.lines(x = xx + grid::unit(minor, "points"), y = grid::unit(c(t, t), "native"), gp = line_gp)
     }
@@ -1297,7 +1297,7 @@ plot_cartesian <- function(chart, series) {
     for (i in seq_along(x2_ticks)) {
       t <- tr(x2_ticks[i], x2)
       if (!is.null(x2_major)) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(1, "npc") + grid::unit(x2_major, "points"), gp = x2_line_gp)
-      grid::grid.text(x2_labels[i], x = grid::unit(t, "native"), y = grid::unit(1, "npc") + grid::unit(6, "points"), just = c("centre", "bottom"), gp = x2_gp)
+      grid::grid.text(x2_labels[i], x = grid::unit(t, "native"), y = grid::unit(1, "npc") + grid::unit(6, "points"), just = c("center", "bottom"), gp = x2_gp)
     }
     x2_minor <- tick_ends(px2$minor_tick %||% "cross", 2, 1)
     if (!is.null(x2_minor) && is_xy) for (t in tr(minor_positions(x2, px2), x2)) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(1, "npc") + grid::unit(x2_minor, "points"), gp = x2_line_gp)
@@ -1427,7 +1427,7 @@ plot_radar <- function(chart, series) {
   }
   filled <- isTRUE(series[[1]]$filled)
   if (!identical(py$label_pos, "none")) {
-    for (t in ticks) grid::grid.text(plot_format(t, py$format), x = 0.5 - 0.01, y = 0.5 + rad(t), just = c("right", "centre"), gp = plot_gpar_text(py, 10, "#000000"))
+    for (t in ticks) grid::grid.text(plot_format(t, py$format), x = 0.5 - 0.01, y = 0.5 + rad(t), just = c("right", "center"), gp = plot_gpar_text(py, 10, "#000000"))
   }
   for (s in series) {
     col <- plot_color(s$line$color, "#4472C4")
@@ -1469,8 +1469,8 @@ plot_radar <- function(chart, series) {
 #' from `wb_data()`) or are read from `wb`. Series added with plain range
 #' strings and all `ChartEx` objects need `wb`.
 #'
-#' Axis scaling follows Excel's rules for automatic axes; fonts, spacing and
-#' the exact placement of labels differ from Excel. Number formats are
+#' Axis scaling follows the rules for automatic axes; fonts, spacing and
+#' the exact placement of labels differ from the original. Number formats are
 #' approximated for common codes (`0`, `0.00`, `#,##0`, `0%`, date formats).
 #'
 #' @param x A `Chart` or `ChartEx` object.
@@ -1598,7 +1598,7 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
       x = if (legend$pos == "r") grid::unit(1, "npc") - grid::unit(pad, "points") else if (legend$pos == "l") grid::unit(pad, "points") else grid::unit(0.5, "npc"),
       y = grid::unit(0.5, "npc"),
       width = grid::unit(legend$size[["w"]], "points"), height = grid::unit(legend$size[["h"]], "points"),
-      just = if (legend$pos == "r") "right" else if (legend$pos == "l") "left" else "centre"))
+      just = if (legend$pos == "r") "right" else if (legend$pos == "l") "left" else "center"))
     legend$draw()
     grid::upViewport(2)
   }

@@ -15,7 +15,7 @@ sales_wb <- function() {
   ))
 }
 
-test_that("plot_scale follows Excel's automatic axis rules", {
+test_that("plot_scale follows the automatic axis rules", {
   expect_equal(unlist(plot_scale(0, 190)[c("min", "max", "major")]), c(min = 0, max = 200, major = 20))
   expect_equal(unlist(plot_scale(1150, 1400)[c("min", "max", "major")]), c(min = 0, max = 1600, major = 200))
   expect_equal(unlist(plot_scale(11500, 14000)[c("min", "max", "major")]), c(min = 0, max = 16000, major = 2000))
@@ -25,7 +25,7 @@ test_that("plot_scale follows Excel's automatic axis rules", {
   expect_equal(plot_scale(1, 500, list(log_base = 10))$max, 1000)
 })
 
-test_that("plot_format handles common Excel format codes", {
+test_that("plot_format handles common number format codes", {
   expect_equal(plot_format(c(12000, 0.5, 1234.5678)), c("12000", "0.5", "1234.5678"))
   expect_equal(plot_format(12345.678, "#,##0"), "12,346")
   expect_equal(plot_format(12345.678, "#,##0.00"), "12,345.68")
@@ -141,7 +141,7 @@ test_that("plot() draws the extended chart types", {
   expect_error(plot(ec("regionMap")$add_series(data = "Data!$C$2:$C$4", label = "Data!$A$2:$A$4"), wb = wb), "regionMap")
 })
 
-test_that("plot_ex_bins builds Excel-style histogram bins", {
+test_that("plot_ex_bins builds histogram bins", {
   v <- c(1, 5, 10, 12, 20, 21, 35)
   b <- plot_ex_bins(v, list(binSize = 10))
   expect_equal(b$counts, c(3L, 3L, 0L, 1L))

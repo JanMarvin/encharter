@@ -6,7 +6,7 @@
 \alias{ec_to_crtx}
 \alias{encharter_from_crtx}
 \alias{ec_from_crtx}
-\title{Read and write Excel chart templates (.crtx)}
+\title{Read and write chart templates (.crtx)}
 \usage{
 encharter_to_crtx(chart, path)
 
@@ -27,15 +27,15 @@ ec_from_crtx(path)
 }
 \description{
 A chart template is a zip package holding a chart part without data
-references. Excel writes them from "Save as Template" and applies them to
-other charts. \code{encharter_to_crtx()} saves a \code{Chart} as a template,
+references. Excel writes them from "Save as Template"; other applications
+read them as well. \code{encharter_to_crtx()} saves a \code{Chart} as a template,
 \code{encharter_from_crtx()} reads a template into a \code{Chart} without series,
 and \code{Chart$apply_crtx()} copies the styling of a template onto an existing
 chart.
 }
 \details{
 A template read with \code{encharter_from_crtx()} keeps the per-series styling
-(colour, line, marker) of the template. Series added to it with
+(color, line, marker) of the template. Series added to it with
 \verb{$add_series()} take that styling in order, for the arguments not given
 explicitly; when the template has fewer series than added, its styles are
 reused from the start.

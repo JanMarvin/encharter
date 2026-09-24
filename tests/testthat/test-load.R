@@ -201,7 +201,7 @@ test_that("literal series (numLit/strLit) round-trip", {
   expect_equal(loaded$series_data[[1]]$cat_cache, c("a", "b", "c"))
 })
 
-test_that("Excel-style charts load: horizontal bars, General format codes", {
+test_that("charts from other applications load: horizontal bars, General format codes", {
   xml <- paste0(
     '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" ',
     'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:chart><c:plotArea><c:layout/>',
@@ -271,7 +271,7 @@ test_that("update_series() re-points loaded series at new data", {
   expect_equal(wf2$series_data[[1]]$subtotals, 6)
 })
 
-test_that("luminance modifiers of theme colours survive a round trip", {
+test_that("luminance modifiers of theme colors survive a round trip", {
   skip_if_not_installed("openxlsx")
   wb <- openxlsx2::wb_load(system.file("extdata", "loadExample.xlsx", package = "openxlsx"))
   chart <- encharter_load(wb, 2)

@@ -37,8 +37,8 @@ The values come from the series caches (present when a series was added
 from \code{wb_data()}) or are read from \code{wb}. Series added with plain range
 strings and all \code{ChartEx} objects need \code{wb}.
 
-Axis scaling follows Excel's rules for automatic axes; fonts, spacing and
-the exact placement of labels differ from Excel. Number formats are
+Axis scaling follows the rules for automatic axes; fonts, spacing and
+the exact placement of labels differ from the original. Number formats are
 approximated for common codes (\code{0}, \code{0.00}, \verb{#,##0}, \verb{0\%}, date formats).
 }
 \examples{

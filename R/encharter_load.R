@@ -42,9 +42,9 @@ load_color <- function(node) {
     val <- xml_attr(scheme, "val")
     if (val == "accent1") return("auto")
     col <- openxlsx2::wb_color(theme = val)
-    # luminance modifiers of the scheme colour (e.g. tx1 at 65% + 35% for
-    # Excel's default grey text) are kept for plot(); render() writes the
-    # plain scheme colour
+    # luminance modifiers of the scheme color (e.g. tx1 at 65% + 35% for
+    # the default gray text) are kept for plot(); render() writes the
+    # plain scheme color
     lum_mod <- xml_find_first(scheme, "./a:lumMod")
     lum_off <- xml_find_first(scheme, "./a:lumOff")
     if (!is_missing(lum_mod)) attr(col, "lumMod") <- as.numeric(xml_attr(lum_mod, "val")) / 100000

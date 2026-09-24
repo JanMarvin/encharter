@@ -1,16 +1,16 @@
-#' Read and write Excel chart templates (.crtx)
+#' Read and write chart templates (.crtx)
 #'
 #' @description
 #' A chart template is a zip package holding a chart part without data
-#' references. Excel writes them from "Save as Template" and applies them to
-#' other charts. `encharter_to_crtx()` saves a `Chart` as a template,
+#' references. Excel writes them from "Save as Template"; other applications
+#' read them as well. `encharter_to_crtx()` saves a `Chart` as a template,
 #' `encharter_from_crtx()` reads a template into a `Chart` without series,
 #' and `Chart$apply_crtx()` copies the styling of a template onto an existing
 #' chart.
 #'
 #' @details
 #' A template read with `encharter_from_crtx()` keeps the per-series styling
-#' (colour, line, marker) of the template. Series added to it with
+#' (color, line, marker) of the template. Series added to it with
 #' `$add_series()` take that styling in order, for the arguments not given
 #' explicitly; when the template has fewer series than added, its styles are
 #' reused from the start.
@@ -61,12 +61,12 @@ CRTX_RELS <- paste0(
 encharter_to_crtx <- function(chart, path) {
   if (!inherits(chart, "Chart")) stop("'chart' must be a Chart object; templates do not cover ChartEx.", call. = FALSE)
   if (!grepl("\\.crtx$", path, ignore.case = TRUE)) {
-    warning("'path' does not end in .crtx; Excel will not offer the file as a template.", call. = FALSE)
+    warning("'path' does not end in .crtx; the file will not be offered as a template.", call. = FALSE)
   }
 
   doc <- read_xml(as.character(chart$render()))
-  # a template carries the formatting of the series but no data: Excel keeps
-  # the reference elements and empties them
+  # a template carries the formatting of the series but no data; the
+  # reference elements stay and are emptied
   for (ser in xml_find_all(doc, "//c:ser")) {
     for (nd in xml_children(ser)) {
       if (!xml_name(nd) %in% c("c:tx", "c:cat", "c:val", "c:xVal", "c:yVal", "c:bubbleSize")) next

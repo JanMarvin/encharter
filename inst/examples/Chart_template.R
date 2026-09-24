@@ -1,4 +1,4 @@
-# Save a chart as an Excel chart template (.crtx), read the template back
+# Save a chart as a chart template (.crtx), read the template back
 # and build a new chart from it, and apply the template to an existing chart.
 
 chart_template <- function() {

@@ -2,9 +2,9 @@ ENCHARTER_PLOT_EX_TYPES <- c(
   "waterfall", "boxWhisker", "clusteredColumn", "paretoLine", "funnel", "treemap", "sunburst"
 )
 
-# Point colours Excel uses for extended charts, sampled from Excel output:
+# Point colors of extended charts, sampled from Excel output:
 # increase / series 1, decrease / series 2, total / series 3, then the
-# remaining branch colours in the order Excel assigns them
+# remaining branch colors in the order they are assigned
 ENCHARTER_CHARTEX_HEX <- c("2E5F7F", "DA7842", "34692E", "489CD0", "93358F", "65A542", "1B394C")
 
 plot_ex_color <- function(i, override = NULL) {
@@ -15,7 +15,7 @@ plot_ex_color <- function(i, override = NULL) {
   paste0("#", pal[(i - 1) %% length(pal) + 1])
 }
 
-# Quartiles the way Excel computes them: QUARTILE.INC (R type 7) or
+# Quartiles as QUARTILE.INC (R type 7) or
 # QUARTILE.EXC (R type 6)
 plot_ex_quartiles <- function(v, method) {
   v <- v[is.finite(v)]
@@ -23,7 +23,7 @@ plot_ex_quartiles <- function(v, method) {
   stats::quantile(v, c(0.25, 0.5, 0.75), type = type, names = FALSE)
 }
 
-# Histogram bins as Excel builds them: automatic width by Scott's rule,
+# Histogram bins: automatic width by Scott's rule,
 # `binSize` or `binCount`, optional under- and overflow bins, intervals
 # closed on the right ("(a, b]") unless intervalClosed = "l"
 plot_ex_bins <- function(v, binning) {
@@ -263,7 +263,7 @@ plot.ChartEx <- function(x, wb = NULL, newpage = TRUE, ...) {
       x = if (legend$pos == "r") grid::unit(1, "npc") - grid::unit(pad, "points") else if (legend$pos == "l") grid::unit(pad, "points") else grid::unit(0.5, "npc"),
       y = grid::unit(0.5, "npc"),
       width = grid::unit(legend$size[["w"]], "points"), height = grid::unit(legend$size[["h"]], "points"),
-      just = if (legend$pos == "r") "right" else if (legend$pos == "l") "left" else "centre"))
+      just = if (legend$pos == "r") "right" else if (legend$pos == "l") "left" else "center"))
     legend$draw()
     grid::upViewport(2)
   }
@@ -301,8 +301,8 @@ plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
   # extended charts draw axis titles at the chart title size
   left_w <- text_w(labels, y_gp) + 8 + plot_title_height(chart$y_title, 14)
   right_w <- if (is.null(y2)) 4 else text_w(y2_labels, y_gp) + 8
-  # crowded category labels are staggered over two rows (Excel does not
-  # rotate them on extended charts)
+  # crowded category labels are staggered over two rows (extended charts
+  # do not rotate them)
   rot_x <- if (is.null(px$rotation) || abs(px$rotation) > 90) 0 else -px$rotation
   cat_w <- text_w(cats, x_gp)
   avail <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE) - left_w
@@ -342,19 +342,19 @@ plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
   for (i in seq_len(n)) {
     drop <- if (stagger && i %% 2 == 0) text_h(x_gp) + 4 else 0
     grid::grid.text(cats[i], x = grid::unit(i - 0.5, "native"), y = grid::unit(0, "npc") - grid::unit(6 + drop, "points"),
-                    just = if (rot_x > 0) c("right", "top") else if (rot_x < 0) c("left", "top") else c("centre", "top"), rot = rot_x, gp = x_gp)
+                    just = if (rot_x > 0) c("right", "top") else if (rot_x < 0) c("left", "top") else c("center", "top"), rot = rot_x, gp = x_gp)
   }
   grid::grid.lines(x = grid::unit(0, "npc"), y = grid::unit(c(0, 1), "npc"), gp = y_line_gp)
   for (i in seq_along(ticks)) {
     if (!is.null(py$major_tick) && py$major_tick != "none") {
       grid::grid.lines(x = grid::unit(0, "npc") + grid::unit(c(0, -4), "points"), y = grid::unit(c(ticks[i], ticks[i]), "native"), gp = y_line_gp)
     }
-    grid::grid.text(labels[i], x = grid::unit(0, "npc") - grid::unit(6, "points"), y = grid::unit(ticks[i], "native"), just = c("right", "centre"), gp = y_gp)
+    grid::grid.text(labels[i], x = grid::unit(0, "npc") - grid::unit(6, "points"), y = grid::unit(ticks[i], "native"), just = c("right", "center"), gp = y_gp)
   }
   if (!is.null(y2)) {
     grid::grid.lines(x = grid::unit(1, "npc"), y = grid::unit(c(0, 1), "npc"), gp = y_line_gp)
     for (i in seq_along(y2)) {
-      grid::grid.text(y2_labels[i], x = grid::unit(1, "npc") + grid::unit(6, "points"), y = grid::unit(y2[i], "npc"), just = c("left", "centre"), gp = y_gp)
+      grid::grid.text(y2_labels[i], x = grid::unit(1, "npc") + grid::unit(6, "points"), y = grid::unit(y2[i], "npc"), just = c("left", "center"), gp = y_gp)
     }
   }
   if (!is.null(chart$y_title$text)) {
@@ -406,7 +406,7 @@ plot_ex_waterfall <- function(chart, series) {
     col <- plot_ex_color(kind, if (length(s$color) > 1) s$color[i] else NULL)
     grid::grid.rect(x = grid::unit(i - 0.5, "native"), y = grid::unit(min(base[i], top[i]), "native"),
                     width = max(grid::unit(w, "native"), grid::unit(0.75, "points")), height = grid::unit(abs(top[i] - base[i]), "native"),
-                    just = c("centre", "bottom"),
+                    just = c("center", "bottom"),
                     gp = grid::gpar(fill = col, col = plot_color(s$line_color, NA), lwd = (s$line_width %||% 1) * 96 / 72))
     if (connectors && i < n) {
       grid::grid.lines(x = grid::unit(c(i - 0.5 + w / 2, i + 0.5 - w / 2), "native"), y = grid::unit(c(top[i], top[i]), "native"),
@@ -416,7 +416,7 @@ plot_ex_waterfall <- function(chart, series) {
       # labels sit above the bar, for decreases as well
       grid::grid.text(plot_label_text(lp, s$cats[i], s$values[i]), x = grid::unit(i - 0.5, "native"),
                       y = grid::unit(max(base[i], top[i]), "native") + grid::unit(3, "points"),
-                      just = c("centre", "bottom"), gp = label_gp)
+                      just = c("center", "bottom"), gp = label_gp)
     }
   }
   grid::upViewport(2)
@@ -457,7 +457,7 @@ plot_ex_box <- function(chart, series) {
       grid::grid.lines(x = grid::unit(c(cx, cx), "native"), y = grid::unit(c(q[3], whisk[2]), "native"), gp = grid::gpar(col = col))
       for (y in whisk) grid::grid.lines(x = grid::unit(c(cx - bw * 0.15, cx + bw * 0.15), "native"), y = grid::unit(c(y, y), "native"), gp = grid::gpar(col = col))
       grid::grid.rect(x = grid::unit(cx, "native"), y = grid::unit(q[1], "native"), width = grid::unit(bw, "native"),
-                      height = grid::unit(q[3] - q[1], "native"), just = c("centre", "bottom"),
+                      height = grid::unit(q[3] - q[1], "native"), just = c("center", "bottom"),
                       gp = grid::gpar(fill = col, col = border, lwd = (s$line_width %||% 1) * 96 / 72))
       grid::grid.lines(x = grid::unit(c(cx - bw / 2, cx + bw / 2), "native"), y = grid::unit(c(q[2], q[2]), "native"),
                        gp = grid::gpar(col = if (is.na(border)) col else border))
@@ -489,7 +489,7 @@ plot_ex_box <- function(chart, series) {
 # clusteredColumn without a binning element is a plain column chart of the
 # values; with binning the values are counted into bins. A paretoLine series
 # on its own draws only the cumulative share of the (descending) bins on the
-# value axis, as Excel does when no column series accompanies it.
+# value axis when no column series accompanies it.
 plot_ex_histogram <- function(chart, series, pareto = FALSE) {
   s <- series[[1]]
   if (length(s$binning) == 0 && !pareto) {
@@ -517,11 +517,11 @@ plot_ex_histogram <- function(chart, series, pareto = FALSE) {
   w <- 1 / (1 + gap)
   for (i in seq_along(counts)) {
     grid::grid.rect(x = grid::unit(i - 0.5, "native"), y = grid::unit(0, "native"), width = grid::unit(w, "native"),
-                    height = grid::unit(counts[i], "native"), just = c("centre", "bottom"),
+                    height = grid::unit(counts[i], "native"), just = c("center", "bottom"),
                     gp = grid::gpar(fill = col, col = plot_color(s$line_color, "#FFFFFF"), lwd = 0.75))
     if (plot_ex_labels_on(lp)) {
       grid::grid.text(plot_format(counts[i], lp$format), x = grid::unit(i - 0.5, "native"), y = grid::unit(counts[i], "native") + grid::unit(3, "points"),
-                      just = c("centre", "bottom"), gp = plot_gpar_text(lp$style, 9, "#000000"))
+                      just = c("center", "bottom"), gp = plot_gpar_text(lp$style, 9, "#000000"))
     }
   }
   grid::upViewport(2)
@@ -545,18 +545,18 @@ plot_ex_funnel <- function(chart, series) {
   for (i in seq_len(n)) {
     grid::grid.rect(x = grid::unit(0, "native"), y = grid::unit(i - 0.5, "native"), width = grid::unit(2 * v[i], "native"),
                     height = grid::unit(h, "native"), gp = grid::gpar(fill = col, col = plot_color(s$line_color, NA)))
-    # data labels sit centred above the bar
+    # data labels sit centered above the bar
     if (plot_ex_labels_on(lp)) {
       grid::grid.text(plot_label_text(lp, s$cats[i], v[i], sep = ", "), x = grid::unit(0, "native"),
                       y = grid::unit(i - 0.5 - h / 2, "native") + grid::unit(1, "points"),
-                      just = c("centre", "bottom"), gp = plot_gpar_text(lp$style, 8, "#000000"))
+                      just = c("center", "bottom"), gp = plot_gpar_text(lp$style, 8, "#000000"))
     }
   }
   grid::upViewport()
   grid::pushViewport(grid::viewport(layout.pos.col = 1, yscale = c(n, 0)))
   for (i in seq_len(n)) {
     grid::grid.text(s$cats[i], x = grid::unit(1, "npc") - grid::unit(6, "points"), y = grid::unit(i - 0.5, "native"),
-                    just = c("right", "centre"), gp = x_gp)
+                    just = c("right", "center"), gp = x_gp)
   }
   grid::upViewport(2)
 }
@@ -588,7 +588,7 @@ plot_ex_treemap <- function(chart, series) {
         txt <- if (labels_on) plot_label_text(lp, kids$label[k], kids$value[k], sep = ", ") else ""
         tw <- grid::convertWidth(grid::grobWidth(grid::textGrob(txt, gp = leaf_gp)), "points", valueOnly = TRUE)
         if (tw >= r[["w"]] - 4) {
-          # Excel wraps a label that does not fit after the comma
+          # a label that does not fit wraps after the comma
           txt <- plot_label_text(lp, kids$label[k], kids$value[k], sep = ",\n")
           tw <- grid::convertWidth(grid::grobWidth(grid::textGrob(txt, gp = leaf_gp)), "points", valueOnly = TRUE)
         }
