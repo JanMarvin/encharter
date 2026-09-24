@@ -62,6 +62,9 @@ Chart <- R6::R6Class(
     bar_shape = NULL,
     #' @field size_represents Character; bubble size meaning, "area" or "w".
     size_represents = NULL,
+    #' @field template List of series styles from a chart template; see
+    #'   [encharter_from_crtx()].
+    template = list(),
 
     #' @description Initialize a new Chart object.
     #' @param type Initial chart type (e.g., "lineChart", "barChart", "pieChart").
@@ -461,6 +464,24 @@ Chart <- R6::R6Class(
                           filled = FALSE, error_bars = FALSE, trendline = FALSE,
                           invert_if_negative = FALSE) {
 
+      # styling from a chart template for the arguments not given
+      if (length(self$template)) {
+        tpl <- self$template[[(length(self$series_data) %% length(self$template)) + 1]]
+        if (missing(color) && !is.null(tpl$line$color)) color <- tpl$line$color
+        if (missing(line_width) && !is.null(tpl$line$width)) line_width <- tpl$line$width
+        if (missing(line_type) && !is.null(tpl$line$type)) line_type <- tpl$line$type
+        if (missing(show_line) && !is.null(tpl$line$show)) show_line <- tpl$line$show
+        if (missing(marker) && !is.null(tpl$marker$symbol)) marker <- tpl$marker$symbol
+        if (missing(marker_size) && !is.null(tpl$marker$size)) marker_size <- tpl$marker$size
+        if (missing(marker_fill) && !is.null(tpl$marker$fill)) marker_fill <- tpl$marker$fill
+        if (missing(marker_line) && !is.null(tpl$marker$line$color)) marker_line <- tpl$marker$line$color
+        if (missing(marker_line_width) && !is.null(tpl$marker$line$width)) marker_line_width <- tpl$marker$line$width
+        if (missing(smooth) && !is.null(tpl$smooth)) smooth <- tpl$smooth
+        if (missing(invert_if_negative) && !is.null(tpl$invert_if_negative)) invert_if_negative <- tpl$invert_if_negative
+        if (missing(type) && !is.null(tpl$type)) type <- tpl$type
+        if (missing(secondary) && !is.null(tpl$sec_type)) secondary <- switch(tpl$sec_type, none = FALSE, y = TRUE, tpl$sec_type)
+      }
+
       type <- normalize_encharter_type(type)
       private$validate_input(
         type,
@@ -599,6 +620,41 @@ Chart <- R6::R6Class(
         #  label_style = self$label_params$style currently unused?
       )
 
+      invisible(self)
+    },
+
+    #' @description Apply the styling of a chart template (`.crtx`) to this
+    #'   chart: chart and plot area, title and legend style, axes, and the
+    #'   styling of the series in order. Series data, ranges and titles are
+    #'   kept. Series added afterwards take the template styling as well.
+    #' @param path Path of the `.crtx` file.
+    #' @return The chart, invisibly.
+    apply_crtx = function(path) {
+      tpl <- encharter_from_crtx(path)
+      self$chart_style <- tpl$chart_style
+      self$plot_style <- tpl$plot_style
+      self$legend_params <- tpl$legend_params
+      self$label_params <- tpl$label_params
+      self$chart_title$style <- tpl$chart_title$style
+      for (nm in c("x_title", "y_title", "x2_title", "y2_title")) {
+        if (!is.null(self[[nm]]$text)) self[[nm]]$style <- tpl[[nm]]$style
+      }
+      for (nm in names(self$axis_params)) {
+        self$axis_params[[nm]] <- tpl$axis_params[[nm]]
+      }
+      self$palette <- tpl$palette
+      self$template <- tpl$template
+      if (length(tpl$template)) {
+        for (i in seq_along(self$series_data)) {
+          t <- tpl$template[[(i - 1) %% length(tpl$template) + 1]]
+          s <- self$series_data[[i]]
+          s$line <- t$line
+          s$marker <- t$marker
+          s$smooth <- t$smooth
+          s$invert_if_negative <- t$invert_if_negative
+          self$series_data[[i]] <- s
+        }
+      }
       invisible(self)
     },
 

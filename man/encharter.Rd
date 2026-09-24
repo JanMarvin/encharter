@@ -92,6 +92,7 @@ The available files are:
 \item \code{Histogram_with_args.R} — histogram via clusteredColumn binning
 \item \code{Label_Grouping.R} — multi-level category labels
 \item \code{Load_and_extend.R} — load a chart back from a workbook and extend its range
+\item \code{Chart_template.R} — save a chart as a .crtx template, read and apply it
 \item \code{Line.R} — line with markers and global data labels
 \item \code{New_chart_types.R} — 0.11 showcase: pie/bar of pie, all 3D types,
 display units, tick skips, directional error bars
@@ -238,6 +239,9 @@ when \code{split_type = "cust"}.}
 "cylinder", "cone", "coneToMax", "pyramid", or "pyramidToMax".}
 
     \item{\code{size_represents}}{Character; bubble size meaning, "area" or "w".}
+
+    \item{\code{template}}{List of series styles from a chart template; see
+\code{\link[=encharter_from_crtx]{encharter_from_crtx()}}.}
   }
   \if{html}{\out{</div>}}
 }
@@ -256,6 +260,7 @@ when \code{split_type = "cust"}.}
     \item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
     \item \href{#method-Chart-set_disp_blanks}{\code{Chart$set_disp_blanks()}}
     \item \href{#method-Chart-add_series}{\code{Chart$add_series()}}
+    \item \href{#method-Chart-apply_crtx}{\code{Chart$apply_crtx()}}
     \item \href{#method-Chart-update_series}{\code{Chart$update_series()}}
     \item \href{#method-Chart-render}{\code{Chart$render()}}
     \item \href{#method-Chart-clone}{\code{Chart$clone()}}
@@ -812,6 +817,31 @@ forwards/backwards.
 negative values. Default \code{FALSE}.}
     }
     \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-apply_crtx"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-apply_crtx}{}}}
+\subsection{\code{Chart$apply_crtx()}}{
+  Apply the styling of a chart template (\code{.crtx}) to this
+chart: chart and plot area, title and legend style, axes, and the
+styling of the series in order. Series data, ranges and titles are
+kept. Series added afterwards take the template styling as well.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Chart$apply_crtx(path)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{path}}{Path of the \code{.crtx} file.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    The chart, invisibly.
   }
 }
 

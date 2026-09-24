@@ -88,6 +88,7 @@ ENCHARTER_EXTENDED <- c(
 #'   * `Histogram_with_args.R` — histogram via clusteredColumn binning
 #'   * `Label_Grouping.R` — multi-level category labels
 #'   * `Load_and_extend.R` — load a chart back from a workbook and extend its range
+#'   * `Chart_template.R` — save a chart as a .crtx template, read and apply it
 #'   * `Line.R` — line with markers and global data labels
 #'   * `New_chart_types.R` — 0.11 showcase: pie/bar of pie, all 3D types,
 #'     display units, tick skips, directional error bars
@@ -641,7 +642,7 @@ EncharterBase <- R6::R6Class(
             val_name <- theme_map[as.numeric(theme_idx) + 1]
           }
           scheme <- xml_add_child(node, "a:schemeClr", val = val_name)
-          # luminance modifiers kept by encharter_load() on theme colours
+          # luminance modifiers kept by encharter_load() on theme colors
           lum_mod <- attr(color_val, "lumMod")
           lum_off <- attr(color_val, "lumOff")
           if (!is.null(lum_mod)) xml_add_child(scheme, "a:lumMod", val = as.character(round(lum_mod * 100000)))

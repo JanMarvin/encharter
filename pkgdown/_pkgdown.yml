@@ -12,6 +12,7 @@ reference:
     contents:
       - encharter
       - encharter_load
+      - encharter_crtx
       - plot.Chart
   - title: Chart classes
     contents:

@@ -201,7 +201,7 @@ test_that("literal series (numLit/strLit) round-trip", {
   expect_equal(loaded$series_data[[1]]$cat_cache, c("a", "b", "c"))
 })
 
-test_that("Excel-style charts load: horizontal bars, General format codes", {
+test_that("charts from other applications load: horizontal bars, General format codes", {
   xml <- paste0(
     '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" ',
     'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:chart><c:plotArea><c:layout/>',
@@ -271,7 +271,7 @@ test_that("update_series() re-points loaded series at new data", {
   expect_equal(wf2$series_data[[1]]$subtotals, 6)
 })
 
-test_that("luminance modifiers of theme colours survive a round trip", {
+test_that("luminance modifiers of theme colors survive a round trip", {
   skip_if_not_installed("openxlsx")
   wb <- openxlsx2::wb_load(system.file("extdata", "loadExample.xlsx", package = "openxlsx"))
   chart <- encharter_load(wb, 2)
@@ -281,4 +281,68 @@ test_that("luminance modifiers of theme colours survive a round trip", {
   xml <- chart$render(u_ids = paste0("1000", 1:5))
   expect_match(xml, '<c:majorGridlines><c:spPr><a:ln w="9525"><a:solidFill><a:schemeClr val="tx1"><a:lumMod val="15000"/><a:lumOff val="85000"/>', fixed = TRUE)
   expect_equal(plot_color(grid_color), "#D9D9D9")
+})
+
+test_that("chart templates round trip", {
+  skip_if(Sys.which("zip") == "")
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    Month = month.abb[1:6], Sales = c(120, 135, 128, 160, 175, 190), Cost = c(80, 90, 85, 100, 110, 120)
+  ))
+  wd <- openxlsx2::wb_data(wb)
+  chart <- ec("bar")$set_chart_title("Sales", bold = TRUE, font_color = "C00000")$
+    set_y_axis(grid_lines = TRUE, grid_color = "EEEEEE", format = "#,##0")$
+    set_chart_style(fill = "F7F7F7")$set_legend_style(pos = "b")$
+    add_series(name = Sales, data = wd, label = Month, color = "2E4057")$
+    add_series(name = Cost, data = wd, label = Month, color = "E84855", type = "line",
+               marker = "circle", line_type = "dashed", secondary = TRUE)
+  tmp <- tempfile(fileext = ".crtx")
+  expect_invisible(ec_to_crtx(chart, tmp))
+  expect_setequal(utils::unzip(tmp, list = TRUE)$Name, c("[Content_Types].xml", "_rels/.rels", "chart/chart.xml"))
+  xml <- readLines(unz(tmp, "chart/chart.xml"), warn = FALSE)
+  expect_false(any(grepl("<c:f>|<c:numCache>|<c:strCache>", xml)))
+  expect_true(any(grepl("<c:tx><c:strRef/></c:tx>", xml, fixed = TRUE)))
+  expect_true(any(grepl("<c:val><c:numRef/></c:val>", xml, fixed = TRUE)))
+
+  tpl <- ec_from_crtx(tmp)
+  expect_length(tpl$series_data, 0)
+  expect_length(tpl$template, 2)
+  expect_equal(tpl$chart_style$fill, "F7F7F7")
+  expect_equal(tpl$legend_params$pos, "b")
+  expect_equal(tpl$axis_params$y$format, "#,##0")
+  tpl$add_series(name = Sales, data = wd, label = Month)$add_series(name = Cost, data = wd, label = Month)
+  expect_equal(tpl$series_data[[1]]$line$color, "2E4057")
+  expect_equal(tpl$series_data[[2]]$type, "lineChart")
+  expect_equal(tpl$series_data[[2]]$sec_type, "y")
+  expect_equal(tpl$series_data[[2]]$marker$symbol, "circle")
+  expect_equal(tpl$series_data[[2]]$line$type, "dash")
+  expect_match(tpl$render(), "<c:legendPos val=\"b\"/>", fixed = TRUE)
+
+  plain <- ec("line")$add_series(name = Sales, data = wd, label = Month)$add_series(name = Cost, data = wd, label = Month)
+  plain$apply_crtx(tmp)
+  expect_equal(plain$series_data[[1]]$line$color, "2E4057")
+  expect_equal(plain$series_data[[2]]$marker$symbol, "circle")
+  expect_equal(plain$chart_title$style$font_color, "C00000")
+  expect_null(plain$chart_title$text)
+  expect_error(ec_to_crtx(ec("waterfall"), tmp), "ChartEx")
+})
+
+test_that("a template written by Excel loads", {
+  tpl <- ec_from_crtx(system.file("extdata", "excel_template.crtx", package = "encharter"))
+  expect_length(tpl$series_data, 0)
+  expect_length(tpl$template, 2)
+  expect_equal(tpl$template[[1]]$line$color, "2E4057")
+  expect_true(tpl$template[[1]]$invert_if_negative)
+  expect_equal(tpl$template[[2]]$type, "lineChart")
+  expect_equal(tpl$template[[2]]$sec_type, "y")
+  expect_equal(tpl$template[[2]]$line$type, "dash")
+  expect_equal(tpl$axis_params$y$format, "#,##0")
+  expect_equal(tpl$legend_params$pos, "b")
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    Month = month.abb[1:6], Sales = c(120, 135, 128, 160, 175, 190), Cost = c(80, 90, 85, 100, 110, 120)
+  ))
+  wd <- openxlsx2::wb_data(wb)
+  tpl$add_series(name = Sales, data = wd, label = Month)$add_series(name = Cost, data = wd, label = Month)
+  xml <- tpl$render()
+  expect_match(xml, "<c:lineChart>", fixed = TRUE)
+  expect_match(xml, '<a:prstDash val="dash"/>', fixed = TRUE)
 })

@@ -6,9 +6,13 @@ S3method(plot,ChartEx)
 S3method(print,pugi_node)
 S3method(print,pugi_nodeset)
 export(ec)
+export(ec_from_crtx)
 export(ec_load)
+export(ec_to_crtx)
 export(encharter)
+export(encharter_from_crtx)
 export(encharter_load)
+export(encharter_to_crtx)
 import(R6)
 importFrom(openxlsx2,
   dims_to_dataframe,

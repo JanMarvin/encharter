@@ -4,7 +4,6 @@ CMD
 Calibri
 ChartEx
 ECMA
-Excel's
 OOXML
 OOXMLValidator
 OpenXML
@@ -20,6 +19,7 @@ chartex
 clusteredColumn
 codecov
 coneToMax
+crtx
 cust
 dashDot
 dml
