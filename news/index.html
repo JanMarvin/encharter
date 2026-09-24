@@ -39,8 +39,12 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.12" id="encharter-012-development">encharter 0.12 (development)<a class="anchor" aria-label="anchor" href="#encharter-012-development"></a></h2>
-<ul><li>New <code><a href="../reference/encharter_load.html">encharter_load()</a></code> / <code><a href="../reference/encharter_load.html">ec_load()</a></code> reads a chart from a workbook back into a <code>Chart</code> or <code>ChartEx</code> object, the reverse of <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_add_encharter.html" class="external-link">wb_add_encharter()</a></code>. Charts written by encharter round-trip to identical XML; charts from Excel load as far as encharter has fields for their content. New <code>$update_series()</code> on both classes changes references and styling of existing series, e.g. <code>chart$update_series(data = wb_data(wb), label = Month)</code> to follow a longer data range. Series without a cell reference are now written as literals (<code>numLit</code>/<code>strLit</code>). Both are new and lightly tested; please report charts that do not load or render differently after loading.</li>
+<div class="section level3">
+<h3 id="new-features-0-12">New features<a class="anchor" aria-label="anchor" href="#new-features-0-12"></a></h3>
+<ul><li><p><code><a href="../reference/encharter_load.html">encharter_load()</a></code> / <code><a href="../reference/encharter_load.html">ec_load()</a></code> read a chart from a workbook back into a <code>Chart</code> or <code>ChartEx</code> object, so charts can be reloaded, modified and added again. Charts written by Excel load as well. New <code>$update_series()</code> on both classes to change an existing series. Loading has seen limited testing; unusual charts may not survive a round trip unchanged.</p></li>
+<li><p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for <code>Chart</code> and <code>ChartEx</code> objects draw the chart with grid, following what Excel renders from the written OOXML: automatic axis scaling, primary and secondary axes, tick marks, gridlines, legend, data labels, trendlines, error bars, and the extended types waterfall, box-and-whisker, histogram, Pareto, funnel, treemap and sunburst. 3D, stock, surface, pie-of-pie and region map charts are not drawn.</p></li>
 </ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.11" id="encharter-011">encharter 0.11<a class="anchor" aria-label="anchor" href="#encharter-011"></a></h2><p class="text-muted">CRAN release: 2026-09-05</p>
 <div class="section level3">
