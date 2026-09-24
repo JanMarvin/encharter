@@ -4,7 +4,9 @@ S3method(as.character,pugi_node)
 S3method(print,pugi_node)
 S3method(print,pugi_nodeset)
 export(ec)
+export(ec_load)
 export(encharter)
+export(encharter_load)
 import(R6)
 importFrom(openxlsx2,
   dims_to_dataframe,

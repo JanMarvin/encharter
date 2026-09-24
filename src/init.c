@@ -17,6 +17,7 @@ extern SEXP pugi_node_name(SEXP);
 extern SEXP pugi_serialize_node(SEXP);
 extern SEXP pugi_node_type(SEXP);
 extern SEXP pugi_has_attr(SEXP, SEXP);
+extern SEXP pugi_node_text(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
   {"pugi_find_first",    (DL_FUNC) &pugi_find_first,    2},
@@ -32,6 +33,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"pugi_serialize_node",(DL_FUNC) &pugi_serialize_node,1},
   {"pugi_node_type",     (DL_FUNC) &pugi_node_type,     1},
   {"pugi_has_attr",      (DL_FUNC) &pugi_has_attr,      2},
+  {"pugi_node_text",     (DL_FUNC) &pugi_node_text,     1},
   {NULL, NULL, 0}
 };
 

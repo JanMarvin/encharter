@@ -514,8 +514,9 @@ Chart <- R6::R6Class(
       self$type <- series_type
       if (!is.null(color) && length(color) > 1 && series_type %in% c("bubbleChart", "pieChart", "doughnutChart")) self$palette <- color
 
-      h_expr <- substitute(name)
-      c_expr <- substitute(label)
+      h_label <- tryCatch(if (is.symbol(substitute(name))) deparse1(substitute(name)) else name, error = function(e) NULL)
+      c_label <- tryCatch(if (is.symbol(substitute(label))) deparse1(substitute(label)) else label, error = function(e) NULL)
+      z_label <- tryCatch(if (is.symbol(substitute(weight))) deparse1(substitute(weight)) else weight, error = function(e) NULL)
 
       if (is.null(color)) {
         color_idx <- (length(self$series_data) %% length(self$palette)) + 1
@@ -526,47 +527,15 @@ Chart <- R6::R6Class(
       cat_vals <- NULL
       z_vals <- NULL
       if (inherits(data, "wb_data")) {
-        wb_sheet   <- attr(data, "sheet")
-        dims_mat   <- attr(data, "dims")
-        col_names  <- names(data)
+        res <- private$resolve_wb_data(data, h_label, c_label, z_label)
+        name      <- res$name
+        data      <- res$data
+        label     <- res$label
+        weight    <- res$weight
+        data_vals <- res$data_vals
+        cat_vals  <- res$cat_vals
+        z_vals    <- res$z_vals
 
-        # Deterministic name detection based on row counts
-        has_header <- nrow(dims_mat) > length(attr(data, "row.names"))
-
-        h_label <- tryCatch(if (is.symbol(h_expr)) deparse1(h_expr) else name, error = function(e) NULL)
-        c_label <- tryCatch(if (is.symbol(c_expr)) deparse1(c_expr) else label, error = function(e) NULL)
-
-        # For weight, we handle the NSE expression locally
-        z_expr  <- substitute(weight)
-        z_label <- tryCatch(if (is.symbol(z_expr)) deparse1(z_expr) else weight, error = function(e) NULL)
-
-        start_row <- if (has_header) 2 else 1
-        wd_orig <- data
-
-        # 1. Resolve Column Index for Y-Data and Header
-        col_idx <- which(col_names == h_label)
-        if (length(col_idx) > 0) {
-          col_idx   <- col_idx[1]
-          data_vals <- wd_orig[[h_label]]
-          name      <- if (has_header) sprintf("%s!%s", wb_sheet, dims_mat[1, col_idx]) else NULL
-          data      <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, col_idx], dims_mat[nrow(dims_mat), col_idx])
-        }
-
-        # 2. Resolve Category (label / X-Axis)
-        cat_idx <- which(col_names == c_label)
-        if (length(cat_idx) > 0) {
-          cat_idx  <- cat_idx[1]
-          cat_vals <- wd_orig[[c_label]]
-          label    <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, cat_idx], dims_mat[nrow(dims_mat), cat_idx])
-        }
-
-        # 3. Resolve Z-Data (Bubble Size)
-        z_idx <- which(col_names == z_label)
-        if (length(z_idx) > 0) {
-          z_idx  <- z_idx[1]
-          z_vals <- wd_orig[[z_label]]
-          weight <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, z_idx], dims_mat[nrow(dims_mat), z_idx])
-        }
       }
 
       # Apply absolute reference wrapper to all potential range strings
@@ -627,6 +596,161 @@ Chart <- R6::R6Class(
         #  label_style = self$label_params$style currently unused?
       )
 
+      invisible(self)
+    },
+
+    #' @description Change an existing series. Takes the arguments of
+    #'   `add_series()`; arguments that are not supplied keep their current
+    #'   value. With a `wb_data()` object as `data` and no `name`, the column
+    #'   is found from the series' current header (or data) cell, so
+    #'   `update_series(data = wb_data(wb), label = Month)` re-points every
+    #'   series at the current extent of the data.
+    #' @param index Integer vector of series to update. Default: all series.
+    #' @param name,data,label,weight,color,type,secondary,dir,grouping,overlap,gap_width,smooth,show_line,marker,marker_size,marker_fill,marker_line,marker_line_width,line_type,line_width,line_color,filled,error_bars,trendline,invert_if_negative
+    #'   See `add_series()`.
+    #' @examples
+    #' wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+    #'   x = data.frame(Month = month.abb[1:6], Sales = 1:6))
+    #' chart <- ec("line")$add_series(name = Sales, data = openxlsx2::wb_data(wb), label = Month)
+    #' wb$add_data(x = data.frame(Month = "Jul", Sales = 7), dims = "A8", col_names = FALSE)
+    #' chart$update_series(data = openxlsx2::wb_data(wb), label = Month, color = "C00000")
+    update_series = function(index = NULL, name = NULL, data = NULL, label = NULL, weight = NULL,
+                             color = NULL, type = NULL, secondary = NULL, dir = NULL, grouping = NULL,
+                             overlap = NULL, gap_width = NULL, smooth = NULL, show_line = NULL,
+                             marker = NULL, marker_size = NULL, marker_fill = NULL, marker_line = NULL,
+                             marker_line_width = NULL, line_type = NULL, line_width = NULL,
+                             line_color = NULL, filled = NULL, error_bars = NULL, trendline = NULL,
+                             invert_if_negative = NULL) {
+
+      n <- length(self$series_data)
+      if (n == 0) stop("The chart has no series to update.", call. = FALSE)
+      if (is.null(index)) index <- seq_len(n)
+      if (!is.numeric(index) || anyNA(index) || any(index < 1) || any(index > n)) {
+        stop(sprintf("'index' must be between 1 and %d.", n), call. = FALSE)
+      }
+
+      h_label <- tryCatch(if (is.symbol(substitute(name))) deparse1(substitute(name)) else name, error = function(e) NULL)
+      c_label <- tryCatch(if (is.symbol(substitute(label))) deparse1(substitute(label)) else label, error = function(e) NULL)
+      z_label <- tryCatch(if (is.symbol(substitute(weight))) deparse1(substitute(weight)) else weight, error = function(e) NULL)
+
+      if (!is.null(type)) {
+        type <- normalize_encharter_type(type)
+        private$validate_input(type, ENCHARTER_STANDARD, "series type")
+      }
+      if (!is.null(marker)) {
+        marker <- private$validate_input(marker, c("none", "circle", "dash", "diamond", "dot", "plus", "square", "star", "triangle", "x"), "marker")
+      }
+      if (!is.null(dir)) {
+        dir <- private$validate_input(normalize_encharter_string(dir), c("col", "bar"), "dir")
+      }
+      if (!is.null(grouping)) {
+        grouping <- private$validate_input(grouping, c("standard", "clustered", "stacked", "percentStacked"), "grouping")
+      }
+      if (!is.null(line_type)) {
+        private$validate_input(line_type, c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"), "line_type")
+      }
+      check_num(overlap, "overlap", min = -100, max = 100, integer = TRUE)
+      check_num(gap_width, "gap_width", min = 0, max = 500, integer = TRUE)
+      check_num(marker_size, "marker_size", min = 2, max = 72, integer = TRUE)
+      check_num(line_width, "line_width", min = 0)
+      check_num(marker_line_width, "marker_line_width", min = 0)
+      if (!is.null(trendline)) check_trendline(trendline)
+      if (!is.null(error_bars)) check_error_bars(error_bars)
+      check_bool(smooth, "smooth")
+      check_bool(show_line, "show_line")
+      check_bool(filled, "filled")
+      check_bool(invert_if_negative, "invert_if_negative")
+      color       <- check_color(color, "color")
+      line_color  <- check_color(line_color, "line_color")
+      marker_fill <- check_color(marker_fill, "marker_fill")
+      marker_line <- check_color(marker_line, "marker_line")
+      sec_val <- if (is.null(secondary)) NULL else if (isTRUE(secondary)) "y"
+        else if (isFALSE(secondary)) "none"
+        else match.arg(secondary, c("x", "y", "xy", "none"))
+
+      for (i in index) {
+        s <- self$series_data[[i]]
+        for (nm in c("name", "data", "label", "weight")) {
+          if (!nm %in% names(s)) s[nm] <- list(NULL)
+        }
+
+        if (inherits(data, "wb_data")) {
+          # without a name the column is taken from the series' own header
+          # (or first data) cell
+          this_h <- h_label
+          if (is.null(this_h)) {
+            src <- if (!is.null(s$name) && grepl("!.+", s$name)) s$name else s$data
+            if (!is.null(src)) {
+              cell <- gsub("\\$", "", sub("^.*!", "", src))
+              cell <- sub(":.*$", "", cell)
+              col  <- sub("[0-9]+$", "", cell)
+              dims_cols <- sub("[0-9]+$", "", attr(data, "dims")[1, ])
+              this_h <- names(data)[match(col, dims_cols)]
+            }
+          }
+          res <- private$resolve_wb_data(data, this_h, c_label, z_label)
+          if (is.null(res$data)) {
+            stop(sprintf("series %d: object '%s' not found in the wb_data object", i, this_h %||% ""), call. = FALSE)
+          }
+          if (!is.null(res$data)) {
+            s$name       <- to_abs_ref(res$name)
+            s$data       <- to_abs_ref(res$data)
+            s$data_cache <- res$data_vals
+          }
+          if (!is.null(res$label)) {
+            s$label     <- to_abs_ref(res$label)
+            s$cat_cache <- res$cat_vals
+          }
+          if (!is.null(res$weight)) {
+            s$weight  <- to_abs_ref(res$weight)
+            s$z_cache <- res$z_vals
+          }
+        } else {
+          if (!is.null(name)) s$name <- to_abs_ref(name)
+          if (!is.null(data)) {
+            if (!grepl("!", data)) stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
+            s$data <- to_abs_ref(data)
+            s["data_cache"] <- list(NULL)
+          }
+          if (!is.null(label)) {
+            s$label <- to_abs_ref(label)
+            s["cat_cache"] <- list(NULL)
+          }
+          if (!is.null(weight)) {
+            s$weight <- to_abs_ref(weight)
+            s["z_cache"] <- list(NULL)
+          }
+        }
+
+        if (!is.null(color)) {
+          s$line$color        <- line_color %||% color
+          s$marker$fill       <- marker_fill %||% color
+          s$marker$line$color <- marker_line %||% color
+        }
+        if (!is.null(line_color))        s$line$color <- line_color
+        if (!is.null(line_width))        s$line$width <- line_width
+        if (!is.null(line_type))         s$line$type  <- line_type
+        if (!is.null(show_line))         s$line$show  <- show_line
+        if (!is.null(marker))            s$marker$symbol <- marker
+        if (!is.null(marker_size))       s$marker$size   <- marker_size
+        if (!is.null(marker_fill))       s$marker$fill   <- marker_fill
+        if (!is.null(marker_line))       s$marker$line$color <- marker_line
+        if (!is.null(marker_line_width)) s$marker$line$width <- marker_line_width
+        if (!is.null(type))              s$type      <- type
+        if (!is.null(sec_val))           s$sec_type  <- sec_val
+        if (!is.null(dir))               s$dir       <- dir
+        if (!is.null(grouping))          s$grouping  <- grouping
+        if (!is.null(overlap))           s$overlap   <- overlap
+        if (!is.null(gap_width))         s$gap_width <- gap_width
+        if (!is.null(smooth))            s$smooth    <- smooth
+        if (!is.null(filled))            s$filled    <- filled
+        if (!is.null(error_bars))        s$error_bars <- error_bars
+        if (!is.null(trendline))         s$trendline  <- trendline
+        if (!is.null(invert_if_negative)) s$invert_if_negative <- invert_if_negative
+
+        self$series_data[[i]] <- s
+      }
+      if (!is.null(type)) self$type <- type
       invisible(self)
     },
 
@@ -798,6 +922,46 @@ Chart <- R6::R6Class(
   private = list(
     current_idx = 0,
 
+    # Turns a wb_data() object plus column names into sheet references and
+    # cached values. Columns that are not found return NULL.
+    resolve_wb_data = function(data, h_label, c_label, z_label) {
+      wb_sheet  <- attr(data, "sheet")
+      dims_mat  <- attr(data, "dims")
+      col_names <- names(data)
+      has_header <- nrow(dims_mat) > length(attr(data, "row.names"))
+      start_row  <- if (has_header) 2 else 1
+
+      out <- list(name = NULL, data = NULL, label = NULL, weight = NULL,
+                  data_vals = NULL, cat_vals = NULL, z_vals = NULL)
+
+      for (lbl in c(h_label, c_label, z_label)) {
+        if (!lbl %in% col_names) stop(sprintf("object '%s' not found in the wb_data object", lbl), call. = FALSE)
+      }
+
+      col_idx <- which(col_names == h_label)
+      if (length(col_idx) > 0) {
+        col_idx <- col_idx[1]
+        out$data_vals <- data[[h_label]]
+        out$name <- if (has_header) sprintf("%s!%s", wb_sheet, dims_mat[1, col_idx]) else NULL
+        out$data <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, col_idx], dims_mat[nrow(dims_mat), col_idx])
+      }
+
+      cat_idx <- which(col_names == c_label)
+      if (length(cat_idx) > 0) {
+        cat_idx <- cat_idx[1]
+        out$cat_vals <- data[[c_label]]
+        out$label <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, cat_idx], dims_mat[nrow(dims_mat), cat_idx])
+      }
+
+      z_idx <- which(col_names == z_label)
+      if (length(z_idx) > 0) {
+        z_idx <- z_idx[1]
+        out$z_vals <- data[[z_label]]
+        out$weight <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, z_idx], dims_mat[nrow(dims_mat), z_idx])
+      }
+      out
+    },
+
     # Emits <c:view3D> for surfaceChart and the 3D chart types.
     # Sequence per CT_View3D: rotX, hPercent, rotY, depthPercent, rAngAx,
     # perspective. User values from self$view3d override the per-type defaults.
@@ -931,6 +1095,11 @@ Chart <- R6::R6Class(
 
       # 2. THE SERIES LOOP
       for (s in sub_series) {
+        # `s$data <- NULL` drops the element and `s$data` would then partially
+        # match `data_cache`; keep the names present.
+        for (nm in c("name", "data", "label", "weight")) {
+          if (!nm %in% names(s)) s[nm] <- list(NULL)
+        }
 
         ser <- xml_add_child(c_node, "c:ser")
         xml_add_child(ser, "c:idx", val = as.character(private$current_idx))
@@ -1126,8 +1295,24 @@ Chart <- R6::R6Class(
           }
         }
 
-        # 6. Data References (xVal/yVal or label/val)
-        if (type %in% c("scatterChart", "bubbleChart")) {
+        # 6. Data References (xVal/yVal or label/val). A series without a
+        # reference but with cached values is written as a literal.
+        if (is.null(s$data) && !is.null(s$data_cache)) {
+          if (!is.null(s$cat_cache)) {
+            cat_node <- xml_add_child(ser, if (type %in% c("scatterChart", "bubbleChart")) "c:xVal" else "c:cat")
+            if (is.character(s$cat_cache) || is.factor(s$cat_cache)) {
+              private$render_str_cache(xml_add_child(cat_node, "c:strLit"), s$cat_cache, lit = TRUE)
+            } else {
+              private$render_num_cache(xml_add_child(cat_node, "c:numLit"), s$cat_cache, lit = TRUE)
+            }
+          }
+          val_node <- xml_add_child(ser, if (type %in% c("scatterChart", "bubbleChart")) "c:yVal" else "c:val")
+          private$render_num_cache(xml_add_child(val_node, "c:numLit"), s$data_cache, lit = TRUE)
+          if (type == "bubbleChart") {
+            z_node <- xml_add_child(ser, "c:bubbleSize")
+            private$render_num_cache(xml_add_child(z_node, "c:numLit"), s$z_cache %||% s$data_cache, lit = TRUE)
+          }
+        } else if (type %in% c("scatterChart", "bubbleChart")) {
           if (!is.null(s$label)) {
             x_val_node <- xml_add_child(ser, "c:xVal")
             if (!is.null(s$cat_cache)) {
@@ -1548,8 +1733,8 @@ Chart <- R6::R6Class(
     # Emit a c:numCache block into ref_node.
     # Date/POSIXt values are converted to OOXML serials via convert_to_excel_date.
     # Plain numeric values are written as-is.
-    render_num_cache = function(ref_node, vals) {
-      cache <- xml_add_child(ref_node, "c:numCache")
+    render_num_cache = function(ref_node, vals, lit = FALSE) {
+      cache <- if (lit) ref_node else xml_add_child(ref_node, "c:numCache")
       if (inherits(vals, c("Date", "POSIXt"))) {
         vals <- openxlsx2::convert_to_excel_date(data.frame(d = vals))[[1]]
 
@@ -1569,8 +1754,8 @@ Chart <- R6::R6Class(
     },
 
     # Emit a c:strCache block into ref_node for character/factor categories.
-    render_str_cache = function(ref_node, vals) {
-      cache <- xml_add_child(ref_node, "c:strCache")
+    render_str_cache = function(ref_node, vals, lit = FALSE) {
+      cache <- if (lit) ref_node else xml_add_child(ref_node, "c:strCache")
       xml_add_child(cache, "c:ptCount", val = as.character(length(vals)))
       for (i in seq_along(vals)) {
         if (!is.na(vals[[i]])) {
