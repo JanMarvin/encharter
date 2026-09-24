@@ -88,6 +88,7 @@ ENCHARTER_EXTENDED <- c(
 #'   * `Histogram_with_args.R` — histogram via clusteredColumn binning
 #'   * `Label_Grouping.R` — multi-level category labels
 #'   * `Load_and_extend.R` — load a chart back from a workbook and extend its range
+#'   * `Chart_template.R` — save a chart as a .crtx template, read and apply it
 #'   * `Line.R` — line with markers and global data labels
 #'   * `New_chart_types.R` — 0.11 showcase: pie/bar of pie, all 3D types,
 #'     display units, tick skips, directional error bars

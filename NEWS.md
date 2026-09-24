@@ -8,6 +8,12 @@
   classes to change an existing series. Loading has seen limited testing;
   unusual charts may not survive a round trip unchanged.
 
+* Chart templates: `encharter_to_crtx()` / `ec_to_crtx()` save a `Chart` as an
+  Excel chart template (`.crtx`), `encharter_from_crtx()` / `ec_from_crtx()`
+  read one into a `Chart` whose `$add_series()` picks up the template's series
+  styling, and `$apply_crtx()` copies a template's styling onto an existing
+  chart.
+
 * `plot()` methods for `Chart` and `ChartEx` objects draw the chart with grid,
   following what Excel renders from the written OOXML: automatic axis scaling,
   primary and secondary axes, tick marks, gridlines, legend, data labels,
