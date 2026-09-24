@@ -41,7 +41,15 @@ load_color <- function(node) {
   if (!is_missing(scheme)) {
     val <- xml_attr(scheme, "val")
     if (val == "accent1") return("auto")
-    return(openxlsx2::wb_color(theme = val))
+    col <- openxlsx2::wb_color(theme = val)
+    # luminance modifiers of the scheme colour (e.g. tx1 at 65% + 35% for
+    # Excel's default grey text) are kept for plot(); render() writes the
+    # plain scheme colour
+    lum_mod <- xml_find_first(scheme, "./a:lumMod")
+    lum_off <- xml_find_first(scheme, "./a:lumOff")
+    if (!is_missing(lum_mod)) attr(col, "lumMod") <- as.numeric(xml_attr(lum_mod, "val")) / 100000
+    if (!is_missing(lum_off)) attr(col, "lumOff") <- as.numeric(xml_attr(lum_off, "val")) / 100000
+    return(col)
   }
   NULL
 }
@@ -258,7 +266,7 @@ load_axis <- function(ax, defaults) {
   upd$label_pos  <- attr_or_null(xml_find_first(ax, "./c:tickLblPos"), "val") %||% "nextTo"
 
   ln <- load_line_style(xml_find_first(ax, "./c:spPr"))
-  upd$color <- ln$color %||% "000000"
+  upd$color <- if (isFALSE(ln$show)) "none" else ln$color %||% "000000"
   if (!is.null(ln$width)) upd$line_width <- ln$width
 
   ts <- load_text_style(ax)

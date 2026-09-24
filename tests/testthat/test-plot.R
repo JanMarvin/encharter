@@ -36,6 +36,11 @@ test_that("plot_format handles common Excel format codes", {
   expect_equal(plot_format(c(1, NA), "0"), c("1", ""))
 })
 
+test_that("plot_gpar_text ignores theme font placeholders", {
+  expect_equal(plot_gpar_text(list(font_name = "+mn-lt"), 10)$fontfamily, "")
+  expect_equal(plot_gpar_text(list(font_name = "Arial"), 10)$fontfamily, "Arial")
+})
+
 test_that("plot_color converts encharter colors", {
   expect_equal(plot_color("ff0000"), "#FF0000")
   expect_equal(plot_color("80FF0000"), "#FF000080")

@@ -12,6 +12,34 @@ ENCHARTER_THEME_HEX <- c(
   dk1 = "000000", lt1 = "FFFFFF", dk2 = "44546A", lt2 = "E7E6E6"
 )
 
+# theme colours of the workbook being plotted; plot() sets them from the
+# workbook's theme part and restores the Office defaults afterwards
+plot_state <- new.env(parent = emptyenv())
+plot_state$theme <- ENCHARTER_THEME_HEX
+
+plot_set_theme <- function(wb) {
+  theme <- ENCHARTER_THEME_HEX
+  xml <- if (!is.null(wb)) wb$theme else NULL
+  if (is.character(xml) && length(xml) == 1 && nzchar(xml)) {
+    scheme <- xml_find_first(read_xml(xml), ".//a:clrScheme")
+    if (!is_missing(scheme)) {
+      for (nm in c("dk1", "lt1", "dk2", "lt2", paste0("accent", 1:6), "hlink", "folHlink")) {
+        node <- xml_find_first(scheme, paste0("./a:", nm))
+        if (is_missing(node)) next
+        srgb <- xml_find_first(node, "./a:srgbClr")
+        sys <- xml_find_first(node, "./a:sysClr")
+        hex <- if (!is_missing(srgb)) xml_attr(srgb, "val") else if (!is_missing(sys)) xml_attr(sys, "lastClr") else ""
+        if (nzchar(hex)) theme[[nm]] <- toupper(hex)
+      }
+      theme[["tx1"]] <- theme[["dk1"]]
+      theme[["bg1"]] <- theme[["lt1"]]
+      theme[["tx2"]] <- theme[["dk2"]]
+      theme[["bg2"]] <- theme[["lt2"]]
+    }
+  }
+  plot_state$theme <- theme
+}
+
 # Converts an encharter color (hex, AARRGGBB hex, "auto", "none", wbColour)
 # to an R color string; NA for no fill.
 plot_color <- function(x, default = "#000000") {
@@ -20,8 +48,24 @@ plot_color <- function(x, default = "#000000") {
     type <- names(x)
     if (identical(type, "theme")) {
       val <- as.character(x)
-      if (!val %in% names(ENCHARTER_THEME_HEX)) val <- names(ENCHARTER_THEME_HEX)[as.integer(val) + 1]
-      x <- ENCHARTER_THEME_HEX[[val]]
+      if (!val %in% names(plot_state$theme)) val <- names(plot_state$theme)[as.integer(val) + 1]
+      lum_mod <- attr(x, "lumMod")
+      lum_off <- attr(x, "lumOff")
+      x <- plot_state$theme[[val]]
+      if (!is.null(lum_mod) || !is.null(lum_off)) {
+        # DrawingML lumMod/lumOff act on the HSL luminance
+        rgb <- grDevices::col2rgb(paste0("#", x)) / 255
+        mx <- max(rgb)
+        mn <- min(rgb)
+        l <- (mx + mn) / 2
+        sat <- if (mx == mn) 0 else (mx - mn) / (1 - abs(2 * l - 1))
+        h <- if (mx == mn) 0 else if (mx == rgb[1]) ((rgb[2] - rgb[3]) / (mx - mn)) %% 6 else if (mx == rgb[2]) (rgb[3] - rgb[1]) / (mx - mn) + 2 else (rgb[1] - rgb[2]) / (mx - mn) + 4
+        l <- min(1, max(0, l * (lum_mod %||% 1) + (lum_off %||% 0)))
+        c1 <- (1 - abs(2 * l - 1)) * sat
+        x1 <- c1 * (1 - abs(h %% 2 - 1))
+        base <- switch(floor(h) + 1, c(c1, x1, 0), c(x1, c1, 0), c(0, c1, x1), c(0, x1, c1), c(x1, 0, c1), c(c1, 0, x1))
+        x <- toupper(substr(grDevices::rgb(base[1] + l - c1 / 2, base[2] + l - c1 / 2, base[3] + l - c1 / 2), 2, 7))
+      }
     } else if (identical(type, "auto")) {
       x <- "auto"
     } else {
@@ -31,7 +75,7 @@ plot_color <- function(x, default = "#000000") {
   }
   x <- as.character(x[1])
   if (is.na(x)) return(default)
-  if (tolower(x) == "auto") return(paste0("#", ENCHARTER_THEME_HEX[["accent1"]]))
+  if (tolower(x) == "auto") return(paste0("#", plot_state$theme[["accent1"]]))
   if (tolower(x) == "none") return(NA_character_)
   hex <- toupper(sub("^#", "", x))
   if (nchar(hex) == 8) return(paste0("#", substr(hex, 3, 8), substr(hex, 1, 2)))
@@ -43,7 +87,7 @@ plot_color <- function(x, default = "#000000") {
 # with the brightness variations of the default colour style
 plot_auto_color <- function(i, palette) {
   if (i <= length(palette)) return(plot_color(palette[i], "#4472C4"))
-  accents <- ENCHARTER_THEME_HEX[paste0("accent", 1:6)]
+  accents <- plot_state$theme[paste0("accent", 1:6)]
   base <- grDevices::col2rgb(paste0("#", accents[(i - 1) %% 6 + 1])) / 255
   cycle <- (i - 1) %/% 6
   mod <- c(1, 0.6, 0.8, 0.8, 0.6, 0.5)[min(cycle + 1, 6)]
@@ -77,11 +121,14 @@ plot_gpar_text <- function(style, default_size, default_col = "#000000") {
     else if (isTRUE(style$bold)) "bold"
     else if (isTRUE(style$italic)) "italic"
     else "plain"
+  # theme font placeholders such as "+mn-lt" are not font families
+  family <- style$font_name %||% ""
+  if (startsWith(family, "+")) family <- ""
   grid::gpar(
     fontsize = style$font_size %||% default_size,
     fontface = face,
     col = plot_color(style$font_color %||% style$color, default_col),
-    fontfamily = style$font_name %||% ""
+    fontfamily = family
   )
 }
 
@@ -283,7 +330,7 @@ plot_legend <- function(entries, params, style, max_w = Inf) {
                            gp = grid::gpar(col = e$col, lwd = e$lwd, lty = e$lty))
           if (!is.na(e$pch)) {
             grid::grid.points(x = grid::unit(x + (key_w - 4) / 2, "points"), y = grid::unit(cy, "points"),
-                              pch = e$pch, size = grid::unit(e$cex, "points"),
+                              pch = e$pch, size = grid::unit(e$cex / 0.75, "points"),
                               gp = grid::gpar(col = e$mcol, fill = e$mfill, lwd = 1))
           }
         } else {
@@ -362,7 +409,8 @@ plot_draw_markers <- function(x, y, m, series_col) {
   if (is.na(pch)) return(invisible())
   fill <- plot_color(m$fill, series_col)
   line <- plot_color(m$line$color, series_col)
-  grid::grid.points(x, y, pch = pch, size = grid::unit(m$size %||% 5, "points"),
+  # grid draws a symbol at 3/4 of `size`; Excel's size is the diameter in points
+  grid::grid.points(x, y, pch = pch, size = grid::unit((m$size %||% 5) / 0.75, "points"),
                     gp = grid::gpar(col = line, fill = fill, lwd = (m$line$width %||% 0.75) * 96 / 72),
                     default.units = "native")
 }
@@ -683,8 +731,10 @@ plot_cartesian <- function(chart, series) {
   }
 
   # ---- tick labels ----
-  # OOXML rotation is clockwise, grid rotation counter-clockwise
-  rot_x <- -(px$rotation %||% 0)
+  # OOXML rotation is clockwise, grid rotation counter-clockwise; Excel
+  # writes rot="-60000000" (outside the valid range) for automatic rotation
+  rot_auto <- is.null(px$rotation) || abs(px$rotation) > 90
+  rot_x <- if (rot_auto) 0 else -px$rotation
   if (is_xy) {
     x_ticks <- plot_ticks(xa)
     x_labels <- plot_format(x_ticks, px$format)
@@ -695,7 +745,7 @@ plot_cartesian <- function(chart, series) {
     gp_tmp <- plot_gpar_text(px, 10)
     lab_w <- max(vapply(x_labels, function(l) grid::convertWidth(grid::grobWidth(grid::textGrob(l, gp = gp_tmp)), "points", valueOnly = TRUE), numeric(1)))
     avail <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE) / max(1, length(x_ticks))
-    if (is.null(px$rotation) && lab_w + 4 > avail) rot_x <- 90
+    if (rot_auto && lab_w + 4 > avail) rot_x <- 90
   } else {
     x_ticks <- seq_along(cats) - 0.5
     x_labels <- plot_format(cats, px$format)
@@ -1442,6 +1492,8 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
     stop("Only standard charts (class 'Chart') can be plotted.", call. = FALSE)
   }
   if (length(chart$series_data) == 0) stop("The chart has no series.", call. = FALSE)
+  plot_set_theme(wb)
+  on.exit(plot_set_theme(NULL), add = TRUE)
   types <- unique(vapply(chart$series_data, function(s) s$type, character(1)))
   bad <- setdiff(types, ENCHARTER_PLOT_TYPES)
   if (length(bad)) {

@@ -1596,10 +1596,14 @@ Chart <- R6::R6Class(
 
       # 6. Visual Styles
       ln <- xml_add_child(xml_add_child(ax, "c:spPr"), "a:ln")
-      private$render_color_core(xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
+      if (identical(params$color, "none")) {
+        xml_add_child(ln, "a:noFill")
+      } else {
+        private$render_color_core(xml_add_child(ln, "a:solidFill"), params$color %||% "000000")
+      }
 
       label_style <- params
-      label_style$color <- params$font_color %||% params$color %||% "000000"
+      label_style$color <- params$font_color %||% (if (identical(params$color, "none")) "000000" else params$color) %||% "000000"
       private$apply_text_style(ax, label_style)
       # 7. Crossing (EG_AxShared)
       xml_add_child(ax, "c:crossAx", val = cross_id)
@@ -1693,11 +1697,15 @@ Chart <- R6::R6Class(
       xml_add_child(ax, "c:tickLblPos", val = params$label_pos %||% "nextTo")
 
       # 6. Shape and Text Properties
-      ax_style <- list(color = params$color %||% "000000", width = params$line_width)
-      private$render_line_style(xml_add_child(ax, "c:spPr"), ax_style)
+      if (identical(params$color, "none")) {
+        xml_add_child(xml_add_child(xml_add_child(ax, "c:spPr"), "a:ln"), "a:noFill")
+      } else {
+        ax_style <- list(color = params$color %||% "000000", width = params$line_width)
+        private$render_line_style(xml_add_child(ax, "c:spPr"), ax_style)
+      }
 
       label_style <- params
-      label_style$color <- params$font_color %||% params$color %||% "000000"
+      label_style$color <- params$font_color %||% (if (identical(params$color, "none")) "000000" else params$color) %||% "000000"
       private$apply_text_style(ax, label_style)
 
       # 7. Crossing Properties (End of EG_AxShared)

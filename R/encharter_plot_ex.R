@@ -172,6 +172,8 @@ plot_ex_hierarchy <- function(levels, values) {
 plot.ChartEx <- function(x, wb = NULL, newpage = TRUE, ...) {
   chart <- x
   if (length(chart$series_data) == 0) stop("The chart has no series.", call. = FALSE)
+  plot_set_theme(wb)
+  on.exit(plot_set_theme(NULL), add = TRUE)
   types <- unique(vapply(chart$series_data, function(s) s$type, character(1)))
   bad <- setdiff(types, ENCHARTER_PLOT_EX_TYPES)
   if (length(bad)) {
@@ -301,7 +303,7 @@ plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
   right_w <- if (is.null(y2)) 4 else text_w(y2_labels, y_gp) + 8
   # crowded category labels are staggered over two rows (Excel does not
   # rotate them on extended charts)
-  rot_x <- -(px$rotation %||% 0)
+  rot_x <- if (is.null(px$rotation) || abs(px$rotation) > 90) 0 else -px$rotation
   cat_w <- text_w(cats, x_gp)
   avail <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE) - left_w
   stagger <- rot_x == 0 && length(cats) && cat_w > avail / length(cats)
