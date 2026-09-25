@@ -4,12 +4,13 @@ Draws a `Chart` or `ChartEx` object on the current graphics device with
 grid, approximating what a spreadsheet application shows for it.
 
 Supported are bar/column (clustered, stacked, percent stacked,
-horizontal), line, area, scatter, bubble, pie, doughnut and radar charts
-with titles, primary and secondary axes, gridlines, legend, markers,
-line styles, data labels, trendlines and error bars, and the extended
-types waterfall, box-and-whisker, histogram, Pareto, funnel, treemap and
-sunburst. 3D, stock, surface, pie-of-pie and region map charts are not
-drawn.
+horizontal), line, area, scatter, bubble, pie, doughnut, pie of pie, bar
+of pie, radar and stock charts with titles, primary and secondary axes,
+gridlines, legend, markers, line styles, data labels, trendlines, error
+bars, high-low lines, drop lines and up-down bars; the 3D column, bar,
+line, area and pie types and surface charts (contour and 3D); and the
+extended types waterfall, box-and-whisker, histogram, Pareto, funnel,
+treemap and sunburst. Region maps are not drawn.
 
 ## Usage
 

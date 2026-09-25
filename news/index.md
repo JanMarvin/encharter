@@ -4,6 +4,19 @@
 
 ### Bug fixes
 
+- `c:logBase` is written first within `c:scaling`, as the schema
+  requires. A logarithmic axis produced a chart that Excel removed on
+  opening.
+
+- Scatter and bubble series with text x values write them as a string
+  reference (`c:strRef`) instead of a number cache holding text, which
+  made Excel repair the file.
+
+- 3D bar and area charts only get a series axis (`c:serAx`) with the
+  `"standard"` grouping. With a series axis present, a `"clustered"` 3D
+  column chart was rendered with its series in rows along the depth
+  rather than side by side.
+
 - Bar series are written with `<c:invertIfNegative val="0"/>` unless
   `invert_if_negative = TRUE`. Without the element, negative bars
   appeared inverted (white with an outline) in Excel.
@@ -58,10 +71,18 @@
   `Chart` and `ChartEx` objects draw the chart with grid, following what
   a spreadsheet application renders from the written OOXML: automatic
   axis scaling, primary and secondary axes, tick marks, gridlines,
-  legend, data labels, trendlines, error bars, and the extended types
-  waterfall, box-and-whisker, histogram, Pareto, funnel, treemap and
-  sunburst. 3D, stock, surface, pie-of-pie and region map charts are not
-  drawn.
+  legend, data labels, trendlines, error bars, stock charts (high-low
+  lines, drop lines, up-down bars), pie of pie and bar of pie, the 3D
+  column, bar, line, area and pie types and surface charts (contour and
+  3D, including wireframes), and the extended types waterfall,
+  box-and-whisker, histogram, Pareto, funnel, treemap and sunburst.
+  Region maps are not drawn; they need shape data the package does not
+  ship. Value axes of data well away from zero start below the values,
+  as in Excel, and date axes label the base units rather than their
+  boundaries. Also drawn: data tables, overlaid legends, legend keys and
+  bubble sizes in data labels, trendline intercepts, value axes crossing
+  at the categories (`cross_between = "midCat"`), doughnut rings for
+  every series and pie labels outside the slices.
 
 ## encharter 0.11
 
