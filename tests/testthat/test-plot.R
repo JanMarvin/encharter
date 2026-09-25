@@ -53,7 +53,6 @@ test_that("plot_color converts encharter colors", {
 
 test_that("plot() validates its input", {
   expect_error(plot(ec("bar")), "no series")
-  expect_error(plot_to_png(ec("bar3DChart")$add_series(data = "Data!B2:B7")), "not supported")
   expect_error(plot_to_png(ec("bar")$add_series(data = "Data!B2:B7")), "pass 'wb'")
 })
 
@@ -162,4 +161,78 @@ test_that("plot_ex_hierarchy fills blank outer cells", {
   expect_equal(nodes$label[nodes$level == 1], c("A", "B"))
   expect_equal(nodes$value[nodes$level == 1], c(3, 3))
   expect_equal(nodes$parent[nodes$label == "y"], nodes$id[nodes$label == "A"])
+})
+
+test_that("plot() draws stock, of-pie, 3D and surface charts", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    k = c("a", "b", "c", "d"), o = c(3, 4, 2, 5), h = c(5, 6, 4, 7), l = c(2, 3, 1, 4), c = c(4, 3, 3, 6)
+  ))
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  stock <- ec("stockChart")$add_series(data = d, name = o, label = k, show_line = FALSE)$
+    add_series(data = d, name = h, label = k, show_line = FALSE)$
+    add_series(data = d, name = l, label = k, show_line = FALSE)$
+    add_series(data = d, name = c, label = k, show_line = FALSE)
+  stock$high_low_lines <- TRUE
+  stock$up_down_bars <- TRUE
+  stock$drop_lines <- TRUE
+  expect_gt(file.info(plot_to_png(stock))$size, 1000)
+  expect_equal(encharter:::plot_of_pie_split(ec("pieOfPie")$set_of_pie_options(split_type = "pos", split_pos = 2), c(5, 4, 3, 2)), 3:4)
+  expect_equal(encharter:::plot_of_pie_split(ec("pieOfPie")$set_of_pie_options(split_type = "val", split_pos = 3.5), c(5, 4, 3, 2)), 3:4)
+  expect_equal(encharter:::plot_of_pie_split(ec("pieOfPie")$set_of_pie_options(split_type = "percent", split_pos = 20), c(5, 4, 3, 2)), 4L)
+  expect_equal(encharter:::plot_of_pie_split(ec("pieOfPie")$set_of_pie_options(split_type = "cust", split_pos = c(0, 2)), c(5, 4, 3, 2)), c(1L, 3L))
+  expect_gt(file.info(plot_to_png(ec("pieOfPie")$add_series(data = d, name = o, label = k)$set_of_pie_options(split_type = "pos", split_pos = 2)$set_data_label_style(show_percent = TRUE)))$size, 1000)
+  expect_gt(file.info(plot_to_png(ec("barOfPie")$add_series(data = d, name = o, label = k)$set_of_pie_options(split_type = "cust", split_pos = c(1, 3))))$size, 1000)
+  for (g in c("clustered", "standard", "stacked", "percentStacked")) {
+    ch <- ec("bar3DChart")$add_series(data = d, name = o, label = k, grouping = g)$add_series(data = d, name = h, label = k, grouping = g)
+    expect_gt(file.info(plot_to_png(ch))$size, 1000)
+    xml <- ch$render()
+    expect_equal(grepl("<c:serAx>", xml), g == "standard")
+  }
+  expect_gt(file.info(plot_to_png(ec("bar3DChart")$add_series(data = d, name = o, label = k, dir = "bar", grouping = "stacked")$
+    add_series(data = d, name = h, label = k, dir = "bar", grouping = "stacked")$
+    set_3d_options(rot_x = 20, rot_y = 30, right_angle_axes = FALSE, perspective = 30, shape = "pyramid")))$size, 1000)
+  expect_gt(file.info(plot_to_png(ec("bar3DChart")$add_series(data = d, name = o, label = k)$set_3d_options(shape = "cylinder")$set_data_label_style(show_val = TRUE)))$size, 1000)
+  expect_gt(file.info(plot_to_png(ec("line3DChart")$add_series(data = d, name = o, label = k)$add_series(data = d, name = h, label = k)))$size, 1000)
+  expect_gt(file.info(plot_to_png(ec("area3DChart")$add_series(data = d, name = o, label = k)$add_series(data = d, name = h, label = k)))$size, 1000)
+  expect_gt(file.info(plot_to_png(ec("pie3DChart")$add_series(data = d, name = o, label = k)$set_3d_options(rot_x = 40, h_percent = 60)$set_data_label_style(show_percent = TRUE)))$size, 1000)
+  for (type in c("surfaceChart", "surface3DChart")) {
+    ch <- ec(type)
+    for (nm in c("o", "h", "l")) ch$add_series(name = paste0("Data!$", toupper(nm), "$1"), data = paste0("Data!$", toupper(nm), "$2:$", toupper(nm), "$5"), label = "Data!$A$2:$A$5", type = type)
+    expect_gt(file.info(plot_to_png(ch, wb))$size, 1000)
+    ch$series_data[[1]]$filled <- TRUE
+    expect_gt(file.info(plot_to_png(ch, wb))$size, 1000)
+  }
+  poly <- encharter:::plot_clip_band(c(0, 1, 0), c(0, 0, 1), c(0, 0, 0), c(0, 10, 20), 5, 15)
+  expect_equal(length(poly$x), 5)
+  expect_true(all(poly$v >= 5 & poly$v <= 15))
+})
+
+test_that("axes away from zero start below the values", {
+  sc <- plot_scale(40.29, 45.62)
+  expect_equal(c(sc$min, sc$max, sc$major), c(37, 47, 1))
+  sc <- plot_scale(111, 149)
+  expect_equal(c(sc$min, sc$max), c(0, 160))
+  sc <- plot_scale(-45.62, -40.29)
+  expect_equal(c(sc$min, sc$max), c(-47, -37))
+})
+
+test_that("plot() honors data tables, midCat, overlaid legends, label keys and trendline intercepts", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    k = c("a", "b", "c", "d"), v = c(3, 4, 2, 5), w = c(5, 6, 4, 7), z = c(1, 2, 3, 4)
+  ))
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("bar")$add_series(name = v, data = d, label = k)$add_series(name = w, data = d, label = k)$set_data_table(TRUE)$
+    set_legend_style(pos = "r", overlay = TRUE)$set_data_label_style(show_val = TRUE, show_legend_key = TRUE)
+  expect_gt(file.info(plot_to_png(ch))$size, 1000)
+  ch <- ec("line")$add_series(name = v, data = d, label = k, trendline = list(type = "linear", intercept = 1, show_eq = TRUE))$
+    add_series(name = w, data = d, label = k, trendline = list(type = "exp", intercept = 2))$set_y_axis(cross_between = "midCat")
+  expect_gt(file.info(plot_to_png(ch))$size, 1000)
+  tc <- plot_trend_curve(1:4, c(3, 4, 2, 5), list(type = "linear", intercept = 1))
+  expect_equal(tc$y[1], 1 + (tc$y[100] - 1) * tc$x[1] / tc$x[100])
+  expect_equal(plot_trend_equation(1:4, c(3, 4, 2, 5), list(type = "linear", intercept = 1))$eq, "y = 0.9x + 1")
+  ch <- ec("bubble")$add_series(name = v, data = d, label = z, weight = w)$set_data_label_style(show_val = FALSE, show_bubble_size = TRUE)
+  expect_gt(file.info(plot_to_png(ch))$size, 1000)
+  expect_equal(plot_label_text(list(show_bubble_size = TRUE), "a", 1, size = 7), "7")
+  ch <- ec("doughnut")$add_series(name = v, data = d, label = k)$add_series(name = w, data = d, label = k)
+  expect_gt(file.info(plot_to_png(ch))$size, 1000)
 })

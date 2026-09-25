@@ -1,7 +1,9 @@
 ENCHARTER_PLOT_TYPES <- c(
   "barChart", "lineChart", "areaChart", "scatterChart",
-  "pieChart", "doughnutChart", "radarChart", "bubbleChart"
+  "pieChart", "doughnutChart", "radarChart", "bubbleChart", "stockChart", "ofPieChart",
+  "bar3DChart", "line3DChart", "area3DChart", "pie3DChart", "surfaceChart", "surface3DChart"
 )
+ENCHARTER_PLOT_PIES <- c("pieChart", "doughnutChart", "ofPieChart", "pie3DChart")
 
 # Office theme colors, used for wb_color(theme = ...) and "auto"
 ENCHARTER_THEME_HEX <- c(
@@ -90,6 +92,10 @@ plot_color <- function(x, default = "#000000") {
 plot_auto_color <- function(i, palette) {
   if (i <= length(palette)) return(plot_color(palette[i], "#4472C4"))
   accents <- plot_state$theme[paste0("accent", 1:6)]
+  # the colors of the points 7 to 9 as rendered with the current Office theme
+  if (i <= 9 && identical(unname(accents[1]), "156082")) {
+    return(c("#8599AA", "#EEA18A", "#869E87")[i - 6])
+  }
   base <- grDevices::col2rgb(paste0("#", accents[(i - 1) %% 6 + 1])) / 255
   cycle <- (i - 1) %/% 6
   mod <- c(1, 0.6, 0.8, 0.8, 0.6, 0.5)[min(cycle + 1, 6)]
@@ -261,11 +267,24 @@ plot_scale <- function(lo, hi, params = list(), pad = TRUE) {
     lo <- if (lo > 0) 0 else lo - 1
     hi <- if (hi > 0) hi else 0
   }
-  if (lo > 0 && (hi - lo) > hi / 6) lo <- 0
-  if (hi < 0 && (hi - lo) > abs(lo) / 6) hi <- 0
   rng <- hi - lo
-  hi_pad <- params$max %||% if (hi > 0 && pad) hi + 0.05 * rng else hi
-  lo_pad <- params$min %||% if (lo < 0 && pad) lo - 0.05 * rng else lo
+  if (lo > 0 && rng <= hi / 6) {
+    # values well away from zero: the axis starts below them by half
+    # their range and ends a tenth above
+    lo_pad <- lo - 0.5 * rng
+    hi_pad <- hi + 0.1 * rng
+  } else if (hi < 0 && rng <= abs(lo) / 6) {
+    hi_pad <- hi + 0.5 * rng
+    lo_pad <- lo - 0.1 * rng
+  } else {
+    if (lo > 0) lo <- 0
+    if (hi < 0) hi <- 0
+    rng <- hi - lo
+    hi_pad <- if (hi > 0 && pad) hi + 0.05 * rng else hi
+    lo_pad <- if (lo < 0 && pad) lo - 0.05 * rng else lo
+  }
+  hi_pad <- params$max %||% hi_pad
+  lo_pad <- params$min %||% lo_pad
   major <- params$major
   if (is.null(major)) {
     span <- hi_pad - lo_pad
@@ -485,10 +504,16 @@ plot_trend_curve <- function(x, y, tl, shift = 0) {
   type <- tl$type %||% "linear"
   xs <- seq(min(x) - (tl$backward %||% 0), max(x) + (tl$forward %||% 0), length.out = 100)
   new <- data.frame(x = xs)
+  # a set intercept is taken out of the values before the fit
+  b0 <- tl$intercept
+  k <- min(tl$order %||% 2, length(x) - 1)
   fit <- switch(type,
-    linear = stats::predict(stats::lm(y ~ x), new),
-    poly = stats::predict(stats::lm(y ~ stats::poly(x, min(tl$order %||% 2, length(x) - 1), raw = TRUE)), new),
-    exp = exp(stats::predict(stats::lm(log(y) ~ x), new)),
+    linear = if (is.null(b0)) stats::predict(stats::lm(y ~ x), new)
+      else b0 + stats::predict(stats::lm(I(y - b0) ~ x - 1), new),
+    poly = if (is.null(b0)) stats::predict(stats::lm(y ~ stats::poly(x, k, raw = TRUE)), new)
+      else b0 + stats::predict(stats::lm(I(y - b0) ~ stats::poly(x, k, raw = TRUE) - 1), new),
+    exp = if (is.null(b0)) exp(stats::predict(stats::lm(log(y) ~ x), new))
+      else b0 * exp(stats::predict(stats::lm(I(log(y) - log(b0)) ~ x - 1), new)),
     log = stats::predict(stats::lm(y ~ log(x)), new),
     power = exp(stats::predict(stats::lm(log(y) ~ log(x)), new)),
     movingAvg = {
@@ -518,22 +543,28 @@ plot_trend_equation <- function(x, y, tl) {
   x <- x[ok]
   y <- y[ok]
   if (length(x) < 2) return(NULL)
-  num <- function(v) formatC(v, format = "f", digits = 4)
+  # the default label shows six characters: five significant digits, or
+  # four decimals below one, without trailing zeros
+  num <- function(v) format(if (abs(v) >= 1) signif(v, 5) else round(v, 4), scientific = FALSE, trim = TRUE, drop0trailing = TRUE)
   term <- function(coef, txt, first = FALSE) {
     sign <- if (coef < 0) "- " else if (first) "" else "+ "
     paste0(sign, num(abs(coef)), txt)
   }
   type <- tl$type %||% "linear"
+  b0 <- tl$intercept
+  k <- min(tl$order %||% 2, length(x) - 1)
   fit <- switch(type,
-    linear = stats::lm(y ~ x),
-    poly = stats::lm(y ~ stats::poly(x, min(tl$order %||% 2, length(x) - 1), raw = TRUE)),
-    exp = if (all(y > 0)) stats::lm(log(y) ~ x),
+    linear = if (is.null(b0)) stats::lm(y ~ x) else stats::lm(I(y - b0) ~ x - 1),
+    poly = if (is.null(b0)) stats::lm(y ~ stats::poly(x, k, raw = TRUE)) else stats::lm(I(y - b0) ~ stats::poly(x, k, raw = TRUE) - 1),
+    exp = if (all(y > 0)) (if (is.null(b0)) stats::lm(log(y) ~ x) else stats::lm(I(log(y) - log(b0)) ~ x - 1)),
     log = if (all(x > 0)) stats::lm(y ~ log(x)),
     power = if (all(x > 0 & y > 0)) stats::lm(log(y) ~ log(x)),
     NULL
   )
   if (is.null(fit)) return(NULL)
   b <- stats::coef(fit)
+  # the set intercept takes its place among the coefficients
+  if (!is.null(b0) && type %in% c("linear", "poly", "exp")) b <- c(if (type == "exp") log(b0) else b0, b)
   eq <- switch(type,
     linear = paste("y =", term(b[2], "x", TRUE), term(b[1], "")),
     poly = {
@@ -549,7 +580,13 @@ plot_trend_equation <- function(x, y, tl) {
     log = paste("y =", term(b[2], "ln(x)", TRUE), term(b[1], "")),
     power = paste0("y = ", num(exp(b[1])), "x^", num(b[2]))
   )
-  r2 <- summary(fit)$r.squared
+  # with a set intercept the label still shows the R-squared of the free
+  # fit, as the spreadsheet application does
+  r2 <- if (is.null(b0)) summary(fit)$r.squared else summary(switch(type,
+    linear = stats::lm(y ~ x),
+    poly = stats::lm(y ~ stats::poly(x, k, raw = TRUE)),
+    exp = stats::lm(log(y) ~ x)
+  ))$r.squared
   list(eq = eq, r2 = paste0("R\u00b2 = ", num(r2)))
 }
 
@@ -593,17 +630,18 @@ plot_draw_error_bars <- function(x, y, s, horizontal = FALSE) {
 }
 
 # Data label text for a point
-plot_label_text <- function(lp, cat, val, pct = NULL, name = NULL, sep = lp$sep %||% ", ") {
+plot_label_text <- function(lp, cat, val, pct = NULL, name = NULL, sep = lp$sep %||% ", ", size = NULL) {
   parts <- character()
   if (isTRUE(lp$show_ser_name) && !is.null(name)) parts <- c(parts, name)
   if (isTRUE(lp$show_cat)) parts <- c(parts, plot_format(cat))
   if (isTRUE(lp$show_val)) parts <- c(parts, plot_format(val, lp$format))
   if (isTRUE(lp$show_percent) && !is.null(pct)) parts <- c(parts, plot_format(pct, lp$format %||% "0%"))
+  if (isTRUE(lp$show_bubble_size) && !is.null(size)) parts <- c(parts, plot_format(size))
   paste(parts, collapse = sep)
 }
 
 plot_labels_on <- function(lp) {
-  isTRUE(lp$show_val) || isTRUE(lp$show_cat) || isTRUE(lp$show_percent) || isTRUE(lp$show_ser_name)
+  isTRUE(lp$show_val) || isTRUE(lp$show_cat) || isTRUE(lp$show_percent) || isTRUE(lp$show_ser_name) || isTRUE(lp$show_bubble_size)
 }
 
 # ---------------------------------------------------------------------------
@@ -630,6 +668,12 @@ plot_cartesian <- function(chart, series) {
     if (length(cats) < n_cat) cats <- c(cats, rep(NA, n_cat - length(cats)))
     x_of <- function(s) seq_along(s$values) - 0.5
   }
+  # with the value axis crossing at the categories ("midCat") the points
+  # of line and area charts sit on the tick marks, the first one on the
+  # axis; bars keep their slots
+  mid_cat <- !is_xy && identical(chart$axis_params$y$cross_between, "midCat") &&
+    !any(vapply(series, function(s) s$type == "barChart", logical(1)))
+  if (mid_cat) x_of <- function(s) seq_along(s$values) - 1
   # a trendline extrapolated forwards adds empty categories to the axis
   n_slots <- length(cats)
   for (s in series) {
@@ -645,6 +689,7 @@ plot_cartesian <- function(chart, series) {
   px_auto <- chart$axis_params$x$auto
   is_date <- !is_xy && inherits(cats, c("Date", "POSIXt")) && !horizontal && !isFALSE(px_auto) &&
     !is.null(series[[1]]$label) && is.null(series[[1]]$cat_levels)
+  if (is_date) mid_cat <- FALSE
   if (is_date) {
     px_date <- chart$axis_params$x
     dates <- as.Date(cats)
@@ -730,6 +775,11 @@ plot_cartesian <- function(chart, series) {
             ext <- plot_error_extent(v, s$error_bars)
             v <- c(v, v + ext, v - ext)
           }
+          # a forecast trendline counts towards the axis range
+          if (is.list(s$trendline) && ((s$trendline$forward %||% 0) > 0 || (s$trendline$backward %||% 0) > 0)) {
+            tc <- plot_trend_curve(x_of(s), s$values, s$trendline, shift = if (is_xy || is_date) 0 else 0.5)
+            if (!is.null(tc)) v <- c(v, tc$y)
+          }
           lo <- min(lo, v, na.rm = TRUE)
           hi <- max(hi, v, na.rm = TRUE)
         }
@@ -757,6 +807,10 @@ plot_cartesian <- function(chart, series) {
   if (is_xy) {
     xs <- unlist(lapply(series[!on_x2], x_of))
     if (!length(xs)) xs <- unlist(lapply(series, x_of))
+    # forecast trendlines extend the x axis
+    for (s in series) {
+      if (is.list(s$trendline)) xs <- c(xs, min(xs) - (s$trendline$backward %||% 0), max(xs) + (s$trendline$forward %||% 0))
+    }
     xa <- plot_scale(min(xs, na.rm = TRUE), max(xs, na.rm = TRUE), chart$axis_params$x)
     if (any(on_x2) || !is.null(chart$x2_title$text)) {
       xs2 <- if (any(on_x2)) unlist(lapply(series[on_x2], x_of)) else xs
@@ -782,7 +836,7 @@ plot_cartesian <- function(chart, series) {
     }
     xa <- list(min = 0, max = date_span, major = step, log = NULL)
   } else {
-    xa <- list(min = 0, max = n_slots, major = 1, log = NULL)
+    xa <- list(min = 0, max = if (mid_cat) max(1, n_slots - 1) else n_slots, major = 1, log = NULL)
   }
   px <- chart$axis_params$x
   px2 <- chart$axis_params$x2
@@ -803,17 +857,21 @@ plot_cartesian <- function(chart, series) {
   rot_x <- if (rot_auto) 0 else -px$rotation
   if (is_xy) {
     x_ticks <- plot_ticks(xa)
+    x_lab_at <- x_ticks
     x_labels <- plot_format(x_ticks, px$format)
   } else if (is_date) {
     x_ticks <- seq(0, date_span, by = xa$major)
-    x_labels <- plot_format(from_units(x_ticks), px$format)
+    # tick marks sit between the base units, labels in the middle of them
+    x_lab_at <- x_ticks[x_ticks < date_span] + 0.5
+    x_labels <- plot_format(from_units(x_lab_at - 0.5), px$format)
     # date labels turn upright when they do not fit side by side
     gp_tmp <- plot_gpar_text(px, 10)
     lab_w <- max(vapply(x_labels, function(l) grid::convertWidth(grid::grobWidth(grid::textGrob(l, gp = gp_tmp)), "points", valueOnly = TRUE), numeric(1)))
     avail <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE) / max(1, length(x_ticks))
     if (rot_auto && lab_w + 4 > avail) rot_x <- 90
   } else {
-    x_ticks <- seq_along(cats) - 0.5
+    x_ticks <- seq_along(cats) - if (mid_cat) 1 else 0.5
+    x_lab_at <- x_ticks
     x_labels <- plot_format(cats, px$format)
     x_labels[is.na(cats)] <- ""
   }
@@ -897,6 +955,17 @@ plot_cartesian <- function(chart, series) {
     bottom_h <- bottom_h + outer_levels * (lab_h + 6)
     top_h <- if (is.null(x2)) 4 else text_h(x2_gp) + 8
   }
+  # a data table hangs below the category labels, one row per series and
+  # a column with the legend keys and names to the left of the plot area
+  data_table <- isTRUE(chart$show_data_table) && !is_xy && !horizontal
+  if (data_table) {
+    dt_row_h <- text_h(x_gp) + 6
+    dt_hdr_h <- bottom_h
+    dt_names <- vapply(series, function(s) s$label_text, character(1))
+    dt_name_w <- text_w(dt_names, x_gp) + 20
+    bottom_h <- bottom_h + length(series) * dt_row_h
+    left_w <- max(left_w, dt_name_w)
+  }
   xt_h <- plot_title_height(chart$x_title, 10)
   x2t_h <- if (is.null(x2)) 0 else plot_title_height(chart$x2_title, 10)
   yt_w <- plot_title_height(chart$y_title, 10)
@@ -976,7 +1045,7 @@ plot_cartesian <- function(chart, series) {
   if (!is_xy) {
     if (!isFALSE(px$grid_lines) && !is.null(px$grid_lines)) {
       gp <- plot_grid_gp(px)
-      for (t in if (is_date) x_ticks else 0:length(cats)) {
+      for (t in if (is_date || mid_cat) x_ticks else 0:length(cats)) {
         if (horizontal) grid::grid.lines(x = grid::unit(c(0, 1), "npc"), y = grid::unit(c(t, t), "native"), gp = gp)
         else grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(c(0, 1), "npc"), gp = gp)
       }
@@ -986,7 +1055,7 @@ plot_cartesian <- function(chart, series) {
   }
 
   # ---- series ----
-  order_of <- c(areaChart = 1, barChart = 2, lineChart = 3, scatterChart = 4, bubbleChart = 4)
+  order_of <- c(areaChart = 1, barChart = 2, lineChart = 3, stockChart = 3, scatterChart = 4, bubbleChart = 4)
   bar_groups <- Filter(function(s) s$type == "barChart", series)
   bar_key <- vapply(bar_groups, function(s) paste(s$sec_type %in% c("y", "xy"), s$grouping), character(1))
   labels_pending <- list()
@@ -1012,6 +1081,9 @@ plot_cartesian <- function(chart, series) {
   trend_shift <- if (is_xy || is_date) 0 else 0.5
   trend_labels <- list()
   stack_tops <- list()
+  # points of the line-type series, for high-low lines, drop lines and
+  # up-down bars
+  line_pts <- list()
   for (s in series[order(order_of[vapply(series, function(s) s$type, character(1))])]) {
     sc <- scale_of(s)
     push_scale(s)
@@ -1117,9 +1189,15 @@ plot_cartesian <- function(chart, series) {
           }
           if (horizontal) {
             hj <- c(if (just[2] == "bottom") "left" else if (just[2] == "top") "right" else "center", "center")
-            labels_pending[[length(labels_pending) + 1]] <- list(x = yy, y = centers[i], txt = txt, just = hj, gp = plot_gpar_text(plp$style, 9, "#000000"), dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align)
+            labels_pending[[length(labels_pending) + 1]] <- list(
+              x = yy, y = centers[i], txt = txt, just = hj, gp = plot_gpar_text(plp$style, 9, "#000000"),
+              dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align, key = if (isTRUE(plp$show_legend_key)) col
+            )
           } else {
-            labels_pending[[length(labels_pending) + 1]] <- list(x = centers[i], y = yy, txt = txt, just = just, gp = plot_gpar_text(plp$style, 9, "#000000"), dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align)
+            labels_pending[[length(labels_pending) + 1]] <- list(
+              x = centers[i], y = yy, txt = txt, just = just, gp = plot_gpar_text(plp$style, 9, "#000000"),
+              dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align, key = if (isTRUE(plp$show_legend_key)) col
+            )
           }
         }
       }
@@ -1153,6 +1231,7 @@ plot_cartesian <- function(chart, series) {
                             gp = grid::gpar(fill = plot_auto_color(i, chart$palette), col = NA))
         }
       } else {
+        if (s$type %in% c("lineChart", "stockChart")) line_pts[[length(line_pts) + 1]] <- list(xs = xs, yv = yv, s = s)
         if (!isFALSE(s$line$show)) {
           gp <- grid::gpar(col = col, lwd = (s$line$width %||% 1) * 96 / 72, lty = plot_lty(s$line$type), lineend = "round")
           ok <- is.finite(yv) & is.finite(xs)
@@ -1187,11 +1266,14 @@ plot_cartesian <- function(chart, series) {
           plp <- slp
           for (p in s$point_labels) if (p$idx == i - 1) plp <- if (isTRUE(p$delete)) NULL else utils::modifyList(slp, p[!vapply(p, is.null, logical(1))])
           if (is.null(plp) || !plot_labels_on(plp)) next
-          txt <- plot_label_text(plp, if (is_xy) xs[i] else cats[i], s$values[i], name = s$label_text)
+          txt <- plot_label_text(plp, if (is_xy) xs[i] else cats[i], s$values[i], name = s$label_text, size = s$sizes[i])
           pos <- plp$pos %||% "t"
           just <- switch(pos, b = c("center", "top"), l = c("right", "center"), r = c("left", "center"), ctr = c("center", "center"), c("center", "bottom"))
           off <- switch(pos, b = c(0, -4), l = c(-4, 0), r = c(4, 0), ctr = c(0, 0), c(0, 4))
-          labels_pending[[length(labels_pending) + 1]] <- list(x = xs[i], y = yv[i], txt = txt, just = just, off = off, gp = plot_gpar_text(plp$style, 9, "#000000"), dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align)
+          labels_pending[[length(labels_pending) + 1]] <- list(
+            x = xs[i], y = yv[i], txt = txt, just = just, off = off, gp = plot_gpar_text(plp$style, 9, "#000000"),
+            dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align, key = if (isTRUE(plp$show_legend_key)) col
+          )
         }
       }
       if (is.list(s$trendline)) {
@@ -1208,6 +1290,57 @@ plot_cartesian <- function(chart, series) {
       if (is.null(l$sec)) l$sec <- s$sec_type
       l
     })
+    grid::upViewport()
+  }
+
+  # high-low lines join the highest and lowest series value of a category,
+  # drop lines fall from every point to the category axis, and up-down bars
+  # span the first and the last series (open and close of a stock chart)
+  if (length(line_pts) && (isTRUE(chart$high_low_lines) || isTRUE(chart$drop_lines) || isTRUE(chart$up_down_bars))) {
+    s1 <- line_pts[[1]]$s
+    sc <- scale_of(s1)
+    push_scale(s1)
+    n_pt <- max(vapply(line_pts, function(l) length(l$xs), integer(1)))
+    ys <- do.call(rbind, lapply(line_pts, function(l) {
+      y <- l$yv
+      length(y) <- n_pt
+      y
+    }))
+    xs1 <- line_pts[[1]]$xs
+    length(xs1) <- n_pt
+    lgp <- grid::gpar(col = "#000000", lwd = 0.75 * 96 / 72)
+    if (isTRUE(chart$drop_lines)) {
+      y0 <- tr(max(sc$min, min(0, sc$max)), sc)
+      for (l in line_pts) for (i in seq_along(l$xs)) {
+        if (!is.finite(l$yv[i])) next
+        a <- at(c(l$xs[i], l$xs[i]), c(y0, l$yv[i]))
+        grid::grid.lines(a$x, a$y, default.units = "native", gp = lgp)
+      }
+    }
+    if (isTRUE(chart$high_low_lines)) {
+      for (i in seq_len(n_pt)) {
+        y <- ys[, i]
+        if (sum(is.finite(y)) < 2) next
+        a <- at(c(xs1[i], xs1[i]), range(y, na.rm = TRUE))
+        grid::grid.lines(a$x, a$y, default.units = "native", gp = lgp)
+      }
+    }
+    if (isTRUE(chart$up_down_bars) && length(line_pts) >= 2) {
+      gap <- (s1$gap_width %||% 150) / 100
+      w <- 1 / (1 + gap)
+      y_open <- ys[1, ]
+      y_close <- ys[nrow(ys), ]
+      for (i in seq_len(n_pt)) {
+        if (!is.finite(y_open[i]) || !is.finite(y_close[i])) next
+        up <- y_close[i] >= y_open[i]
+        pt <- if (horizontal) list(x = grid::unit(min(y_open[i], y_close[i]), "native"), y = grid::unit(xs1[i] - w / 2, "native"),
+                                   width = grid::unit(abs(y_close[i] - y_open[i]), "native"), height = grid::unit(w, "native"))
+              else list(x = grid::unit(xs1[i] - w / 2, "native"), y = grid::unit(min(y_open[i], y_close[i]), "native"),
+                        width = grid::unit(w, "native"), height = grid::unit(abs(y_close[i] - y_open[i]), "native"))
+        grid::grid.rect(x = pt$x, y = pt$y, width = pt$width, height = pt$height, just = c("left", "bottom"),
+                        gp = grid::gpar(fill = if (up) "#FFFFFF" else "#404040", col = "#000000", lwd = 0.75 * 96 / 72))
+      }
+    }
     grid::upViewport()
   }
 
@@ -1281,6 +1414,13 @@ plot_cartesian <- function(chart, series) {
     push_scale(list(sec_type = l$sec), clip = FALSE)
     lx <- grid::unit(l$x, "native") + grid::unit(off[1], "points")
     ly <- grid::unit(l$y, "native") + grid::unit(off[2], "points")
+    if (!is.null(l$key)) {
+      # legend key: a square in the series color left of the text
+      tg <- grid::textGrob(l$txt, gp = l$gp %||% label_gp)
+      kx <- lx - grid::grobWidth(tg) * switch(l$just[1], left = 0, right = 1, 0.5) - grid::unit(7, "points")
+      grid::grid.rect(x = kx, y = ly, width = grid::unit(6, "points"), height = grid::unit(6, "points"), gp = grid::gpar(fill = l$key, col = NA))
+      lx <- lx + grid::unit(5, "points")
+    }
     if (!is.null(l$fill)) {
       # label background
       tg <- grid::textGrob(l$txt, gp = l$gp %||% label_gp)
@@ -1341,11 +1481,12 @@ plot_cartesian <- function(chart, series) {
   } else if (horizontal) {
     grid::grid.lines(x = grid::unit(c(x_cross, x_cross), "native"), y = grid::unit(c(0, 1), "npc"), gp = x_line_gp)
     lab_x <- switch(x_label_pos, low = grid::unit(0, "npc"), high = grid::unit(1, "npc"), grid::unit(x_cross, "native"))
-    for (i in seq_along(x_ticks)) {
-      grid::grid.text(x_labels[i], x = lab_x - grid::unit(6, "points"), y = grid::unit(x_ticks[i], "native"), just = c("right", "center"), rot = rot_x, gp = x_gp)
+    for (i in seq_along(x_lab_at)) {
+      grid::grid.text(x_labels[i], x = lab_x - grid::unit(6, "points"), y = grid::unit(x_lab_at[i], "native"),
+                      just = c("right", "center"), rot = rot_x, gp = x_gp)
     }
     if (!is.null(x_major)) {
-      tks <- if (is_xy) tr(x_ticks, xa) else 0:length(cats)
+      tks <- if (is_xy) tr(x_ticks, xa) else if (mid_cat) x_ticks else 0:length(cats)
       if (!is_xy && !is.null(px$tick_mark_skip)) tks <- tks[seq(1, length(tks), by = px$tick_mark_skip)]
       for (t in tks) grid::grid.lines(x = grid::unit(x_cross, "native") + grid::unit(x_major, "points"), y = grid::unit(c(t, t), "native"), gp = x_line_gp)
     }
@@ -1362,11 +1503,12 @@ plot_cartesian <- function(chart, series) {
     lab_y <- switch(x_label_pos, low = grid::unit(0, "npc"), high = grid::unit(1, "npc"), grid::unit(x_cross, "native"))
     just <- if (rot_x > 0) c("right", "top") else if (rot_x < 0) c("left", "top") else c("center", "top")
     gap <- if (rot_x != 0) 10 else 6
-    for (i in seq_along(x_ticks)) {
-      grid::grid.text(x_labels[i], x = grid::unit(tr(x_ticks[i], xa), "native"), y = lab_y - grid::unit(gap, "points"), just = just, rot = rot_x, gp = x_gp)
+    for (i in seq_along(x_lab_at)) {
+      grid::grid.text(x_labels[i], x = grid::unit(tr(x_lab_at[i], xa), "native"), y = lab_y - grid::unit(gap, "points"),
+                      just = just, rot = rot_x, gp = x_gp)
     }
     if (!is.null(x_major)) {
-      tks <- if (is_xy) tr(x_ticks, xa) else if (is_date) x_ticks else 0:n_slots
+      tks <- if (is_xy) tr(x_ticks, xa) else if (is_date || mid_cat) x_ticks else 0:n_slots
       if (!is_xy && !is.null(px$tick_mark_skip)) tks <- tks[seq(1, length(tks), by = px$tick_mark_skip)]
       for (t in tks) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(x_cross, "native") + grid::unit(x_major, "points"), gp = x_line_gp)
     }
@@ -1376,7 +1518,11 @@ plot_cartesian <- function(chart, series) {
     } else if (!is_date) {
       # minor ticks of a category axis sit at the category centers
       x_minor <- tick_ends(px$minor_tick %||% "cross", 3, -1)
-      if (!is.null(x_minor)) for (t in seq_len(n_slots) - 0.5) grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(x_cross, "native") + grid::unit(x_minor, "points"), gp = x_line_gp)
+      if (!is.null(x_minor) && !mid_cat) {
+        for (t in seq_len(n_slots) - 0.5) {
+          grid::grid.lines(x = grid::unit(c(t, t), "native"), y = grid::unit(x_cross, "native") + grid::unit(x_minor, "points"), gp = x_line_gp)
+        }
+      }
     }
     if (is_date && !is.null(px$minor)) {
       x_minor <- tick_ends(px$minor_tick %||% "cross", 2, -1)
@@ -1459,6 +1605,36 @@ plot_cartesian <- function(chart, series) {
   }
   grid::upViewport()
 
+  if (data_table) {
+    grid::pushViewport(grid::viewport(layout.pos.row = 3, layout.pos.col = 1:2))
+    tot_w <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE)
+    tot_h <- grid::convertHeight(grid::unit(1, "npc"), "points", valueOnly = TRUE)
+    plot_w <- tot_w - left_w
+    x_at <- function(t) grid::unit(left_w + t / n_slots * plot_w, "points")
+    y_top <- tot_h - dt_hdr_h
+    y_bottom <- y_top - length(series) * dt_row_h
+    x_left <- grid::unit(left_w - dt_name_w, "points")
+    tgp <- grid::gpar(col = "#D9D9D9", lwd = 0.75 * 96 / 72)
+    for (j in 0:length(series)) {
+      grid::grid.lines(grid::unit.c(x_left, x_at(n_slots)), grid::unit(rep(y_top - j * dt_row_h, 2), "points"), gp = tgp)
+    }
+    for (t in 0:n_slots) grid::grid.lines(grid::unit.c(x_at(t), x_at(t)), grid::unit(c(tot_h, y_bottom), "points"), gp = tgp)
+    grid::grid.lines(grid::unit.c(x_left, x_left), grid::unit(c(y_top, y_bottom), "points"), gp = tgp)
+    for (j in seq_along(series)) {
+      s <- series[[j]]
+      yc <- y_top - (j - 0.5) * dt_row_h
+      grid::grid.rect(x = x_left + grid::unit(8, "points"), y = grid::unit(yc, "points"),
+                      width = grid::unit(6, "points"), height = grid::unit(6, "points"),
+                      gp = grid::gpar(fill = plot_color(s$line$color, "#4472C4"), col = NA))
+      grid::grid.text(s$label_text, x = x_left + grid::unit(15, "points"), y = grid::unit(yc, "points"), just = c("left", "center"), gp = x_gp)
+      for (i in seq_along(s$values)) {
+        if (is.na(s$values[i])) next
+        grid::grid.text(plot_format(s$values[i]), x = x_at(i - 0.5), y = grid::unit(yc, "points"), gp = x_gp)
+      }
+    }
+    grid::upViewport()
+  }
+
   # ---- axis titles ----
   if (!is.null(chart$x_title$text)) {
     if (horizontal) {
@@ -1500,6 +1676,85 @@ plot_cartesian <- function(chart, series) {
 # ---------------------------------------------------------------------------
 
 plot_pie <- function(chart, series) {
+  pal <- chart$palette
+  if (length(series[[1]]$line$color) > 1) pal <- series[[1]]$line$color
+  start <- (chart$first_slice_ang %||% 0) * pi / 180
+  hole <- if (chart$type == "doughnutChart") (chart$hole_size %||% 75) / 100 else 0
+  expl <- (chart$expansion %||% 0) / 100
+  lp <- chart$label_params
+  # a doughnut draws every series as a ring, the first one innermost; a
+  # pie only its first series
+  rings <- if (hole > 0) series else series[1]
+  n_ring <- length(rings)
+
+  grid::pushViewport(grid::viewport(width = grid::unit(1, "snpc"), height = grid::unit(1, "snpc")))
+  r_max <- 0.42 / (1 + expl)
+  ring_w <- r_max * (1 - hole) / n_ring
+  for (k in seq_len(n_ring)) {
+    s <- rings[[k]]
+    v <- abs(s$values)
+    v[is.na(v)] <- 0
+    n <- length(v)
+    cols <- vapply(seq_len(n), function(i) plot_auto_color(i, pal), character(1))
+    for (p in s$points) if (!is.null(p$color) && p$idx + 1 <= n) cols[p$idx + 1] <- plot_color(p$color, cols[p$idx + 1])
+    total <- sum(v)
+    r_in <- r_max * hole + (k - 1) * ring_w
+    r_out <- r_in + ring_w
+    slp <- s$label_params %||% lp
+    a0 <- start
+    for (i in seq_len(n)) {
+      if (total == 0) break
+      sweep <- 2 * pi * v[i] / total
+      a1 <- a0 + sweep
+      ang <- seq(a0, a1, length.out = max(2, ceiling(sweep * 60)))
+      mid <- (a0 + a1) / 2
+      cx <- 0.5 + expl * r_max * sin(mid)
+      cy <- 0.5 + expl * r_max * cos(mid)
+      px <- c(cx + r_out * sin(ang), cx + r_in * sin(rev(ang)))
+      py <- c(cy + r_out * cos(ang), cy + r_in * cos(rev(ang)))
+      grid::grid.polygon(px, py, gp = grid::gpar(fill = cols[i], col = "#FFFFFF", lwd = 1))
+      if (plot_labels_on(slp) && v[i] > 0) {
+        # labels sit in the middle of a ring, in the outer part of a pie
+        # and outside it for the outer end position
+        # pie labels sit towards the rim ("bestFit", written for the outer
+        # end as well) or at half the radius for the center position
+        pos <- slp$pos %||% "bestFit"
+        rr <- if (hole > 0) (r_in + r_out) / 2
+          else if (pos == "ctr") r_out * 0.5
+          else if (pos %in% c("outEnd", "bestFit", "inEnd")) r_out * 0.72
+          else r_out * 0.65
+        just <- c("center", "center")
+        grid::grid.text(plot_label_text(slp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = "\n"),
+                        x = cx + rr * sin(mid), y = cy + rr * cos(mid), just = just, gp = plot_gpar_text(slp$style, 9, "#000000"))
+      }
+      a0 <- a1
+    }
+  }
+  grid::upViewport()
+
+  invisible()
+}
+
+# ---------------------------------------------------------------------------
+# Pie of pie, bar of pie
+# ---------------------------------------------------------------------------
+
+# Points moved to the second plot, as 1-based indices
+plot_of_pie_split <- function(chart, v) {
+  n <- length(v)
+  total <- sum(v)
+  pos <- chart$split_pos
+  switch(chart$split_type %||% "auto",
+    pos = if (is.null(pos)) integer() else seq_len(n)[seq_len(n) > n - pos],
+    val = which(v < (pos %||% 0)),
+    percent = which(v / total * 100 < (pos %||% 0)),
+    cust = intersect(pos + 1, seq_len(n)),
+    # "auto": the last third of the points, rounded up
+    seq_len(n)[seq_len(n) > n - ceiling(n / 3)]
+  )
+}
+
+plot_of_pie <- function(chart, series) {
   s <- series[[1]]
   v <- abs(s$values)
   v[is.na(v)] <- 0
@@ -1508,34 +1763,106 @@ plot_pie <- function(chart, series) {
   if (length(s$line$color) > 1) pal <- s$line$color
   cols <- vapply(seq_len(n), function(i) plot_auto_color(i, pal), character(1))
   total <- sum(v)
-  start <- (chart$first_slice_ang %||% 0) * pi / 180
-  hole <- if (chart$type == "doughnutChart") (chart$hole_size %||% 75) / 100 else 0
-  expl <- (chart$expansion %||% 0) / 100
   lp <- chart$label_params
+  sec <- plot_of_pie_split(chart, v)
+  main <- setdiff(seq_len(n), sec)
+  is_bar <- identical(chart$of_pie_type, "bar")
+  size2 <- (chart$second_pie_size %||% 75) / 100
+  # the gap is three quarters of the second plot's width per 100 percent
+  w2 <- if (is_bar) size2 / 2 else size2
+  gap <- (s$gap_width %||% 100) / 100 * 0.75 * w2
 
-  grid::pushViewport(grid::viewport(width = grid::unit(1, "snpc"), height = grid::unit(1, "snpc")))
-  r_out <- 0.42 / (1 + expl)
-  a0 <- start
-  for (i in seq_len(n)) {
-    if (total == 0) break
-    sweep <- 2 * pi * v[i] / total
-    a1 <- a0 + sweep
-    ang <- seq(a0, a1, length.out = max(2, ceiling(sweep * 60)))
+  w_pt <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE)
+  h_pt <- grid::convertHeight(grid::unit(1, "npc"), "points", valueOnly = TRUE)
+  label_gp <- plot_gpar_text(lp$style, 9, "#000000")
+  # room for the labels next to a bar
+  bar_lab_w <- 0
+  if (is_bar && plot_labels_on(lp)) {
+    widths <- vapply(sec, function(i) {
+      txt <- plot_label_text(lp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text)
+      grid::convertWidth(grid::grobWidth(grid::textGrob(txt, gp = label_gp)), "points", valueOnly = TRUE)
+    }, numeric(1))
+    bar_lab_w <- 8 + max(widths)
+  }
+  # first pie of diameter d, the second plot d * size2 (a bar is half as
+  # wide as high), the group centered
+  d <- min(h_pt, (w_pt - bar_lab_w) / (1 + gap + w2))
+  d2 <- d * size2
+  span <- d * (1 + gap + w2) + bar_lab_w
+  x1 <- (w_pt - span) / 2 + d / 2
+  x2 <- x1 + d / 2 + d * gap + d * w2 / 2
+  cy <- h_pt / 2
+
+  slice <- function(cx, r, a0, a1, col) {
+    ang <- seq(a0, a1, length.out = max(2, ceiling((a1 - a0) * 60)))
+    grid::grid.polygon(grid::unit(c(cx, cx + r * sin(ang)), "points"), grid::unit(c(cy, cy + r * cos(ang)), "points"),
+                       gp = grid::gpar(fill = col, col = "#FFFFFF", lwd = 1))
+  }
+  label <- function(i, x, y, just = c("center", "center")) {
+    if (!plot_labels_on(lp) || v[i] == 0) return()
+    grid::grid.text(plot_label_text(lp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = if (is_bar) "; " else "\n"),
+                    x = grid::unit(x, "points"), y = grid::unit(y, "points"), just = just, gp = label_gp)
+  }
+
+  # first pie: the slice holding the rest faces the second plot, centered
+  # on its right; the remaining points follow clockwise
+  other <- sum(v[sec])
+  r <- d / 2
+  other_sweep <- 2 * pi * other / total
+  a0 <- pi / 2 + other_sweep / 2 + (chart$first_slice_ang %||% 0) * pi / 180
+  for (k in main) {
+    a1 <- a0 + 2 * pi * v[k] / total
+    slice(x1, r, a0, a1, cols[k])
     mid <- (a0 + a1) / 2
-    cx <- 0.5 + expl * r_out * sin(mid)
-    cy <- 0.5 + expl * r_out * cos(mid)
-    px <- c(cx + r_out * sin(ang), cx + hole * r_out * sin(rev(ang)))
-    py <- c(cy + r_out * cos(ang), cy + hole * r_out * cos(rev(ang)))
-    grid::grid.polygon(px, py, gp = grid::gpar(fill = cols[i], col = "#FFFFFF", lwd = 1))
-    if (plot_labels_on(lp) && v[i] > 0) {
-      rr <- r_out * (if (hole > 0) (1 + hole) / 2 else 0.65)
-      grid::grid.text(plot_label_text(lp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = "\n"),
-                      x = cx + rr * sin(mid), y = cy + rr * cos(mid), gp = plot_gpar_text(lp$style, 9, "#000000"))
-    }
+    label(k, x1 + 0.65 * r * sin(mid), cy + 0.65 * r * cos(mid))
     a0 <- a1
   }
-  grid::upViewport()
+  other_arc <- c(a0, a0 + other_sweep)
+  if (other > 0) {
+    slice(x1, r, other_arc[1], other_arc[2], plot_auto_color(n + 1, pal))
+    if (plot_labels_on(lp)) {
+      mid <- mean(other_arc)
+      grid::grid.text(plot_label_text(lp, "Other", other, pct = other / total, name = s$label_text, sep = if (is_bar) "; " else "\n"),
+                      x = grid::unit(x1 + 0.65 * r * sin(mid), "points"), y = grid::unit(cy + 0.65 * r * cos(mid), "points"), gp = label_gp)
+    }
+  }
 
+  # second plot: a bar stacks the points from the top down, a pie starts
+  # them at the right
+  if (is_bar) {
+    bw <- d2 / 2
+    y0 <- cy + d2 / 2
+    for (i in sec) {
+      h <- if (other > 0) d2 * v[i] / other else 0
+      grid::grid.rect(x = grid::unit(x2 - bw / 2, "points"), y = grid::unit(y0 - h, "points"),
+                      width = grid::unit(bw, "points"), height = grid::unit(h, "points"),
+                      just = c("left", "bottom"), gp = grid::gpar(fill = cols[i], col = "#FFFFFF", lwd = 1))
+      label(i, x2 + bw / 2 + 4, y0 - h / 2, just = c("left", "center"))
+      y0 <- y0 - h
+    }
+    top <- c(x2 - bw / 2, cy + d2 / 2)
+    bottom <- c(x2 - bw / 2, cy - d2 / 2)
+  } else {
+    r2 <- d2 / 2
+    b0 <- pi / 2
+    for (i in sec) {
+      b1 <- b0 + if (other > 0) 2 * pi * v[i] / other else 0
+      slice(x2, r2, b0, b1, cols[i])
+      mid <- (b0 + b1) / 2
+      label(i, x2 + 0.65 * r2 * sin(mid), cy + 0.65 * r2 * cos(mid))
+      b0 <- b1
+    }
+    top <- c(x2, cy + r2)
+    bottom <- c(x2, cy - r2)
+  }
+  # series lines from the edges of the rest slice to the second plot
+  if (other > 0) {
+    lgp <- grid::gpar(col = "#404040", lwd = 0.75 * 96 / 72)
+    grid::grid.lines(grid::unit(c(x1 + r * sin(other_arc[1]), top[1]), "points"),
+                     grid::unit(c(cy + r * cos(other_arc[1]), top[2]), "points"), gp = lgp)
+    grid::grid.lines(grid::unit(c(x1 + r * sin(other_arc[2]), bottom[1]), "points"),
+                     grid::unit(c(cy + r * cos(other_arc[2]), bottom[2]), "points"), gp = lgp)
+  }
   invisible()
 }
 
@@ -1612,11 +1939,13 @@ plot_radar <- function(chart, series) {
 #' grid, approximating what a spreadsheet application shows for it.
 #'
 #' Supported are bar/column (clustered, stacked, percent stacked, horizontal),
-#' line, area, scatter, bubble, pie, doughnut and radar charts with titles,
-#' primary and secondary axes, gridlines, legend, markers, line styles, data
-#' labels, trendlines and error bars, and the extended types waterfall,
-#' box-and-whisker, histogram, Pareto, funnel, treemap and sunburst. 3D,
-#' stock, surface, pie-of-pie and region map charts are not drawn.
+#' line, area, scatter, bubble, pie, doughnut, pie of pie, bar of pie, radar
+#' and stock charts with titles, primary and secondary axes, gridlines,
+#' legend, markers, line styles, data labels, trendlines, error bars,
+#' high-low lines, drop lines and up-down bars; the 3D column, bar, line,
+#' area and pie types and surface charts (contour and 3D); and the extended
+#' types waterfall, box-and-whisker, histogram, Pareto, funnel, treemap and
+#' sunburst. Region maps are not drawn.
 #'
 #' @details
 #' The values come from the series caches (present when a series was added
@@ -1677,6 +2006,10 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
 
   draw_body <- function() {
     if (types[1] %in% c("pieChart", "doughnutChart")) plot_pie(chart, series)
+    else if (types[1] == "ofPieChart") plot_of_pie(chart, series)
+    else if (types[1] == "pie3DChart") plot_3d_pie(chart, series)
+    else if (types[1] %in% c("bar3DChart", "line3DChart", "area3DChart")) plot_3d_cartesian(chart, series)
+    else if (types[1] %in% c("surfaceChart", "surface3DChart")) plot_surface(chart, series)
     else if (types[1] == "radarChart") plot_radar(chart, series)
     else plot_cartesian(chart, series)
   }
@@ -1684,17 +2017,25 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   legend <- NULL
   l_pos <- chart$legend_params$pos %||% "r"
   if (l_pos != "none") {
-    entries <- if (types[1] %in% c("pieChart", "doughnutChart")) {
+    entries <- if (types[1] %in% c("surfaceChart", "surface3DChart")) {
+      # one entry per value band, the highest first
+      bands <- plot_surface_bands(chart, unlist(lapply(series, function(s) s$values)), types[1] == "surfaceChart")
+      fmt <- chart$axis_params$y$format
+      lapply(rev(seq_along(bands$cols)), function(i) {
+        list(kind = "rect", label = paste0(plot_format(bands$breaks[i], fmt), "-", plot_format(bands$breaks[i + 1], fmt)), col = bands$cols[i])
+      })
+    } else if (types[1] %in% c("pieChart", "doughnutChart", "ofPieChart", "pie3DChart")) {
       s <- series[[1]]
       pal <- if (length(s$line$color) > 1) s$line$color else chart$palette
-      lapply(seq_along(s$values), function(i) {
+      e <- lapply(seq_along(s$values), function(i) {
         list(kind = "rect", label = plot_format(s$cats[i]), col = plot_auto_color(i, pal))
       })
+      e
     } else {
       entries <- list()
       for (s in series) {
         col <- plot_color(s$line$color, "#4472C4")
-        if (s$type %in% c("lineChart", "scatterChart") || (s$type == "radarChart" && !isTRUE(series[[1]]$filled))) {
+        if (s$type %in% c("lineChart", "scatterChart", "stockChart") || (s$type == "radarChart" && !isTRUE(series[[1]]$filled))) {
           m <- s$marker
           if (s$type == "scatterChart" && (is.null(m$symbol) || m$symbol == "none")) m$symbol <- "circle"
           entries[[length(entries) + 1]] <- list(
@@ -1705,7 +2046,7 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
         } else {
           entries[[length(entries) + 1]] <- list(kind = "rect", label = s$label_text, col = col)
         }
-        if (is.list(s$trendline) && !types[1] %in% c("pieChart", "doughnutChart", "radarChart")) {
+        if (is.list(s$trendline) && !types[1] %in% c(ENCHARTER_PLOT_PIES, "radarChart")) {
           entries[[length(entries) + 1]] <- list(
             kind = "line", label = plot_trend_name(s$trendline, s$label_text),
             col = plot_color(s$trendline$color, col), lwd = 1.5 * 96 / 72, lty = "solid", pch = NA_integer_)
@@ -1727,8 +2068,10 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   }
 
   pad <- 8
-  lw <- if (!is.null(legend) && legend$pos %in% c("l", "r")) legend$size[["w"]] + pad else 0
-  lh <- if (!is.null(legend) && legend$pos %in% c("t", "b")) legend$size[["h"]] + pad else 0
+  # an overlaid legend takes no room from the plot area
+  overlay <- !is.null(legend) && (identical(chart$legend_params$overlay, "1") || isTRUE(chart$legend_params$overlay))
+  lw <- if (!is.null(legend) && !overlay && legend$pos %in% c("l", "r")) legend$size[["w"]] + pad else 0
+  lh <- if (!is.null(legend) && !overlay && legend$pos %in% c("t", "b")) legend$size[["h"]] + pad else 0
   layout <- grid::grid.layout(
     5, 3,
     widths  = grid::unit(c(pad + if (identical(legend$pos, "l")) lw else 0, 1, pad + if (identical(legend$pos, "r")) lw else 0), c("points", "null", "points")),
@@ -1743,7 +2086,7 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
     grid::upViewport(2)
   }
 
-  if (!is.null(chart$plot_layout) && !types[1] %in% c("pieChart", "doughnutChart", "radarChart")) {
+  if (!is.null(chart$plot_layout) && !types[1] %in% c("pieChart", "doughnutChart", "ofPieChart", "pie3DChart", "radarChart")) {
     # the plot area sits at its fixed position within the chart
     ml <- chart$plot_layout
     grid::upViewport()
@@ -1760,14 +2103,21 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   }
 
   if (!is.null(legend)) {
-    row <- switch(legend$pos, t = 2, b = 4, 3)
-    col <- switch(legend$pos, l = 1, r = 3, 1:3)
+    row <- if (overlay) 3 else switch(legend$pos, t = 2, b = 4, 3)
+    col <- if (overlay) 2 else switch(legend$pos, l = 1, r = 3, 1:3)
     grid::pushViewport(grid::viewport(layout.pos.row = row, layout.pos.col = col))
     grid::pushViewport(grid::viewport(
-      x = if (legend$pos == "r") grid::unit(1, "npc") - grid::unit(pad, "points") else if (legend$pos == "l") grid::unit(pad, "points") else grid::unit(0.5, "npc"),
-      y = grid::unit(0.5, "npc"),
-      width = grid::unit(legend$size[["w"]], "points"), height = grid::unit(legend$size[["h"]], "points"),
-      just = if (legend$pos == "r") "right" else if (legend$pos == "l") "left" else "center"))
+      x = if (legend$pos == "r") grid::unit(1, "npc") - grid::unit(pad, "points")
+        else if (legend$pos == "l") grid::unit(pad, "points")
+        else grid::unit(0.5, "npc"),
+      y = if (overlay && legend$pos == "t") grid::unit(1, "npc") - grid::unit(pad, "points")
+        else if (overlay && legend$pos == "b") grid::unit(pad, "points")
+        else grid::unit(0.5, "npc"),
+      just = c(
+        if (legend$pos == "r") "right" else if (legend$pos == "l") "left" else "center",
+        if (overlay && legend$pos == "t") "top" else if (overlay && legend$pos == "b") "bottom" else "center"
+      ),
+      width = grid::unit(legend$size[["w"]], "points"), height = grid::unit(legend$size[["h"]], "points")))
     legend$draw()
     grid::upViewport(2)
   }

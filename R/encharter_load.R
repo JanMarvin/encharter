@@ -624,6 +624,9 @@ load_chart <- function(xml) {
 
     dir       <- attr_or_null(xml_find_first(nd, "./c:barDir"), "val") %||% "col"
     grouping  <- attr_or_null(xml_find_first(nd, "./c:grouping"), "val") %||% "standard"
+    # a 3D bar or area chart with a series axis places its series along
+    # the depth whatever its grouping says
+    if (type %in% c("bar3DChart", "area3DChart") && grouping == "clustered" && length(ids) == 3) grouping <- "standard"
     gap_width <- int_or_null(xml_find_first(nd, "./c:gapWidth"))
     overlap   <- int_or_null(xml_find_first(nd, "./c:overlap"))
     filled    <- identical(attr_or_null(xml_find_first(nd, "./c:radarStyle"), "val"), "filled") ||

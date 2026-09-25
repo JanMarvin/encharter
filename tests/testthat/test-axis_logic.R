@@ -71,6 +71,8 @@ test_that("Chart: scaling", {
   # Check for log scaling
   xml <- as.character(chart$render())
   expect_match(xml, "<c:logBase val=\"10\"/>")
+  # CT_Scaling: logBase comes before orientation
+  expect_match(xml, "<c:scaling><c:logBase val=\"10\"/><c:orientation")
   expect_match(xml, "<c:min val=\"-1\"/>")
 
   # Check for valid XML
