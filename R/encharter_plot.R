@@ -844,7 +844,14 @@ plot_cartesian <- function(chart, series) {
   py2 <- chart$axis_params$y2
 
   # transform for log axes: native coordinates are log-scaled
-  tr <- function(v, sc) if (is.null(sc$log)) v else log(v, sc$log)
+  # values at or below zero have no place on a logarithmic axis
+  tr <- function(v, sc) {
+    if (is.null(sc$log)) return(v)
+    out <- rep(NA_real_, length(v))
+    ok <- !is.na(v) & v > 0
+    out[ok] <- log(v[ok], sc$log)
+    out
+  }
   lim <- function(sc, p = NULL) {
     l <- sort(tr(c(sc$min, sc$max), sc))
     if (isTRUE(p$rev)) rev(l) else l
@@ -1371,33 +1378,6 @@ plot_cartesian <- function(chart, series) {
     grid::upViewport()
   }
 
-  line_series <- Filter(function(s) s$type == "lineChart", series)
-  if (length(line_series) && (isTRUE(chart$drop_lines) || isTRUE(chart$high_low_lines))) {
-    push_scale(line_series[[1]])
-    sc <- scale_of(line_series[[1]])
-    gp <- grid::gpar(col = "#000000", lwd = 0.75 * 96 / 72)
-    xs <- x_of(line_series[[1]])
-    mat <- do.call(rbind, lapply(line_series, function(s) {
-      v <- s$values
-      length(v) <- length(xs)
-      v
-    }))
-    for (i in seq_along(xs)) {
-      col_v <- mat[, i]
-      if (all(is.na(col_v))) next
-      if (isTRUE(chart$drop_lines)) {
-        for (v in col_v[!is.na(col_v)]) {
-          a <- at(c(xs[i], xs[i]), tr(c(max(sc$min, min(0, v)), v), sc))
-          grid::grid.lines(a$x, a$y, default.units = "native", gp = gp)
-        }
-      }
-      if (isTRUE(chart$high_low_lines)) {
-        a <- at(c(xs[i], xs[i]), tr(range(col_v, na.rm = TRUE), sc))
-        grid::grid.lines(a$x, a$y, default.units = "native", gp = gp)
-      }
-    }
-    grid::upViewport()
-  }
 
   for (l in labels_pending) {
     # a data label wraps when it is wider than a fifth of the chart

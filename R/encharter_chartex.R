@@ -704,28 +704,6 @@ ChartEx <- R6::R6Class(
       x
     },
 
-    # Renders grid lines for modern charts
-    render_grid_lines = function(axis_node, type, params) {
-      # type is "majorGridlines" or "minorGridlines"
-      prefix <- if (type == "majorGridlines") "" else "minor_"
-      style_val <- params[[paste0(prefix, "grid_lines")]]
-
-      if (is.null(style_val) || isFALSE(style_val)) return()
-
-      grid_node <- xml_add_child(axis_node, paste0("cx:", type))
-      sp_pr <- xml_add_child(grid_node, "cx:spPr")
-
-      # Use your existing render_color logic from ChartEx
-      width <- params[[paste0(prefix, "grid_width")]] %||% 1
-      color <- params[[paste0(prefix, "grid_color")]] %||% "D9D9D9"
-
-      ln <- xml_add_child(sp_pr, "a:ln", w = as.character(round(width * 12700)))
-      private$render_color_core(xml_add_child(ln, "a:solidFill"), color)
-
-      # Dash type support
-      dash <- switch(as.character(style_val), "dotted" = "dot", "dash" = "dash", NULL)
-      if (!is.null(dash)) xml_add_child(ln, "a:prstDash", val = dash)
-    },
 
     apply_label_style = function(node, s) {
       txPr <- xml_add_child(node, "cx:txPr")

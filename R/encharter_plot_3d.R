@@ -455,7 +455,9 @@ plot_3d_pie <- function(chart, series) {
 plot_surface_bands <- function(chart, z, contour = FALSE) {
   # the axis ends at the major unit above the data; the contour view uses
   # twice the unit of the 3D view
-  sc <- plot_scale(min(z, na.rm = TRUE), max(z, na.rm = TRUE), chart$axis_params$y, pad = FALSE)
+  z <- z[is.finite(z)]
+  if (!length(z)) z <- c(0, 1)
+  sc <- plot_scale(min(z), max(z), chart$axis_params$y, pad = FALSE)
   if (contour && is.null(chart$axis_params$y$major)) {
     sc$major <- sc$major * 2
     if (is.null(chart$axis_params$y$max)) sc$max <- ceiling(sc$max / sc$major - 1e-9) * sc$major

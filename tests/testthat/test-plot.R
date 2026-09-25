@@ -197,7 +197,7 @@ test_that("plot() draws stock, of-pie, 3D and surface charts", {
   expect_gt(file.info(plot_to_png(ec("pie3DChart")$add_series(data = d, name = o, label = k)$set_3d_options(rot_x = 40, h_percent = 60)$set_data_label_style(show_percent = TRUE)))$size, 1000)
   for (type in c("surfaceChart", "surface3DChart")) {
     ch <- ec(type)
-    for (nm in c("o", "h", "l")) ch$add_series(name = paste0("Data!$", toupper(nm), "$1"), data = paste0("Data!$", toupper(nm), "$2:$", toupper(nm), "$5"), label = "Data!$A$2:$A$5", type = type)
+    for (col in c("B", "C", "D")) ch$add_series(name = paste0("Data!$", col, "$1"), data = paste0("Data!$", col, "$2:$", col, "$5"), label = "Data!$A$2:$A$5", type = type)
     expect_gt(file.info(plot_to_png(ch, wb))$size, 1000)
     ch$series_data[[1]]$filled <- TRUE
     expect_gt(file.info(plot_to_png(ch, wb))$size, 1000)
