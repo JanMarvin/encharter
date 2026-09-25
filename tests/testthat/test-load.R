@@ -522,3 +522,14 @@ test_that("bar outlines and axis positions of horizontal bars survive a round tr
   grDevices::dev.off()
   expect_gt(file.info(f)$size, 1000)
 })
+
+test_that("text x values of scatter charts are written as string references", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(k = c("a", "b", "c"), v = c(3, 4, 2)))
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  xml <- ec("scatter")$add_series(name = v, data = d, label = k)$render()
+  expect_match(xml, "<c:xVal><c:strRef><c:f>'Data'!\\$A\\$2:\\$A\\$4</c:f><c:strCache>", fixed = FALSE)
+  expect_false(grepl("<c:numCache><c:ptCount val=\"3\"/><c:pt idx=\"0\"><c:v>a</c:v>", xml))
+  ch <- encharter:::load_chart(xml)
+  expect_equal(ch$series_data[[1]]$cat_cache, c("a", "b", "c"))
+  expect_match(ch$render(), "<c:xVal><c:strRef>", fixed = TRUE)
+})

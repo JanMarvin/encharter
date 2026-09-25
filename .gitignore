@@ -35,7 +35,6 @@ docs/reference/*.html
 *.tar.gz
 
 # Test files
-tests/testthat/_snaps
 tests/testthat/testfiles
 
 # Vignettes

@@ -920,6 +920,7 @@ Chart <- R6::R6Class(
       }
 
       has_axes <- FALSE
+      depth_rows <- FALSE
       for (combo in combos) {
         sub_series <- Filter(function(x) x$type == combo$type && x$sec_type == combo$sec_type, self$series_data)
 
@@ -936,8 +937,12 @@ Chart <- R6::R6Class(
           val_id <- id_prim_val
         }
 
-        # Surface and 3D chart groups reference a third (series) axis
-        ser_ax_id <- if (combo$type %in% c("surfaceChart", "bar3DChart", "line3DChart", "area3DChart", "surface3DChart")) id_ser_ax else NULL
+        # Surface and 3D chart groups reference a third (series) axis; a 3D
+        # bar or area chart only with the standard grouping, which puts the
+        # series into rows along the depth
+        depth_rows <- combo$type %in% c("surfaceChart", "line3DChart", "surface3DChart") ||
+          (combo$type %in% c("bar3DChart", "area3DChart") && identical(sub_series[[1]]$grouping %||% "standard", "standard"))
+        ser_ax_id <- if (depth_rows) id_ser_ax else NULL
 
         private$render_series_node(plot_area, sub_series, combo$type, cat_id, val_id, ser_ax_id)
 
@@ -991,7 +996,7 @@ Chart <- R6::R6Class(
           }
         }
 
-        if (self$type %in% c("surfaceChart", "bar3DChart", "line3DChart", "area3DChart", "surface3DChart")) {
+        if (depth_rows) {
           private$render_ser_ax(plot_area, id_ser_ax, id_prim_val)
         }
       }
@@ -1498,16 +1503,29 @@ Chart <- R6::R6Class(
           if (!is.null(s$label)) {
             x_val_node <- xml_add_child(ser, "c:xVal")
             if (!is.null(s$cat_cache)) {
-              ref_node <- xml_add_child(x_val_node, "c:numRef")
-              xml_add_child(ref_node, "c:f", s$label)
-              private$render_num_cache(ref_node, s$cat_cache)
+              # text x values need a string reference; a number cache with
+              # text in it makes Excel repair the file
+              if (is.character(s$cat_cache) || is.factor(s$cat_cache)) {
+                ref_node <- xml_add_child(x_val_node, "c:strRef")
+                xml_add_child(ref_node, "c:f", s$label)
+                private$render_str_cache(ref_node, s$cat_cache)
+              } else {
+                ref_node <- xml_add_child(x_val_node, "c:numRef")
+                xml_add_child(ref_node, "c:f", s$label)
+                private$render_num_cache(ref_node, s$cat_cache)
+              }
             } else {
               ref_type <- if (grepl("!", s$label)) "c:numRef" else "c:numLit"
               xml_add_child(xml_add_child(x_val_node, ref_type), "c:f", s$label)
             }
           } else if (!is.null(s$cat_cache)) {
             # literal x values next to referenced y values
-            private$render_num_cache(xml_add_child(xml_add_child(ser, "c:xVal"), "c:numLit"), s$cat_cache, lit = TRUE)
+            x_val_node <- xml_add_child(ser, "c:xVal")
+            if (is.character(s$cat_cache) || is.factor(s$cat_cache)) {
+              private$render_str_cache(xml_add_child(x_val_node, "c:strLit"), s$cat_cache, lit = TRUE)
+            } else {
+              private$render_num_cache(xml_add_child(x_val_node, "c:numLit"), s$cat_cache, lit = TRUE)
+            }
           }
 
           y_val_node <- xml_add_child(ser, "c:yVal")
@@ -1702,9 +1720,7 @@ Chart <- R6::R6Class(
                       "bar3DChart", "line3DChart", "area3DChart", "surface3DChart")) {
         xml_add_child(c_node, "c:axId", val = as.character(cat_id))
         xml_add_child(c_node, "c:axId", val = as.character(val_id))
-        if (type %in% c("surfaceChart", "bar3DChart", "line3DChart", "area3DChart", "surface3DChart")) {
-          xml_add_child(c_node, "c:axId", val = as.character(ser_id))
-        }
+        if (!is.null(ser_id)) xml_add_child(c_node, "c:axId", val = as.character(ser_id))
       }
     },
 
@@ -1736,11 +1752,12 @@ Chart <- R6::R6Class(
 
       # 1. Identity and Scaling (EG_AxShared Start)
       xml_add_child(ax, "c:axId", val = id)
+      # CT_Scaling: logBase, orientation, max, min
       scaling <- xml_add_child(ax, "c:scaling")
+      if (!is.null(params$log_base)) xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
       xml_add_child(scaling, "c:orientation", val = ifelse(isTRUE(params$rev), "maxMin", "minMax"))
       if (!is.null(params$max)) xml_add_child(scaling, "c:max", val = format(params$max, scientific = FALSE, digits = 15, trim = TRUE))
       if (!is.null(params$min)) xml_add_child(scaling, "c:min", val = format(params$min, scientific = FALSE, digits = 15, trim = TRUE))
-      if (!is.null(params$log_base)) xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
 
       # 2. Basic Properties
       if (isTRUE(params$delete)) delete <- "1"
@@ -1840,11 +1857,12 @@ Chart <- R6::R6Class(
 
       # 1. Identity and Scaling
       xml_add_child(ax, "c:axId", val = id)
+      # CT_Scaling: logBase, orientation, max, min
       scaling <- xml_add_child(ax, "c:scaling")
+      if (!is.null(params$log_base)) xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
       xml_add_child(scaling, "c:orientation", val = ifelse(isTRUE(params$rev), "maxMin", "minMax"))
       if (!is.null(params$max)) xml_add_child(scaling, "c:max", val = format(params$max, scientific = FALSE, digits = 15, trim = TRUE))
       if (!is.null(params$min)) xml_add_child(scaling, "c:min", val = format(params$min, scientific = FALSE, digits = 15, trim = TRUE))
-      if (!is.null(params$log_base)) xml_add_child(scaling, "c:logBase", val = as.character(params$log_base))
 
       # 2. Delete and Position
       if (isTRUE(params$delete)) delete <- "1"
