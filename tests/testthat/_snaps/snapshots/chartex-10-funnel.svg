@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' data-engine-version='2.0' width='720.00pt' height='576.00pt' viewBox='0 0 720.00 576.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA='>
+    <rect x='0.00' y='0.00' width='720.00' height='576.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 1.00; stroke: #D9D9D9; fill: #FFFFFF;' />
+<text x='360.00' y='25.14' text-anchor='middle' style='font-size: 14.00px; font-family: sans;' textLength='62.27px' lengthAdjust='spacingAndGlyphs'>10 Funnel</text>
+<rect x='339.02' y='41.94' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #2E5F7F;' />
+<text x='356.96' y='49.02' style='font-size: 9.00px; font-family: sans;' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>Count</text>
+<polyline points='70.15,564.04 70.15,63.16 ' style='stroke-width: 1.00;' />
+<rect x='70.15' y='76.96' width='633.91' height='72.59' style='stroke-width: 0.75; stroke: none; fill: #2E5F7F;' />
+<rect x='190.60' y='177.13' width='393.02' height='72.59' style='stroke-width: 0.75; stroke: none; fill: #2E5F7F;' />
+<rect x='279.34' y='277.31' width='215.53' height='72.59' style='stroke-width: 0.75; stroke: none; fill: #2E5F7F;' />
+<rect x='339.56' y='377.48' width='95.09' height='72.59' style='stroke-width: 0.75; stroke: none; fill: #2E5F7F;' />
+<rect x='358.58' y='477.66' width='57.05' height='72.59' style='stroke-width: 0.75; stroke: none; fill: #2E5F7F;' />
+<text x='64.18' y='116.69' text-anchor='end' style='font-size: 10.00px; font-family: sans;' textLength='23.90px' lengthAdjust='spacingAndGlyphs'>Visits</text>
+<text x='64.18' y='216.87' text-anchor='end' style='font-size: 10.00px; font-family: sans;' textLength='36.14px' lengthAdjust='spacingAndGlyphs'>Signups</text>
+<text x='64.18' y='317.04' text-anchor='end' style='font-size: 10.00px; font-family: sans;' textLength='24.44px' lengthAdjust='spacingAndGlyphs'>Trials</text>
+<text x='64.18' y='417.22' text-anchor='end' style='font-size: 10.00px; font-family: sans;' textLength='20.02px' lengthAdjust='spacingAndGlyphs'>Paid</text>
+<text x='64.18' y='517.40' text-anchor='end' style='font-size: 10.00px; font-family: sans;' textLength='42.26px' lengthAdjust='spacingAndGlyphs'>Renewed</text>
+</g>
+</svg>

@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' data-engine-version='2.0' width='720.00pt' height='576.00pt' viewBox='0 0 720.00 576.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA='>
+    <rect x='0.00' y='0.00' width='720.00' height='576.00' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 1.00; stroke: #D9D9D9; fill: #FFFFFF;' />
+<text x='360.00' y='25.14' text-anchor='middle' style='font-size: 14.00px; font-family: sans;' textLength='227.27px' lengthAdjust='spacingAndGlyphs'>14 Log axis reversed, x crosses max</text>
+<polyline points='51.72,40.65 626.18,40.65 ' style='stroke-width: 1.00; stroke: #D9D9D9;' />
+<polyline points='51.72,294.92 626.18,294.92 ' style='stroke-width: 1.00; stroke: #D9D9D9;' />
+<polyline points='51.72,549.19 626.18,549.19 ' style='stroke-width: 1.00; stroke: #D9D9D9;' />
+</g>
+<defs>
+  <clipPath id='cpNTEuNzJ8NjI2LjE4fDQwLjY1fDU0OS4xOQ=='>
+    <rect x='51.72' y='40.65' width='574.46' height='508.55' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpNTEuNzJ8NjI2LjE4fDQwLjY1fDU0OS4xOQ==)'>
+<polyline points='87.62,315.97 159.43,310.35 231.24,326.41 303.05,322.18 374.86,333.64 446.66,331.28 518.47,339.70 590.28,347.51 ' style='stroke-width: 1.00; stroke: #4472C4;' />
+</g>
+<g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
+<polyline points='51.72,549.19 626.18,549.19 ' style='stroke-width: 1.00;' />
+<text x='87.62' y='562.05' text-anchor='middle' style='font-size: 10.00px; font-family: sans;' textLength='16.13px' lengthAdjust='spacingAndGlyphs'>Jan</text>
+<text x='159.43' y='562.05' text-anchor='middle' style='font-size: 10.00px; font-family: sans;' textLength='17.23px' lengthAdjust='spacingAndGlyphs'>Feb</text>
+<text x='231.24' y='562.05' text-anchor='middle' style='font-size: 10.00px; font-family: sans;' textLength='17.23px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='303.05' y='562.05' text-anchor='middle' style='font-size: 10.00px; font-family: sans;' textLength='15.56px' lengthAdjust='spacingAndGlyphs'>Apr</text>
+<text x='374.86' y='562.05' text-anchor='middle' style='font-size: 10.00px; font-family: sans;' textLength='18.90px' lengthAdjust='spacingAndGlyphs'>May</text>
+<text x='446.66' y='562.05' text-anchor='middle' style='font-size: 10.00px; font-family: sans;' textLength='16.13px' lengthAdjust='spacingAndGlyphs'>Jun</text>
+<text x='518.47' y='562.05' text-anchor='middle' style='font-size: 10.00px; font-family: sans;' textLength='12.79px' lengthAdjust='spacingAndGlyphs'>Jul</text>
+<text x='590.28' y='562.05' text-anchor='middle' style='font-size: 10.00px; font-family: sans;' textLength='17.80px' lengthAdjust='spacingAndGlyphs'>Aug</text>
+<polyline points='51.72,553.18 51.72,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='123.53,553.18 123.53,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='195.34,553.18 195.34,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='267.14,553.18 267.14,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='338.95,553.18 338.95,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='410.76,553.18 410.76,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='482.57,553.18 482.57,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='554.37,553.18 554.37,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='626.18,553.18 626.18,545.21 ' style='stroke-width: 1.00;' />
+<polyline points='87.62,552.18 87.62,546.20 ' style='stroke-width: 1.00;' />
+<polyline points='159.43,552.18 159.43,546.20 ' style='stroke-width: 1.00;' />
+<polyline points='231.24,552.18 231.24,546.20 ' style='stroke-width: 1.00;' />
+<polyline points='303.05,552.18 303.05,546.20 ' style='stroke-width: 1.00;' />
+<polyline points='374.86,552.18 374.86,546.20 ' style='stroke-width: 1.00;' />
+<polyline points='446.66,552.18 446.66,546.20 ' style='stroke-width: 1.00;' />
+<polyline points='518.47,552.18 518.47,546.20 ' style='stroke-width: 1.00;' />
+<polyline points='590.28,552.18 590.28,546.20 ' style='stroke-width: 1.00;' />
+<polyline points='51.72,549.19 51.72,40.65 ' style='stroke-width: 1.00;' />
+<polyline points='47.74,40.65 55.71,40.65 ' style='stroke-width: 1.00;' />
+<text x='45.74' y='44.09' text-anchor='end' style='font-size: 10.00px; font-family: sans;' textLength='16.69px' lengthAdjust='spacingAndGlyphs'>100</text>
+<polyline points='47.74,294.92 55.71,294.92 ' style='stroke-width: 1.00;' />
+<text x='45.74' y='298.36' text-anchor='end' style='font-size: 10.00px; font-family: sans;' textLength='22.25px' lengthAdjust='spacingAndGlyphs'>1000</text>
+<polyline points='47.74,549.19 55.71,549.19 ' style='stroke-width: 1.00;' />
+<text x='45.74' y='552.63' text-anchor='end' style='font-size: 10.00px; font-family: sans;' textLength='27.81px' lengthAdjust='spacingAndGlyphs'>10000</text>
+<polyline points='49.73,117.19 53.71,117.19 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,161.97 53.71,161.97 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,193.73 53.71,193.73 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,218.38 53.71,218.38 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,238.51 53.71,238.51 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,255.53 53.71,255.53 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,270.28 53.71,270.28 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,283.29 53.71,283.29 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,371.46 53.71,371.46 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,416.24 53.71,416.24 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,448.01 53.71,448.01 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,472.65 53.71,472.65 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,492.78 53.71,492.78 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,509.81 53.71,509.81 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,524.55 53.71,524.55 ' style='stroke-width: 1.00;' />
+<polyline points='49.73,537.56 53.71,537.56 ' style='stroke-width: 1.00;' />
+<polyline points='652.09,300.35 666.03,300.35 ' style='stroke-width: 1.00; stroke: #4472C4;' />
+<text x='670.02' y='303.45' style='font-size: 9.00px; font-family: sans;' textLength='36.03px' lengthAdjust='spacingAndGlyphs'>Revenue</text>
+</g>
+</svg>
