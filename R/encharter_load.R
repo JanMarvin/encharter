@@ -5,7 +5,7 @@ is_missing <- function(x) {
 attr_or_null <- function(node, attr) {
   if (is_missing(node)) return(NULL)
   val <- xml_attr(node, attr)
-  if (nzchar(val)) val else NULL
+  if (nzchar(val)) xml_unescape(val) else NULL
 }
 
 num_or_null <- function(node, attr = "val") {
@@ -78,10 +78,13 @@ load_sp_pr <- function(sppr) {
   out <- list(fill = NULL, line = NULL, line_width = 1)
   if (is_missing(sppr)) return(out)
   out$fill <- load_color(xml_find_first(sppr, "./a:solidFill"))
+  if (!is_missing(xml_find_first(sppr, "./a:noFill"))) out$fill <- "none"
   ln <- load_line_style(sppr)
   if (isTRUE(ln$show) && !is.null(ln$color)) {
     out$line <- ln$color
     out$line_width <- ln$width %||% 1
+  } else if (!isTRUE(ln$show) && !is_missing(xml_find_first(sppr, "./a:ln"))) {
+    out$line <- "none"
   }
   out
 }
@@ -96,12 +99,16 @@ load_text_style <- function(node) {
   rot  <- num_or_null(body, "rot")
   latin <- xml_find_first(rpr, "./a:latin")
   list(
-    font_size  = if (is.null(sz) || sz == 1000) NULL else sz / 100,
+    font_size  = if (is.null(sz)) NULL else sz / 100,
     font_name  = attr_or_null(latin, "typeface"),
     bold       = if (identical(attr_or_null(rpr, "b"), "1")) TRUE else NULL,
     italic     = if (identical(attr_or_null(rpr, "i"), "1")) TRUE else NULL,
     font_color = load_color(xml_find_first(rpr, "./a:solidFill")),
-    rotation   = if (is.null(rot)) NULL else rot / 60000
+    rotation   = if (is.null(rot)) NULL else rot / 60000,
+    align      = attr_or_null(xml_find_first(txpr, "./a:p/a:pPr"), "algn"),
+    # insets and anchoring of the text box, kept as written
+    body_pr    = Filter(Negate(is.null), sapply(c("lIns", "tIns", "rIns", "bIns", "wrap", "anchor", "anchorCtr"), function(a) attr_or_null(body, a), simplify = FALSE)),
+    auto_fit   = if (is_missing(xml_find_first(body, "./a:spAutoFit"))) NULL else TRUE
   )
 }
 
@@ -244,7 +251,12 @@ load_axis <- function(ax, defaults) {
     rev      = if (identical(attr_or_null(xml_find_first(scaling, "./c:orientation"), "val"), "maxMin")) TRUE else NULL,
     max      = num_or_null(xml_find_first(scaling, "./c:max")),
     min      = num_or_null(xml_find_first(scaling, "./c:min")),
-    log_base = num_or_null(xml_find_first(scaling, "./c:logBase"))
+    log_base = num_or_null(xml_find_first(scaling, "./c:logBase")),
+    # a deleted axis is kept in the file but not drawn
+    delete   = if (identical(attr_or_null(xml_find_first(ax, "./c:delete"), "val"), "1")) TRUE else NULL,
+    # auto = 0 on a category axis keeps date categories as text
+    auto     = if (identical(attr_or_null(xml_find_first(ax, "./c:auto"), "val"), "0")) FALSE else NULL,
+    label_offset = int_or_null(xml_find_first(ax, "./c:lblOffset"))
   )
 
   for (which in c("major", "minor")) {
@@ -302,13 +314,15 @@ load_axis <- function(ax, defaults) {
 # Inverse of the c:dLbls block written in render_series_node()
 load_label_params <- function(dlbls, type) {
   flag <- function(name) identical(attr_or_null(xml_find_first(dlbls, name), "val"), "1")
-  pos <- attr_or_null(xml_find_first(dlbls, "./c:dLblPos"), "val") %||% "t"
-  if (type == "barChart") {
+  # without a position the default of the chart type applies; it is filled
+  # in once the grouping is known
+  pos <- attr_or_null(xml_find_first(dlbls, "./c:dLblPos"), "val")
+  if (type == "barChart" && !is.null(pos)) {
     if (pos == "outEnd") pos <- "t"
     if (pos == "inBase") pos <- "b"
   }
   ts <- load_text_style(dlbls)
-  style <- if (is.null(ts)) list() else ts[c("font_size", "font_name", "bold", "italic", "font_color")]
+  style <- if (is.null(ts)) list() else ts[c("font_size", "font_name", "bold", "italic", "font_color", "align", "body_pr", "auto_fit")]
   list(
     show_val         = flag("./c:showVal"),
     show_cat         = flag("./c:showCatName"),
@@ -318,6 +332,10 @@ load_label_params <- function(dlbls, type) {
     show_bubble_size = flag("./c:showBubbleSize"),
     pos    = pos,
     format = attr_or_null(xml_find_first(dlbls, "./c:numFmt"), "formatCode"),
+    sep    = if (is_missing(xml_find_first(dlbls, "./c:separator"))) NULL else xml_text(xml_find_first(dlbls, "./c:separator")),
+    fill   = load_color(xml_find_first(dlbls, "./c:spPr/a:solidFill")),
+    leader_lines = flag_or_null(xml_find_first(dlbls, "./c:extLst/c:ext/c15:showLeaderLines"), "val") %||%
+      flag_or_null(xml_find_first(dlbls, "./c:showLeaderLines"), "val"),
     style  = style
   )
 }
@@ -338,9 +356,13 @@ load_series <- function(ser, type, chart) {
   color <- "4472C4"
   line <- list(color = color, width = 1, type = NULL, show = TRUE)
   sppr <- xml_find_first(ser, "./c:spPr")
+  border <- NULL
   if (type %in% c("barChart", "areaChart", "bubbleChart", "bar3DChart", "area3DChart")) {
     fill <- load_color(xml_find_first(sppr, "./a:solidFill"))
     if (!is.null(fill)) line$color <- fill
+    # the outline of bars and areas
+    ls <- load_line_style(sppr)
+    if (isTRUE(ls$show) && !is.null(ls$color)) border <- list(color = ls$color, width = ls$width %||% 0.75)
   } else if (type %in% c("lineChart", "scatterChart", "stockChart", "line3DChart")) {
     ls <- load_line_style(sppr)
     line$show <- ls$show
@@ -414,7 +436,67 @@ load_series <- function(ser, type, chart) {
   }
 
   smooth <- identical(attr_or_null(xml_find_first(ser, "./c:smooth"), "val"), "1")
-  invert <- identical(attr_or_null(xml_find_first(ser, "./c:invertIfNegative"), "val"), "1")
+  # a missing element counts as TRUE, which is how Excel draws it
+  invert <- !identical(attr_or_null(xml_find_first(ser, "./c:invertIfNegative"), "val"), "0")
+  if (!type %in% c("barChart", "bar3DChart")) invert <- FALSE
+  # per-point formatting: the fill of single points, "none" when invisible
+  points <- list()
+  for (dpt in xml_find_all(ser, "./c:dPt")) {
+    idx <- as.integer(xml_attr(xml_find_first(dpt, "./c:idx"), "val"))
+    sppr <- xml_find_first(dpt, "./c:spPr")
+    fill <- if (is_missing(sppr)) NULL else load_color(xml_find_first(sppr, "./a:solidFill"))
+    if (is.null(fill) && !is_missing(sppr) && !is_missing(xml_find_first(sppr, "./a:noFill"))) fill <- "none"
+    pt_border <- NULL
+    if (!is_missing(sppr)) {
+      ls <- load_line_style(sppr)
+      if (isTRUE(ls$show) && !is.null(ls$color)) pt_border <- list(color = ls$color, width = ls$width %||% 0.75)
+      else if (!isTRUE(ls$show) && !is_missing(xml_find_first(sppr, "./a:ln"))) pt_border <- "none"
+    }
+    pt_marker <- NULL
+    mk <- xml_find_first(dpt, "./c:marker")
+    if (!is_missing(mk)) {
+      m_sppr <- xml_find_first(mk, "./c:spPr")
+      pt_marker <- list(
+        symbol = attr_or_null(xml_find_first(mk, "./c:symbol"), "val"),
+        size   = int_or_null(xml_find_first(mk, "./c:size")),
+        fill   = if (is_missing(m_sppr)) NULL else load_color(xml_find_first(m_sppr, "./a:solidFill"))
+      )
+    }
+    if (is.null(fill) && is.null(pt_marker) && is.null(pt_border)) next
+    points[[length(points) + 1]] <- list(idx = idx, color = fill, border = pt_border, marker = pt_marker)
+  }
+
+  # label settings of this series, when they differ from the chart's, and
+  # the labels of single points
+  dlbls <- xml_find_first(ser, "./c:dLbls")
+  label_params <- if (is_missing(dlbls)) NULL else load_label_params(dlbls, type)
+  point_labels <- list()
+  if (!is_missing(dlbls)) {
+    for (dl in xml_find_all(dlbls, "./c:dLbl")) {
+      idx <- as.integer(xml_attr(xml_find_first(dl, "./c:idx"), "val"))
+      if (identical(attr_or_null(xml_find_first(dl, "./c:delete"), "val"), "1")) {
+        point_labels[[length(point_labels) + 1]] <- list(idx = idx, delete = TRUE)
+        next
+      }
+      pl <- load_label_params(dl, type)
+      # a point without its own position takes the series' one
+      if (is_missing(xml_find_first(dl, "./c:dLblPos"))) pl["pos"] <- list(NULL)
+      # a manual offset from the default position, as fractions of the chart
+      ml <- xml_find_first(dl, "./c:layout/c:manualLayout")
+      if (!is_missing(ml)) {
+        pl$dx <- num_or_null(xml_find_first(ml, "./c:x")) %||% 0
+        pl$dy <- num_or_null(xml_find_first(ml, "./c:y")) %||% 0
+      }
+      point_labels[[length(point_labels) + 1]] <- c(list(idx = idx, delete = FALSE), pl)
+    }
+  }
+  if (!is.null(label_params) && identical(label_params, chart$label_params)) label_params <- NULL
+  # a series without labels of its own stays without labels when the chart's
+  # settings would show some
+  if (is_missing(dlbls) && plot_labels_on(chart$label_params)) {
+    label_params <- list(show_val = FALSE, show_cat = FALSE, show_legend_key = FALSE, show_ser_name = FALSE,
+                         show_percent = FALSE, show_bubble_size = FALSE, pos = "t", format = NULL, style = list())
+  }
 
   list(
     name       = name,
@@ -437,10 +519,14 @@ load_series <- function(ser, type, chart) {
     trendline  = trendline,
     invert_if_negative = invert,
     line       = line,
+    border     = border,
     marker     = marker,
-    show_val   = chart$label_params$show_val,
-    show_cat   = chart$label_params$show_cat,
-    label_pos  = chart$label_params$pos
+    show_val   = (label_params %||% chart$label_params)$show_val,
+    show_cat   = (label_params %||% chart$label_params)$show_cat,
+    label_pos  = (label_params %||% chart$label_params)$pos,
+    label_params = label_params,
+    points       = points,
+    point_labels = point_labels
   )
 }
 
@@ -457,6 +543,8 @@ load_chart <- function(xml) {
   chart_root <- xml_find_first(doc, "/c:chartSpace/c:chart")
 
   chart$chart_style <- load_sp_pr(xml_find_first(doc, "/c:chartSpace/c:spPr"))
+  ts <- load_text_style(xml_find_first(doc, "/c:chartSpace"))
+  chart$text_style  <- if (is.null(ts)) list() else Filter(Negate(is.null), ts[c("font_size", "font_name", "bold", "italic", "font_color", "body_pr")])
   chart$plot_style  <- load_sp_pr(xml_find_first(plot_area, "./c:spPr"))
   chart$chart_title <- load_title(xml_find_first(chart_root, "./c:title"), default_sz = 1400)
 
@@ -506,6 +594,17 @@ load_chart <- function(xml) {
 
   dba <- attr_or_null(xml_find_first(chart_root, "./c:dispBlanksAs"), "val")
   if (!is.null(dba)) chart$disp_blanks_as <- dba
+
+  # fixed plot area position (edge mode only; offsets from the automatic
+  # position are not kept)
+  ml <- xml_find_first(plot_area, "./c:layout/c:manualLayout")
+  if (!is_missing(ml)) {
+    pos <- lapply(c(x = "x", y = "y", w = "w", h = "h"), function(nm) num_or_null(xml_find_first(ml, paste0("./c:", nm))))
+    modes <- c(attr_or_null(xml_find_first(ml, "./c:xMode"), "val"), attr_or_null(xml_find_first(ml, "./c:yMode"), "val"))
+    if (!any(vapply(pos, is.null, logical(1))) && all(modes == "edge") && length(modes) == 2) {
+      chart$plot_layout <- c(pos, list(target = attr_or_null(xml_find_first(ml, "./c:layoutTarget"), "val") %||% "outer"))
+    }
+  }
 
   dlbls_all <- xml_find_all(plot_area, ".//c:ser/c:dLbls")
   if (length(dlbls_all)) {
@@ -581,7 +680,26 @@ load_chart <- function(xml) {
       s$gap_width <- gap_width
       s$overlap   <- overlap
       s$filled    <- filled
+      # default label position: centered for stacked bars and areas, at the
+      # outer end of clustered bars, to the right of line and scatter points
+      default_pos <- if (type == "barChart" && grouping %in% c("stacked", "percentStacked")) "ctr"
+        else if (type == "barChart") "t"
+        else if (type %in% c("lineChart", "scatterChart", "bubbleChart")) "r"
+        else "ctr"
+      if (!is.null(s$label_params) && is.null(s$label_params$pos)) s$label_params$pos <- default_pos
+      if (is.null(s$label_pos)) s$label_pos <- default_pos
       series_list[[length(series_list) + 1]] <- s
+    }
+  }
+  if (!is.null(chart$label_params) && is.null(chart$label_params$pos)) {
+    chart$label_params$pos <- series_list[[1]]$label_pos %||% "t"
+    for (i in seq_along(series_list)) {
+      s <- series_list[[i]]
+      if (is.null(s$label_params) && !identical(s$label_pos, chart$label_params$pos)) {
+        s$label_params <- chart$label_params
+        s$label_params$pos <- s$label_pos
+        series_list[[i]] <- s
+      }
     }
   }
   chart$series_data <- series_list
@@ -694,7 +812,7 @@ load_chartex <- function(xml, wb, chart_idx) {
       pos     = attr_or_null(legend, "pos") %||% "t",
       align   = attr_or_null(legend, "align") %||% "ctr",
       overlay = attr_or_null(legend, "overlay") %||% "0",
-      style   = if (is.null(ts)) list() else ts[c("font_size", "font_name", "bold", "italic", "font_color")]
+      style   = if (is.null(ts)) list() else ts[c("font_size", "font_name", "bold", "italic", "font_color", "align", "body_pr", "auto_fit")]
     )
   }
 

@@ -346,3 +346,179 @@ test_that("a template written by Excel loads", {
   expect_match(xml, "<c:lineChart>", fixed = TRUE)
   expect_match(xml, '<a:prstDash val="dash"/>', fixed = TRUE)
 })
+
+test_that("deleted axes and per-series labels load and render", {
+  xml <- paste0(
+    '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" ',
+    'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:chart><c:plotArea><c:layout/>',
+    '<c:barChart><c:barDir val="col"/><c:grouping val="clustered"/><c:varyColors val="0"/>',
+    '<c:ser><c:idx val="0"/><c:order val="0"/><c:val><c:numLit><c:ptCount val="2"/><c:pt idx="0"><c:v>1</c:v></c:pt><c:pt idx="1"><c:v>2</c:v></c:pt></c:numLit></c:val></c:ser>',
+    '<c:ser><c:idx val="1"/><c:order val="1"/><c:dLbls><c:showLegendKey val="0"/><c:showVal val="1"/><c:showCatName val="0"/><c:showSerName val="0"/><c:showPercent val="0"/><c:showBubbleSize val="0"/></c:dLbls>',
+    '<c:val><c:numLit><c:ptCount val="2"/><c:pt idx="0"><c:v>3</c:v></c:pt><c:pt idx="1"><c:v>4</c:v></c:pt></c:numLit></c:val></c:ser>',
+    '<c:axId val="1"/><c:axId val="2"/></c:barChart>',
+    '<c:catAx><c:axId val="1"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:crossAx val="2"/></c:catAx>',
+    '<c:valAx><c:axId val="2"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="1"/><c:axPos val="l"/><c:crossAx val="1"/></c:valAx>',
+    "</c:plotArea></c:chart></c:chartSpace>"
+  )
+  chart <- encharter:::load_chart(xml)
+  expect_true(chart$axis_params$y$delete)
+  expect_null(chart$axis_params$x$delete)
+  expect_null(chart$axis_params$x$auto)
+  expect_match(chart$render(), '<c:auto val="1"/>', fixed = TRUE)
+  chart2 <- encharter:::load_chart(sub('<c:axPos val="b"/>', '<c:axPos val="b"/><c:auto val="0"/>', xml, fixed = TRUE))
+  expect_false(chart2$axis_params$x$auto)
+  expect_match(chart2$render(), '<c:auto val="0"/>', fixed = TRUE)
+  expect_false(chart$series_data[[1]]$label_params$show_val)
+  expect_true(chart$label_params$show_val)
+  expect_null(chart$series_data[[2]]$label_params)
+  out <- chart$render()
+  expect_match(out, '<c:valAx><c:axId val="60812428"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="1"/>', fixed = TRUE)
+  expect_equal(lengths(regmatches(out, gregexpr('<c:showVal val="1"/>', out))), 1)
+  f <- tempfile(fileext = ".png")
+  grDevices::png(f, 400, 300)
+  plot(chart)
+  grDevices::dev.off()
+  expect_gt(file.info(f)$size, 1000)
+})
+
+test_that("per-point formatting, labels and the plot area layout round trip", {
+  xml <- paste0(
+    '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" ',
+    'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:chart><c:plotArea>',
+    '<c:layout><c:manualLayout><c:layoutTarget val="inner"/><c:xMode val="edge"/><c:yMode val="edge"/>',
+    '<c:x val="0.1"/><c:y val="0.2"/><c:w val="0.8"/><c:h val="0.6"/></c:manualLayout></c:layout>',
+    '<c:barChart><c:barDir val="col"/><c:grouping val="clustered"/><c:varyColors val="0"/>',
+    '<c:ser><c:idx val="0"/><c:order val="0"/><c:spPr><a:solidFill><a:srgbClr val="30384D"/></a:solidFill></c:spPr>',
+    '<c:invertIfNegative val="0"/>',
+    '<c:dPt><c:idx val="1"/><c:invertIfNegative val="0"/><c:bubble3D val="0"/><c:spPr><a:solidFill><a:srgbClr val="B0B0B0"/></a:solidFill></c:spPr></c:dPt>',
+    '<c:dPt><c:idx val="2"/><c:invertIfNegative val="0"/><c:bubble3D val="0"/><c:spPr><a:noFill/></c:spPr></c:dPt>',
+    '<c:dLbls><c:dLbl><c:idx val="0"/><c:delete val="1"/></c:dLbl>',
+    '<c:dLbl><c:idx val="2"/><c:layout><c:manualLayout><c:x val="-0.05"/><c:y val="0"/></c:manualLayout></c:layout>',
+    '<c:showLegendKey val="0"/><c:showVal val="0"/><c:showCatName val="0"/><c:showSerName val="1"/><c:showPercent val="0"/><c:showBubbleSize val="0"/></c:dLbl>',
+    '<c:numFmt formatCode="\\+#,##0;\\-#,##0;" sourceLinked="0"/><c:showLegendKey val="0"/><c:showVal val="1"/><c:showCatName val="0"/>',
+    '<c:showSerName val="0"/><c:showPercent val="0"/><c:showBubbleSize val="0"/><c:separator> </c:separator></c:dLbls>',
+    '<c:val><c:numLit><c:ptCount val="3"/><c:pt idx="0"><c:v>5</c:v></c:pt><c:pt idx="1"><c:v>-3</c:v></c:pt><c:pt idx="2"><c:v>2</c:v></c:pt></c:numLit></c:val></c:ser>',
+    '<c:axId val="1"/><c:axId val="2"/></c:barChart>',
+    '<c:catAx><c:axId val="1"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:crossAx val="2"/></c:catAx>',
+    '<c:valAx><c:axId val="2"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:crossAx val="1"/></c:valAx>',
+    "</c:plotArea></c:chart></c:chartSpace>"
+  )
+  chart <- encharter:::load_chart(xml)
+  s <- chart$series_data[[1]]
+  expect_false(s$invert_if_negative)
+  expect_equal(chart$plot_layout, list(x = 0.1, y = 0.2, w = 0.8, h = 0.6, target = "inner"))
+  expect_equal(lapply(s$points, `[[`, "color"), list("B0B0B0", "none"))
+  expect_true(s$point_labels[[1]]$delete)
+  expect_true(s$point_labels[[2]]$show_ser_name)
+  expect_equal(s$point_labels[[2]]$dx, -0.05)
+  expect_equal(chart$label_params$format, "\\+#,##0;\\-#,##0;")
+  expect_equal(chart$label_params$sep, " ")
+  out <- chart$render()
+  expect_match(out, '<c:invertIfNegative val="0"/>', fixed = TRUE)
+  expect_match(out, '<c:dPt><c:idx val="2"/><c:invertIfNegative val="0"/><c:bubble3D val="0"/><c:spPr><a:noFill/></c:spPr></c:dPt>', fixed = TRUE)
+  expect_match(out, '<c:dLbl><c:idx val="0"/><c:delete val="1"/></c:dLbl>', fixed = TRUE)
+  expect_match(out, '<c:dLbl><c:idx val="2"/><c:layout><c:manualLayout><c:x val="-0.05"/><c:y val="0"/></c:manualLayout></c:layout>', fixed = TRUE)
+  expect_match(out, '<c:layoutTarget val="inner"/><c:xMode val="edge"/><c:yMode val="edge"/><c:x val="0.1"/>', fixed = TRUE)
+  expect_match(out, "<c:separator> </c:separator>", fixed = TRUE)
+  expect_equal(plot_format(c(5, -3, 0), "\\+#,##0;\\-#,##0;"), c("+5", "-3", ""))
+  expect_equal(plot_format(1119.29, "#,##0.00\\ \"€\""), "1,119.29 €")
+  expect_equal(plot_format(0.094, "\\+#,##0.0%;\\-#,##0.0%"), "+9.4%")
+  f <- tempfile(fileext = ".png")
+  grDevices::png(f, 400, 300)
+  plot(chart)
+  grDevices::dev.off()
+  expect_gt(file.info(f)$size, 1000)
+})
+
+test_that("chart text defaults, label alignment, leader lines and literal categories survive a round trip", {
+  xml <- paste0(
+    '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">',
+    '<c:chart><c:autoTitleDeleted val="1"/><c:plotArea><c:layout/>',
+    '<c:barChart><c:barDir val="col"/><c:grouping val="clustered"/><c:varyColors val="0"/>',
+    '<c:ser><c:idx val="0"/><c:order val="0"/>',
+    '<c:dLbls><c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr algn="l"><a:defRPr/></a:pPr></a:p></c:txPr>',
+    '<c:showLegendKey val="0"/><c:showVal val="1"/><c:showCatName val="0"/><c:showSerName val="0"/><c:showPercent val="0"/><c:showBubbleSize val="0"/>',
+    '<c:showLeaderLines val="0"/><c:extLst><c:ext uri="{CE6537A1-D6FC-4f65-9D91-7224C49458BB}" xmlns:c15="http://schemas.microsoft.com/office/drawing/2012/chart">',
+    '<c15:showLeaderLines val="0"/></c:ext></c:extLst></c:dLbls>',
+    '<c:cat><c:strLit><c:ptCount val="2"/><c:pt idx="0"><c:v>a</c:v></c:pt><c:pt idx="1"><c:v>b</c:v></c:pt></c:strLit></c:cat>',
+    '<c:val><c:numRef><c:f>Sheet1!$B$2:$B$3</c:f><c:numCache><c:formatCode>General</c:formatCode><c:ptCount val="2"/>',
+    '<c:pt idx="0"><c:v>5</c:v></c:pt><c:pt idx="1"><c:v>3</c:v></c:pt></c:numCache></c:numRef></c:val></c:ser>',
+    '<c:axId val="1"/><c:axId val="2"/></c:barChart>',
+    '<c:catAx><c:axId val="1"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:crossAx val="2"/>',
+    '<c:txPr><a:bodyPr wrap="square" lIns="38100" tIns="19050" rIns="38100" bIns="19050" anchor="ctr"><a:spAutoFit/></a:bodyPr><a:lstStyle/><a:p><a:pPr><a:defRPr/></a:pPr></a:p></c:txPr>',
+    '<c:lblOffset val="800"/></c:catAx>',
+    '<c:valAx><c:axId val="2"/><c:scaling><c:orientation val="minMax"/><c:max val="800000"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:crossAx val="1"/></c:valAx>',
+    "</c:plotArea></c:chart>",
+    "<c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr>",
+    '<c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="800"><a:solidFill><a:srgbClr val="404040"/></a:solidFill><a:latin typeface="Arial"/></a:defRPr></a:pPr></a:p></c:txPr>',
+    "</c:chartSpace>"
+  )
+  chart <- encharter:::load_chart(xml)
+  expect_equal(chart$text_style[c("font_size", "font_name", "font_color")], list(font_size = 8, font_name = "Arial", font_color = "404040"))
+  expect_equal(chart$chart_style$fill, "none")
+  expect_equal(chart$chart_style$line, "none")
+  expect_equal(chart$label_params$style$align, "l")
+  expect_false(chart$label_params$leader_lines)
+  expect_null(chart$axis_params$x$font_size)
+  expect_equal(chart$series_data[[1]]$cat_cache, c("a", "b"))
+  out <- chart$render()
+  expect_match(out, "</c:chart><c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr><c:txPr>", fixed = TRUE)
+  expect_match(out, '<a:defRPr sz="800"><a:solidFill><a:srgbClr val="404040"/></a:solidFill><a:latin typeface="Arial"/></a:defRPr>', fixed = TRUE)
+  expect_match(out, '<a:pPr algn="l"><a:defRPr>', fixed = TRUE)
+  expect_match(out, '<c:showLeaderLines val="0"/><c:extLst><c:ext uri="{CE6537A1-D6FC-4f65-9D91-7224C49458BB}"', fixed = TRUE)
+  expect_match(out, '<c15:showLeaderLines val="0"/>', fixed = TRUE)
+  expect_match(out, '<c:cat><c:strLit><c:ptCount val="2"/><c:pt idx="0"><c:v>a</c:v></c:pt>', fixed = TRUE)
+  # text without its own size takes the chart default
+  expect_false(grepl('<c:catAx>.*sz="1000"', out))
+  expect_equal(chart$axis_params$x$label_offset, 800L)
+  expect_match(out, '<c:lblOffset val="800"/>', fixed = TRUE)
+  expect_match(out, '<a:bodyPr lIns="38100" tIns="19050" rIns="38100" bIns="19050" wrap="square" anchor="ctr"><a:spAutoFit/></a:bodyPr>', fixed = TRUE)
+  expect_match(out, "</c:spPr><c:txPr><a:bodyPr/><a:lstStyle/>", fixed = TRUE)
+  expect_match(out, '<c:max val="800000"/>', fixed = TRUE)
+  f <- tempfile(fileext = ".png")
+  grDevices::png(f, 400, 300)
+  plot(chart)
+  grDevices::dev.off()
+  expect_gt(file.info(f)$size, 1000)
+})
+
+test_that("bar outlines and axis positions of horizontal bars survive a round trip", {
+  xml <- paste0(
+    '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">',
+    '<c:chart><c:autoTitleDeleted val="1"/><c:plotArea><c:layout/>',
+    '<c:barChart><c:barDir val="bar"/><c:grouping val="percentStacked"/><c:varyColors val="0"/>',
+    '<c:ser><c:idx val="0"/><c:order val="0"/>',
+    '<c:spPr><a:solidFill><a:srgbClr val="747C8F"/></a:solidFill><a:ln w="12700"><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill></a:ln></c:spPr>',
+    '<c:invertIfNegative val="0"/>',
+    '<c:dPt><c:idx val="1"/><c:invertIfNegative val="0"/><c:bubble3D val="0"/><c:spPr><a:noFill/><a:ln w="12700"><a:noFill/></a:ln></c:spPr></c:dPt>',
+    '<c:val><c:numLit><c:ptCount val="2"/><c:pt idx="0"><c:v>5</c:v></c:pt><c:pt idx="1"><c:v>3</c:v></c:pt></c:numLit></c:val></c:ser>',
+    '<c:overlap val="100"/><c:axId val="1"/><c:axId val="2"/></c:barChart>',
+    '<c:catAx><c:axId val="1"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="l"/>',
+    '<c:spPr><a:ln w="9525"><a:solidFill><a:srgbClr val="404040"/></a:solidFill></a:ln></c:spPr><c:crossAx val="2"/></c:catAx>',
+    '<c:valAx><c:axId val="2"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:crossAx val="1"/></c:valAx>',
+    "</c:plotArea></c:chart></c:chartSpace>"
+  )
+  chart <- encharter:::load_chart(xml)
+  s <- chart$series_data[[1]]
+  expect_equal(s$border, list(color = "FFFFFF", width = 1))
+  expect_equal(s$points[[1]]$border, "none")
+  expect_equal(chart$axis_params$x$line_width, 0.75)
+  out <- chart$render()
+  expect_match(out, '<a:srgbClr val="747C8F"/></a:solidFill><a:ln w="12700"><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill></a:ln></c:spPr>', fixed = TRUE)
+  expect_match(out, '<c:dPt><c:idx val="1"/><c:invertIfNegative val="0"/><c:bubble3D val="0"/><c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr></c:dPt>', fixed = TRUE)
+  expect_match(out, '<c:catAx>.*<c:axPos val="l"/>.*<a:ln w="9525">.*<c:valAx>.*<c:axPos val="b"/>')
+  # a template made from it hands outline, direction and grouping to new series
+  tmp <- tempfile(fileext = ".crtx")
+  ec_to_crtx(chart, tmp)
+  tpl <- ec_from_crtx(tmp)
+  tpl$add_series(name = "Sheet1!$A$1", data = "Sheet1!$A$2:$A$3")
+  expect_equal(tpl$series_data[[1]]$border, list(color = "FFFFFF", width = 1))
+  expect_equal(tpl$series_data[[1]]$dir, "bar")
+  expect_equal(tpl$series_data[[1]]$grouping, "percentStacked")
+  expect_equal(tpl$series_data[[1]]$overlap, 100)
+  f <- tempfile(fileext = ".png")
+  grDevices::png(f, 400, 300)
+  plot(chart)
+  grDevices::dev.off()
+  expect_gt(file.info(f)$size, 1000)
+})
