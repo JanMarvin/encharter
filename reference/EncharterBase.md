@@ -57,7 +57,8 @@ instead.
 - `label_params`:
 
   Named list of global data label defaults: `show_val`, `show_cat`,
-  `show_legend_key` (logicals), `pos` (character), `style` (list).
+  `show_legend_key`, `leader_lines` (logicals), `pos`, `sep`, `fill`
+  (character), `style` (list).
 
 - `legend_params`:
 

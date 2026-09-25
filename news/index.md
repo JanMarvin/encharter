@@ -2,6 +2,12 @@
 
 ## encharter 0.12 (development)
 
+### Bug fixes
+
+- Bar series are written with `<c:invertIfNegative val="0"/>` unless
+  `invert_if_negative = TRUE`. Without the element, negative bars
+  appeared inverted (white with an outline) in Excel.
+
 ### New features
 
 - [`encharter_load()`](https://janmarvin.github.io/encharter/reference/encharter_load.md)
@@ -24,6 +30,29 @@
   read one into a `Chart` whose `$add_series()` picks up the template’s
   series styling, and `$apply_crtx()` copies a template’s styling onto
   an existing chart.
+
+- Loading keeps more of what a file says: deleted axes, per-series data
+  label settings, labels and formatting of single points (`c:dLbl`,
+  `c:dPt`, including manual label offsets), and a fixed plot area
+  position (`c:manualLayout`). `render()` writes all of these back.
+
+- Text properties round-trip more faithfully: a chart-level default text
+  style (`c:chartSpace/c:txPr`, new field `$text_style`) is loaded,
+  written and used by
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) for text
+  without its own; the paragraph alignment of data labels (`align`),
+  leader line settings (`leader_lines`), explicit “no fill” and “no
+  line” of the chart and plot area (`"none"`), and literal categories
+  next to referenced values are kept, as are text box insets and
+  anchoring and the category axis label offset (`label_offset`). Text
+  without an explicit size no longer gets `sz="1000"` written, so it
+  inherits the chart default. Axis bounds, units and cached values are
+  written without scientific notation. Outlines of bars, areas and
+  single points (`border`) and the line width of category axes are kept,
+  and horizontal bar charts get their axes positioned left and bottom.
+  Templates hand bar direction, grouping, overlap, gap width, outlines
+  and label settings of their series to series added later, and
+  `$apply_crtx()` copies the chart text defaults.
 
 - [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
   `Chart` and `ChartEx` objects draw the chart with grid, following what

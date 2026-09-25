@@ -243,6 +243,16 @@ Run all of them in one session with `run_all_examples()` (defined in
   List of series styles from a chart template; see
   [`encharter_from_crtx()`](https://janmarvin.github.io/encharter/reference/encharter_crtx.md).
 
+- `plot_layout`:
+
+  Fixed position of the plot area as fractions of the chart (`x`, `y`,
+  `w`, `h`, `target`), or `NULL` for automatic layout.
+
+- `text_style`:
+
+  Default text properties of the chart (`font_size`, `font_name`,
+  `font_color`, `bold`, `italic`), used by text without its own.
+
 ## Methods
 
 ### Public methods
