@@ -17,58 +17,58 @@ reference_standard <- function() {
 
   charts <- list(
     ec("area")$set_chart_title("01 Stacked area")$
-      add_series(name = A, data = wd, label = Month, grouping = "stacked")$
-      add_series(name = B, data = wd, label = Month, grouping = "stacked", color = "70AD47"),
+      add_series(name = "A", data = wd, label = "Month", grouping = "stacked")$
+      add_series(name = "B", data = wd, label = "Month", grouping = "stacked", color = "70AD47"),
     ec("area")$set_chart_title("02 Stacked area, negatives")$
-      add_series(name = N, data = wd, label = Month, grouping = "stacked")$
-      add_series(name = M, data = wd, label = Month, grouping = "stacked", color = "70AD47"),
+      add_series(name = "N", data = wd, label = "Month", grouping = "stacked")$
+      add_series(name = "M", data = wd, label = "Month", grouping = "stacked", color = "70AD47"),
     ec("line")$set_chart_title("03 Log axis, poly trend")$
-      add_series(name = A, data = wd, label = Month, trendline = list(type = "poly", order = 3, color = "000000", forward = 1))$
+      add_series(name = "A", data = wd, label = "Month", trendline = list(type = "poly", order = 3, color = "000000", forward = 1))$
       set_y_axis(log_base = 10, min = 1),
     ec("line")$set_chart_title("04 Date axis, auto major")$
-      add_series(name = A, data = wd, label = D, marker = "circle")$
+      add_series(name = "A", data = wd, label = D, marker = "circle")$
       set_x_axis(format = "dd.mm.yyyy", base_time = "days"),
     ec("line")$set_chart_title("05 Date axis, stacked %")$
-      add_series(name = A, data = wd, label = D, grouping = "percentStacked")$
-      add_series(name = B, data = wd, label = D, grouping = "percentStacked", color = "ED7D31")$
+      add_series(name = "A", data = wd, label = D, grouping = "percentStacked")$
+      add_series(name = "B", data = wd, label = D, grouping = "percentStacked", color = "ED7D31")$
       set_x_axis(format = "dd.mm.yyyy", base_time = "days")$set_legend_style(pos = "t"),
     ec("bar")$set_chart_title("06 100% stacked bars, reversed")$
-      add_series(name = A, data = wd, label = Month, grouping = "percentStacked")$
-      add_series(name = B, data = wd, label = Month, grouping = "percentStacked", color = "A5A5A5")$
+      add_series(name = "A", data = wd, label = "Month", grouping = "percentStacked")$
+      add_series(name = "B", data = wd, label = "Month", grouping = "percentStacked", color = "A5A5A5")$
       set_x_axis(rev = TRUE)$set_y_axis(grid_lines = "dash", major_tick = "out"),
     ec("bar")$set_chart_title("07 Stacked %, negatives")$
-      add_series(name = N, data = wd, label = Month, grouping = "percentStacked")$
-      add_series(name = M, data = wd, label = Month, grouping = "percentStacked", color = "A5A5A5"),
+      add_series(name = "N", data = wd, label = "Month", grouping = "percentStacked")$
+      add_series(name = "M", data = wd, label = "Month", grouping = "percentStacked", color = "A5A5A5"),
     ec("scatter")$set_chart_title("08 Scatter smooth, secondary x")$
-      add_series(name = A, data = wd, label = B, marker = "diamond", show_line = FALSE, color = "C00000")$
-      add_series(name = B, data = wd, label = A, secondary = "x", smooth = TRUE, marker = "square", color = "7030A0")$
+      add_series(name = "A", data = wd, label = "B", marker = "diamond", show_line = FALSE, color = "C00000")$
+      add_series(name = "B", data = wd, label = "A", secondary = "x", smooth = TRUE, marker = "square", color = "7030A0")$
       set_x_title("B")$set_x2_title("A (top)"),
     ec("radar")$set_chart_title("09 Radar")$
-      add_series(name = A, data = wd, label = Month, marker = "circle")$
-      add_series(name = B, data = wd, label = Month, color = "ED7D31", filled = TRUE),
+      add_series(name = "A", data = wd, label = "Month", marker = "circle")$
+      add_series(name = "B", data = wd, label = "Month", color = "ED7D31", filled = TRUE),
     ec("bar")$set_chart_title("10 Negative bars, labels low")$
-      add_series(name = N, data = wd, label = Month)$
-      add_series(name = M, data = wd, label = Month, color = "ED7D31")$
+      add_series(name = "N", data = wd, label = "Month")$
+      add_series(name = "M", data = wd, label = "Month", color = "ED7D31")$
       set_x_axis(label_pos = "low", rotation = -45)$set_data_label_style(show_val = TRUE),
     ec("bar")$set_chart_title("11 Horizontal stacked, negatives")$
-      add_series(name = N, data = wd, label = Month, dir = "bar", grouping = "stacked")$
-      add_series(name = M, data = wd, label = Month, dir = "bar", grouping = "stacked", color = "ED7D31"),
+      add_series(name = "N", data = wd, label = "Month", dir = "bar", grouping = "stacked")$
+      add_series(name = "M", data = wd, label = "Month", dir = "bar", grouping = "stacked", color = "ED7D31"),
     ec("line")$set_chart_title("12 Smooth + markers + trends")$
-      add_series(name = N, data = wd, label = Month, smooth = TRUE, marker = "circle", trendline = list(type = "linear"))$
-      add_series(name = M, data = wd, label = Month, color = "ED7D31", trendline = list(type = "movingAvg", period = 3)),
+      add_series(name = "N", data = wd, label = "Month", smooth = TRUE, marker = "circle", trendline = list(type = "linear"))$
+      add_series(name = "M", data = wd, label = "Month", color = "ED7D31", trendline = list(type = "movingAvg", period = 3)),
     ec("bar")$set_chart_title("13 Combo, secondary y")$
-      add_series(name = A, data = wd, label = Month, gap_width = 80, overlap = -10)$
-      add_series(name = B, data = wd, label = Month, type = "line", secondary = TRUE, color = "ED7D31",
+      add_series(name = "A", data = wd, label = "Month", gap_width = 80, overlap = -10)$
+      add_series(name = "B", data = wd, label = "Month", type = "line", secondary = TRUE, color = "ED7D31",
                  line_type = "dashed", line_width = 2.5, marker = "diamond",
                  error_bars = list(type = "percentage", value = 10))$
       set_y2_title("B")$set_legend_style(pos = "b")$set_data_label_style(show_val = TRUE),
     ec("pie")$set_chart_title("14 Pie")$set_pie_options(rotation = 45, expansion = 10)$
       set_data_label_style(show_percent = TRUE, show_cat = TRUE, show_val = FALSE)$
-      add_series(name = A, data = wd, label = Month, color = c("C00000", "4472C4", "70AD47", "FFC000", "7030A0", "00B0F0", "A5A5A5", "5B9BD5")),
+      add_series(name = "A", data = wd, label = "Month", color = c("C00000", "4472C4", "70AD47", "FFC000", "7030A0", "00B0F0", "A5A5A5", "5B9BD5")),
     ec("doughnut")$set_chart_title("15 Doughnut")$set_pie_options(hole_size = 50, rotation = 90)$
-      add_series(name = A, data = wd, label = Month)$set_legend_style(pos = "b"),
+      add_series(name = "A", data = wd, label = "Month")$set_legend_style(pos = "b"),
     ec("bubble")$set_chart_title("16 Bubble")$set_bubble_options(scale = 60)$
-      add_series(name = A, data = wd, label = B, weight = A)
+      add_series(name = "A", data = wd, label = "B", weight = "A")
   )
   list(wb = wb, charts = charts)
 }
@@ -190,18 +190,18 @@ reference_threed <- function() {
 
   hlc <- function(title) {
     ch <- ec("stockChart")$set_chart_title(title)
-    ch$add_series(data = st, label = Date, name = High, show_line = FALSE)
-    ch$add_series(data = st, label = Date, name = Low, show_line = FALSE)
-    ch$add_series(data = st, label = Date, name = Close, show_line = FALSE, marker = "dash", marker_size = 7)
+    ch$add_series(data = st, label = "Date", name = "High", show_line = FALSE)
+    ch$add_series(data = st, label = "Date", name = "Low", show_line = FALSE)
+    ch$add_series(data = st, label = "Date", name = "Close", show_line = FALSE, marker = "dash", marker_size = 7)
     ch$set_x_axis(base_time = "days")
     ch
   }
   ohlc <- function(title) {
     ch <- ec("stockChart")$set_chart_title(title)
-    ch$add_series(data = st, label = Date, name = Open, show_line = FALSE)
-    ch$add_series(data = st, label = Date, name = High, show_line = FALSE)
-    ch$add_series(data = st, label = Date, name = Low, show_line = FALSE)
-    ch$add_series(data = st, label = Date, name = Close, show_line = FALSE)
+    ch$add_series(data = st, label = "Date", name = "Open", show_line = FALSE)
+    ch$add_series(data = st, label = "Date", name = "High", show_line = FALSE)
+    ch$add_series(data = st, label = "Date", name = "Low", show_line = FALSE)
+    ch$add_series(data = st, label = "Date", name = "Close", show_line = FALSE)
     ch$set_x_axis(base_time = "days")
     ch
   }
@@ -224,43 +224,43 @@ reference_threed <- function() {
       ch
     },
     hlc("03 Stock HLC, nothing on"),
-    ec("pieOfPie")$add_series(name = Sales, data = reg, label = Region)$
+    ec("pieOfPie")$add_series(name = "Sales", data = reg, label = "Region")$
       set_of_pie_options(split_type = "pos", split_pos = 4, second_size = 65)$
       set_chart_title("04 Pie of pie, pos 4, size 65")$set_data_label_style(show_val = FALSE, show_percent = TRUE, format = "0.0%")$set_legend_style(pos = "b"),
-    ec("pieOfPie")$add_series(name = Sales, data = reg, label = Region)$
+    ec("pieOfPie")$add_series(name = "Sales", data = reg, label = "Region")$
       set_of_pie_options(split_type = "val", split_pos = 10000)$
       set_chart_title("05 Pie of pie, val < 10000, defaults")$set_legend_style(pos = "b"),
-    ec("barOfPie")$add_series(name = Sales, data = reg, label = Region)$
+    ec("barOfPie")$add_series(name = "Sales", data = reg, label = "Region")$
       set_of_pie_options(split_type = "percent", split_pos = 10)$
       set_chart_title("06 Bar of pie, percent < 10")$set_data_label_style(show_val = TRUE, show_cat = TRUE)$set_legend_style(pos = "b"),
-    ec("barOfPie")$add_series(name = Sales, data = reg, label = Region)$
+    ec("barOfPie")$add_series(name = "Sales", data = reg, label = "Region")$
       set_of_pie_options(split_type = "cust", split_pos = c(1, 3, 5, 7), second_size = 100)$
       set_chart_title("07 Bar of pie, custom 1,3,5,7, size 100")$set_legend_style(pos = "r"),
-    ec("bar3DChart")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31")$
+    ec("bar3DChart")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31")$
       set_chart_title("08 3D column, clustered, defaults"),
-    ec("bar3DChart")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4", grouping = "standard")$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31", grouping = "standard")$
-      add_series(name = Cost, data = mon, label = Month, color = "A5A5A5", grouping = "standard")$
+    ec("bar3DChart")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4", grouping = "standard")$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31", grouping = "standard")$
+      add_series(name = "Cost", data = mon, label = "Month", color = "A5A5A5", grouping = "standard")$
       set_chart_title("09 3D column, standard (series in depth)"),
-    ec("bar3DChart")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4", grouping = "stacked", dir = "bar")$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31", grouping = "stacked", dir = "bar")$
+    ec("bar3DChart")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4", grouping = "stacked", dir = "bar")$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31", grouping = "stacked", dir = "bar")$
       set_3d_options(rot_x = 20, rot_y = 30, right_angle_axes = FALSE, perspective = 30)$
       set_chart_title("10 3D bar, stacked, rot 20/30, perspective 30"),
-    ec("bar3DChart")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4", gap_width = 80)$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31", gap_width = 80)$
+    ec("bar3DChart")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4", gap_width = 80)$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31", gap_width = 80)$
       set_3d_options(shape = "cylinder", gap_depth = 50)$
       set_chart_title("11 3D column, cylinder, gap 80/50")$set_data_label_style(show_val = TRUE),
-    ec("line3DChart")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31")$
+    ec("line3DChart")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31")$
       set_chart_title("12 3D line, defaults"),
-    ec("area3DChart")$add_series(name = Revenue, data = mon, label = Month, color = "5B9BD5")$
-      add_series(name = Target, data = mon, label = Month, color = "FFC000")$
+    ec("area3DChart")$add_series(name = "Revenue", data = mon, label = "Month", color = "5B9BD5")$
+      add_series(name = "Target", data = mon, label = "Month", color = "FFC000")$
       set_chart_title("13 3D area, defaults"),
-    ec("pie3DChart")$add_series(name = Sales, data = reg, label = Region)$
+    ec("pie3DChart")$add_series(name = "Sales", data = reg, label = "Region")$
       set_3d_options(rot_x = 40, h_percent = 60)$
       set_chart_title("14 3D pie, rot_x 40, h 60")$set_data_label_style(show_val = FALSE, show_percent = TRUE)$set_legend_style(pos = "r"),
-    ec("pie3DChart")$add_series(name = Sales, data = reg, label = Region)$
+    ec("pie3DChart")$add_series(name = "Sales", data = reg, label = "Region")$
       set_chart_title("15 3D pie, defaults")$set_legend_style(pos = "b"),
     surf("surfaceChart", "16 Surface (contour)"),
     surf("surface3DChart", "17 Surface 3D, defaults"),
@@ -270,11 +270,11 @@ reference_threed <- function() {
       ch$set_3d_options(rot_x = 30, rot_y = 60)
       ch
     },
-    ec("area3DChart")$add_series(name = Revenue, data = mon, label = Month, color = "5B9BD5", grouping = "stacked")$
-      add_series(name = Target, data = mon, label = Month, color = "FFC000", grouping = "stacked")$
+    ec("area3DChart")$add_series(name = "Revenue", data = mon, label = "Month", color = "5B9BD5", grouping = "stacked")$
+      add_series(name = "Target", data = mon, label = "Month", color = "FFC000", grouping = "stacked")$
       set_chart_title("19 3D area, stacked, rot 10/10")$set_3d_options(rot_x = 10, rot_y = 10),
-    ec("bar3DChart")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4", grouping = "percentStacked")$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31", grouping = "percentStacked")$
+    ec("bar3DChart")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4", grouping = "percentStacked")$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31", grouping = "percentStacked")$
       set_3d_options(shape = "pyramid")$set_chart_title("20 3D column, percent stacked, pyramid")
   )
   list(wb = wb, charts = charts)
@@ -290,53 +290,53 @@ reference_options <- function() {
   bub <- openxlsx2::wb_data(wb, sheet = "Data", dims = "F1:H6")
 
   charts <- list(
-    ec("line")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4", marker = "circle")$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31")$
+    ec("line")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4", marker = "circle")$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31")$
       set_y_axis(cross_between = "midCat", grid_lines = TRUE)$set_x_axis(major_tick = "out")$
       set_chart_title("01 Line, axis crosses midCat"),
-    ec("area")$add_series(name = Revenue, data = mon, label = Month, color = "5B9BD5")$
+    ec("area")$add_series(name = "Revenue", data = mon, label = "Month", color = "5B9BD5")$
       set_y_axis(cross_between = "midCat")$set_chart_title("02 Area, midCat"),
-    ec("bar")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31")$
+    ec("bar")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31")$
       set_chart_title("03 Data table")$set_legend_style(pos = "none")$set_data_table(TRUE),
-    ec("line")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
-      add_series(name = Cost, data = mon, label = Month, color = "A5A5A5")$
+    ec("line")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
+      add_series(name = "Cost", data = mon, label = "Month", color = "A5A5A5")$
       set_chart_title("04 Data table with legend")$set_legend_style(pos = "b")$set_data_table(TRUE),
-    ec("bar")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
+    ec("bar")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
       set_data_label_style(show_val = TRUE, show_legend_key = TRUE, pos = "outEnd")$
       set_chart_title("05 Labels with legend key")$set_legend_style(pos = "b"),
-    ec("bubble")$add_series(name = Y, data = bub, label = X, weight = Size, color = "4472C4")$
+    ec("bubble")$add_series(name = "Y", data = bub, label = "X", weight = "Size", color = "4472C4")$
       set_data_label_style(show_val = FALSE, show_bubble_size = TRUE)$
       set_chart_title("06 Bubble size labels"),
-    ec("scatter")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4", marker = "circle", show_line = FALSE,
+    ec("scatter")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4", marker = "circle", show_line = FALSE,
                              trendline = list(type = "linear", intercept = 1000, show_eq = TRUE, forward = 2))$
       set_chart_title("07 Trend, intercept 1000, forward 2"),
-    ec("line")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4",
+    ec("line")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4",
                           trendline = list(type = "poly", order = 3, show_eq = TRUE, show_r2 = TRUE))$
-      add_series(name = Cost, data = mon, label = Month, color = "A5A5A5", trendline = list(type = "exp", intercept = 800))$
+      add_series(name = "Cost", data = mon, label = "Month", color = "A5A5A5", trendline = list(type = "exp", intercept = 800))$
       set_chart_title("08 Poly 3 and exp trend"),
-    ec("bar")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
-      add_series(name = Target, data = mon, label = Month, color = "ED7D31")$
+    ec("bar")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
+      add_series(name = "Target", data = mon, label = "Month", color = "ED7D31")$
       set_legend_style(pos = "r", overlay = TRUE)$set_chart_title("09 Legend overlay right"),
-    ec("line")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
+    ec("line")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
       set_legend_style(pos = "t", overlay = TRUE)$set_chart_title("10 Legend overlay top"),
-    ec("bar")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4",
+    ec("bar")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4",
                          error_bars = list(type = "stdErr", direction = "both"))$
-      add_series(name = Cost, data = mon, label = Month, color = "A5A5A5", error_bars = list(type = "percentage", value = 10, direction = "minus", color = "FF0000"))$
+      add_series(name = "Cost", data = mon, label = "Month", color = "A5A5A5", error_bars = list(type = "percentage", value = 10, direction = "minus", color = "FF0000"))$
       set_chart_title("11 Error bars stdErr, percent minus"),
-    ec("line")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4", marker = "diamond", marker_size = 9, line_type = "dash", line_width = 2.5)$
-      add_series(name = Target, data = mon, label = Month, color = "70AD47", marker = "triangle", marker_size = 7, line_type = "sysDot", smooth = TRUE)$
-      add_series(name = Cost, data = mon, label = Month, color = "7030A0", marker = "x", marker_size = 8, line_type = "lgDashDot")$
+    ec("line")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4", marker = "diamond", marker_size = 9, line_type = "dash", line_width = 2.5)$
+      add_series(name = "Target", data = mon, label = "Month", color = "70AD47", marker = "triangle", marker_size = 7, line_type = "sysDot", smooth = TRUE)$
+      add_series(name = "Cost", data = mon, label = "Month", color = "7030A0", marker = "x", marker_size = 8, line_type = "lgDashDot")$
       set_chart_title("12 Line types, markers, smooth"),
-    ec("bar")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
+    ec("bar")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
       set_y_axis(disp_units = "thousands", format = "0.0", min = 0, max = 2000, major = 250, minor = 50, minor_tick = "out", minor_grid_lines = TRUE, log_base = NULL)$
       set_x_axis(label_pos = "high", rotation = -30)$set_chart_title("13 Display units, minor grid, labels high"),
-    ec("line")$add_series(name = Revenue, data = mon, label = Month, color = "4472C4")$
+    ec("line")$add_series(name = "Revenue", data = mon, label = "Month", color = "4472C4")$
       set_y_axis(log_base = 10, min = 100, max = 10000, rev = TRUE)$set_x_axis(crosses = "max")$
       set_chart_title("14 Log axis reversed, x crosses max"),
-    ec("pie")$add_series(name = Revenue, data = mon, label = Month)$set_pie_options(rotation = 90, expansion = 10)$
+    ec("pie")$add_series(name = "Revenue", data = mon, label = "Month")$set_pie_options(rotation = 90, expansion = 10)$
       set_data_label_style(show_percent = TRUE, show_cat = TRUE, pos = "outEnd")$set_chart_title("15 Pie, angle 90, explosion 10, outEnd"),
-    ec("doughnut")$add_series(name = Revenue, data = mon, label = Month)$add_series(name = Target, data = mon, label = Month)$
+    ec("doughnut")$add_series(name = "Revenue", data = mon, label = "Month")$add_series(name = "Target", data = mon, label = "Month")$
       set_pie_options(hole_size = 40)$set_chart_title("16 Doughnut, two rings, hole 40")$set_legend_style(pos = "r")
   )
   list(wb = wb, charts = charts)

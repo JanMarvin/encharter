@@ -506,7 +506,7 @@ plot_trend_curve <- function(x, y, tl, shift = 0) {
   new <- data.frame(x = xs)
   # a set intercept is taken out of the values before the fit
   b0 <- tl$intercept
-  k <- min(tl$order %||% 2, length(x) - 1)
+  k <- min(tl$order %||% 2, length(x) - 1) # nolint
   fit <- switch(type,
     linear = if (is.null(b0)) stats::predict(stats::lm(y ~ x), new)
       else b0 + stats::predict(stats::lm(I(y - b0) ~ x - 1), new),
