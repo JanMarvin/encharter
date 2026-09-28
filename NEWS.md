@@ -2,6 +2,13 @@
 
 ## Bug fixes
 
+* Radar series are written with their color (line color, or the fill of a
+  filled radar); before, Excel used its automatic colors for them.
+
+* Loaded series without a color of their own take the theme accents in
+  turn, as the application colors them, instead of all becoming blue;
+  `plot()` does the same for series without a color.
+
 * `c:logBase` is written first within `c:scaling`, as the schema requires.
   A logarithmic axis produced a chart that Excel removed on opening.
 

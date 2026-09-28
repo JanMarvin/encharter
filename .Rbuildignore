@@ -23,5 +23,4 @@ codecov.yml
 vignettes/img/worksheet_styling.jpg
 
 # Test files
-^tests/testthat/_snaps$
 ^tests/testthat/testfiles$

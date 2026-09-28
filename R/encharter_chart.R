@@ -1251,6 +1251,12 @@ Chart <- R6::R6Class(
             } else {
               private$render_line_style(sp, s$line)
             }
+          } else if (type == "radarChart") {
+            # a filled radar takes the color as area fill, a standard one as line
+            if (isTRUE(s$filled)) {
+              private$render_color_core(xml_add_child(sp, "a:solidFill"), s$line$color %||% "auto")
+            }
+            private$render_line_style(sp, s$line)
           }
         }
 

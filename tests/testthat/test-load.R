@@ -533,3 +533,41 @@ test_that("text x values of scatter charts are written as string references", {
   expect_equal(ch$series_data[[1]]$cat_cache, c("a", "b", "c"))
   expect_match(ch$render(), "<c:xVal><c:strRef>", fixed = TRUE)
 })
+
+test_that("radar series carry their colors through render and load", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(k = c("a", "b", "c"), v = c(3, 4, 2), w = c(5, 6, 4)))
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("radar")$add_series(name = v, data = d, label = k, color = "4472C4", marker = "circle")$
+    add_series(name = w, data = d, label = k, color = "ED7D31", line_width = 2)
+  xml <- ch$render()
+  expect_match(xml, '<c:spPr><a:ln w="25400"><a:solidFill><a:srgbClr val="ED7D31"/>', fixed = TRUE)
+  back <- encharter:::load_chart(xml)
+  expect_equal(back$series_data[[2]]$line$color, "ED7D31")
+  expect_equal(back$series_data[[2]]$line$width, 2)
+  filled <- ec("radar")$add_series(name = v, data = d, label = k, color = "4472C4", filled = TRUE)$
+    add_series(name = w, data = d, label = k, color = "ED7D31", filled = TRUE)
+  xml <- filled$render()
+  expect_match(xml, '<c:radarStyle val="filled"/>', fixed = TRUE)
+  expect_match(xml, '<c:spPr><a:solidFill><a:srgbClr val="ED7D31"/></a:solidFill><a:ln w="12700"><a:solidFill><a:srgbClr val="ED7D31"/>', fixed = TRUE)
+  back <- encharter:::load_chart(xml)
+  expect_equal(back$series_data[[2]]$line$color, "ED7D31")
+  expect_true(back$series_data[[2]]$filled)
+})
+
+test_that("series without a color take the theme accents in turn", {
+  ser <- function(i) sprintf('<c:ser><c:idx val="%d"/><c:order val="%d"/><c:val><c:numLit><c:ptCount val="1"/><c:pt idx="0"><c:v>%d</c:v></c:pt></c:numLit></c:val></c:ser>', i, i, i + 1)
+  xml <- paste0(
+    '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">',
+    '<c:chart><c:plotArea><c:barChart><c:barDir val="col"/><c:grouping val="clustered"/>', ser(0), ser(1), ser(6),
+    '<c:axId val="1"/><c:axId val="2"/></c:barChart>',
+    '<c:catAx><c:axId val="1"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:crossAx val="2"/></c:catAx>',
+    '<c:valAx><c:axId val="2"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:crossAx val="1"/></c:valAx>',
+    "</c:plotArea></c:chart></c:chartSpace>"
+  )
+  chart <- encharter:::load_chart(xml)
+  cols <- lapply(chart$series_data, function(s) s$line$color)
+  expect_equal(unname(unclass(cols[[2]])), "accent2")
+  expect_equal(unname(unclass(cols[[3]])), "accent1")
+  expect_equal(plot_color(cols[[2]]), "#ED7D31")
+  expect_match(chart$render(), '<c:idx val="1"/><c:order val="1"/><c:spPr><a:solidFill><a:schemeClr val="accent2"/>', fixed = TRUE)
+})
