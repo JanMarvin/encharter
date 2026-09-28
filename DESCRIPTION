@@ -26,7 +26,8 @@ Imports:
 Suggests:
     testthat (>= 3.0.0),
     vdiffr,
-    viridisLite
+    viridisLite,
+    withr
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
 Roxygen: list(markdown = TRUE)

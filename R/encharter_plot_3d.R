@@ -294,7 +294,7 @@ plot_3d_cartesian <- function(chart, series) {
   plot_3d_frame(chart, proj0, w, h, d, sc, cats, cat_pos, ser_labels, ser_pos, horizontal = horizontal)
   yy <- function(v) val_len * (v - sc$min) / (sc$max - sc$min)
 
-  cols <- vapply(seq_len(n_ser), function(j) plot_color(series[[j]]$line$color, plot_auto_color(j, chart$palette)), character(1))
+  cols <- vapply(series, function(s) s$auto_col, character(1))
   lp <- chart$label_params
   labels <- list()
 

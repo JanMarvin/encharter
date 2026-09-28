@@ -353,7 +353,10 @@ load_series <- function(ser, type, chart) {
     if (!is_missing(cache)) name_cache <- xml_text(cache)
   }
 
-  color <- "4472C4"
+  # a series without a color of its own takes the automatic one: the theme
+  # accents in turn, by the series index
+  idx <- as.integer(attr_or_null(xml_find_first(ser, "./c:idx"), "val") %||% "0")
+  color <- openxlsx2::wb_color(theme = paste0("accent", idx %% 6 + 1))
   line <- list(color = color, width = 1, type = NULL, show = TRUE)
   sppr <- xml_find_first(ser, "./c:spPr")
   border <- NULL
@@ -363,12 +366,15 @@ load_series <- function(ser, type, chart) {
     # the outline of bars and areas
     ls <- load_line_style(sppr)
     if (isTRUE(ls$show) && !is.null(ls$color)) border <- list(color = ls$color, width = ls$width %||% 0.75)
-  } else if (type %in% c("lineChart", "scatterChart", "stockChart", "line3DChart")) {
+  } else if (type %in% c("lineChart", "scatterChart", "stockChart", "line3DChart", "radarChart")) {
     ls <- load_line_style(sppr)
     line$show <- ls$show
     if (!is.null(ls$color)) line$color <- ls$color
     if (!is.null(ls$width)) line$width <- ls$width
     line["type"] <- list(ls$type)
+    # a filled radar carries its color in the fill
+    fill <- load_color(xml_find_first(sppr, "./a:solidFill"))
+    if (type == "radarChart" && !is.null(fill)) line$color <- fill
   }
   color <- line$color
 

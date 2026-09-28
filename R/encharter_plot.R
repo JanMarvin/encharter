@@ -1094,7 +1094,7 @@ plot_cartesian <- function(chart, series) {
   for (s in series[order(order_of[vapply(series, function(s) s$type, character(1))])]) {
     sc <- scale_of(s)
     push_scale(s)
-    col <- plot_color(s$line$color, "#4472C4")
+    col <- s$auto_col
     v <- s$values
     xs <- x_of(s)
     stacked <- s$grouping %in% c("stacked", "percentStacked") && s$type %in% c("barChart", "areaChart", "lineChart")
@@ -1276,7 +1276,16 @@ plot_cartesian <- function(chart, series) {
           txt <- plot_label_text(plp, if (is_xy) xs[i] else cats[i], s$values[i], name = s$label_text, size = s$sizes[i])
           pos <- plp$pos %||% "t"
           just <- switch(pos, b = c("center", "top"), l = c("right", "center"), r = c("left", "center"), ctr = c("center", "center"), c("center", "bottom"))
-          off <- switch(pos, b = c(0, -4), l = c(-4, 0), r = c(4, 0), ctr = c(0, 0), c(0, 4))
+          # the label clears the marker or the bubble
+          mk <- s$marker
+          gap <- 4 + if (s$type == "bubbleChart") {
+            grid::convertWidth(grid::unit(d[i] / 2, "snpc"), "points", valueOnly = TRUE)
+          } else if (identical(mk$symbol, "none") || is.null(mk$symbol)) {
+            0
+          } else {
+            (mk$size %||% 5) / 2
+          }
+          off <- switch(pos, b = c(0, -gap), l = c(-gap, 0), r = c(gap, 0), ctr = c(0, 0), c(0, gap))
           labels_pending[[length(labels_pending) + 1]] <- list(
             x = xs[i], y = yv[i], txt = txt, just = just, off = off, gp = plot_gpar_text(plp$style, 9, "#000000"),
             dx = plp$dx, dy = plp$dy, fill = plp$fill, align = plp$style$align, key = if (isTRUE(plp$show_legend_key)) col
@@ -1605,7 +1614,7 @@ plot_cartesian <- function(chart, series) {
       yc <- y_top - (j - 0.5) * dt_row_h
       grid::grid.rect(x = x_left + grid::unit(8, "points"), y = grid::unit(yc, "points"),
                       width = grid::unit(6, "points"), height = grid::unit(6, "points"),
-                      gp = grid::gpar(fill = plot_color(s$line$color, "#4472C4"), col = NA))
+                      gp = grid::gpar(fill = s$auto_col, col = NA))
       grid::grid.text(s$label_text, x = x_left + grid::unit(15, "points"), y = grid::unit(yc, "points"), just = c("left", "center"), gp = x_gp)
       for (i in seq_along(s$values)) {
         if (is.na(s$values[i])) next
@@ -1891,13 +1900,13 @@ plot_radar <- function(chart, series) {
     for (t in ticks) grid::grid.text(plot_format(t, py$format), x = 0.5 - 0.01, y = 0.5 + rad(t), just = c("right", "center"), gp = plot_gpar_text(py, 10, "#000000"))
   }
   for (s in series) {
-    col <- plot_color(s$line$color, "#4472C4")
+    col <- s$auto_col
     v <- s$values
     v[is.na(v)] <- sc$min
     x <- 0.5 + rad(v) * sin(ang[seq_along(v)])
     y <- 0.5 + rad(v) * cos(ang[seq_along(v)])
     if (filled) {
-      grid::grid.polygon(x, y, gp = grid::gpar(fill = grDevices::adjustcolor(col, 0.5), col = col, lwd = 1.5))
+      grid::grid.polygon(x, y, gp = grid::gpar(fill = col, col = col, lwd = 1.5))
     } else {
       grid::grid.polygon(x, y, gp = grid::gpar(fill = NA, col = col, lwd = 2.25 * 96 / 72, lty = plot_lty(s$line$type)))
       plot_draw_markers(grid::unit(x, "npc"), grid::unit(y, "npc"), s$marker, col)
@@ -1969,6 +1978,10 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   if (!is.null(wb) && !inherits(wb, "wbWorkbook")) stop("'wb' must be a wbWorkbook object.", call. = FALSE)
 
   series <- plot_collect(chart, wb)
+  # a series without a color of its own takes the automatic one
+  for (j in seq_along(series)) {
+    series[[j]]$auto_col <- plot_color(series[[j]]$line$color, plot_auto_color(j, chart$palette))
+  }
 
   if (isTRUE(newpage)) grid::grid.newpage()
   depth0 <- length(grid::current.vpPath())
@@ -2014,7 +2027,7 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
     } else {
       entries <- list()
       for (s in series) {
-        col <- plot_color(s$line$color, "#4472C4")
+        col <- s$auto_col
         if (s$type %in% c("lineChart", "scatterChart", "stockChart") || (s$type == "radarChart" && !isTRUE(series[[1]]$filled))) {
           m <- s$marker
           if (s$type == "scatterChart" && (is.null(m$symbol) || m$symbol == "none")) m$symbol <- "circle"

@@ -26,11 +26,11 @@ reference_standard <- function() {
       add_series(name = "A", data = wd, label = "Month", trendline = list(type = "poly", order = 3, color = "000000", forward = 1))$
       set_y_axis(log_base = 10, min = 1),
     ec("line")$set_chart_title("04 Date axis, auto major")$
-      add_series(name = "A", data = wd, label = D, marker = "circle")$
+      add_series(name = "A", data = wd, label = "D", marker = "circle")$
       set_x_axis(format = "dd.mm.yyyy", base_time = "days"),
     ec("line")$set_chart_title("05 Date axis, stacked %")$
-      add_series(name = "A", data = wd, label = D, grouping = "percentStacked")$
-      add_series(name = "B", data = wd, label = D, grouping = "percentStacked", color = "ED7D31")$
+      add_series(name = "A", data = wd, label = "D", grouping = "percentStacked")$
+      add_series(name = "B", data = wd, label = "D", grouping = "percentStacked", color = "ED7D31")$
       set_x_axis(format = "dd.mm.yyyy", base_time = "days")$set_legend_style(pos = "t"),
     ec("bar")$set_chart_title("06 100% stacked bars, reversed")$
       add_series(name = "A", data = wd, label = "Month", grouping = "percentStacked")$
