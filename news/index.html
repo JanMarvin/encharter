@@ -41,7 +41,9 @@
 <h2 class="pkg-version" data-toc-text="0.12" id="encharter-012-development">encharter 0.12 (development)<a class="anchor" aria-label="anchor" href="#encharter-012-development"></a></h2>
 <div class="section level3">
 <h3 id="bug-fixes-0-12">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-12"></a></h3>
-<ul><li><p><code>c:logBase</code> is written first within <code>c:scaling</code>, as the schema requires. A logarithmic axis produced a chart that Excel removed on opening.</p></li>
+<ul><li><p>Radar series are written with their color (line color, or the fill of a filled radar); before, Excel used its automatic colors for them.</p></li>
+<li><p>Loaded series without a color of their own take the theme accents in turn, as the application colors them, instead of all becoming blue; <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> does the same for series without a color.</p></li>
+<li><p><code>c:logBase</code> is written first within <code>c:scaling</code>, as the schema requires. A logarithmic axis produced a chart that Excel removed on opening.</p></li>
 <li><p>Scatter and bubble series with text x values write them as a string reference (<code>c:strRef</code>) instead of a number cache holding text, which made Excel repair the file.</p></li>
 <li><p>3D bar and area charts only get a series axis (<code>c:serAx</code>) with the <code>"standard"</code> grouping. With a series axis present, a <code>"clustered"</code> 3D column chart was rendered with its series in rows along the depth rather than side by side.</p></li>
 <li><p>Bar series are written with <code>&lt;c:invertIfNegative val="0"/&gt;</code> unless <code>invert_if_negative = TRUE</code>. Without the element, negative bars appeared inverted (white with an outline) in Excel.</p></li>
