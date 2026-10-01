@@ -271,9 +271,28 @@ test_that("update_series() re-points loaded series at new data", {
   expect_equal(wf2$series_data[[1]]$subtotals, 6)
 })
 
+# from openxlsx2 to avoid curl dependency
+dns_lookup <- function(host = "captive.apple.com") {
+  con <- try(socketConnection(host, port = 80, open = "r+", timeout = 2), silent = TRUE)
+  if (inherits(con, "connection")) {
+    on.exit(close(con))
+    return(TRUE)
+  }
+  FALSE
+}
+
+# Skip tests if offline or on CRAN
+skip_online_checks <- function() {
+  testthat::skip_on_cran()
+  if (!dns_lookup()) {
+    testthat::skip("Offline: DNS lookup failed")
+  }
+}
+
 test_that("luminance modifiers of theme colors survive a round trip", {
-  skip_if_not_installed("openxlsx")
-  wb <- openxlsx2::wb_load(system.file("extdata", "loadExample.xlsx", package = "openxlsx"))
+  skip_online_checks()
+  fl <- "https://janmarvin.github.io/openxlsx-data/loadExample.xlsx"
+  wb <- openxlsx2::wb_load(fl)
   chart <- encharter_load(wb, 2)
   grid_color <- chart$axis_params$y$grid_color
   expect_equal(attr(grid_color, "lumMod"), 0.15)
