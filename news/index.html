@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">encharter</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.12.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,11 +34,20 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/JanMarvin/encharter/blob/v0.12.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/JanMarvin/encharter/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.12" id="encharter-012-development">encharter 0.12 (development)<a class="anchor" aria-label="anchor" href="#encharter-012-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.12.1" id="encharter-0121">encharter 0.12.1<a class="anchor" aria-label="anchor" href="#encharter-0121"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-0-12-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-12-1"></a></h3>
+<ul><li><p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> takes <code>dir</code>, <code>grouping</code>, <code>overlap</code> and <code>gap_width</code> of a chart group from its first series, as the writer does. Before, bars were drawn on top of each other when <code>grouping = "stacked"</code> was set on the first series only.</p></li>
+<li><p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> removes locale tags such as <code>[$-en-US]</code> from date formats instead of printing them in the axis labels, and handles <code>dddd</code> and <code>ddd</code>.</p></li>
+<li><p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> on Windows no longer warns about font families missing from the font database; such fonts fall back to the device default.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.12" id="encharter-012">encharter 0.12<a class="anchor" aria-label="anchor" href="#encharter-012"></a></h2><p class="text-muted">CRAN release: 2026-10-01</p>
 <div class="section level3">
 <h3 id="bug-fixes-0-12">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-12"></a></h3>
 <ul><li><p>Radar series are written with their color (line color, or the fill of a filled radar); before, Excel used its automatic colors for them.</p></li>

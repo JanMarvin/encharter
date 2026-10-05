@@ -1,6 +1,25 @@
 # Changelog
 
-## encharter 0.12 (development)
+## encharter 0.12.1
+
+### Bug fixes
+
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) takes `dir`,
+  `grouping`, `overlap` and `gap_width` of a chart group from its first
+  series, as the writer does. Before, bars were drawn on top of each
+  other when `grouping = "stacked"` was set on the first series only.
+
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) removes
+  locale tags such as `[$-en-US]` from date formats instead of printing
+  them in the axis labels, and handles `dddd` and `ddd`.
+
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) on Windows no
+  longer warns about font families missing from the font database; such
+  fonts fall back to the device default.
+
+## encharter 0.12
+
+CRAN release: 2026-10-01
 
 ### Bug fixes
 
