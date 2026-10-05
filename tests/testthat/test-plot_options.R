@@ -24,6 +24,9 @@ test_that("plot helpers cover formats, line types, trend equations and error ext
   expect_equal(plot_format(as.Date("2024-03-05"), "dd.mm.yyyy"), "05.03.2024")
   expect_equal(plot_format(as.Date("2024-03-05"), "mmm yy"), "Mar 24")
   expect_equal(plot_format(as.Date("2024-03-05"), "mmmm"), "March")
+  expect_equal(plot_format(as.Date("2024-03-05"), "[$-en-US]mmm yy"), "Mar 24")
+  expect_equal(plot_format(as.Date("2024-03-05"), "[$-409]dd.mm.yyyy"), "05.03.2024")
+  expect_equal(plot_format(as.Date("2024-03-05"), "[$-F800]"), format(as.Date("2024-03-05"), "%x"))
   expect_equal(plot_format(NA_real_), "")
   expect_equal(plot_format(c(1, 2.5)), c("1", "2.5"))
 
@@ -147,4 +150,27 @@ test_that("wrapped labels with alignment, multi-level categories and bar-of-pie 
   line$high_low_lines <- TRUE
   line$disp_blanks_as <- "span"
   expect_gt(plot_png(line), 1000)
+})
+
+test_that("plot() takes grouping and overlap of a chart group from its first series", {
+  d <- data.frame(P = c("A", "B", "C"), Q1 = c(3, 2, 1), Q2 = c(2, 3, 2), Q3 = c(1, 1, 3))
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S")$add_data(x = d)
+  build <- function(all) {
+    ch <- ec("barChart")
+    for (i in 1:3) {
+      col <- LETTERS[i + 1]
+      args <- list(name = sprintf("S!$%s$1", col), label = "S!$A$2:$A$4", data = sprintf("S!$%s$2:$%s$4", col, col))
+      if (all || i == 1) args <- c(args, list(grouping = "stacked", overlap = 100))
+      do.call(ch$add_series, args)
+    }
+    ch
+  }
+  render_png <- function(ch) {
+    f <- tempfile(fileext = ".png")
+    grDevices::png(f, 600, 400)
+    plot(ch, wb = wb)
+    grDevices::dev.off()
+    unname(tools::md5sum(f))
+  }
+  expect_equal(render_png(build(FALSE)), render_png(build(TRUE)))
 })

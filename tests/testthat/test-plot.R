@@ -38,7 +38,8 @@ test_that("plot_format handles common number format codes", {
 
 test_that("plot_gpar_text ignores theme font placeholders", {
   expect_equal(plot_gpar_text(list(font_name = "+mn-lt"), 10)$fontfamily, "")
-  expect_equal(plot_gpar_text(list(font_name = "Arial"), 10)$fontfamily, "Arial")
+  known <- .Platform$OS.type != "windows" || "Arial" %in% names(grDevices::windowsFonts())
+  expect_equal(plot_gpar_text(list(font_name = "Arial"), 10)$fontfamily, if (known) "Arial" else "")
 })
 
 test_that("plot_color converts encharter colors", {

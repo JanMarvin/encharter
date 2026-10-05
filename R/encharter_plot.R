@@ -137,6 +137,7 @@ plot_gpar_text <- function(style, default_size, default_col = "#000000") {
   # theme font placeholders such as "+mn-lt" are not font families
   family <- style$font_name %||% ""
   if (startsWith(family, "+")) family <- ""
+  if (.Platform$OS.type == "windows" && nzchar(family) && !family %in% names(grDevices::windowsFonts())) family <- ""
   grid::gpar(
     fontsize = style$font_size %||% default_size,
     fontface = face,
@@ -152,9 +153,12 @@ plot_format <- function(x, format = NULL) {
     # without a format the cell's short date is shown, which follows the
     # system locale
     if (is.null(format)) return(format(x, "%x"))
-    fmt <- tolower(format)
+    fmt <- tolower(gsub("\\[\\$-[^]]*\\]", "", format))
+    if (!nzchar(trimws(fmt))) return(format(x, "%x"))
     fmt <- gsub("yyyy", "%Y", fmt)
     fmt <- gsub("yy", "%y", fmt)
+    fmt <- gsub("dddd", "%A", fmt)
+    fmt <- gsub("ddd", "%a", fmt)
     fmt <- gsub("mmmm", "%B", fmt)
     fmt <- gsub("mmm", "%b", fmt)
     fmt <- gsub("mm", "%m", fmt)
@@ -1978,6 +1982,13 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   if (!is.null(wb) && !inherits(wb, "wbWorkbook")) stop("'wb' must be a wbWorkbook object.", call. = FALSE)
 
   series <- plot_collect(chart, wb)
+  group_key <- vapply(series, function(s) paste(s$type, s$sec_type), character(1))
+  for (k in unique(group_key)) {
+    idx <- which(group_key == k)
+    for (f in c("dir", "grouping", "overlap", "gap_width")) {
+      for (j in idx) series[[j]][f] <- list(series[[idx[1]]][[f]])
+    }
+  }
   # a series without a color of its own takes the automatic one
   for (j in seq_along(series)) {
     series[[j]]$auto_col <- plot_color(series[[j]]$line$color, plot_auto_color(j, chart$palette))
