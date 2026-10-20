@@ -325,3 +325,104 @@ test_that("stockChart with wb_data renders without error", {
   expect_match(x, "c:dropLines")
   expect_match(x, "c:numCache")
 })
+
+test_that("a wb_data object with a header of several rows names the whole header range", {
+  dat <- data.frame(Month = c("m1", "m2"), `A x` = c(1, 2), `A y` = c(3, 4), `B x` = c(5, 6), check.names = FALSE)
+  attr(dat, "dims") <- openxlsx2::dims_to_dataframe("A2:D4", fill = TRUE, empty_rm = TRUE)
+  attr(dat, "header_dims") <- openxlsx2::dims_to_dataframe("A1:D2", fill = TRUE, empty_rm = TRUE)
+  attr(dat, "sheet") <- "DataSheet"
+  attr(dat, "header") <- matrix(c(NA, "A", "A", "B", "Month", "x", "y", "x"), nrow = 2, byrow = TRUE)
+  class(dat) <- c("wb_data", "data.frame")
+
+  chart <- Chart$new("barChart")
+  chart$add_series(data = dat, name = "A y", label = Month)
+  s <- chart$series_data[[1]]
+  expect_equal(s$name, "'DataSheet'!$C$1:$C$2")
+  expect_equal(s$data, "'DataSheet'!$C$3:$C$4")
+  expect_equal(s$label, "'DataSheet'!$A$3:$A$4")
+  expect_equal(s$name_cache, c("A", "y"))
+  expect_match(as.character(chart$render()), "<c:f>'DataSheet'!\\$C\\$1:\\$C\\$2</c:f><c:strCache><c:ptCount val=\"2\"/>")
+
+  chart$add_series(data = dat, name = "B x", label = Month)
+  chart$update_series(2, data = dat, name = "A x", label = Month)
+  expect_equal(chart$series_data[[2]]$name, "'DataSheet'!$B$1:$B$2")
+  expect_equal(chart$series_data[[2]]$data, "'DataSheet'!$B$3:$B$4")
+
+  wb <- openxlsx2::wb_workbook()$add_worksheet("DataSheet")
+  wb$add_data(x = matrix(c(NA, "A", "A", "B", "Month", "x", "y", "x"), nrow = 2, byrow = TRUE), col_names = FALSE)
+  wb$add_data(x = data.frame(c("m1", "m2"), 1:2, 3:4, 5:6), col_names = FALSE, dims = "A3")
+  res <- plot_collect(chart, wb)
+  expect_equal(res[[1]]$label_text, "A y")
+  expect_equal(res[[1]]$values, c(3, 4))
+  expect_equal(plot_collect(chart, NULL)[[1]]$label_text, "A y")
+})
+
+test_that("a wb_data object with a single header row keeps its name cache", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("DataSheet")$add_data(x = data.frame(Revenue = 10:12, Month = 1:3))
+  dat <- openxlsx2::wb_data(wb, sheet = "DataSheet")
+  chart <- Chart$new("lineChart")
+  chart$add_series(data = dat, name = Revenue, label = Month)
+  expect_equal(chart$series_data[[1]]$name_cache, "Revenue")
+  expect_equal(chart$series_data[[1]]$name, "'DataSheet'!$A$1")
+})
+
+test_that("several label columns of a wb_data object give multi-level categories", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Rows")
+  wb$add_data(x = data.frame(Region = NA_character_, Sex = rep(c("Male", "Female"), 3), V = c(4, 5, 6, 6, 5, 5)), na.strings = "")
+  wb$add_data(x = "N", col_names = FALSE, dims = "A2")
+  wb$add_data(x = "S", col_names = FALSE, dims = "A4")
+  wb$add_data(x = "E", col_names = FALSE, dims = "A6")
+  dat <- openxlsx2::wb_data(wb, sheet = "Rows", dims = "A1:C7")
+
+  chart <- Chart$new("barChart")
+  chart$add_series(data = dat, name = V, label = c(Region, Sex))
+  s <- chart$series_data[[1]]
+  expect_equal(s$label, "'Rows'!$A$2:$B$7")
+  expect_s3_class(s$cat_cache, "data.frame")
+  expect_equal(names(s$cat_cache), c("Region", "Sex"))
+
+  xml <- as.character(chart$render())
+  expect_match(xml, "<c:multiLvlStrRef><c:f>'Rows'!\\$A\\$2:\\$B\\$7</c:f><c:multiLvlStrCache><c:ptCount val=\"6\"/>")
+  expect_equal(lengths(regmatches(xml, gregexpr("<c:lvl>", xml))), 2L)
+
+  res <- plot_collect(chart, NULL)[[1]]
+  expect_equal(ncol(res$cat_levels), 2L)
+  expect_equal(res$cats, rep(c("Male", "Female"), 3))
+
+  chart$add_series(data = dat, name = V, label = Sex)
+  chart$update_series(2, data = dat, name = V, label = c(Region, Sex))
+  expect_equal(chart$series_data[[2]]$label, "'Rows'!$A$2:$B$7")
+  expect_s3_class(chart$series_data[[2]]$cat_cache, "data.frame")
+
+  expect_error(chart$add_series(data = dat, name = V, label = c(Sex, Region)), "adjacent")
+  expect_error(chart$add_series(data = dat, name = V, label = c(Region, Typo)), "not found")
+})
+
+test_that("the name of a series reads merged header cells as the application does", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S")
+  wb$add_data(x = "0-14", col_names = FALSE, dims = "B1")
+  wb$add_data(x = matrix(c("Male", "Female"), nrow = 1), col_names = FALSE, dims = "B2")
+  wb$add_data(x = data.frame(c("N", "S"), c(1, 2), c(3, 4)), col_names = FALSE, dims = "A3")
+  wb$merge_cells(dims = "B1:C1")
+  chart <- Chart$new("barChart")
+  chart$add_series(name = "S!$C$1:$C$2", label = "S!$A$3:$A$4", data = "S!$C$3:$C$4")
+  expect_equal(plot_collect(chart, wb)[[1]]$label_text, "0-14 Female")
+})
+
+test_that("empty cells in the upper rows of a series name take the group on their left", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S")
+  wb$add_data(x = "0-14", col_names = FALSE, dims = "B1")
+  wb$add_data(x = "15-64", col_names = FALSE, dims = "D1")
+  wb$add_data(x = matrix(c("Male", "Female", "Male", "Female"), nrow = 1), col_names = FALSE, dims = "B2")
+  wb$add_data(x = data.frame(c("N", "S"), c(1, 2), c(3, 4), c(5, 6), c(7, 8)), col_names = FALSE, dims = "A3")
+  chart <- Chart$new("barChart")
+  for (col in c("B", "C", "D", "E")) {
+    chart$add_series(
+      name = sprintf("S!$%s$1:$%s$2", col, col),
+      label = "S!$A$3:$A$4",
+      data = sprintf("S!$%s$3:$%s$4", col, col)
+    )
+  }
+  res <- plot_collect(chart, wb)
+  expect_equal(vapply(res, function(s) s$label_text, character(1)), c("0-14 Male", "0-14 Female", "15-64 Male", "15-64 Female"))
+})

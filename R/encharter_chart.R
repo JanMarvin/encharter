@@ -40,6 +40,9 @@ Chart <- R6::R6Class(
     show_neg_bubbles = FALSE,
     #' @field disp_blanks_as Character; "gap", "span", or "zero".
     disp_blanks_as = "gap",
+    #' @field plot_vis_only Logical; plot only cells in visible rows and columns
+    #'   (default `TRUE`).
+    plot_vis_only = TRUE,
     #' @field of_pie_type Character; subtype of `ofPieChart`: "pie" or "bar".
     of_pie_type = "pie",
     #' @field second_pie_size Integer; size of the second pie/bar plot as a
@@ -405,6 +408,16 @@ Chart <- R6::R6Class(
       invisible(self)
     },
 
+    #' @description Set whether data in hidden rows and columns is plotted.
+    #' @param val Logical. If `TRUE` (default), only visible cells are plotted.
+    set_plot_vis_only = function(val = TRUE) {
+      if (!is.logical(val) || length(val) != 1L || is.na(val)) {
+        stop("'val' must be TRUE or FALSE", call. = FALSE)
+      }
+      self$plot_vis_only <- val
+      invisible(self)
+    },
+
     #' @description Add a data series to the chart with independent styling.
     #' @param name Cell range or string for series name.
     #' @param data Cell range for series values.
@@ -548,7 +561,17 @@ Chart <- R6::R6Class(
       if (!is.null(color) && length(color) > 1 && series_type %in% c("bubbleChart", "pieChart", "doughnutChart")) self$palette <- color
 
       h_label <- tryCatch(if (is.symbol(substitute(name))) deparse1(substitute(name)) else name, error = function(e) NULL)
-      c_label <- tryCatch(if (is.symbol(substitute(label))) deparse1(substitute(label)) else label, error = function(e) NULL)
+      c_label <- tryCatch({
+        label_expr <- substitute(label)
+        if (is.symbol(label_expr)) {
+          deparse1(label_expr)
+        } else if (is.call(label_expr) && identical(label_expr[[1]], as.name("c")) &&
+                   all(vapply(as.list(label_expr)[-1], is.symbol, logical(1)))) {
+          vapply(as.list(label_expr)[-1], deparse1, character(1))
+        } else {
+          label
+        }
+      }, error = function(e) NULL)
       z_label <- tryCatch(if (is.symbol(substitute(weight))) deparse1(substitute(weight)) else weight, error = function(e) NULL)
 
       if (is.null(color)) {
@@ -562,7 +585,7 @@ Chart <- R6::R6Class(
       name_vals <- NULL
       if (inherits(data, "wb_data")) {
         res <- private$resolve_wb_data(data, h_label, c_label, z_label)
-        name_vals <- if (!is.null(res$name)) h_label
+        name_vals <- res$name_vals
         name      <- res$name
         data      <- res$data
         label     <- res$label
@@ -710,7 +733,17 @@ Chart <- R6::R6Class(
       }
 
       h_label <- tryCatch(if (is.symbol(substitute(name))) deparse1(substitute(name)) else name, error = function(e) NULL)
-      c_label <- tryCatch(if (is.symbol(substitute(label))) deparse1(substitute(label)) else label, error = function(e) NULL)
+      c_label <- tryCatch({
+        label_expr <- substitute(label)
+        if (is.symbol(label_expr)) {
+          deparse1(label_expr)
+        } else if (is.call(label_expr) && identical(label_expr[[1]], as.name("c")) &&
+                   all(vapply(as.list(label_expr)[-1], is.symbol, logical(1)))) {
+          vapply(as.list(label_expr)[-1], deparse1, character(1))
+        } else {
+          label
+        }
+      }, error = function(e) NULL)
       z_label <- tryCatch(if (is.symbol(substitute(weight))) deparse1(substitute(weight)) else weight, error = function(e) NULL)
 
       if (!is.null(type)) {
@@ -774,7 +807,7 @@ Chart <- R6::R6Class(
           }
           if (!is.null(res$data)) {
             s$name       <- to_abs_ref(res$name)
-            s$name_cache <- if (!is.null(res$name)) this_h
+            s["name_cache"] <- list(res$name_vals)
             s$data       <- to_abs_ref(res$data)
             s$data_cache <- res$data_vals
           }
@@ -1022,6 +1055,7 @@ Chart <- R6::R6Class(
         xml_add_child(legend, "c:overlay", val = self$legend_params$overlay)
         if (length(self$legend_params$style) > 0) private$apply_text_style(legend, self$legend_params$style)
       }
+      xml_add_child(chart_root, "c:plotVisOnly", val = as.integer(self$plot_vis_only))
       xml_add_child(chart_root, "c:dispBlanksAs", val = self$disp_blanks_as)
 
       read_xml(as.character(self$xml), pointer = FALSE)
@@ -1037,10 +1071,12 @@ Chart <- R6::R6Class(
       wb_sheet  <- attr(data, "sheet")
       dims_mat  <- attr(data, "dims")
       col_names <- names(data)
-      has_header <- nrow(dims_mat) > length(attr(data, "row.names"))
-      start_row  <- if (has_header) 2 else 1
+      hdr_dims   <- attr(data, "header_dims")
+      n_header   <- max(nrow(dims_mat) - length(attr(data, "row.names")), 0L)
+      has_header <- n_header > 0
+      start_row  <- n_header + 1
 
-      out <- list(name = NULL, data = NULL, label = NULL, weight = NULL,
+      out <- list(name = NULL, name_vals = NULL, data = NULL, label = NULL, weight = NULL,
                   data_vals = NULL, cat_vals = NULL, z_vals = NULL)
 
       for (lbl in c(h_label, c_label, z_label)) {
@@ -1051,15 +1087,28 @@ Chart <- R6::R6Class(
       if (length(col_idx) > 0) {
         col_idx <- col_idx[1]
         out$data_vals <- data[[h_label]]
-        out$name <- if (has_header) sprintf("%s!%s", wb_sheet, dims_mat[1, col_idx]) else NULL
+        out$name <- if (!has_header) NULL
+          else if (!is.null(hdr_dims)) sprintf("%s!%s:%s", wb_sheet, hdr_dims[1, col_idx], hdr_dims[nrow(hdr_dims), col_idx])
+          else if (n_header == 1) sprintf("%s!%s", wb_sheet, dims_mat[1, col_idx])
+          else sprintf("%s!%s:%s", wb_sheet, dims_mat[1, col_idx], dims_mat[n_header, col_idx])
+        if (n_header == 1) out$name_vals <- h_label
+        if (!is.null(hdr_dims) && !is.null(attr(data, "header"))) out$name_vals <- attr(data, "header")[, col_idx]
+        if (is.null(hdr_dims) && n_header > 1 && !is.null(attr(data, "header"))) out$name_vals <- attr(data, "header")[, col_idx]
         out$data <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, col_idx], dims_mat[nrow(dims_mat), col_idx])
       }
 
-      cat_idx <- which(col_names == c_label)
-      if (length(cat_idx) > 0) {
-        cat_idx <- cat_idx[1]
+      cat_idx <- match(c_label, col_names)
+      if (length(cat_idx) > 1 && any(diff(cat_idx) != 1)) {
+        stop("labels with several columns need adjacent columns in the order of the sheet", call. = FALSE)
+      }
+      if (length(cat_idx) == 1) {
         out$cat_vals <- data[[c_label]]
-        out$label <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, cat_idx], dims_mat[nrow(dims_mat), cat_idx])
+      } else if (length(cat_idx) > 1) {
+        out$cat_vals <- as.data.frame(lapply(c_label, function(l) as.character(data[[l]])), stringsAsFactors = FALSE)
+        names(out$cat_vals) <- c_label
+      }
+      if (length(cat_idx) > 0) {
+        out$label <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, cat_idx[1]], dims_mat[nrow(dims_mat), cat_idx[length(cat_idx)]])
       }
 
       z_idx <- which(col_names == z_label)
@@ -1562,7 +1611,21 @@ Chart <- R6::R6Class(
           if (!is.null(s$label)) {
             cat_node <- xml_add_child(ser, "c:cat")
 
-            if (!is.null(s$cat_cache) && inherits(s$cat_cache, c("Date", "POSIXt"))) {
+            if (is.data.frame(s$cat_cache)) {
+              # several label columns -> multi-level categories, innermost level first
+              ref_node <- xml_add_child(cat_node, "c:multiLvlStrRef")
+              xml_add_child(ref_node, "c:f", s$label)
+              cache <- xml_add_child(ref_node, "c:multiLvlStrCache")
+              xml_add_child(cache, "c:ptCount", val = as.character(nrow(s$cat_cache)))
+              for (k in rev(seq_len(ncol(s$cat_cache)))) {
+                lvl <- xml_add_child(cache, "c:lvl")
+                for (i in seq_len(nrow(s$cat_cache))) {
+                  if (is.na(s$cat_cache[[k]][i])) next
+                  pt <- xml_add_child(lvl, "c:pt", idx = as.character(i - 1))
+                  xml_add_child(pt, "c:v", as.character(s$cat_cache[[k]][i]))
+                }
+              }
+            } else if (!is.null(s$cat_cache) && inherits(s$cat_cache, c("Date", "POSIXt"))) {
               # Date/datetime categories -> numRef with OOXML serial conversion
               ref_node <- xml_add_child(cat_node, "c:numRef")
               xml_add_child(ref_node, "c:f", s$label)

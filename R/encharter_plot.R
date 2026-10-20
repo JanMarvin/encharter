@@ -311,18 +311,45 @@ plot_ticks <- function(scale) {
   t
 }
 
-# Reads a range such as "'Sheet 1'!$B$2:$B$7" from the workbook.
-plot_read_ref <- function(wb, ref, levels = FALSE) {
+# Reads a range such as "'Sheet 1'!$B$2:$B$7" from the workbook. With
+# `visible = TRUE` cells in hidden rows and columns are left out and
+# `fill_merged = TRUE` gives every cell of a merged range the merged value. With
+# `fill_left = TRUE` empty cells in all but the last row of a range of one
+# column take the value of the nearest filled cell on their left, as the legend
+# of a multi-level series name does.
+plot_read_ref <- function(wb, ref, levels = FALSE, visible = FALSE, fill_merged = FALSE, fill_left = FALSE) {
   if (is.null(wb) || is.null(ref) || !grepl("!", ref)) return(NULL)
   sheet <- gsub("^'|'$", "", sub("!.*$", "", ref))
   sheet <- gsub("''", "'", sheet)
   dims <- gsub("\\$", "", sub("^.*!", "", ref))
   if (!sheet %in% wb$get_sheet_names(escape = TRUE)) return(NULL)
-  df <- openxlsx2::wb_to_df(wb, sheet = sheet, dims = dims, col_names = FALSE)
+  df <- openxlsx2::wb_to_df(
+    wb, sheet = sheet, dims = dims, col_names = FALSE,
+    skip_hidden_rows = visible, skip_hidden_cols = visible,
+    fill_merged_cells = fill_merged
+  )
+  if (isTRUE(fill_left)) {
+    rc <- openxlsx2::dims_to_rowcol(dims)
+    if (length(rc$col) == 1L && length(rc$row) > 1L) {
+      wide <- openxlsx2::wb_to_df(
+        wb, sheet = sheet,
+        dims = sprintf("A%s:%s%s", rc$row[1], rc$col, rc$row[length(rc$row)]),
+        col_names = FALSE, fill_merged_cells = TRUE
+      )
+      cells <- vapply(wide, as.character, character(nrow(wide)))
+      for (r in seq_len(nrow(cells) - 1L)) {
+        for (cc in seq_len(ncol(cells))[-1]) {
+          if (is.na(cells[r, cc])) cells[r, cc] <- cells[r, cc - 1L]
+        }
+      }
+      return(unname(cells[, ncol(cells)]))
+    }
+  }
   if (isTRUE(levels) && nrow(df) >= ncol(df) && ncol(df) > 1) {
     # a multi-level category range: one column per level, outer level first
     return(as.data.frame(lapply(df, function(col) as.character(col)), stringsAsFactors = FALSE))
   }
+  if (nrow(df) == 0L || ncol(df) == 0L) return(logical(0))
   vals <- if (nrow(df) >= ncol(df)) df[[1]] else unlist(df[1, ], use.names = FALSE)
   if (is.factor(vals)) vals <- as.character(vals)
   vals
@@ -333,24 +360,28 @@ plot_collect <- function(chart, wb) {
   out <- vector("list", length(chart$series_data))
   for (i in seq_along(chart$series_data)) {
     s <- chart$series_data[[i]]
-    y <- s$data_cache %||% plot_read_ref(wb, s$data)
-    x <- s$cat_cache %||% plot_read_ref(wb, s$label, levels = TRUE)
+    vis <- isTRUE(chart$plot_vis_only)
+    y <- plot_read_ref(wb, s$data, visible = vis) %||% s$data_cache
+    x <- plot_read_ref(wb, s$label, levels = TRUE, visible = vis) %||% s$cat_cache
     cat_levels <- NULL
     if (is.data.frame(x)) {
       cat_levels <- x
       x <- x[[ncol(x)]]
     }
-    z <- s$z_cache %||% plot_read_ref(wb, s$weight)
+    z <- plot_read_ref(wb, s$weight, visible = vis) %||% s$z_cache
     if (is.null(y)) {
       stop(sprintf("series %d has no values; add it from wb_data() or pass 'wb'", i), call. = FALSE)
     }
     y <- suppressWarnings(as.numeric(y))
     if (!is.null(z)) z <- suppressWarnings(as.numeric(z))
-    name <- s$name_cache %||% s$name
-    if (!is.null(name) && grepl("!.+", name)) {
-      cell <- plot_read_ref(wb, name)
-      name <- if (is.null(cell)) paste("Series", i) else as.character(cell[1])
+    name <- NULL
+    if (!is.null(s$name) && grepl("!.+", s$name)) {
+      cell <- plot_read_ref(wb, s$name, fill_merged = TRUE, fill_left = TRUE)
+      if (!is.null(cell) && length(cell)) name <- as.character(cell)
     }
+    name <- name %||% s$name_cache %||% s$name
+    if (length(name) > 1L) name <- paste(name[!is.na(name) & nzchar(name)], collapse = " ")
+    if (length(name) == 1L && !is.na(name) && grepl("!.+", name)) name <- paste("Series", i)
     if (is.null(name) || is.na(name)) name <- paste("Series", i)
     if (is.null(x)) x <- seq_along(y)
     if (length(x) < length(y)) x <- c(x, rep(NA, length(y) - length(x)))
@@ -1941,8 +1972,11 @@ plot_radar <- function(chart, series) {
 #' sunburst. Region maps are not drawn.
 #'
 #' @details
-#' The values come from the series caches (present when a series was added
-#' from `wb_data()`) or are read from `wb`. Series added with plain range
+#' With `wb`, the values are read from the ranges of the series in that
+#' workbook, so one chart can be drawn for different workbooks. Cells in hidden
+#' rows and columns are skipped unless the chart plots hidden data
+#' (`plot_vis_only`). Without `wb`, the series caches (present when a series
+#' was added from `wb_data()`) are used. Series added with plain range
 #' strings and all `ChartEx` objects need `wb`.
 #'
 #' Axis scaling follows the rules for automatic axes; fonts, spacing and

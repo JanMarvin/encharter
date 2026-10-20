@@ -35,8 +35,11 @@ types waterfall, box-and-whisker, histogram, Pareto, funnel, treemap and
 sunburst. Region maps are not drawn.
 }
 \details{
-The values come from the series caches (present when a series was added
-from \code{wb_data()}) or are read from \code{wb}. Series added with plain range
+With \code{wb}, the values are read from the ranges of the series in that
+workbook, so one chart can be drawn for different workbooks. Cells in hidden
+rows and columns are skipped unless the chart plots hidden data
+(\code{plot_vis_only}). Without \code{wb}, the series caches (present when a series
+was added from \code{wb_data()}) are used. Series added with plain range
 strings and all \code{ChartEx} objects need \code{wb}.
 
 Axis scaling follows the rules for automatic axes; fonts, spacing and
