@@ -201,6 +201,10 @@ Run all of them in one session with `run_all_examples()` (defined in
 
   Character; "gap", "span", or "zero".
 
+- `plot_vis_only`:
+
+  Logical; plot only cells in visible rows and columns (default `TRUE`).
+
 - `of_pie_type`:
 
   Character; subtype of `ofPieChart`: "pie" or "bar".
@@ -278,6 +282,8 @@ Run all of them in one session with `run_all_examples()` (defined in
 - [`Chart$set_bubble_options()`](#method-Chart-set_bubble_options)
 
 - [`Chart$set_disp_blanks()`](#method-Chart-set_disp_blanks)
+
+- [`Chart$set_plot_vis_only()`](#method-Chart-set_plot_vis_only)
 
 - [`Chart$add_series()`](#method-Chart-add_series)
 
@@ -938,6 +944,22 @@ Set missing value behavior ("gap", "span", "zero").
 - `val`:
 
   Character. One of "gap" (break), "span" (continue), or "zero" (drop).
+
+------------------------------------------------------------------------
+
+### `Chart$set_plot_vis_only()`
+
+Set whether data in hidden rows and columns is plotted.
+
+#### Usage
+
+    Chart$set_plot_vis_only(val = TRUE)
+
+#### Arguments
+
+- `val`:
+
+  Logical. If `TRUE` (default), only visible cells are plotted.
 
 ------------------------------------------------------------------------
 

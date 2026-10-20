@@ -2,6 +2,38 @@
 
 ## encharter 0.12.1
 
+### New features
+
+- `plot(chart, wb)` reads the series from the ranges in `wb` and skips
+  cells in hidden rows and columns, as a spreadsheet application does
+  unless “Show data in hidden rows and columns” is switched on. The
+  workbook takes precedence over the
+  [`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html)
+  caches, so one chart can be drawn for different workbooks;
+  `plot(chart)` still uses the caches. The new `plot_vis_only` field and
+  `set_plot_vis_only()` control this; the setting is written as
+  `c:plotVisOnly` and read back by
+  [`ec_load()`](https://janmarvin.github.io/encharter/reference/encharter_load.md).
+  Extended charts are not affected.
+
+- Series from a
+  [`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html)
+  object whose header spans several rows (see the `header_rows` argument
+  of
+  [`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html)
+  in the development version of openxlsx2) use the cells of all header
+  rows as series name, so the legend shows them as one multi-level name.
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) joins the
+  non-empty cells of such a name range with a space. Merged header cells
+  give every cell of the merged range the value of the merged cell.
+
+- Several columns can be given as `label` of a series from a
+  [`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html)
+  object, e.g. `label = c(Region, Sex)`, if they are adjacent and in the
+  order of the sheet. The first column is the outer level of the
+  multi-level categories, and the levels are written to the category
+  cache.
+
 ### Bug fixes
 
 - [`plot()`](https://rdrr.io/r/graphics/plot.default.html) takes `dir`,

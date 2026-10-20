@@ -48,11 +48,14 @@ plot(x, wb = NULL, newpage = TRUE, ...)
 
 ## Details
 
-The values come from the series caches (present when a series was added
-from
+With `wb`, the values are read from the ranges of the series in that
+workbook, so one chart can be drawn for different workbooks. Cells in
+hidden rows and columns are skipped unless the chart plots hidden data
+(`plot_vis_only`). Without `wb`, the series caches (present when a
+series was added from
 [`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html))
-or are read from `wb`. Series added with plain range strings and all
-`ChartEx` objects need `wb`.
+are used. Series added with plain range strings and all `ChartEx`
+objects need `wb`.
 
 Axis scaling follows the rules for automatic axes; fonts, spacing and
 the exact placement of labels differ from the original. Number formats

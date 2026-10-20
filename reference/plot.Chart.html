@@ -104,8 +104,11 @@ sunburst. Region maps are not drawn.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The values come from the series caches (present when a series was added
-from <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code>) or are read from <code>wb</code>. Series added with plain range
+    <p>With <code>wb</code>, the values are read from the ranges of the series in that
+workbook, so one chart can be drawn for different workbooks. Cells in hidden
+rows and columns are skipped unless the chart plots hidden data
+(<code>plot_vis_only</code>). Without <code>wb</code>, the series caches (present when a series
+was added from <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code>) are used. Series added with plain range
 strings and all <code>ChartEx</code> objects need <code>wb</code>.</p>
 <p>Axis scaling follows the rules for automatic axes; fonts, spacing and
 the exact placement of labels differ from the original. Number formats are

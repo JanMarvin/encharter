@@ -132,7 +132,9 @@ assign a custom series name that is not itself a cell reference — in the
 approach the name must correspond to a column in the data object.
 Multi-level legends, where spreadsheet groups entries across two rows
 (for example, an age group label spanning a male and female series), are
-only achievable with the range approach. On the other hand, some
+achievable with the range approach, and with
+[`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html)
+objects that have a header of several rows. On the other hand, some
 features like drop-down lines require construction with
 [`wb_data()`](https://janmarvin.github.io/openxlsx2/reference/wb_data.html)
 objects. The examples below use both approaches interchangeably to show
