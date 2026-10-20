@@ -237,3 +237,55 @@ test_that("plot() honors data tables, midCat, overlaid legends, label keys and t
   ch <- ec("doughnut")$add_series(name = v, data = d, label = k)$add_series(name = w, data = d, label = k)
   expect_gt(file.info(plot_to_png(ch))$size, 1000)
 })
+
+test_that("plot() skips hidden rows and columns unless plot_vis_only is FALSE", {
+  d <- data.frame(M = month.abb[1:6], V = c(5, 9, 3, 8, 2, 7), W = c(1, 2, 3, 4, 5, 6))
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S")$add_data(x = d)
+  wb$set_row_heights(rows = c(3, 5), hidden = TRUE)
+  ch <- ec("barChart")$add_series(name = "S!$B$1", label = "S!$A$2:$A$7", data = "S!$B$2:$B$7")
+  res <- plot_collect(ch, wb)[[1]]
+  expect_equal(res$values, c(5, 3, 2, 7))
+  expect_equal(res$cats, c("Jan", "Mar", "May", "Jun"))
+
+  ch$set_plot_vis_only(FALSE)
+  expect_equal(plot_collect(ch, wb)[[1]]$values, c(5, 9, 3, 8, 2, 7))
+
+  wb2 <- openxlsx2::wb_workbook()$add_worksheet("S")$add_data(x = t(c(1, 2, 3, 4)), col_names = FALSE)
+  wb2$set_col_widths(cols = 2, hidden = TRUE)
+  ch2 <- ec("lineChart")$add_series(name = "x", label = "S!$A$1:$D$1", data = "S!$A$1:$D$1")
+  expect_equal(plot_collect(ch2, wb2)[[1]]$values, c(1, 3, 4))
+})
+
+test_that("plot_vis_only is written and loaded", {
+  d <- data.frame(M = c("a", "b"), V = c(1, 2))
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S")$add_data(x = d)
+  ch <- ec("barChart")$add_series(name = "S!$B$1", label = "S!$A$2:$A$3", data = "S!$B$2:$B$3")
+  expect_true(ch$plot_vis_only)
+  ch$set_plot_vis_only(FALSE)
+  wb$add_encharter(sheet = "S", graph = ch, dims = "D2:K16")
+  f <- tempfile(fileext = ".xlsx")
+  wb$save(f)
+  loaded <- ec_load(openxlsx2::wb_load(f))
+  if (!inherits(loaded, "Chart")) loaded <- loaded[[1]]
+  expect_false(loaded$plot_vis_only)
+})
+
+test_that("plot() reads the series from the workbook it is given, not from the caches", {
+  mk <- function(hide) {
+    d <- data.frame(M = sprintf("m%02d", 1:14), V = 1:14)
+    wb <- openxlsx2::wb_workbook()$add_worksheet("S")$add_data(x = d)
+    wb$set_row_heights(rows = seq_len(hide) + 1L, hidden = TRUE)
+    wb
+  }
+  wb1 <- mk(2)
+  wb2 <- mk(3)
+  ch <- ec("barChart")$add_series(name = V, label = M, data = openxlsx2::wb_data(wb1, dims = "A1:B15"))
+
+  expect_equal(plot_collect(ch, NULL)[[1]]$values, 1:14)
+  expect_equal(plot_collect(ch, wb1)[[1]]$values, 3:14)
+  expect_equal(plot_collect(ch, wb2)[[1]]$values, 4:14)
+  expect_equal(plot_collect(ch, wb2)[[1]]$cats, sprintf("m%02d", 4:14))
+
+  ch$set_plot_vis_only(FALSE)
+  expect_equal(plot_collect(ch, wb2)[[1]]$values, 1:14)
+})

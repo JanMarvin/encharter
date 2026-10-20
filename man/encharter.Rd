@@ -219,6 +219,9 @@ ec("regionMap")$
 
     \item{\code{disp_blanks_as}}{Character; "gap", "span", or "zero".}
 
+    \item{\code{plot_vis_only}}{Logical; plot only cells in visible rows and columns
+(default \code{TRUE}).}
+
     \item{\code{of_pie_type}}{Character; subtype of \code{ofPieChart}: "pie" or "bar".}
 
     \item{\code{second_pie_size}}{Integer; size of the second pie/bar plot as a
@@ -266,6 +269,7 @@ its own.}
     \item \href{#method-Chart-set_3d_options}{\code{Chart$set_3d_options()}}
     \item \href{#method-Chart-set_bubble_options}{\code{Chart$set_bubble_options()}}
     \item \href{#method-Chart-set_disp_blanks}{\code{Chart$set_disp_blanks()}}
+    \item \href{#method-Chart-set_plot_vis_only}{\code{Chart$set_plot_vis_only()}}
     \item \href{#method-Chart-add_series}{\code{Chart$add_series()}}
     \item \href{#method-Chart-apply_crtx}{\code{Chart$apply_crtx()}}
     \item \href{#method-Chart-update_series}{\code{Chart$update_series()}}
@@ -724,6 +728,25 @@ element.}
     \if{html}{\out{<div class="arguments">}}
     \describe{
       \item{\code{val}}{Character. One of "gap" (break), "span" (continue), or "zero" (drop).}
+    }
+    \if{html}{\out{</div>}}
+  }
+}
+
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Chart-set_plot_vis_only"></a>}}
+\if{latex}{\out{\hypertarget{method-Chart-set_plot_vis_only}{}}}
+\subsection{\code{Chart$set_plot_vis_only()}}{
+  Set whether data in hidden rows and columns is plotted.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{Chart$set_plot_vis_only(val = TRUE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{val}}{Logical. If \code{TRUE} (default), only visible cells are plotted.}
     }
     \if{html}{\out{</div>}}
   }

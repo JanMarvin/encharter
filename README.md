@@ -134,8 +134,9 @@ assign a custom series name that is not itself a cell reference — in the
 `wb_data()` approach the name must correspond to a column in the data
 object. Multi-level legends, where spreadsheet groups entries across two
 rows (for example, an age group label spanning a male and female
-series), are only achievable with the range approach. On the other hand,
-some features like drop-down lines require construction with `wb_data()`
+series), are achievable with the range approach, and with `wb_data()`
+objects that have a header of several rows. On the other hand, some
+features like drop-down lines require construction with `wb_data()`
 objects. The examples below use both approaches interchangeably to show
 that they are equivalent; a comment marks each switch.
 

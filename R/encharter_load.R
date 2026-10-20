@@ -598,6 +598,9 @@ load_chart <- function(xml) {
     )
   }
 
+  pvo <- attr_or_null(xml_find_first(chart_root, "./c:plotVisOnly"), "val")
+  if (!is.null(pvo)) chart$plot_vis_only <- pvo %in% c("1", "true")
+
   dba <- attr_or_null(xml_find_first(chart_root, "./c:dispBlanksAs"), "val")
   if (!is.null(dba)) chart$disp_blanks_as <- dba
 
