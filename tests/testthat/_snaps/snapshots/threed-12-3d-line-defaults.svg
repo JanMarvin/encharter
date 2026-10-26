@@ -61,26 +61,26 @@
 <polyline points='529.48,511.31 581.03,472.30 ' style='stroke-width: 0.75;' />
 <text x='548.35' y='505.00' style='font-size: 10.00px; font-family: sans;' textLength='40.04px' lengthAdjust='spacingAndGlyphs'>Revenue</text>
 <text x='574.12' y='485.49' style='font-size: 10.00px; font-family: sans;' textLength='28.90px' lengthAdjust='spacingAndGlyphs'>Target</text>
-<polygon points='148.54,198.78 223.90,198.78 234.21,190.98 158.85,190.98 ' style='stroke-width: 0.75; stroke: none; fill: #B45F25;' />
-<polygon points='148.54,206.44 223.90,206.44 223.90,198.78 148.54,198.78 ' style='stroke-width: 0.75; stroke: none; fill: #ED7D31;' />
-<polygon points='223.90,198.78 299.25,174.85 309.56,167.05 234.21,190.98 ' style='stroke-width: 0.75; stroke: none; fill: #B45F25;' />
-<polygon points='223.90,206.44 299.25,182.50 299.25,174.85 223.90,198.78 ' style='stroke-width: 0.75; stroke: none; fill: #ED7D31;' />
-<polygon points='299.25,174.85 374.60,174.85 384.91,167.05 309.56,167.05 ' style='stroke-width: 0.75; stroke: none; fill: #B45F25;' />
-<polygon points='299.25,182.50 374.60,182.50 374.60,174.85 299.25,174.85 ' style='stroke-width: 0.75; stroke: none; fill: #ED7D31;' />
-<polygon points='374.60,174.85 449.96,150.92 460.27,143.11 384.91,167.05 ' style='stroke-width: 0.75; stroke: none; fill: #B45F25;' />
-<polygon points='374.60,182.50 449.96,158.57 449.96,150.92 374.60,174.85 ' style='stroke-width: 0.75; stroke: none; fill: #ED7D31;' />
-<polygon points='449.96,150.92 525.31,150.92 535.62,143.11 460.27,143.11 ' style='stroke-width: 0.75; stroke: none; fill: #B45F25;' />
-<polygon points='449.96,158.57 525.31,158.57 525.31,150.92 449.96,150.92 ' style='stroke-width: 0.75; stroke: none; fill: #ED7D31;' />
-<polygon points='122.77,215.89 198.13,230.25 208.43,222.45 133.08,208.09 ' style='stroke-width: 0.75; stroke: none; fill: #345795;' />
-<polygon points='122.77,223.55 198.13,237.90 198.13,230.25 122.77,215.89 ' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
-<polygon points='198.13,230.25 273.48,187.17 283.79,179.37 208.43,222.45 ' style='stroke-width: 0.75; stroke: none; fill: #345795;' />
-<polygon points='198.13,237.90 273.48,194.83 273.48,187.17 198.13,230.25 ' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
-<polygon points='273.48,187.17 348.83,199.14 359.14,191.33 283.79,179.37 ' style='stroke-width: 0.75; stroke: none; fill: #345795;' />
-<polygon points='273.48,194.83 348.83,206.79 348.83,199.14 273.48,187.17 ' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
-<polygon points='348.83,199.14 424.19,165.63 434.49,157.83 359.14,191.33 ' style='stroke-width: 0.75; stroke: none; fill: #345795;' />
-<polygon points='348.83,206.79 424.19,173.29 424.19,165.63 348.83,199.14 ' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
-<polygon points='424.19,165.63 499.54,172.81 509.85,165.01 434.49,157.83 ' style='stroke-width: 0.75; stroke: none; fill: #345795;' />
-<polygon points='424.19,173.29 499.54,180.47 499.54,172.81 424.19,165.63 ' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
+<polygon points='148.54,198.78 223.90,198.78 234.21,190.98 158.85,190.98 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #B45F25;' />
+<polygon points='148.54,206.44 223.90,206.44 223.90,198.78 148.54,198.78 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #ED7D31;' />
+<polygon points='223.90,198.78 299.25,174.85 309.56,167.05 234.21,190.98 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #B45F25;' />
+<polygon points='223.90,206.44 299.25,182.50 299.25,174.85 223.90,198.78 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #ED7D31;' />
+<polygon points='299.25,174.85 374.60,174.85 384.91,167.05 309.56,167.05 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #B45F25;' />
+<polygon points='299.25,182.50 374.60,182.50 374.60,174.85 299.25,174.85 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #ED7D31;' />
+<polygon points='374.60,174.85 449.96,150.92 460.27,143.11 384.91,167.05 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #B45F25;' />
+<polygon points='374.60,182.50 449.96,158.57 449.96,150.92 374.60,174.85 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #ED7D31;' />
+<polygon points='449.96,150.92 525.31,150.92 535.62,143.11 460.27,143.11 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #B45F25;' />
+<polygon points='449.96,158.57 525.31,158.57 525.31,150.92 449.96,150.92 ' style='stroke-width: 0.75; stroke: #ED7D31; fill: #ED7D31;' />
+<polygon points='122.77,215.89 198.13,230.25 208.43,222.45 133.08,208.09 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #345795;' />
+<polygon points='122.77,223.55 198.13,237.90 198.13,230.25 122.77,215.89 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #4472C4;' />
+<polygon points='198.13,230.25 273.48,187.17 283.79,179.37 208.43,222.45 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #345795;' />
+<polygon points='198.13,237.90 273.48,194.83 273.48,187.17 198.13,230.25 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #4472C4;' />
+<polygon points='273.48,187.17 348.83,199.14 359.14,191.33 283.79,179.37 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #345795;' />
+<polygon points='273.48,194.83 348.83,206.79 348.83,199.14 273.48,187.17 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #4472C4;' />
+<polygon points='348.83,199.14 424.19,165.63 434.49,157.83 359.14,191.33 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #345795;' />
+<polygon points='348.83,206.79 424.19,173.29 424.19,165.63 348.83,199.14 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #4472C4;' />
+<polygon points='424.19,165.63 499.54,172.81 509.85,165.01 434.49,157.83 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #345795;' />
+<polygon points='424.19,173.29 499.54,180.47 499.54,172.81 424.19,165.63 ' style='stroke-width: 0.75; stroke: #4472C4; fill: #4472C4;' />
 <rect x='652.09' y='290.09' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
 <text x='670.02' y='297.17' style='font-size: 9.00px; font-family: sans;' textLength='36.03px' lengthAdjust='spacingAndGlyphs'>Revenue</text>
 <rect x='652.09' y='302.65' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #ED7D31;' />

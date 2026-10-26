@@ -137,7 +137,17 @@ plot_3d_box <- function(proj, x0, x1, y0, y1, z0, z1, col, shape = "box", part =
     ez_lo <- cz + rz * r_lo * sin(ang)
     ex_hi <- cx + rx * r_hi * cos(ang)
     ez_hi <- cz + rz * r_hi * sin(ang)
-    plot_3d_poly(proj, c(ex_lo[near], rev(ex_hi[near])), c(rep(y0, 25), rep(y1, 25)), c(ez_lo[near], rev(ez_hi[near])), col)
+    # a cylinder is shaded across its width: brightest in the middle and
+    # darker towards the edges, the right edge less so than the left
+    shade_u <- c(0, 0.06, 0.13, 0.19, 0.25, 0.32, 0.38, 0.44, 0.51, 0.63, 0.7, 0.76, 0.83, 0.89, 0.95, 1)
+    shade_f <- c(0.44, 0.66, 0.77, 0.85, 0.9, 0.94, 0.965, 0.985, 1, 0.975, 0.955, 0.92, 0.87, 0.79, 0.68, 0.62)
+    for (k in seq_len(length(near) - 1)) {
+      seg <- near[c(k, k + 1)]
+      u <- (cos(mean(ang[seg])) + 1) / 2
+      strip_col <- plot_shade(col, stats::approx(shade_u, shade_f, xout = u)$y)
+      plot_3d_poly(proj, c(ex_lo[seg], rev(ex_hi[seg])), c(rep(y0, 2), rep(y1, 2)), c(ez_lo[seg], rev(ez_hi[seg])),
+                   strip_col, strip_col, 0.5)
+    }
     if (r_hi > 0) plot_3d_poly(proj, ex_hi, rep(y1, 49), ez_hi, top)
     return(invisible())
   }
@@ -342,8 +352,10 @@ plot_3d_cartesian <- function(chart, series) {
     for (r in rev(seq_len(rows))) {
       for (j in seq_len(n_ser)) {
         if (rows > 1 && j != r) next
-        z0 <- (r - 1) * row_d
-        z1 <- r * row_d
+        # a slab is as deep as a bar and centered in its row
+        slab_d <- row_d / (1 + (chart$gap_depth %||% 150) / 100)
+        z0 <- (r - 1) * row_d + (row_d - slab_d) / 2
+        z1 <- z0 + slab_d
         xs <- cat_pos
         yb <- yy(bases[[j]])
         yt <- yy(tops[[j]])
@@ -369,9 +381,13 @@ plot_3d_cartesian <- function(chart, series) {
       ys <- yy(tops[[r]])
       for (i in seq_len(n_cat - 1)) {
         if (is.na(ys[i]) || is.na(ys[i + 1])) next
+        # the ribbon is filled with the theme color of the series and
+        # outlined with the line color
+        ribbon <- paste0("#", plot_state$theme[[paste0("accent", (r - 1) %% 6 + 1)]])
         plot_3d_poly(proj, c(xs[i], xs[i + 1], xs[i + 1], xs[i]), c(ys[i], ys[i + 1], ys[i + 1], ys[i]), c(z0, z0, z1, z1),
-                     plot_shade(cols[r], 0.76))
-        plot_3d_poly(proj, c(xs[i], xs[i + 1], xs[i + 1], xs[i]), c(ys[i] - lift, ys[i + 1] - lift, ys[i + 1], ys[i]), rep(z0, 4), cols[r])
+                     plot_shade(ribbon, 0.76), cols[r])
+        plot_3d_poly(proj, c(xs[i], xs[i + 1], xs[i + 1], xs[i]), c(ys[i] - lift, ys[i + 1] - lift, ys[i + 1], ys[i]), rep(z0, 4),
+                     ribbon, cols[r])
       }
     }
   }
@@ -589,13 +605,27 @@ plot_surface <- function(chart, series) {
       tx <- c(cx[t], cx[u], mx)
       tz <- c(cz[t], cz[u], mz)
       tv <- c(cv[t], cv[u], mv)
+      lit <- 1
+      if (!contour) {
+        span <- c(diff(range(xs)), (sc$max - sc$min) / 0.6, diff(range(zs)))
+        ex <- c(tx[2] - tx[1], tv[2] - tv[1], tz[2] - tz[1]) / span
+        ey <- c(tx[3] - tx[1], tv[3] - tv[1], tz[3] - tz[1]) / span
+        nrm <- c(ex[2] * ey[3] - ex[3] * ey[2], ex[3] * ey[1] - ex[1] * ey[3], ex[1] * ey[2] - ex[2] * ey[1])
+        len <- sqrt(sum(nrm^2))
+        if (len > 0) {
+          nrm <- nrm / len * sign(nrm[2] + 1e-12)
+          light <- c(0.5, 0.8, -0.3) / sqrt(0.5^2 + 0.8^2 + 0.3^2)
+          lit <- 0.55 + 0.6 * max(0, sum(nrm * light))
+        }
+      }
       for (b in seq_along(bands$cols)) {
         lo <- bands$breaks[b]
         hi <- bands$breaks[b + 1]
         if (max(tv) < lo || min(tv) > hi) next
         part <- plot_clip_band(tx, yy(tv), tz, tv, lo, hi)
         if (is.null(part)) next
-        plot_3d_poly(proj, part$x, part$y, part$z, bands$cols[b], if (contour) NA else bands$cols[b], 0.25)
+        face <- if (contour) bands$cols[b] else plot_shade(bands$cols[b], lit)
+        plot_3d_poly(proj, part$x, part$y, part$z, face, if (contour) NA else face, 0.25)
       }
     }
   }

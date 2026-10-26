@@ -2102,7 +2102,7 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
       })
     }
     stacked <- all(vapply(series, function(s) {
-      s$grouping %in% c("stacked", "percentStacked") && s$type %in% c("barChart", "areaChart", "lineChart")
+      s$grouping %in% c("stacked", "percentStacked") && s$type %in% c("barChart", "areaChart", "lineChart", "area3DChart")
     }, logical(1)))
     if (stacked && l_pos %in% c("l", "r", "tr")) entries <- rev(entries)
     legend <- plot_legend(entries, chart$legend_params, chart$legend_params$style, max_w = chart_w)
