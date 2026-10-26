@@ -42,6 +42,11 @@
   depth was too small in wide charts, so the rows of a 3D chart sat too
   close together.
 
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) draws the
+  slabs of a 3D area chart as deep as a column (reduced by the gap
+  depth) and centered in their row, and lists the series of a stacked 3D
+  area chart in reverse order in the legend.
+
 - The wall of a 3D pie is drawn with a brightness gradient from left to
   right instead of one flat shade.
 
@@ -51,6 +56,14 @@
   color varies the color by point.
   [`plot()`](https://rdrr.io/r/graphics/plot.default.html) draws bubbles
   the same way.
+
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) shades 3D
+  cylinder columns with a gradient across the mantle, and draws 3D line
+  ribbons filled with the theme color and outlined in the series color.
+
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) lights the
+  faces of 3D surface charts, so slopes facing the light are brighter
+  and the others darker.
 
 - [`plot()`](https://rdrr.io/r/graphics/plot.default.html) takes `dir`,
   `grouping`, `overlap` and `gap_width` of a chart group from its first
