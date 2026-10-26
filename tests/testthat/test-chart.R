@@ -228,3 +228,19 @@ test_that("scatter without label is supported", {
     add_encharter(sheet = "ScatterData", graph = sc_chart)
 
 })
+
+
+test_that("bubble series keep their own color unless a single default series varies colors", {
+  mk <- function(colors) {
+    bb <- Chart$new("bubbleChart")
+    for (i in seq_along(colors)) {
+      bb$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", label = "S!$A$2:$A$4",
+                    weight = "S!$C$2:$C$4", color = colors[i])
+    }
+    xml <- read_xml(bb$render())
+    length(xml_find_all(xml, ".//c:ser/c:dPt"))
+  }
+  expect_gt(mk("4472C4"), 0)
+  expect_equal(mk("FF0000"), 0)
+  expect_equal(mk(c("4472C4", "ED7D31")), 0)
+})

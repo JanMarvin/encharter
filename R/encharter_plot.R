@@ -1265,12 +1265,15 @@ plot_cartesian <- function(chart, series) {
         zmax <- max(unlist(lapply(series, function(o) o$sizes %||% abs(o$values))), na.rm = TRUE)
         maxd <- 0.25 * (chart$bubble_scale %||% 100) / 100
         d <- if (identical(chart$size_represents, "w")) maxd * abs(z) / zmax else maxd * sqrt(abs(z) / zmax)
+        bubble_vary <- length(series) == 1L && (is.null(s$line$color) || length(s$line$color) > 1L || identical(toupper(as.character(s$line$color)[1]), "4472C4"))
         for (i in seq_along(v)) {
           if (!is.finite(yv[i]) || !is.finite(xs[i]) || is.na(d[i])) next
           if (z[i] < 0 && !isTRUE(chart$show_neg_bubbles)) next
+          bubble_fill <- if (bubble_vary) plot_auto_color(i, if (length(s$line$color) > 1L) s$line$color else chart$palette) else col
+          for (p in s$points) if (p$idx == i - 1 && !is.null(p$color)) bubble_fill <- plot_color(p$color, bubble_fill)
           grid::grid.circle(x = grid::unit(xs[i], "native"), y = grid::unit(yv[i], "native"),
                             r = grid::unit(d[i] / 2, "snpc"),
-                            gp = grid::gpar(fill = plot_auto_color(i, chart$palette), col = NA))
+                            gp = grid::gpar(fill = bubble_fill, col = NA))
         }
       } else {
         if (s$type %in% c("lineChart", "stockChart")) line_pts[[length(line_pts) + 1]] <- list(xs = xs, yv = yv, s = s)
@@ -2092,10 +2095,10 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
       }
       entries
     }
-    if (types[1] == "bubbleChart") {
+    if (types[1] == "bubbleChart" && length(series) == 1L && (is.null(series[[1]]$line$color) || length(series[[1]]$line$color) > 1L || identical(toupper(as.character(series[[1]]$line$color)[1]), "4472C4"))) {
       s <- series[[1]]
       entries <- lapply(seq_along(s$values), function(i) {
-        list(kind = "rect", label = plot_format(s$cats[i]), col = plot_auto_color(i, chart$palette))
+        list(kind = "rect", label = plot_format(s$cats[i]), col = plot_auto_color(i, if (length(s$line$color) > 1L) s$line$color else chart$palette))
       })
     }
     stacked <- all(vapply(series, function(s) {

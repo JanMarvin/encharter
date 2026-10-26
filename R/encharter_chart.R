@@ -1337,7 +1337,9 @@ Chart <- R6::R6Class(
         }
 
         # 4. dPt (Data Points)
-        if (type %in% c("bubbleChart", ENCHARTER_PIE_FAMILY)) {
+        bubble_vary <- type == "bubbleChart" && length(sub_series) == 1L &&
+          (is.null(s$line$color) || length(s$line$color) > 1L || identical(toupper(as.character(s$line$color)[1]), "4472C4"))
+        if (bubble_vary || type %in% ENCHARTER_PIE_FAMILY) {
           palette <- s$line$color %||% self$palette
           # for (i in (seq_along(palette) - 1L)) {
           #   dPt <- xml_add_child(ser, "c:dPt")
@@ -1348,11 +1350,12 @@ Chart <- R6::R6Class(
           #   private$render_color_core(xml_add_child(ln_dpt, "a:solidFill"), "FFFFFF")
           # }
 
-          for (i in seq_along(self$palette)) {
+          pt_colors <- if (length(s$line$color) > 1L) s$line$color else self$palette
+          for (i in seq_along(pt_colors)) {
             dPt <- xml_add_child(ser, "c:dPt")
             xml_add_child(dPt, "c:idx", val = as.character(i - 1))
             spPr <- xml_add_child(dPt, "c:spPr")
-            private$render_color_core(xml_add_child(spPr, "a:solidFill"), self$palette[i])
+            private$render_color_core(xml_add_child(spPr, "a:solidFill"), pt_colors[i])
           }
         } else {
           # per-point formatting (c:dPt): fill colour, or "none" for an

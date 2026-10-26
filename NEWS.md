@@ -25,6 +25,19 @@
 
 ## Bug fixes
 
+* `plot()` draws the depth of 3D charts with right-angle axes (columns, lines,
+  areas) at the same angle for every chart size. Before, the vertical share of
+  the depth was too small in wide charts, so the rows of a 3D chart sat too
+  close together.
+
+* The wall of a 3D pie is drawn with a brightness gradient from left to
+  right instead of one flat shade.
+
+* Bubble charts no longer write the default point colors on every series. A
+  chart with several series, or a series with its own color, now keeps the
+  series colors; only a single series with the default color varies the color
+  by point. `plot()` draws bubbles the same way.
+
 * `plot()` takes `dir`, `grouping`, `overlap` and `gap_width` of a chart group
   from its first series, as the writer does. Before, bars were drawn on top of
   each other when `grouping = "stacked"` was set on the first series only.

@@ -44,17 +44,22 @@ plot_3d_projection <- function(chart, w, h, d, margin = c(0.1, 0.08, 0.1, 0.1), 
   if (isTRUE(r_ang)) {
     # oblique: the depth vector uses the horizontal scale for both of its
     # components, so the height can be stretched on its own
+    # the unit square is as wide as the viewport and as high as it, so the
+    # vertical share of the depth vector is scaled by the aspect ratio to
+    # keep the oblique angle on the screen
+    asp <- grid::convertWidth(grid::unit(1, "npc"), "points", valueOnly = TRUE) /
+      grid::convertHeight(grid::unit(1, "npc"), "points", valueOnly = TRUE)
     x_ext <- w + d * sin(ay)
-    y_lift <- d * sin(ax)
+    y_lift <- d * sin(ax) * asp
     sx <- x_room / x_ext
     sy <- (y_room - y_lift * sx) / h
     if (!stretch) {
-      sx <- min(sx, y_room / (h + y_lift))
-      sy <- sx
+      sx <- min(sx, y_room / (h * asp + y_lift))
+      sy <- sx * asp
     }
     x0 <- margin[4] + (x_room - sx * x_ext) / 2
     y0 <- margin[3] + (y_room - sy * h - y_lift * sx) / 2
-    return(function(x, y, z) list(x = x0 + sx * (x + z * sin(ay)), y = y0 + sy * y + sx * z * sin(ax)))
+    return(function(x, y, z) list(x = x0 + sx * (x + z * sin(ay)), y = y0 + sy * y + sx * z * sin(ax) * asp))
   }
 
   # rotate the box around its vertical axis, tilt it and look from a
@@ -426,10 +431,18 @@ plot_3d_pie <- function(chart, series) {
     a <- seq(e[1], e[2], length.out = max(2, ceiling((e[2] - e[1]) * 60)))
     a <- a[cos(a) < 0]
     if (length(a) < 2) next
-    top <- to_pt(r * sin(a), 0, r * cos(a))
-    bottom <- to_pt(r * sin(rev(a)), -thick, r * cos(rev(a)))
-    grid::grid.polygon(grid::unit.c(top$x, bottom$x), grid::unit.c(top$y, bottom$y),
-                       gp = grid::gpar(fill = plot_shade(cols[i], 0.6), col = NA))
+    # the wall is lit from the left: its brightness falls linearly from the
+    # left to the right edge of the disc and is drawn in narrow strips
+    for (k in seq_len(length(a) - 1)) {
+      ak <- a[c(k, k + 1)]
+      mid_x <- mean(raw(r * sin(ak), 0, r * cos(ak))$x)
+      u <- (mid_x - xr[1]) / diff(xr)
+      top <- to_pt(r * sin(ak), 0, r * cos(ak))
+      bottom <- to_pt(r * sin(rev(ak)), -thick, r * cos(rev(ak)))
+      strip_col <- plot_shade(cols[i], max(0.38, 0.87 - 0.65 * u))
+      grid::grid.polygon(grid::unit.c(top$x, bottom$x), grid::unit.c(top$y, bottom$y),
+                         gp = grid::gpar(fill = strip_col, col = strip_col, lwd = 1))
+    }
   }
   center <- to_pt(0, 0, 0)
   for (i in seq_along(edges)) {
