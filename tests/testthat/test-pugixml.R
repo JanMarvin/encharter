@@ -473,3 +473,13 @@ test_that("node accessors return typed vectors for empty node sets", {
   expect_identical(xml_has_attr(bs, "v"), c(TRUE, TRUE))
   expect_identical(xml_length(bs), c(0L, 0L))
 })
+
+test_that("nodes serialize like the document they belong to", {
+  doc <- openxlsx2::read_xml("<a><b t=\"x &amp; y\">1 &lt; 2 &amp; 3</b></a>")
+  node <- xml_find_first(doc, "b")
+  expect_identical(as.character(node), "<b t=\"x &amp; y\">1 &lt; 2 &amp; 3</b>")
+  expect_match(as.character(doc), as.character(node), fixed = TRUE)
+
+  added <- xml_add_child(doc, "c", "a & b")
+  expect_identical(as.character(added), "<c>a &amp; b</c>")
+})
