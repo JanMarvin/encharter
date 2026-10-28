@@ -124,7 +124,7 @@ encharter <- function(type = "lineChart") {
 
   type_raw <- tolower(as.character(type))
   type <- normalize_encharter_type(type)
-  match.arg(as.character(type), choices = c(ENCHARTER_STANDARD, ENCHARTER_EXTENDED))
+  type <- match.arg(as.character(type), choices = c(ENCHARTER_STANDARD, ENCHARTER_EXTENDED))
 
   if (type %in% ENCHARTER_EXTENDED) {
     ec <- ChartEx$new(type = type)
@@ -169,9 +169,11 @@ EncharterBase <- R6::R6Class(
     series_data = list(),
     #' @field type The default chart type for the object (e.g., `"lineChart"`).
     type = NULL,
-    #' @field palette A character vector of six-digit hex colors used for series
-    #'   when no explicit color is supplied. Defaults to the standard Office theme
-    #'   palette.
+    #' @field palette A character vector of six-digit hex colors. Series added
+    #'   with `color = NULL` take the next color of the palette. In pie,
+    #'   doughnut and pie-of-pie charts, and in a chart with a single bubble
+    #'   series at its default color, the palette colors the data points.
+    #'   Defaults to the standard Office theme palette.
     palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
 
     #' @field chart_title Named list with elements `text` (character) and
@@ -224,6 +226,9 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_chart_title("Monthly Sales", font_size = 14, bold = TRUE)
     set_chart_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      font_color <- check_color(font_color, "font_color")
+      fill <- check_color(fill, "fill")
+      line <- check_color(line, "line")
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$chart_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
@@ -242,6 +247,9 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_x_title("Month", font_color = "888888", italic = TRUE)
     set_x_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      font_color <- check_color(font_color, "font_color")
+      fill <- check_color(fill, "fill")
+      line <- check_color(line, "line")
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$x_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
@@ -260,12 +268,17 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_y_title("Revenue (USD)", bold = TRUE)
     set_y_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      font_color <- check_color(font_color, "font_color")
+      fill <- check_color(fill, "fill")
+      line <- check_color(line, "line")
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$y_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 
     #' @description Set primary X-axis scaling, tick marks, and label formatting.
+    #'   Arguments that are not given keep their
+    #'   current value, so the method can be called several times.
     #' @param min,max Numeric axis limits.
     #' @param major,minor Numeric major/minor unit intervals. For date axes, unit
     #'   is set by `major_time`/`minor_time`.
@@ -346,6 +359,8 @@ EncharterBase <- R6::R6Class(
     },
 
     #' @description Set primary Y-axis scaling, tick marks, and label formatting.
+    #'   Arguments that are not given keep their
+    #'   current value, so the method can be called several times.
     #' @param min,max Numeric axis limits.
     #' @param major,minor Numeric major/minor unit intervals.
     #' @param major_time,minor_time Time unit for date axes: `"days"`,
@@ -457,8 +472,9 @@ EncharterBase <- R6::R6Class(
     },
 
     #' @description Configure the chart legend.
-    #' @param pos Legend position: `"t"`, `"b"`, `"l"`,
-    #'   `"r"` (default), or `"none"` to hide.
+    #' @param pos Legend position: `"t"`, `"b"`, `"l"`, `"r"`, or `"none"` to
+    #'   hide. Not given, the current position is kept: `"r"` for standard
+    #'   and `"t"` for extended charts, unless set before.
     #' @param align Legend alignment relative to the chart: `"ctr"`
     #'   (default), `"min"`, or `"max"`.
     #' @param overlay Logical; if `TRUE` the legend overlaps the plot area.
@@ -468,10 +484,10 @@ EncharterBase <- R6::R6Class(
     #' @param color Six-digit hex color for the legend text.
     #' @examples
     #' ec("line")$set_legend_style(pos = "b", font_size = 9)
-    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
+    set_legend_style = function(pos = NULL, align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
       pos <- normalize_encharter_string(pos)
       align <- normalize_encharter_string(align)
-      pos <- check_choice(pos, c("t", "b", "l", "r", "tr", "none"), "pos") %||% "t"
+      pos <- check_choice(pos, c("t", "b", "l", "r", "tr", "none"), "pos") %||% self$legend_params$pos
       check_bool(overlay, "overlay")
       check_num(font_size, "font_size", min = 0, exclusive_min = TRUE)
       color <- check_color(color, "color")
@@ -489,6 +505,8 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("bar")$set_chart_style(fill = "F5F5F5", line = "CCCCCC", line_width = 0.5)
     set_chart_style = function(fill = "FFFFFF", line = NULL, line_width = 1) {
+      fill <- check_color(fill, "fill")
+      line <- check_color(line, "line")
       self$chart_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },
@@ -501,6 +519,8 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_plot_style(fill = "FAFAFA")
     set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
+      fill <- check_color(fill, "fill")
+      line <- check_color(line, "line")
       self$plot_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },
@@ -563,6 +583,12 @@ EncharterBase <- R6::R6Class(
                                tick_lbl_skip = NULL, tick_mark_skip = NULL,
                                disp_units = NULL) {
 
+      # arguments not given keep their current value (set before or loaded
+      # with ec_load()); only without one the first choice is the default
+      if (is.null(crosses))    crosses    <- self$axis_params[[which]]$crosses
+      if (is.null(label_pos))  label_pos  <- self$axis_params[[which]]$label_pos
+      if (is.null(major_tick)) major_tick <- self$axis_params[[which]]$major_tick
+      if (is.null(minor_tick)) minor_tick <- self$axis_params[[which]]$minor_tick
       crosses    <- private$validate_input(crosses,    c("autoZero", "min", "max"), "crosses")
       label_pos  <- private$validate_input(label_pos,  c("nextTo", "high", "low", "none"), "label_pos")
       major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")
@@ -570,8 +596,8 @@ EncharterBase <- R6::R6Class(
 
       DASH_TYPES <- c("solid", "dash", "dot", "dashDot", "lgDash",
                       "lgDashDot", "sysDash", "sysDot", "dashed", "dotted")
-      if (is.character(grid_lines))       private$validate_input(grid_lines,       DASH_TYPES, "grid_lines")
-      if (is.character(minor_grid_lines)) private$validate_input(minor_grid_lines, DASH_TYPES, "minor_grid_lines")
+      if (is.character(grid_lines))       grid_lines       <- private$validate_input(grid_lines,       DASH_TYPES, "grid_lines")
+      if (is.character(minor_grid_lines)) minor_grid_lines <- private$validate_input(minor_grid_lines, DASH_TYPES, "minor_grid_lines")
 
       color            <- check_color(color, "color")
       font_color       <- check_color(font_color, "font_color")

@@ -15,7 +15,7 @@ num_bounds_txt <- function(min, max, exclusive_min) {
 
 #' @noRd
 is_num_scalar <- function(val) {
-  is.numeric(val) && length(val) == 1L && !is.na(val)
+  is.numeric(val) && length(val) == 1L && is.finite(val)
 }
 
 #' @noRd
@@ -23,7 +23,7 @@ check_num <- function(val, name, min = -Inf, max = Inf, integer = FALSE,
                       exclusive_min = FALSE) {
   if (is.null(val)) return(invisible(NULL))
   if (!is_num_scalar(val)) {
-    stop(sprintf("'%s' must be a single numeric value", name), call. = FALSE)
+    stop(sprintf("'%s' must be a single finite numeric value", name), call. = FALSE)
   }
   if (integer && val != trunc(val)) {
     stop(sprintf("'%s' must be a whole number", name), call. = FALSE)

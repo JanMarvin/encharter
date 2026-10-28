@@ -63,6 +63,10 @@ encharter_to_crtx <- function(chart, path) {
   if (!grepl("\\.crtx$", path, ignore.case = TRUE)) {
     warning("'path' does not end in .crtx; the file will not be offered as a template.", call. = FALSE)
   }
+  zip_cmd <- Sys.getenv("R_ZIPCMD", "zip")
+  if (!file.exists(zip_cmd) && !nzchar(Sys.which(zip_cmd))) {
+    stop("Writing a .crtx file needs a zip program. Install one or set the R_ZIPCMD environment variable to its path.", call. = FALSE)
+  }
 
   doc <- read_xml(as.character(chart$render()))
   # a template carries the formatting of the series but no data; the
@@ -94,7 +98,9 @@ encharter_to_crtx <- function(chart, path) {
   out <- normalizePath(path, mustWork = FALSE)
   if (file.exists(out)) unlink(out)
   old <- setwd(tmp)
-  on.exit(setwd(old), add = TRUE)
+  # restore the working directory before the folder is removed; a folder
+  # in use as working directory cannot be removed on Windows
+  on.exit(setwd(old), add = TRUE, after = FALSE)
   status <- utils::zip(out, files = c("[Content_Types].xml", "_rels/.rels", "chart/chart.xml"), flags = "-r9Xq")
   if (!identical(status, 0L) || !file.exists(out)) stop("Could not write the zip file ", path, call. = FALSE)
   invisible(path)

@@ -96,9 +96,11 @@ ec("line")
 
     \item{\code{type}}{The default chart type for the object (e.g., \code{"lineChart"}).}
 
-    \item{\code{palette}}{A character vector of six-digit hex colors used for series
-when no explicit color is supplied. Defaults to the standard Office theme
-palette.}
+    \item{\code{palette}}{A character vector of six-digit hex colors. Series added
+with \code{color = NULL} take the next color of the palette. In pie,
+doughnut and pie-of-pie charts, and in a chart with a single bubble
+series at its default color, the palette colors the data points.
+Defaults to the standard Office theme palette.}
 
     \item{\code{chart_title}}{Named list with elements \code{text} (character) and
 \code{style} (list of font/fill/line options) for the main chart title.}
@@ -280,6 +282,8 @@ and style parameters. Modified via \verb{$set_x_axis()}, etc.}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_x_axis}{}}}
 \subsection{\code{EncharterBase$set_x_axis()}}{
   Set primary X-axis scaling, tick marks, and label formatting.
+Arguments that are not given keep their
+current value, so the method can be called several times.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{EncharterBase$set_x_axis(
@@ -388,6 +392,8 @@ positive number for a custom unit.}
 \if{latex}{\out{\hypertarget{method-EncharterBase-set_y_axis}{}}}
 \subsection{\code{EncharterBase$set_y_axis()}}{
   Set primary Y-axis scaling, tick marks, and label formatting.
+Arguments that are not given keep their
+current value, so the method can be called several times.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{EncharterBase$set_y_axis(
@@ -539,7 +545,7 @@ properties (e.g. \code{font_size}, \code{font_color}, \code{bold}).}
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{EncharterBase$set_legend_style(
-  pos = "t",
+  pos = NULL,
   align = "ctr",
   overlay = FALSE,
   font_size = NULL,
@@ -553,8 +559,9 @@ properties (e.g. \code{font_size}, \code{font_color}, \code{bold}).}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{pos}}{Legend position: \code{"t"}, \code{"b"}, \code{"l"},
-\code{"r"} (default), or \code{"none"} to hide.}
+      \item{\code{pos}}{Legend position: \code{"t"}, \code{"b"}, \code{"l"}, \code{"r"}, or \code{"none"} to
+hide. Not given, the current position is kept: \code{"r"} for standard
+and \code{"t"} for extended charts, unless set before.}
       \item{\code{align}}{Legend alignment relative to the chart: \code{"ctr"}
 (default), \code{"min"}, or \code{"max"}.}
       \item{\code{overlay}}{Logical; if \code{TRUE} the legend overlaps the plot area.}

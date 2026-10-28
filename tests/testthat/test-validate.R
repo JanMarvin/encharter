@@ -163,3 +163,63 @@ test_that("ChartEx add_series validates its inputs", {
     ChartEx$new("boxWhisker")$add_series(data = "Sheet1!B2:B5", statistics = "exclusive")
   )
 })
+
+test_that("abbreviated choices are written as the full value", {
+  ch <- Chart$new("lineChart")
+  ch$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", label = "S!$A$2:$A$4", line_type = "sysDa")
+  ch$set_y_axis(grid_lines = "lgDashD")
+  expect_identical(ch$series_data[[1]]$line$type, "sysDash")
+  expect_identical(ch$axis_params$y$grid_lines, "lgDashDot")
+  xml <- as.character(ch$render())
+  expect_match(xml, 'prstDash val="sysDash"', fixed = TRUE)
+  expect_false(grepl('prstDash val="sysDa"', xml, fixed = TRUE))
+
+  ch$update_series(line_type = "lgDashD")
+  expect_identical(ch$series_data[[1]]$line$type, "lgDashDot")
+
+  ch$add_series(name = "S!$C$1", data = "S!$C$2:$C$4", type = "scatterC")
+  expect_identical(ch$series_data[[2]]$type, "scatterChart")
+  expect_identical(Chart$new("ofPie")$type, "ofPieChart")
+  expect_null(Chart$new()$type)
+
+  ch2 <- Chart$new("lineChart")
+  ch2$add_series(name = "S!$B$1", data = "S!$B$2:$B$4")
+  expect_null(ch2$series_data[[1]]$line$type)
+  expect_identical(ch2$series_data[[1]]$type, "lineChart")
+
+  cx <- ChartEx$new()
+  cx$add_series(data = "S!$B$2:$B$4", type = "waterf")
+  expect_identical(cx$series_data[[1]]$type, "waterfall")
+})
+
+test_that("chart, plot and title colors are validated", {
+  ch <- ec("bar")
+  expect_error(ch$set_chart_style(fill = "notacolor"), "fill")
+  expect_error(ch$set_plot_style(line = "notacolor"), "line")
+  expect_error(ch$set_chart_title("T", font_color = "notacolor"), "font_color")
+  expect_error(ch$set_x_title("T", fill = "notacolor"), "fill")
+
+  ch$set_chart_style(fill = "#f5f5f5", line = "red")
+  expect_identical(ch$chart_style$fill, "F5F5F5")
+  expect_identical(ch$chart_style$line, "FF0000")
+  ch$set_plot_style(fill = "none", line = openxlsx2::wb_color(theme = 1))
+  expect_identical(ch$plot_style$fill, "none")
+  expect_s3_class(ch$plot_style$line, "wbColour")
+  ch$set_chart_title("T", fill = "auto")
+  expect_identical(ch$chart_title$style$fill, "auto")
+
+  ch$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", secondary = TRUE)
+  expect_error(ch$set_y2_title("T", line = "notacolor"), "line")
+})
+
+test_that("add_series() checks its logical flags and numbers are finite", {
+  ch <- ec("line")
+  expect_error(ch$add_series(data = "S!$B$2:$B$4", smooth = "yes"), "smooth")
+  expect_error(ch$add_series(data = "S!$B$2:$B$4", show_line = 1), "show_line")
+  expect_error(ch$add_series(data = "S!$B$2:$B$4", filled = NA), "filled")
+  expect_silent(ch$add_series(data = "S!$B$2:$B$4", smooth = TRUE, show_line = FALSE, filled = FALSE))
+
+  expect_error(ec("line")$set_x_axis(min = Inf), "finite")
+  expect_error(ec("line")$set_y_axis(crosses_at = -Inf), "finite")
+  expect_error(ec("line")$add_series(data = "S!$B$2:$B$4", line_width = NaN), "finite")
+})

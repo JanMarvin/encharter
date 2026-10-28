@@ -590,3 +590,49 @@ test_that("series without a color take the theme accents in turn", {
   expect_equal(plot_color(cols[[2]]), "#ED7D31")
   expect_match(chart$render(), '<c:idx val="1"/><c:order val="1"/><c:spPr><a:solidFill><a:schemeClr val="accent2"/>', fixed = TRUE)
 })
+
+test_that("sheet names with apostrophes, '!' and '&' survive render, load and plot", {
+  for (nm in c("O'Brien & Co", "a!b")) {
+    wb <- openxlsx2::wb_workbook()$add_worksheet(nm)$
+      add_data(x = data.frame(a = c("p", "q", "r"), b = c(4, 5, 6)))
+    ch <- ec("bar")$add_series(data = openxlsx2::wb_data(wb), name = "b", label = "a")
+    ref <- ch$series_data[[1]]$data
+    expect_equal(xml_unescape(ref), sprintf("'%s'!$B$2:$B$4", gsub("'", "''", nm)))
+
+    wb$add_data(x = data.frame(b = c(40, 50, 60)), dims = "B1")
+    expect_equal(plot_collect(ch, wb)[[1]]$values, c(40, 50, 60))
+
+    wb$add_encharter(graph = ch)
+    loaded <- ec_load(wb)
+    expect_equal(loaded$series_data[[1]]$data, ref)
+    loaded$update_series(data = openxlsx2::wb_data(wb), label = a)
+    expect_equal(loaded$series_data[[1]]$data, ref)
+  }
+})
+
+test_that("writing a template restores the working directory and cleans up", {
+  skip_if(Sys.which("zip") == "")
+  chart <- ec("bar")$add_series(name = "S!$B$1", data = "S!$B$2:$B$4")
+  wd <- getwd()
+  before <- list.files(tempdir(), pattern = "^crtx")
+  ec_to_crtx(chart, tempfile(fileext = ".crtx"))
+  expect_identical(getwd(), wd)
+  expect_identical(list.files(tempdir(), pattern = "^crtx"), before)
+})
+
+test_that("writing a template without a zip program gives a clear error", {
+  withr::local_envvar(R_ZIPCMD = "no-such-zip-program")
+  chart <- ec("bar")$add_series(name = "S!$B$1", data = "S!$B$2:$B$4")
+  expect_error(ec_to_crtx(chart, tempfile(fileext = ".crtx")), "needs a zip program")
+})
+
+test_that("extended charts on sheets with apostrophes are added to the workbook", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("O'Brien & Co")$
+    add_data(x = data.frame(a = c("p", "q", "r"), b = c(4, 5, 6)))
+  cx <- ec("waterfall")$add_series(data = openxlsx2::wb_data(wb), name = "b", label = "a")
+  expect_equal(xml_unescape(cx$series_data[[1]]$data), "'O''Brien & Co'!$B$2:$B$4")
+  expect_silent(wb$add_encharter(graph = cx))
+  nr <- wb$get_named_regions()
+  expect_setequal(nr$coords, c("B1:B1", "B2:B4", "A2:A4", "B2:B4"))
+  expect_equal(plot_read_ref(wb, cx$series_data[[1]]$data), c(4, 5, 6))
+})

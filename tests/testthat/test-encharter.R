@@ -94,3 +94,14 @@ test_that("escaping works", {
   expect_equal(wf$series_data[[1]]$data, "'Data&amp;Chart'!$B$2:$B$13")
   expect_equal(wf$series_data[[1]]$label, "'Data&amp;Chart'!$A$2:$A$13")
 })
+
+test_that("abbreviated chart types give a chart object", {
+  ch <- ec("stockC")
+  expect_s3_class(ch, "Chart")
+  expect_identical(ch$type, "stockChart")
+  expect_s3_class(ec("waterf"), "ChartEx")
+  expect_identical(ec("barOfPie")$of_pie_type, "bar")
+  expect_identical(ec("line3")$type, "line3DChart")
+  expect_error(ec("ar"), "should be one of")
+  expect_error(ec("nonsense"), "should be one of")
+})

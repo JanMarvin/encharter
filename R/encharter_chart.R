@@ -80,11 +80,13 @@ Chart <- R6::R6Class(
     #' @param type Initial chart type (e.g., "lineChart", "barChart", "pieChart").
     initialize = function(type = NULL) {
 
-      private$validate_input(
-        type,
-        ENCHARTER_STANDARD,
-        "series type"
-      )
+      if (!is.null(type)) {
+        type <- private$validate_input(
+          type,
+          ENCHARTER_STANDARD,
+          "series type"
+        )
+      }
 
       type <- normalize_encharter_type(type)
       self$type <- type
@@ -132,6 +134,9 @@ Chart <- R6::R6Class(
         warning("Secondary axis title ignored: no series is assigned to a secondary X-axis.", call. = FALSE)
         return(invisible(self))
       }
+      font_color <- check_color(font_color, "font_color")
+      fill <- check_color(fill, "fill")
+      line <- check_color(line, "line")
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$x2_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
@@ -165,12 +170,17 @@ Chart <- R6::R6Class(
         warning("Secondary axis title ignored: no series is assigned to a secondary Y-axis.", call. = FALSE)
         return(invisible(self))
       }
+      font_color <- check_color(font_color, "font_color")
+      fill <- check_color(fill, "fill")
+      line <- check_color(line, "line")
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$y2_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
     },
 
     #' @description Set Secondary Y-axis scaling, units, and format.
+    #'   Arguments that are not given keep their
+    #'   current value, so the method can be called several times.
     #' @param min Minimum value for the axis.
     #' @param max Maximum value for the axis.
     #' @param major Numeric value for major unit interval.
@@ -192,7 +202,8 @@ Chart <- R6::R6Class(
     #' @param grid_lines,minor_grid_lines Logical. Show or hide grid lines.
     #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and grid lines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
-    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses Intersection: "autoZero", "min" (start), or "max" (end,
+    #'   default).
     #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     #' @param tick_lbl_skip,tick_mark_skip Integer (>= 1); label/tick every n-th category (category axes only).
@@ -206,8 +217,9 @@ Chart <- R6::R6Class(
                            grid_color = NULL, grid_lines = NULL,
                            minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                           crosses = "max", crosses_at = NULL, label_pos = NULL,
+                           crosses = NULL, crosses_at = NULL, label_pos = NULL,
                            tick_lbl_skip = NULL, tick_mark_skip = NULL, disp_units = NULL) {
+        if (is.null(crosses)) crosses <- self$axis_params$y2$crosses %||% "max"
         private$set_axis_params(
           "y2",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
@@ -225,6 +237,8 @@ Chart <- R6::R6Class(
     },
 
     #' @description Set Secondary X-axis scaling, units, and format.
+    #'   Arguments that are not given keep their
+    #'   current value, so the method can be called several times.
     #' @param min Minimum value for the axis.
     #' @param max Maximum value for the axis.
     #' @param major Numeric value for major unit interval.
@@ -246,7 +260,8 @@ Chart <- R6::R6Class(
     #' @param grid_lines,minor_grid_lines Logical. Show or hide grid lines.
     #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and grid lines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
-    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses Intersection: "autoZero", "min" (start), or "max" (end,
+    #'   default).
     #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     #' @param tick_lbl_skip,tick_mark_skip Integer (>= 1); label/tick every n-th category (category axes only).
@@ -260,9 +275,10 @@ Chart <- R6::R6Class(
                            grid_color = NULL, grid_lines = NULL,
                            minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                           crosses = "max", crosses_at = NULL, label_pos = NULL,
+                           crosses = NULL, crosses_at = NULL, label_pos = NULL,
                            tick_lbl_skip = NULL, tick_mark_skip = NULL, disp_units = NULL) {
 
+        if (is.null(crosses)) crosses <- self$axis_params$x2$crosses %||% "max"
         private$set_axis_params(
           "x2",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
@@ -423,7 +439,8 @@ Chart <- R6::R6Class(
     #' @param data Cell range for series values.
     #' @param label Cell range for category labels.
     #' @param weight Cell range for bubble sizes (bubbleChart only).
-    #' @param color Primary Hex color for the series (used as default for line and markers).
+    #' @param color Primary Hex color for the series (used as default for line and
+    #'   markers). `NULL` takes the next color of the chart's `palette`.
     #' @param type Chart type for this specific series (for combo charts).
     #' @param secondary Logical. Set to TRUE to move series to secondary axis.
     #' @param dir Bar direction ("col" or "bar").
@@ -508,11 +525,13 @@ Chart <- R6::R6Class(
       }
 
       type <- normalize_encharter_type(type)
-      private$validate_input(
-        type,
-        ENCHARTER_STANDARD,
-        "series type"
-      )
+      if (!is.null(type)) {
+        type <- private$validate_input(
+          type,
+          ENCHARTER_STANDARD,
+          "series type"
+        )
+      }
 
       marker <- private$validate_input(
         marker,
@@ -531,11 +550,13 @@ Chart <- R6::R6Class(
 
       # 2. Validate Line Type (Dash Style)
       # OOXML presetDash values
-      private$validate_input(
-        line_type,
-        c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
-        "line_type"
-      )
+      if (!is.null(line_type)) {
+        line_type <- private$validate_input(
+          line_type,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "line_type"
+        )
+      }
 
       # Schema range validation (ECMA-376 dml-chart.xsd)
       check_num(overlap, "overlap", min = -100, max = 100, integer = TRUE)   # ST_Overlap
@@ -544,6 +565,9 @@ Chart <- R6::R6Class(
       check_num(line_width, "line_width", min = 0)
       check_num(marker_line_width, "marker_line_width", min = 0)
       check_trendline(trendline)
+      check_bool(smooth, "smooth")
+      check_bool(show_line, "show_line")
+      check_bool(filled, "filled")
       check_bool(invert_if_negative, "invert_if_negative")
       check_error_bars(error_bars)
       color       <- check_color(color, "color")
@@ -748,7 +772,7 @@ Chart <- R6::R6Class(
 
       if (!is.null(type)) {
         type <- normalize_encharter_type(type)
-        private$validate_input(type, ENCHARTER_STANDARD, "series type")
+        type <- private$validate_input(type, ENCHARTER_STANDARD, "series type")
       }
       if (!is.null(marker)) {
         marker <- private$validate_input(marker, c("none", "circle", "dash", "diamond", "dot", "plus", "square", "star", "triangle", "x"), "marker")
@@ -760,7 +784,7 @@ Chart <- R6::R6Class(
         grouping <- private$validate_input(grouping, c("standard", "clustered", "stacked", "percentStacked"), "grouping")
       }
       if (!is.null(line_type)) {
-        private$validate_input(line_type, c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"), "line_type")
+        line_type <- private$validate_input(line_type, c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"), "line_type")
       }
       check_num(overlap, "overlap", min = -100, max = 100, integer = TRUE)
       check_num(gap_width, "gap_width", min = 0, max = 500, integer = TRUE)
@@ -875,6 +899,10 @@ Chart <- R6::R6Class(
     #' @return A character string containing the OOXML chart definition.
     #' @param u_ids five unique ids
     render = function(u_ids = c("53178645", "60812428", "64752656", "81893617", "90007639")) {
+      # numbers are written with as.character(), which switches to
+      # scientific notation (e.g. "3e+05") that the schema does not allow
+      op <- options(scipen = 999)
+      on.exit(options(op), add = TRUE)
 
       if (length(self$series_data) == 0) {
         stop(

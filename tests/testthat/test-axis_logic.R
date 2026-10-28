@@ -102,3 +102,40 @@ test_that("Chart: scaling", {
   wb <- openxlsx2::wb_workbook()$add_worksheet("dat")$add_data(x = df)$
     add_encharter(graph = chart)
 })
+
+test_that("axis setters keep values that are not given", {
+  pick <- function(p) p[c("crosses", "major_tick", "minor_tick", "label_pos", "min", "font_size")]
+
+  ch <- ec("line")
+  ch$set_x_axis(crosses = "max", major_tick = "out", label_pos = "low")
+  ch$set_x_axis(min = 0)
+  ch$set_x_axis(font_size = 9)
+  expect_equal(pick(ch$axis_params$x),
+               list(crosses = "max", major_tick = "out", minor_tick = "cross", label_pos = "low", min = 0, font_size = 9))
+
+  # a single call still gives the previous defaults
+  one <- ec("line")$set_x_axis(min = 0)
+  expect_equal(pick(one$axis_params$x),
+               list(crosses = "autoZero", major_tick = "cross", minor_tick = "cross", label_pos = "nextTo", min = 0, font_size = NULL))
+
+  ch$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", secondary = TRUE)
+  ch$set_y2_axis(min = 1)
+  expect_identical(ch$axis_params$y2$crosses, "max")
+  ch$set_y2_axis(crosses = "min")
+  ch$set_y2_axis(max = 5)
+  expect_identical(ch$axis_params$y2$crosses, "min")
+})
+
+test_that("axis setters keep the axis settings of a loaded chart", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("D")$
+    add_data(x = data.frame(a = c("p", "q", "r"), b = 4:6))
+  ch <- ec("line")$add_series(data = openxlsx2::wb_data(wb), name = "b", label = "a")
+  ch$set_x_axis(major_tick = "out", label_pos = "low", crosses = "max")
+  wb$add_encharter(graph = ch)
+
+  loaded <- ec_load(wb)
+  loaded$set_x_axis(font_size = 9)
+  expect_identical(loaded$axis_params$x$major_tick, "out")
+  expect_identical(loaded$axis_params$x$label_pos, "low")
+  expect_identical(loaded$axis_params$x$crosses, "max")
+})

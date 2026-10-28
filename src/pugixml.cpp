@@ -281,7 +281,8 @@ extern "C" {
     if (!ptr || !(*ptr)) return Rf_mkString("");
 
     std::stringstream ss;
-    ptr->print(ss, "", pugi::format_raw | pugi::format_no_declaration);
+    ptr->print(ss, "", pugi::format_raw | pugi::format_no_declaration |
+               pugi::format_no_escapes | pugi::format_skip_control_chars);
     return Rf_mkString(ss.str().c_str());
   }
 

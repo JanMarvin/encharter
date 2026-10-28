@@ -125,7 +125,8 @@ ChartEx <- R6::R6Class(
     #' @param data Cell range for the numeric values.
     #' @param label Cell range for the category labels.
     #' @param type Type of chart (waterfall, sunburst, treemap, regionMap).
-    #' @param color Hex color or "auto".
+    #' @param color Hex color or "auto". `NULL` takes the next color of the
+    #'   chart's `palette`.
     #' @param line_color Border color.
     #' @param line_width Border width.
     #' @param gap_width Integer between 0 and 500.
@@ -144,11 +145,13 @@ ChartEx <- R6::R6Class(
 
       # not sure if changing the type here is a good idea
       type <- normalize_encharter_type(type)
-      private$validate_input(
-        type,
-        ENCHARTER_EXTENDED,
-        "series type"
-      )
+      if (!is.null(type)) {
+        type <- private$validate_input(
+          type,
+          ENCHARTER_EXTENDED,
+          "series type"
+        )
+      }
 
       color        <- check_color(color, "color")
       line_color   <- check_color(line_color, "line_color")
@@ -315,6 +318,11 @@ ChartEx <- R6::R6Class(
     #' @param guid a guid
     #' @return A list containing the XML and attribute mappings.
     render = function(id_start = 1, guid = "{C59B1284-E301-0D0F-1B20-FD96A66D6E43}") {
+      # numbers are written with as.character(), which switches to
+      # scientific notation (e.g. "3e+05") that the schema does not allow
+      op <- options(scipen = 999)
+      on.exit(options(op), add = TRUE)
+
       chart_data_node <- xml_find_first(self$xml, "//cx:chartData")
       plot_area_node <- xml_find_first(self$xml, "//cx:plotArea")
       plot_region_node <- xml_find_first(self$xml, "//cx:plotAreaRegion")
@@ -578,6 +586,12 @@ ChartEx <- R6::R6Class(
           private$render_color(ln_chart, self$chart_style$line)
         }
       }
+
+      # the references become defined names via wb_add_encharter(), which
+      # reads the sheet name with a single apostrophe; in the reference it is
+      # written twice, so this is undone here
+      head_attrs <- gsub("&apos;&apos;", "&apos;", head_attrs, fixed = TRUE)
+      body_attrs <- gsub("&apos;&apos;", "&apos;", body_attrs, fixed = TRUE)
 
       out <- openxlsx2::read_xml(as.character(self$xml), pointer = FALSE)
       attr(out, "head") <- head_attrs

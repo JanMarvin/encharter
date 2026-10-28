@@ -92,7 +92,7 @@ xml_children <- function(x) {
 #' @return A character vector of tag names.
 #' @keywords internal
 xml_name <- function(x) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_name, node))))
+  if (is.list(x)) return(vapply(x, function(node) .Call(C_pugi_node_name, node), character(1), USE.NAMES = FALSE))
   # Unwrap document node to its root element, matching xml2 behaviour
   if (.Call(C_pugi_node_type, x) == "document") {
     kids <- xml_find_all(x, "/*")
@@ -108,7 +108,7 @@ xml_name <- function(x) {
 #' @return A character vector (e.g., "element", "document").
 #' @keywords internal
 xml_type <- function(x) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_type, node))))
+  if (is.list(x)) return(vapply(x, function(node) .Call(C_pugi_node_type, node), character(1), USE.NAMES = FALSE))
   .Call(C_pugi_node_type, x)
 }
 
@@ -119,7 +119,7 @@ xml_type <- function(x) {
 #' @return A character vector of attribute values.
 #' @keywords internal
 xml_attr <- function(x, attr) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_get_attr, node, attr))))
+  if (is.list(x)) return(vapply(x, function(node) .Call(C_pugi_get_attr, node, attr), character(1), USE.NAMES = FALSE))
   .Call(C_pugi_get_attr, x, as.character(attr))
 }
 
@@ -129,7 +129,7 @@ xml_attr <- function(x, attr) {
 #' @return A character vector of text contents.
 #' @keywords internal
 xml_text <- function(x) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_text, node))))
+  if (is.list(x)) return(vapply(x, function(node) .Call(C_pugi_node_text, node), character(1), USE.NAMES = FALSE))
   .Call(C_pugi_node_text, x)
 }
 
@@ -154,7 +154,7 @@ xml_set_attr <- function(x, attr, value) {
 #' @return A logical vector.
 #' @keywords internal
 xml_has_attr <- function(x, attr) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_has_attr, node, attr))))
+  if (is.list(x)) return(vapply(x, function(node) .Call(C_pugi_has_attr, node, attr), logical(1), USE.NAMES = FALSE))
   .Call(C_pugi_has_attr, x, as.character(attr))
 }
 
@@ -164,7 +164,7 @@ xml_has_attr <- function(x, attr) {
 #' @return An integer vector of child counts.
 #' @keywords internal
 xml_length <- function(x) {
-  if (is.list(x)) return(unname(sapply(x, function(node) .Call(C_pugi_node_length, node))))
+  if (is.list(x)) return(vapply(x, function(node) .Call(C_pugi_node_length, node), integer(1), USE.NAMES = FALSE))
   .Call(C_pugi_node_length, x)
 }
 
