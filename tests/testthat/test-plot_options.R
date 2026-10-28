@@ -26,7 +26,7 @@ test_that("plot helpers cover formats, line types, trend equations and error ext
   expect_equal(plot_format(as.Date("2024-03-05"), "mmmm"), "March")
   expect_equal(plot_format(as.Date("2024-03-05"), "[$-en-US]mmm yy"), "Mar 24")
   expect_equal(plot_format(as.Date("2024-03-05"), "[$-409]dd.mm.yyyy"), "05.03.2024")
-  expect_equal(plot_format(as.Date("2024-03-05"), "[$-F800]"), format(as.Date("2024-03-05"), "%x"))
+  expect_equal(plot_format(as.Date("2024-03-05"), "[$-F800]"), "03/05/24")
   expect_equal(plot_format(NA_real_), "")
   expect_equal(plot_format(c(1, 2.5)), c("1", "2.5"))
 
@@ -173,4 +173,19 @@ test_that("plot() takes grouping and overlap of a chart group from its first ser
     unname(tools::md5sum(f))
   }
   expect_equal(render_png(build(FALSE)), render_png(build(TRUE)))
+})
+
+test_that("plot_format() reads date codes token by token", {
+  d <- as.Date(c("2024-01-31", "2024-07-04", NA))
+  expect_equal(plot_format(d), c("01/31/24", "07/04/24", NA))
+  expect_equal(plot_format(d, "m/d/yyyy"), c("1/31/2024", "7/4/2024", NA))
+  expect_equal(plot_format(d, "d-mmm-yy"), c("31-Jan-24", "4-Jul-24", NA))
+  expect_equal(plot_format(d, "mmmmm"), c("J", "J", NA))
+  expect_equal(plot_format(d, "dddd \"Week\" dd"), c("Wednesday Week 31", "Thursday Week 04", NA))
+  expect_equal(plot_format(d, "General"), c("01/31/24", "07/04/24", NA))
+  p <- as.POSIXct(c("2024-01-31 09:05:07", "2024-01-31 23:45:00"), tz = "UTC")
+  expect_equal(plot_format(p, "h:mm AM/PM"), c("9:05 AM", "11:45 PM"))
+  expect_equal(plot_format(p, "hh:mm:ss"), c("09:05:07", "23:45:00"))
+  expect_equal(plot_format(p, "mm:ss"), c("05:07", "45:00"))
+  expect_equal(plot_format(p, "h:mm a/p"), c("9:05 a", "11:45 p"))
 })

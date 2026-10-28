@@ -4,10 +4,8 @@
 
 snapshot_set <- function(prefix, set) {
   testthat::skip_if_not_installed("vdiffr")
-  # dates without a number format follow the locale's short date, and
-  # sorting the collation; both are pinned so the pictures are the same
-  # on every system
-  withr::local_locale(c(LC_TIME = "C"))
+  # sorting follows the collation, which is pinned so the pictures are the
+  # same on every system
   withr::local_collate("C")
   r <- set()
   for (i in seq_along(r$charts)) {

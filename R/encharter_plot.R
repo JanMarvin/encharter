@@ -150,25 +150,98 @@ plot_gpar_text <- function(style, default_size, default_col = "#000000") {
 # codes; everything else falls back to "General".
 plot_format <- function(x, format = NULL) {
   if (inherits(x, c("Date", "POSIXt"))) {
-    # without a format the cell's short date is shown, which follows the
-    # system locale
-    if (is.null(format)) return(format(x, "%x"))
-    fmt <- tolower(gsub("\\[\\$-[^]]*\\]", "", format))
-    if (!nzchar(trimws(fmt))) return(format(x, "%x"))
-    fmt <- gsub("yyyy", "%Y", fmt)
-    fmt <- gsub("yy", "%y", fmt)
-    fmt <- gsub("dddd", "%A", fmt)
-    fmt <- gsub("ddd", "%a", fmt)
-    fmt <- gsub("mmmm", "%B", fmt)
-    fmt <- gsub("mmm", "%b", fmt)
-    fmt <- gsub("mm", "%m", fmt)
-    fmt <- gsub("dd", "%d", fmt)
-    fmt <- gsub("hh", "%H", fmt)
-    fmt <- gsub("ss", "%S", fmt)
-    fmt <- gsub("%m:%m", "%M:%M", fmt, fixed = TRUE)
-    fmt <- gsub("%H:%m", "%H:%M", fmt, fixed = TRUE)
-    fmt <- gsub("\\\\", "", fmt)
-    return(format(x, fmt))
+    # date and time codes are read token by token. Month and day names are
+    # English and nothing is passed to format(), so the result does not
+    # depend on the system locale. Without a format a fixed short date is
+    # shown, the one the C locale gives.
+    fmt <- strsplit(paste0(format %||% "", ";"), ";", fixed = TRUE)[[1]][1]
+    if (!nzchar(trimws(gsub("\\[[^]]*\\]", "", fmt))) || tolower(fmt) == "general") fmt <- "mm/dd/yy"
+    chars <- strsplit(fmt, "")[[1]]
+    n <- length(chars)
+    tok_text <- character()
+    tok_kind <- character()
+    i <- 1
+    while (i <= n) {
+      ch <- chars[i]
+      lc <- tolower(ch)
+      if (ch == "\"") {
+        j <- i + 1
+        while (j <= n && chars[j] != "\"") j <- j + 1
+        tok_text <- c(tok_text, paste(chars[seq_len(j - i - 1) + i], collapse = ""))
+        tok_kind <- c(tok_kind, "lit")
+        i <- j + 1
+      } else if (ch == "\\") {
+        tok_text <- c(tok_text, if (i < n) chars[i + 1] else "")
+        tok_kind <- c(tok_kind, "lit")
+        i <- i + 2
+      } else if (ch == "[") {
+        j <- i
+        while (j <= n && chars[j] != "]") j <- j + 1
+        i <- j + 1
+      } else if (ch %in% c("_", "*")) {
+        tok_text <- c(tok_text, if (ch == "_") " " else "")
+        tok_kind <- c(tok_kind, "lit")
+        i <- i + 2
+      } else if (toupper(paste(chars[i:min(i + 4, n)], collapse = "")) == "AM/PM") {
+        tok_text <- c(tok_text, paste(chars[i:(i + 4)], collapse = ""))
+        tok_kind <- c(tok_kind, "ampm")
+        i <- i + 5
+      } else if (toupper(paste(chars[i:min(i + 2, n)], collapse = "")) == "A/P") {
+        tok_text <- c(tok_text, paste(chars[i:(i + 2)], collapse = ""))
+        tok_kind <- c(tok_kind, "ap")
+        i <- i + 3
+      } else if (lc %in% c("y", "m", "d", "h", "s")) {
+        j <- i
+        while (j < n && tolower(chars[j + 1]) == lc) j <- j + 1
+        tok_text <- c(tok_text, strrep(lc, j - i + 1))
+        tok_kind <- c(tok_kind, lc)
+        i <- j + 1
+      } else {
+        tok_text <- c(tok_text, ch)
+        tok_kind <- c(tok_kind, "lit")
+        i <- i + 1
+      }
+    }
+    # m and mm are minutes right after an hour or right before a second
+    # code, with only literals in between
+    codes <- which(tok_kind != "lit")
+    for (k in seq_along(codes)) {
+      t <- codes[k]
+      if (tok_kind[t] != "m" || nchar(tok_text[t]) > 2) next
+      prev_kind <- if (k > 1) tok_kind[codes[k - 1]] else ""
+      next_kind <- if (k < length(codes)) tok_kind[codes[k + 1]] else ""
+      if (prev_kind == "h" || next_kind == "s") tok_kind[t] <- "min"
+    }
+    twelve <- any(tok_kind %in% c("ampm", "ap"))
+
+    lt <- as.POSIXlt(x)
+    yr  <- lt$year + 1900L
+    mon <- lt$mon + 1L
+    hr  <- lt$hour
+    wday_name <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")[lt$wday + 1L]
+    out <- rep("", length(x))
+    for (t in seq_along(tok_kind)) {
+      w <- nchar(tok_text[t])
+      part <- switch(tok_kind[t],
+        lit  = rep(tok_text[t], length(x)),
+        y    = if (w >= 3) sprintf("%04d", yr) else sprintf("%02d", yr %% 100L),
+        m    = if (w == 1) as.character(mon) else if (w == 2) sprintf("%02d", mon)
+               else if (w == 3) month.abb[mon] else if (w == 4) month.name[mon] else substr(month.name[mon], 1, 1),
+        d    = if (w == 1) as.character(lt$mday) else if (w == 2) sprintf("%02d", lt$mday)
+               else if (w == 3) substr(wday_name, 1, 3) else wday_name,
+        h    = {
+          h_val <- if (twelve) (hr + 11L) %% 12L + 1L else hr
+          if (w == 1) as.character(h_val) else sprintf("%02d", h_val)
+        },
+        min  = if (w == 1) as.character(lt$min) else sprintf("%02d", lt$min),
+        s    = if (w == 1) as.character(floor(lt$sec)) else sprintf("%02d", as.integer(floor(lt$sec))),
+        ampm = ifelse(hr < 12L, substr(tok_text[t], 1, 2), substr(tok_text[t], 4, 5)),
+        ap   = ifelse(hr < 12L, substr(tok_text[t], 1, 1), substr(tok_text[t], 3, 3))
+      )
+      out <- paste0(out, part)
+    }
+    out[is.na(x)] <- NA_character_
+    return(out)
   }
   if (is.character(x)) return(x)
   fmt <- format %||% "General"
