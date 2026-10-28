@@ -25,9 +25,11 @@ instead.
 
 - `palette`:
 
-  A character vector of six-digit hex colors used for series when no
-  explicit color is supplied. Defaults to the standard Office theme
-  palette.
+  A character vector of six-digit hex colors. Series added with
+  `color = NULL` take the next color of the palette. In pie, doughnut
+  and pie-of-pie charts, and in a chart with a single bubble series at
+  its default color, the palette colors the data points. Defaults to the
+  standard Office theme palette.
 
 - `chart_title`:
 
@@ -289,7 +291,9 @@ Set the primary Y-axis title.
 
 ### `EncharterBase$set_x_axis()`
 
-Set primary X-axis scaling, tick marks, and label formatting.
+Set primary X-axis scaling, tick marks, and label formatting. Arguments
+that are not given keep their current value, so the method can be called
+several times.
 
 #### Usage
 
@@ -455,7 +459,9 @@ Set primary X-axis scaling, tick marks, and label formatting.
 
 ### `EncharterBase$set_y_axis()`
 
-Set primary Y-axis scaling, tick marks, and label formatting.
+Set primary Y-axis scaling, tick marks, and label formatting. Arguments
+that are not given keep their current value, so the method can be called
+several times.
 
 #### Usage
 
@@ -678,7 +684,7 @@ Configure the chart legend.
 #### Usage
 
     EncharterBase$set_legend_style(
-      pos = "t",
+      pos = NULL,
       align = "ctr",
       overlay = FALSE,
       font_size = NULL,
@@ -692,8 +698,9 @@ Configure the chart legend.
 
 - `pos`:
 
-  Legend position: `"t"`, `"b"`, `"l"`, `"r"` (default), or `"none"` to
-  hide.
+  Legend position: `"t"`, `"b"`, `"l"`, `"r"`, or `"none"` to hide. Not
+  given, the current position is kept: `"r"` for standard and `"t"` for
+  extended charts, unless set before.
 
 - `align`:
 

@@ -73,9 +73,11 @@ shared private helpers (<code>render_color_core</code>, <code>render_color</code
 
 
     <dt><code>palette</code></dt>
-<dd><p>A character vector of six-digit hex colors used for series
-when no explicit color is supplied. Defaults to the standard Office theme
-palette.</p></dd>
+<dd><p>A character vector of six-digit hex colors. Series added
+with <code>color = NULL</code> take the next color of the palette. In pie,
+doughnut and pie-of-pie charts, and in a chart with a single bubble
+series at its default color, the palette colors the data points.
+Defaults to the standard Office theme palette.</p></dd>
 
 
     <dt><code>chart_title</code></dt>
@@ -301,7 +303,9 @@ and style parameters. Modified via <code>$set_x_axis()</code>, etc.</p></dd>
 
 <p></p><hr><a id="method-EncharterBase-set_x_axis"></a><div class="section">
 <h3 id="encharterbase-set-x-axis-"><code>EncharterBase$set_x_axis()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-x-axis-"></a></h3>
-<p>Set primary X-axis scaling, tick marks, and label formatting.</p><div class="section">
+<p>Set primary X-axis scaling, tick marks, and label formatting.
+Arguments that are not given keep their
+current value, so the method can be called several times.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_x_axis</span><span class="op">(</span></span>
 <span>  min <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -449,7 +453,9 @@ positive number for a custom unit.</p></dd>
 
 <p></p><hr><a id="method-EncharterBase-set_y_axis"></a><div class="section">
 <h3 id="encharterbase-set-y-axis-"><code>EncharterBase$set_y_axis()</code><a class="anchor" aria-label="anchor" href="#encharterbase-set-y-axis-"></a></h3>
-<p>Set primary Y-axis scaling, tick marks, and label formatting.</p><div class="section">
+<p>Set primary Y-axis scaling, tick marks, and label formatting.
+Arguments that are not given keep their
+current value, so the method can be called several times.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_y_axis</span><span class="op">(</span></span>
 <span>  min <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -647,7 +653,7 @@ properties (e.g. <code>font_size</code>, <code>font_color</code>, <code>bold</co
 <p>Configure the chart legend.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">EncharterBase</span><span class="op">$</span><span class="fu">set_legend_style</span><span class="op">(</span></span>
-<span>  pos <span class="op">=</span> <span class="st">"t"</span>,</span>
+<span>  pos <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  align <span class="op">=</span> <span class="st">"ctr"</span>,</span>
 <span>  overlay <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  font_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -659,8 +665,9 @@ properties (e.g. <code>font_size</code>, <code>font_color</code>, <code>bold</co
 </div><p></p><div class="section">
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>pos</code></dt>
-<dd><p>Legend position: <code>"t"</code>, <code>"b"</code>, <code>"l"</code>,
-<code>"r"</code> (default), or <code>"none"</code> to hide.</p></dd>
+<dd><p>Legend position: <code>"t"</code>, <code>"b"</code>, <code>"l"</code>, <code>"r"</code>, or <code>"none"</code> to
+hide. Not given, the current position is kept: <code>"r"</code> for standard
+and <code>"t"</code> for extended charts, unless set before.</p></dd>
 
       <dt><code>align</code></dt>
 <dd><p>Legend alignment relative to the chart: <code>"ctr"</code>

@@ -457,7 +457,9 @@ secondary Y-axis via `add_series(secondary = TRUE)` or
 
 ### `Chart$set_y2_axis()`
 
-Set Secondary Y-axis scaling, units, and format.
+Set Secondary Y-axis scaling, units, and format. Arguments that are not
+given keep their current value, so the method can be called several
+times.
 
 #### Usage
 
@@ -489,7 +491,7 @@ Set Secondary Y-axis scaling, units, and format.
       line_width = NULL,
       grid_width = NULL,
       minor_grid_width = NULL,
-      crosses = "max",
+      crosses = NULL,
       crosses_at = NULL,
       label_pos = NULL,
       tick_lbl_skip = NULL,
@@ -588,7 +590,7 @@ Set Secondary Y-axis scaling, units, and format.
 
 - `crosses`:
 
-  Intersection: "autoZero" (default), "min" (start), or "max" (end).
+  Intersection: "autoZero", "min" (start), or "max" (end, default).
 
 - `crosses_at`:
 
@@ -612,7 +614,9 @@ Set Secondary Y-axis scaling, units, and format.
 
 ### `Chart$set_x2_axis()`
 
-Set Secondary X-axis scaling, units, and format.
+Set Secondary X-axis scaling, units, and format. Arguments that are not
+given keep their current value, so the method can be called several
+times.
 
 #### Usage
 
@@ -644,7 +648,7 @@ Set Secondary X-axis scaling, units, and format.
       line_width = NULL,
       grid_width = NULL,
       minor_grid_width = NULL,
-      crosses = "max",
+      crosses = NULL,
       crosses_at = NULL,
       label_pos = NULL,
       tick_lbl_skip = NULL,
@@ -743,7 +747,7 @@ Set Secondary X-axis scaling, units, and format.
 
 - `crosses`:
 
-  Intersection: "autoZero" (default), "min" (start), or "max" (end).
+  Intersection: "autoZero", "min" (start), or "max" (end, default).
 
 - `crosses_at`:
 
@@ -1020,7 +1024,7 @@ Add a data series to the chart with independent styling.
 - `color`:
 
   Primary Hex color for the series (used as default for line and
-  markers).
+  markers). `NULL` takes the next color of the chart's `palette`.
 
 - `type`:
 
@@ -1491,7 +1495,8 @@ Add a data series to the chart.
 
 - `color`:
 
-  Hex color or "auto".
+  Hex color or "auto". `NULL` takes the next color of the chart's
+  `palette`.
 
 - `line_color`:
 
