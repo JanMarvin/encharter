@@ -314,10 +314,10 @@ plot_ticks <- function(scale) {
 # Reads a range such as "'Sheet 1'!$B$2:$B$7" from the workbook. With
 # `visible = TRUE` cells in hidden rows and columns are left out and
 # `fill_merged = TRUE` gives every cell of a merged range the merged value. With
-# `fill_left = TRUE` empty cells in all but the last row of a range of one
-# column take the value of the nearest filled cell on their left, as the legend
-# of a multi-level series name does.
-plot_read_ref <- function(wb, ref, levels = FALSE, visible = FALSE, fill_merged = FALSE, fill_left = FALSE) {
+# `fill_left` set to a column number, empty cells in all but the last row of a
+# range of one column take the value of the nearest filled cell on their left,
+# looking back to that column, as the legend of a multi-level series name does.
+plot_read_ref <- function(wb, ref, levels = FALSE, visible = FALSE, fill_merged = FALSE, fill_left = NULL) {
   if (is.null(wb) || is.null(ref) || !grepl("!", ref)) return(NULL)
   sheet <- gsub("^'|'$", "", sub("!.*$", "", ref))
   sheet <- gsub("''", "'", sheet)
@@ -328,12 +328,12 @@ plot_read_ref <- function(wb, ref, levels = FALSE, visible = FALSE, fill_merged 
     skip_hidden_rows = visible, skip_hidden_cols = visible,
     fill_merged_cells = fill_merged
   )
-  if (isTRUE(fill_left)) {
+  if (!is.null(fill_left)) {
     rc <- openxlsx2::dims_to_rowcol(dims)
-    if (length(rc$col) == 1L && length(rc$row) > 1L) {
+    if (length(rc$col) == 1L && length(rc$row) > 1L && fill_left < openxlsx2::col2int(rc$col)) {
       wide <- openxlsx2::wb_to_df(
         wb, sheet = sheet,
-        dims = sprintf("A%s:%s%s", rc$row[1], rc$col, rc$row[length(rc$row)]),
+        dims = sprintf("%s%s:%s%s", openxlsx2::int2col(fill_left), rc$row[1], rc$col, rc$row[length(rc$row)]),
         col_names = FALSE, fill_merged_cells = TRUE
       )
       cells <- vapply(wide, as.character, character(nrow(wide)))
@@ -376,7 +376,17 @@ plot_collect <- function(chart, wb) {
     if (!is.null(z)) z <- suppressWarnings(as.numeric(z))
     name <- NULL
     if (!is.null(s$name) && grepl("!.+", s$name)) {
-      cell <- plot_read_ref(wb, s$name, fill_merged = TRUE, fill_left = TRUE)
+      # the header labels of a multi-level name sit in the block of the chart
+      # data, so the lookup to the left stops at the first column of its refs
+      name_sheet <- sub("!.*$", "", s$name)
+      first_col <- Inf
+      for (r in c(s$label, s$data, s$weight)) {
+        if (!is.character(r) || !grepl("!", r) || sub("!.*$", "", r) != name_sheet) next
+        r_cols <- openxlsx2::dims_to_rowcol(gsub("\\$", "", sub("^.*!", "", r)))$col
+        first_col <- min(first_col, openxlsx2::col2int(r_cols))
+      }
+      fill_left <- if (is.finite(first_col)) first_col else NULL
+      cell <- plot_read_ref(wb, s$name, fill_merged = TRUE, fill_left = fill_left)
       if (!is.null(cell) && length(cell)) name <- as.character(cell)
     }
     name <- name %||% s$name_cache %||% s$name
