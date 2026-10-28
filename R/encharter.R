@@ -472,8 +472,9 @@ EncharterBase <- R6::R6Class(
     },
 
     #' @description Configure the chart legend.
-    #' @param pos Legend position: `"t"`, `"b"`, `"l"`,
-    #'   `"r"` (default), or `"none"` to hide.
+    #' @param pos Legend position: `"t"`, `"b"`, `"l"`, `"r"`, or `"none"` to
+    #'   hide. Not given, the current position is kept: `"r"` for standard
+    #'   and `"t"` for extended charts, unless set before.
     #' @param align Legend alignment relative to the chart: `"ctr"`
     #'   (default), `"min"`, or `"max"`.
     #' @param overlay Logical; if `TRUE` the legend overlaps the plot area.
@@ -483,10 +484,10 @@ EncharterBase <- R6::R6Class(
     #' @param color Six-digit hex color for the legend text.
     #' @examples
     #' ec("line")$set_legend_style(pos = "b", font_size = 9)
-    set_legend_style = function(pos = "r", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
+    set_legend_style = function(pos = NULL, align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
       pos <- normalize_encharter_string(pos)
       align <- normalize_encharter_string(align)
-      pos <- check_choice(pos, c("t", "b", "l", "r", "tr", "none"), "pos") %||% "r"
+      pos <- check_choice(pos, c("t", "b", "l", "r", "tr", "none"), "pos") %||% self$legend_params$pos
       check_bool(overlay, "overlay")
       check_num(font_size, "font_size", min = 0, exclusive_min = TRUE)
       color <- check_color(color, "color")

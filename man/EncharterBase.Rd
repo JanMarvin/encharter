@@ -545,7 +545,7 @@ properties (e.g. \code{font_size}, \code{font_color}, \code{bold}).}
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{EncharterBase$set_legend_style(
-  pos = "r",
+  pos = NULL,
   align = "ctr",
   overlay = FALSE,
   font_size = NULL,
@@ -559,8 +559,9 @@ properties (e.g. \code{font_size}, \code{font_color}, \code{bold}).}
   \subsection{Arguments}{
     \if{html}{\out{<div class="arguments">}}
     \describe{
-      \item{\code{pos}}{Legend position: \code{"t"}, \code{"b"}, \code{"l"},
-\code{"r"} (default), or \code{"none"} to hide.}
+      \item{\code{pos}}{Legend position: \code{"t"}, \code{"b"}, \code{"l"}, \code{"r"}, or \code{"none"} to
+hide. Not given, the current position is kept: \code{"r"} for standard
+and \code{"t"} for extended charts, unless set before.}
       \item{\code{align}}{Legend alignment relative to the chart: \code{"ctr"}
 (default), \code{"min"}, or \code{"max"}.}
       \item{\code{overlay}}{Logical; if \code{TRUE} the legend overlaps the plot area.}

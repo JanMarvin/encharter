@@ -499,4 +499,11 @@ test_that("set_legend_style() keeps the legend on the right by default", {
   expect_identical(ch$legend_params$pos, "r")
   ch$set_legend_style(pos = "t")
   expect_identical(ch$legend_params$pos, "t")
+  ch$set_legend_style(bold = TRUE)
+  expect_identical(ch$legend_params$pos, "t")
+
+  cx <- ec("waterfall")
+  expect_identical(cx$legend_params$pos, "t")
+  cx$set_legend_style(font_size = 9)
+  expect_identical(cx$legend_params$pos, "t")
 })
