@@ -191,3 +191,23 @@ test_that("abbreviated choices are written as the full value", {
   cx$add_series(data = "S!$B$2:$B$4", type = "waterf")
   expect_identical(cx$series_data[[1]]$type, "waterfall")
 })
+
+test_that("chart, plot and title colors are validated", {
+  ch <- ec("bar")
+  expect_error(ch$set_chart_style(fill = "notacolor"), "fill")
+  expect_error(ch$set_plot_style(line = "notacolor"), "line")
+  expect_error(ch$set_chart_title("T", font_color = "notacolor"), "font_color")
+  expect_error(ch$set_x_title("T", fill = "notacolor"), "fill")
+
+  ch$set_chart_style(fill = "#f5f5f5", line = "red")
+  expect_identical(ch$chart_style$fill, "F5F5F5")
+  expect_identical(ch$chart_style$line, "FF0000")
+  ch$set_plot_style(fill = "none", line = openxlsx2::wb_color(theme = 1))
+  expect_identical(ch$plot_style$fill, "none")
+  expect_s3_class(ch$plot_style$line, "wbColour")
+  ch$set_chart_title("T", fill = "auto")
+  expect_identical(ch$chart_title$style$fill, "auto")
+
+  ch$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", secondary = TRUE)
+  expect_error(ch$set_y2_title("T", line = "notacolor"), "line")
+})
