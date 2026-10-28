@@ -590,3 +590,22 @@ test_that("series without a color take the theme accents in turn", {
   expect_equal(plot_color(cols[[2]]), "#ED7D31")
   expect_match(chart$render(), '<c:idx val="1"/><c:order val="1"/><c:spPr><a:solidFill><a:schemeClr val="accent2"/>', fixed = TRUE)
 })
+
+test_that("sheet names with apostrophes, '!' and '&' survive render, load and plot", {
+  for (nm in c("O'Brien & Co", "a!b")) {
+    wb <- openxlsx2::wb_workbook()$add_worksheet(nm)$
+      add_data(x = data.frame(a = c("p", "q", "r"), b = c(4, 5, 6)))
+    ch <- ec("bar")$add_series(data = openxlsx2::wb_data(wb), name = "b", label = "a")
+    ref <- ch$series_data[[1]]$data
+    expect_equal(xml_unescape(ref), sprintf("'%s'!$B$2:$B$4", gsub("'", "''", nm)))
+
+    wb$add_data(x = data.frame(b = c(40, 50, 60)), dims = "B1")
+    expect_equal(plot_collect(ch, wb)[[1]]$values, c(40, 50, 60))
+
+    wb$add_encharter(graph = ch)
+    loaded <- ec_load(wb)
+    expect_equal(loaded$series_data[[1]]$data, ref)
+    loaded$update_series(data = openxlsx2::wb_data(wb), label = a)
+    expect_equal(loaded$series_data[[1]]$data, ref)
+  }
+})

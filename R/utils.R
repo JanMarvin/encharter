@@ -36,12 +36,18 @@ to_abs_ref <- function(x) {
   sapply(x, function(ref) {
     if (!is.character(ref) || !grepl("!", ref)) return(ref)
 
-    # Split to keep sheet name separate from coordinates
-    parts <- strsplit(ref, "!", fixed = TRUE)[[1]]
-    sheet <- gsub("^'|'$", "", parts[1]) # Clean existing quotes
+    # Split at the last '!' to keep sheet name separate from coordinates; a
+    # sheet name may contain '!' itself
+    sheet <- sub("![^!]*$", "", ref)
+    range <- sub("^.*!", "", ref)
+    if (!nzchar(range)) range <- NA_character_
     # unescape for wb_data() and escape afterwards
-    sheet <- xml_escape(xml_unescape(sheet))
-    range <- parts[2]
+    quoted <- grepl("^'.*'$", sheet)
+    sheet <- xml_unescape(gsub("^'|'$", "", sheet)) # Clean existing quotes
+    # in a quoted name an apostrophe is written twice, a raw name from
+    # wb_data() has it once; in the formula it must be written twice
+    if (quoted) sheet <- gsub("''", "'", sheet, fixed = TRUE)
+    sheet <- xml_escape(gsub("'", "''", sheet, fixed = TRUE))
 
     # Only add $ to coordinates, not the sheet name
     # Regex: find letters/numbers not preceded by $

@@ -319,12 +319,12 @@ plot_ticks <- function(scale) {
 # looking back to that column, as the legend of a multi-level series name does.
 plot_read_ref <- function(wb, ref, levels = FALSE, visible = FALSE, fill_merged = FALSE, fill_left = NULL) {
   if (is.null(wb) || is.null(ref) || !grepl("!", ref)) return(NULL)
-  sheet <- gsub("^'|'$", "", sub("!.*$", "", ref))
-  sheet <- gsub("''", "'", sheet)
+  sheet <- gsub("^'|'$", "", sub("![^!]*$", "", ref))
+  sheet <- xml_escape(gsub("''", "'", xml_unescape(sheet), fixed = TRUE))
   dims <- gsub("\\$", "", sub("^.*!", "", ref))
   if (!sheet %in% wb$get_sheet_names(escape = TRUE)) return(NULL)
   df <- openxlsx2::wb_to_df(
-    wb, sheet = sheet, dims = dims, col_names = FALSE,
+    wb, sheet = xml_unescape(sheet), dims = dims, col_names = FALSE,
     skip_hidden_rows = visible, skip_hidden_cols = visible,
     fill_merged_cells = fill_merged
   )
@@ -332,7 +332,7 @@ plot_read_ref <- function(wb, ref, levels = FALSE, visible = FALSE, fill_merged 
     rc <- openxlsx2::dims_to_rowcol(dims)
     if (length(rc$col) == 1L && length(rc$row) > 1L && fill_left < openxlsx2::col2int(rc$col)) {
       wide <- openxlsx2::wb_to_df(
-        wb, sheet = sheet,
+        wb, sheet = xml_unescape(sheet),
         dims = sprintf("%s%s:%s%s", openxlsx2::int2col(fill_left), rc$row[1], rc$col, rc$row[length(rc$row)]),
         col_names = FALSE, fill_merged_cells = TRUE
       )
@@ -378,10 +378,10 @@ plot_collect <- function(chart, wb) {
     if (!is.null(s$name) && grepl("!.+", s$name)) {
       # the header labels of a multi-level name sit in the block of the chart
       # data, so the lookup to the left stops at the first column of its refs
-      name_sheet <- sub("!.*$", "", s$name)
+      name_sheet <- sub("![^!]*$", "", s$name)
       first_col <- Inf
       for (r in c(s$label, s$data, s$weight)) {
-        if (!is.character(r) || !grepl("!", r) || sub("!.*$", "", r) != name_sheet) next
+        if (!is.character(r) || !grepl("!", r) || sub("![^!]*$", "", r) != name_sheet) next
         r_cols <- openxlsx2::dims_to_rowcol(gsub("\\$", "", sub("^.*!", "", r)))$col
         first_col <- min(first_col, openxlsx2::col2int(r_cols))
       }
