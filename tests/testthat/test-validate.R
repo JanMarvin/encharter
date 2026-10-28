@@ -211,3 +211,15 @@ test_that("chart, plot and title colors are validated", {
   ch$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", secondary = TRUE)
   expect_error(ch$set_y2_title("T", line = "notacolor"), "line")
 })
+
+test_that("add_series() checks its logical flags and numbers are finite", {
+  ch <- ec("line")
+  expect_error(ch$add_series(data = "S!$B$2:$B$4", smooth = "yes"), "smooth")
+  expect_error(ch$add_series(data = "S!$B$2:$B$4", show_line = 1), "show_line")
+  expect_error(ch$add_series(data = "S!$B$2:$B$4", filled = NA), "filled")
+  expect_silent(ch$add_series(data = "S!$B$2:$B$4", smooth = TRUE, show_line = FALSE, filled = FALSE))
+
+  expect_error(ec("line")$set_x_axis(min = Inf), "finite")
+  expect_error(ec("line")$set_y_axis(crosses_at = -Inf), "finite")
+  expect_error(ec("line")$add_series(data = "S!$B$2:$B$4", line_width = NaN), "finite")
+})
