@@ -625,3 +625,14 @@ test_that("writing a template without a zip program gives a clear error", {
   chart <- ec("bar")$add_series(name = "S!$B$1", data = "S!$B$2:$B$4")
   expect_error(ec_to_crtx(chart, tempfile(fileext = ".crtx")), "needs a zip program")
 })
+
+test_that("extended charts on sheets with apostrophes are added to the workbook", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("O'Brien & Co")$
+    add_data(x = data.frame(a = c("p", "q", "r"), b = c(4, 5, 6)))
+  cx <- ec("waterfall")$add_series(data = openxlsx2::wb_data(wb), name = "b", label = "a")
+  expect_equal(xml_unescape(cx$series_data[[1]]$data), "'O''Brien & Co'!$B$2:$B$4")
+  expect_silent(wb$add_encharter(graph = cx))
+  nr <- wb$get_named_regions()
+  expect_setequal(nr$coords, c("B1:B1", "B2:B4", "A2:A4", "B2:B4"))
+  expect_equal(plot_read_ref(wb, cx$series_data[[1]]$data), c(4, 5, 6))
+})

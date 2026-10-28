@@ -587,6 +587,12 @@ ChartEx <- R6::R6Class(
         }
       }
 
+      # the references become defined names via wb_add_encharter(), which
+      # reads the sheet name with a single apostrophe; in the reference it is
+      # written twice, so this is undone here
+      head_attrs <- gsub("&apos;&apos;", "&apos;", head_attrs, fixed = TRUE)
+      body_attrs <- gsub("&apos;&apos;", "&apos;", body_attrs, fixed = TRUE)
+
       out <- openxlsx2::read_xml(as.character(self$xml), pointer = FALSE)
       attr(out, "head") <- head_attrs
       attr(out, "body") <- body_attrs
