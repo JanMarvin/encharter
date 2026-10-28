@@ -455,3 +455,21 @@ test_that("xml_find_first errors on non-string xpath", {
 test_that("xml_add_child errors on invalid node handle", {
   expect_error(xml_add_child(42L, "child"), regexp = "external pointer|handle")
 })
+
+test_that("node accessors return typed vectors for empty node sets", {
+  doc <- openxlsx2::read_xml("<a><b v='1'>x</b><b v='2'>y</b></a>")
+  none <- xml_find_all(doc, "zzz")
+  expect_identical(xml_attr(none, "v"), character(0))
+  expect_identical(xml_text(none), character(0))
+  expect_identical(xml_name(none), character(0))
+  expect_identical(xml_type(none), character(0))
+  expect_identical(xml_has_attr(none, "v"), logical(0))
+  expect_identical(xml_length(none), integer(0))
+
+  bs <- xml_find_all(doc, "b")
+  expect_identical(xml_attr(bs, "v"), c("1", "2"))
+  expect_identical(xml_text(bs), c("x", "y"))
+  expect_identical(xml_name(bs), c("b", "b"))
+  expect_identical(xml_has_attr(bs, "v"), c(TRUE, TRUE))
+  expect_identical(xml_length(bs), c(0L, 0L))
+})
