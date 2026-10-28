@@ -541,7 +541,7 @@ properties (e.g. \code{font_size}, \code{font_color}, \code{bold}).}
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{EncharterBase$set_legend_style(
-  pos = "t",
+  pos = "r",
   align = "ctr",
   overlay = FALSE,
   font_size = NULL,

@@ -470,10 +470,10 @@ EncharterBase <- R6::R6Class(
     #' @param color Six-digit hex color for the legend text.
     #' @examples
     #' ec("line")$set_legend_style(pos = "b", font_size = 9)
-    set_legend_style = function(pos = "t", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
+    set_legend_style = function(pos = "r", align = "ctr", overlay = FALSE, font_size = NULL, font_name = NULL, bold = NULL, italic = NULL, color = NULL) {
       pos <- normalize_encharter_string(pos)
       align <- normalize_encharter_string(align)
-      pos <- check_choice(pos, c("t", "b", "l", "r", "tr", "none"), "pos") %||% "t"
+      pos <- check_choice(pos, c("t", "b", "l", "r", "tr", "none"), "pos") %||% "r"
       check_bool(overlay, "overlay")
       check_num(font_size, "font_size", min = 0, exclusive_min = TRUE)
       color <- check_color(color, "color")
