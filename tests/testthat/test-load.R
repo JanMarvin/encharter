@@ -609,3 +609,19 @@ test_that("sheet names with apostrophes, '!' and '&' survive render, load and pl
     expect_equal(loaded$series_data[[1]]$data, ref)
   }
 })
+
+test_that("writing a template restores the working directory and cleans up", {
+  skip_if(Sys.which("zip") == "")
+  chart <- ec("bar")$add_series(name = "S!$B$1", data = "S!$B$2:$B$4")
+  wd <- getwd()
+  before <- list.files(tempdir(), pattern = "^crtx")
+  ec_to_crtx(chart, tempfile(fileext = ".crtx"))
+  expect_identical(getwd(), wd)
+  expect_identical(list.files(tempdir(), pattern = "^crtx"), before)
+})
+
+test_that("writing a template without a zip program gives a clear error", {
+  withr::local_envvar(R_ZIPCMD = "no-such-zip-program")
+  chart <- ec("bar")$add_series(name = "S!$B$1", data = "S!$B$2:$B$4")
+  expect_error(ec_to_crtx(chart, tempfile(fileext = ".crtx")), "needs a zip program")
+})
