@@ -125,7 +125,8 @@ ChartEx <- R6::R6Class(
     #' @param data Cell range for the numeric values.
     #' @param label Cell range for the category labels.
     #' @param type Type of chart (waterfall, sunburst, treemap, regionMap).
-    #' @param color Hex color or "auto".
+    #' @param color Hex color or "auto". `NULL` takes the next color of the
+    #'   chart's `palette`.
     #' @param line_color Border color.
     #' @param line_width Border width.
     #' @param gap_width Integer between 0 and 500.

@@ -169,9 +169,11 @@ EncharterBase <- R6::R6Class(
     series_data = list(),
     #' @field type The default chart type for the object (e.g., `"lineChart"`).
     type = NULL,
-    #' @field palette A character vector of six-digit hex colors used for series
-    #'   when no explicit color is supplied. Defaults to the standard Office theme
-    #'   palette.
+    #' @field palette A character vector of six-digit hex colors. Series added
+    #'   with `color = NULL` take the next color of the palette. In pie,
+    #'   doughnut and pie-of-pie charts, and in a chart with a single bubble
+    #'   series at its default color, the palette colors the data points.
+    #'   Defaults to the standard Office theme palette.
     palette = c("4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47"),
 
     #' @field chart_title Named list with elements `text` (character) and

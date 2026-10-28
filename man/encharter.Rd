@@ -797,7 +797,8 @@ element.}
       \item{\code{data}}{Cell range for series values.}
       \item{\code{label}}{Cell range for category labels.}
       \item{\code{weight}}{Cell range for bubble sizes (bubbleChart only).}
-      \item{\code{color}}{Primary Hex color for the series (used as default for line and markers).}
+      \item{\code{color}}{Primary Hex color for the series (used as default for line and
+markers). \code{NULL} takes the next color of the chart's \code{palette}.}
       \item{\code{type}}{Chart type for this specific series (for combo charts).}
       \item{\code{secondary}}{Logical. Set to TRUE to move series to secondary axis.}
       \item{\code{dir}}{Bar direction ("col" or "bar").}
@@ -1181,7 +1182,8 @@ and the legend's color scale. Only applied to \code{regionMap} series.
       \item{\code{data}}{Cell range for the numeric values.}
       \item{\code{label}}{Cell range for the category labels.}
       \item{\code{type}}{Type of chart (waterfall, sunburst, treemap, regionMap).}
-      \item{\code{color}}{Hex color or "auto".}
+      \item{\code{color}}{Hex color or "auto". \code{NULL} takes the next color of the
+chart's \code{palette}.}
       \item{\code{line_color}}{Border color.}
       \item{\code{line_width}}{Border width.}
       \item{\code{gap_width}}{Integer between 0 and 500.}

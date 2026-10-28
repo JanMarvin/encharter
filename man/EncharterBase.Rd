@@ -96,9 +96,11 @@ ec("line")
 
     \item{\code{type}}{The default chart type for the object (e.g., \code{"lineChart"}).}
 
-    \item{\code{palette}}{A character vector of six-digit hex colors used for series
-when no explicit color is supplied. Defaults to the standard Office theme
-palette.}
+    \item{\code{palette}}{A character vector of six-digit hex colors. Series added
+with \code{color = NULL} take the next color of the palette. In pie,
+doughnut and pie-of-pie charts, and in a chart with a single bubble
+series at its default color, the palette colors the data points.
+Defaults to the standard Office theme palette.}
 
     \item{\code{chart_title}}{Named list with elements \code{text} (character) and
 \code{style} (list of font/fill/line options) for the main chart title.}

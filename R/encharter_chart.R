@@ -423,7 +423,8 @@ Chart <- R6::R6Class(
     #' @param data Cell range for series values.
     #' @param label Cell range for category labels.
     #' @param weight Cell range for bubble sizes (bubbleChart only).
-    #' @param color Primary Hex color for the series (used as default for line and markers).
+    #' @param color Primary Hex color for the series (used as default for line and
+    #'   markers). `NULL` takes the next color of the chart's `palette`.
     #' @param type Chart type for this specific series (for combo charts).
     #' @param secondary Logical. Set to TRUE to move series to secondary axis.
     #' @param dir Bar direction ("col" or "bar").
