@@ -343,7 +343,7 @@ fmt_txt2 <- function(txt, text_color = "", transparency = 0) {
     }
 
     sz <- sapply(openxlsx2::xml_attr(txt, "r", "rPr", "sz"), "[")
-    if (length(sz)) sz        <- as.integer(sz[["val"]]) * 100
+    if (length(sz)) sz        <- round(as.numeric(sz[["val"]]) * 100)
 
     font <- sapply(openxlsx2::xml_attr(txt, "r", "rPr", "rFont"), "[")
     charset <- sapply(openxlsx2::xml_attr(txt, "r", "rPr", "charset"), "[")
