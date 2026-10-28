@@ -412,6 +412,8 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
 \if{latex}{\out{\hypertarget{method-Chart-set_y2_axis}{}}}
 \subsection{\code{Chart$set_y2_axis()}}{
   Set Secondary Y-axis scaling, units, and format.
+Arguments that are not given keep their
+current value, so the method can be called several times.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{Chart$set_y2_axis(
@@ -442,7 +444,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   line_width = NULL,
   grid_width = NULL,
   minor_grid_width = NULL,
-  crosses = "max",
+  crosses = NULL,
   crosses_at = NULL,
   label_pos = NULL,
   tick_lbl_skip = NULL,
@@ -475,7 +477,8 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{grid_lines, minor_grid_lines}}{Logical. Show or hide grid lines.}
       \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
       \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and grid lines.}
-      \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+      \item{\code{crosses}}{Intersection: "autoZero", "min" (start), or "max" (end,
+default).}
       \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
       \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
       \item{\code{tick_lbl_skip, tick_mark_skip}}{Integer (>= 1); label/tick every n-th category (category axes only).}
@@ -490,6 +493,8 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
 \if{latex}{\out{\hypertarget{method-Chart-set_x2_axis}{}}}
 \subsection{\code{Chart$set_x2_axis()}}{
   Set Secondary X-axis scaling, units, and format.
+Arguments that are not given keep their
+current value, so the method can be called several times.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{Chart$set_x2_axis(
@@ -520,7 +525,7 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
   line_width = NULL,
   grid_width = NULL,
   minor_grid_width = NULL,
-  crosses = "max",
+  crosses = NULL,
   crosses_at = NULL,
   label_pos = NULL,
   tick_lbl_skip = NULL,
@@ -553,7 +558,8 @@ secondary Y-axis via \code{add_series(secondary = TRUE)} or
       \item{\code{grid_lines, minor_grid_lines}}{Logical. Show or hide grid lines.}
       \item{\code{cross_between}}{Specifies how the value axis crosses the category axis ('between' or 'midCat').}
       \item{\code{line_width, grid_width, minor_grid_width}}{Numeric. Change the width of the axis and grid lines.}
-      \item{\code{crosses}}{Intersection: "autoZero" (default), "min" (start), or "max" (end).}
+      \item{\code{crosses}}{Intersection: "autoZero", "min" (start), or "max" (end,
+default).}
       \item{\code{crosses_at}}{Numeric axis value for intersection. Overrides 'crosses'.}
       \item{\code{label_pos}}{Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".}
       \item{\code{tick_lbl_skip, tick_mark_skip}}{Integer (>= 1); label/tick every n-th category (category axes only).}

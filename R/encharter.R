@@ -277,6 +277,8 @@ EncharterBase <- R6::R6Class(
     },
 
     #' @description Set primary X-axis scaling, tick marks, and label formatting.
+    #'   Arguments that are not given keep their
+    #'   current value, so the method can be called several times.
     #' @param min,max Numeric axis limits.
     #' @param major,minor Numeric major/minor unit intervals. For date axes, unit
     #'   is set by `major_time`/`minor_time`.
@@ -357,6 +359,8 @@ EncharterBase <- R6::R6Class(
     },
 
     #' @description Set primary Y-axis scaling, tick marks, and label formatting.
+    #'   Arguments that are not given keep their
+    #'   current value, so the method can be called several times.
     #' @param min,max Numeric axis limits.
     #' @param major,minor Numeric major/minor unit intervals.
     #' @param major_time,minor_time Time unit for date axes: `"days"`,
@@ -578,6 +582,12 @@ EncharterBase <- R6::R6Class(
                                tick_lbl_skip = NULL, tick_mark_skip = NULL,
                                disp_units = NULL) {
 
+      # arguments not given keep their current value (set before or loaded
+      # with ec_load()); only without one the first choice is the default
+      if (is.null(crosses))    crosses    <- self$axis_params[[which]]$crosses
+      if (is.null(label_pos))  label_pos  <- self$axis_params[[which]]$label_pos
+      if (is.null(major_tick)) major_tick <- self$axis_params[[which]]$major_tick
+      if (is.null(minor_tick)) minor_tick <- self$axis_params[[which]]$minor_tick
       crosses    <- private$validate_input(crosses,    c("autoZero", "min", "max"), "crosses")
       label_pos  <- private$validate_input(label_pos,  c("nextTo", "high", "low", "none"), "label_pos")
       major_tick <- private$validate_input(major_tick, c("cross", "in", "out", "none"), "major_tick")

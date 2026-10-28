@@ -179,6 +179,8 @@ Chart <- R6::R6Class(
     },
 
     #' @description Set Secondary Y-axis scaling, units, and format.
+    #'   Arguments that are not given keep their
+    #'   current value, so the method can be called several times.
     #' @param min Minimum value for the axis.
     #' @param max Maximum value for the axis.
     #' @param major Numeric value for major unit interval.
@@ -200,7 +202,8 @@ Chart <- R6::R6Class(
     #' @param grid_lines,minor_grid_lines Logical. Show or hide grid lines.
     #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and grid lines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
-    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses Intersection: "autoZero", "min" (start), or "max" (end,
+    #'   default).
     #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     #' @param tick_lbl_skip,tick_mark_skip Integer (>= 1); label/tick every n-th category (category axes only).
@@ -214,8 +217,9 @@ Chart <- R6::R6Class(
                            grid_color = NULL, grid_lines = NULL,
                            minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                           crosses = "max", crosses_at = NULL, label_pos = NULL,
+                           crosses = NULL, crosses_at = NULL, label_pos = NULL,
                            tick_lbl_skip = NULL, tick_mark_skip = NULL, disp_units = NULL) {
+        if (is.null(crosses)) crosses <- self$axis_params$y2$crosses %||% "max"
         private$set_axis_params(
           "y2",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
@@ -233,6 +237,8 @@ Chart <- R6::R6Class(
     },
 
     #' @description Set Secondary X-axis scaling, units, and format.
+    #'   Arguments that are not given keep their
+    #'   current value, so the method can be called several times.
     #' @param min Minimum value for the axis.
     #' @param max Maximum value for the axis.
     #' @param major Numeric value for major unit interval.
@@ -254,7 +260,8 @@ Chart <- R6::R6Class(
     #' @param grid_lines,minor_grid_lines Logical. Show or hide grid lines.
     #' @param line_width,grid_width,minor_grid_width Numeric. Change the width of the axis and grid lines.
     #' @param cross_between Specifies how the value axis crosses the category axis ('between' or 'midCat').
-    #' @param crosses Intersection: "autoZero" (default), "min" (start), or "max" (end).
+    #' @param crosses Intersection: "autoZero", "min" (start), or "max" (end,
+    #'   default).
     #' @param crosses_at Numeric axis value for intersection. Overrides 'crosses'.
     #' @param label_pos Label position: "nextTo" (default), "low" (edge of chart), "high" (opposite edge), or "none".
     #' @param tick_lbl_skip,tick_mark_skip Integer (>= 1); label/tick every n-th category (category axes only).
@@ -268,9 +275,10 @@ Chart <- R6::R6Class(
                            grid_color = NULL, grid_lines = NULL,
                            minor_grid_color = NULL, minor_grid_lines = NULL, cross_between = NULL,
                            line_width = NULL, grid_width = NULL, minor_grid_width = NULL,
-                           crosses = "max", crosses_at = NULL, label_pos = NULL,
+                           crosses = NULL, crosses_at = NULL, label_pos = NULL,
                            tick_lbl_skip = NULL, tick_mark_skip = NULL, disp_units = NULL) {
 
+        if (is.null(crosses)) crosses <- self$axis_params$x2$crosses %||% "max"
         private$set_axis_params(
           "x2",
           min = min, max = max, major = major, minor = minor, major_time = major_time,
