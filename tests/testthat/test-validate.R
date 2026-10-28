@@ -163,3 +163,31 @@ test_that("ChartEx add_series validates its inputs", {
     ChartEx$new("boxWhisker")$add_series(data = "Sheet1!B2:B5", statistics = "exclusive")
   )
 })
+
+test_that("abbreviated choices are written as the full value", {
+  ch <- Chart$new("lineChart")
+  ch$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", label = "S!$A$2:$A$4", line_type = "sysDa")
+  ch$set_y_axis(grid_lines = "lgDashD")
+  expect_identical(ch$series_data[[1]]$line$type, "sysDash")
+  expect_identical(ch$axis_params$y$grid_lines, "lgDashDot")
+  xml <- as.character(ch$render())
+  expect_match(xml, 'prstDash val="sysDash"', fixed = TRUE)
+  expect_false(grepl('prstDash val="sysDa"', xml, fixed = TRUE))
+
+  ch$update_series(line_type = "lgDashD")
+  expect_identical(ch$series_data[[1]]$line$type, "lgDashDot")
+
+  ch$add_series(name = "S!$C$1", data = "S!$C$2:$C$4", type = "scatterC")
+  expect_identical(ch$series_data[[2]]$type, "scatterChart")
+  expect_identical(Chart$new("ofPie")$type, "ofPieChart")
+  expect_null(Chart$new()$type)
+
+  ch2 <- Chart$new("lineChart")
+  ch2$add_series(name = "S!$B$1", data = "S!$B$2:$B$4")
+  expect_null(ch2$series_data[[1]]$line$type)
+  expect_identical(ch2$series_data[[1]]$type, "lineChart")
+
+  cx <- ChartEx$new()
+  cx$add_series(data = "S!$B$2:$B$4", type = "waterf")
+  expect_identical(cx$series_data[[1]]$type, "waterfall")
+})

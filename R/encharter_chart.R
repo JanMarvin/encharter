@@ -80,11 +80,13 @@ Chart <- R6::R6Class(
     #' @param type Initial chart type (e.g., "lineChart", "barChart", "pieChart").
     initialize = function(type = NULL) {
 
-      private$validate_input(
-        type,
-        ENCHARTER_STANDARD,
-        "series type"
-      )
+      if (!is.null(type)) {
+        type <- private$validate_input(
+          type,
+          ENCHARTER_STANDARD,
+          "series type"
+        )
+      }
 
       type <- normalize_encharter_type(type)
       self$type <- type
@@ -509,11 +511,13 @@ Chart <- R6::R6Class(
       }
 
       type <- normalize_encharter_type(type)
-      private$validate_input(
-        type,
-        ENCHARTER_STANDARD,
-        "series type"
-      )
+      if (!is.null(type)) {
+        type <- private$validate_input(
+          type,
+          ENCHARTER_STANDARD,
+          "series type"
+        )
+      }
 
       marker <- private$validate_input(
         marker,
@@ -532,11 +536,13 @@ Chart <- R6::R6Class(
 
       # 2. Validate Line Type (Dash Style)
       # OOXML presetDash values
-      private$validate_input(
-        line_type,
-        c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
-        "line_type"
-      )
+      if (!is.null(line_type)) {
+        line_type <- private$validate_input(
+          line_type,
+          c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"),
+          "line_type"
+        )
+      }
 
       # Schema range validation (ECMA-376 dml-chart.xsd)
       check_num(overlap, "overlap", min = -100, max = 100, integer = TRUE)   # ST_Overlap
@@ -749,7 +755,7 @@ Chart <- R6::R6Class(
 
       if (!is.null(type)) {
         type <- normalize_encharter_type(type)
-        private$validate_input(type, ENCHARTER_STANDARD, "series type")
+        type <- private$validate_input(type, ENCHARTER_STANDARD, "series type")
       }
       if (!is.null(marker)) {
         marker <- private$validate_input(marker, c("none", "circle", "dash", "diamond", "dot", "plus", "square", "star", "triangle", "x"), "marker")
@@ -761,7 +767,7 @@ Chart <- R6::R6Class(
         grouping <- private$validate_input(grouping, c("standard", "clustered", "stacked", "percentStacked"), "grouping")
       }
       if (!is.null(line_type)) {
-        private$validate_input(line_type, c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"), "line_type")
+        line_type <- private$validate_input(line_type, c("solid", "dash", "dot", "dashDot", "lgDash", "lgDashDot", "sysDash", "sysDot", "dashed", "dotted"), "line_type")
       }
       check_num(overlap, "overlap", min = -100, max = 100, integer = TRUE)
       check_num(gap_width, "gap_width", min = 0, max = 500, integer = TRUE)

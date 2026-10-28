@@ -145,11 +145,13 @@ ChartEx <- R6::R6Class(
 
       # not sure if changing the type here is a good idea
       type <- normalize_encharter_type(type)
-      private$validate_input(
-        type,
-        ENCHARTER_EXTENDED,
-        "series type"
-      )
+      if (!is.null(type)) {
+        type <- private$validate_input(
+          type,
+          ENCHARTER_EXTENDED,
+          "series type"
+        )
+      }
 
       color        <- check_color(color, "color")
       line_color   <- check_color(line_color, "line_color")

@@ -124,7 +124,7 @@ encharter <- function(type = "lineChart") {
 
   type_raw <- tolower(as.character(type))
   type <- normalize_encharter_type(type)
-  match.arg(as.character(type), choices = c(ENCHARTER_STANDARD, ENCHARTER_EXTENDED))
+  type <- match.arg(as.character(type), choices = c(ENCHARTER_STANDARD, ENCHARTER_EXTENDED))
 
   if (type %in% ENCHARTER_EXTENDED) {
     ec <- ChartEx$new(type = type)
@@ -572,8 +572,8 @@ EncharterBase <- R6::R6Class(
 
       DASH_TYPES <- c("solid", "dash", "dot", "dashDot", "lgDash",
                       "lgDashDot", "sysDash", "sysDot", "dashed", "dotted")
-      if (is.character(grid_lines))       private$validate_input(grid_lines,       DASH_TYPES, "grid_lines")
-      if (is.character(minor_grid_lines)) private$validate_input(minor_grid_lines, DASH_TYPES, "minor_grid_lines")
+      if (is.character(grid_lines))       grid_lines       <- private$validate_input(grid_lines,       DASH_TYPES, "grid_lines")
+      if (is.character(minor_grid_lines)) minor_grid_lines <- private$validate_input(minor_grid_lines, DASH_TYPES, "minor_grid_lines")
 
       color            <- check_color(color, "color")
       font_color       <- check_color(font_color, "font_color")
