@@ -875,6 +875,10 @@ Chart <- R6::R6Class(
     #' @return A character string containing the OOXML chart definition.
     #' @param u_ids five unique ids
     render = function(u_ids = c("53178645", "60812428", "64752656", "81893617", "90007639")) {
+      # numbers are written with as.character(), which switches to
+      # scientific notation (e.g. "3e+05") that the schema does not allow
+      op <- options(scipen = 999)
+      on.exit(options(op), add = TRUE)
 
       if (length(self$series_data) == 0) {
         stop(

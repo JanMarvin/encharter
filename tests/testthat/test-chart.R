@@ -244,3 +244,21 @@ test_that("bubble series keep their own color unless a single default series var
   expect_equal(mk("FF0000"), 0)
   expect_equal(mk(c("4472C4", "ED7D31")), 0)
 })
+
+test_that("numeric attributes are not written in scientific notation", {
+  scipen <- getOption("scipen")
+  ch <- Chart$new("barChart")
+  ch$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", label = "S!$A$2:$A$4")
+  ch$set_x_axis(rotation = 5)
+  ch$set_y_axis(rotation = 50)
+  xml <- as.character(ch$render())
+  expect_match(xml, 'rot="300000"', fixed = TRUE)
+  expect_match(xml, 'rot="3000000"', fixed = TRUE)
+  expect_false(grepl("e+0", xml, fixed = TRUE))
+  expect_identical(getOption("scipen"), scipen)
+
+  cx <- ChartEx$new()
+  cx$add_series(name = "S!$B$1", data = "S!$B$2:$B$4", label = "S!$A$2:$A$4", type = "waterfall")
+  cx$set_data_label_style(show_val = TRUE, rotation = 5)
+  expect_match(as.character(cx$render(1)), 'rot="300000"', fixed = TRUE)
+})

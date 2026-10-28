@@ -315,6 +315,11 @@ ChartEx <- R6::R6Class(
     #' @param guid a guid
     #' @return A list containing the XML and attribute mappings.
     render = function(id_start = 1, guid = "{C59B1284-E301-0D0F-1B20-FD96A66D6E43}") {
+      # numbers are written with as.character(), which switches to
+      # scientific notation (e.g. "3e+05") that the schema does not allow
+      op <- options(scipen = 999)
+      on.exit(options(op), add = TRUE)
+
       chart_data_node <- xml_find_first(self$xml, "//cx:chartData")
       plot_area_node <- xml_find_first(self$xml, "//cx:plotArea")
       plot_region_node <- xml_find_first(self$xml, "//cx:plotAreaRegion")
