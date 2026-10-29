@@ -75,7 +75,7 @@ extern "C" {
   SEXP pugi_find_first(SEXP node_ptr, SEXP xpath_str) {
     CHECK_NODE(node_ptr)
     CHECK_STRING(xpath_str, "xpath")
-    const char* xpath = CHAR(STRING_ELT(xpath_str, 0));
+    const char* xpath = Rf_translateCharUTF8(STRING_ELT(xpath_str, 0));
 
     pugi::xml_node found;
     char errbuf[512];
@@ -108,7 +108,7 @@ extern "C" {
   SEXP pugi_find_all(SEXP node_ptr, SEXP xpath_str) {
     CHECK_NODE(node_ptr)
     CHECK_STRING(xpath_str, "xpath")
-    const char* xpath = CHAR(STRING_ELT(xpath_str, 0));
+    const char* xpath = Rf_translateCharUTF8(STRING_ELT(xpath_str, 0));
 
     std::vector<pugi::xml_node> found;
     char errbuf[512];
@@ -213,7 +213,7 @@ extern "C" {
     }
 
     if (Rf_isString(input) && Rf_length(input) > 0) {
-      const char* name = CHAR(STRING_ELT(input, 0));
+      const char* name = Rf_translateCharUTF8(STRING_ELT(input, 0));
       last_added = (where == 0) ? node->prepend_child(name) : node->append_child(name);
       return wrap_node_raw(last_added, node_ptr);
     }
@@ -233,8 +233,8 @@ extern "C" {
     CHECK_NODE(node_ptr)
     CHECK_STRING(name_str, "name")
     CHECK_STRING(val_str, "value")
-    const char* name = CHAR(STRING_ELT(name_str, 0));
-    const char* val = CHAR(STRING_ELT(val_str, 0));
+    const char* name = Rf_translateCharUTF8(STRING_ELT(name_str, 0));
+    const char* val = Rf_translateCharUTF8(STRING_ELT(val_str, 0));
 
     pugi::xml_attribute attr = node->attribute(name);
     if (attr) attr.set_value(val);
@@ -245,35 +245,35 @@ extern "C" {
   SEXP pugi_get_attr(SEXP node_ptr, SEXP name_str) {
     CHECK_NODE(node_ptr)
     CHECK_STRING(name_str, "name")
-    const char* name = CHAR(STRING_ELT(name_str, 0));
-    return Rf_mkString(node->attribute(name).value());
+    const char* name = Rf_translateCharUTF8(STRING_ELT(name_str, 0));
+    return Rf_ScalarString(Rf_mkCharCE(node->attribute(name).value(), CE_UTF8));
   }
 
   SEXP pugi_has_attr(SEXP node_ptr, SEXP name_str) {
     CHECK_NODE(node_ptr)
     CHECK_STRING(name_str, "name")
-    const char* name = CHAR(STRING_ELT(name_str, 0));
+    const char* name = Rf_translateCharUTF8(STRING_ELT(name_str, 0));
     return Rf_ScalarLogical(!node->attribute(name).empty());
   }
 
   SEXP pugi_set_text(SEXP node_ptr, SEXP text_str) {
     CHECK_NODE(node_ptr)
     CHECK_STRING(text_str, "text")
-    const char* text = CHAR(STRING_ELT(text_str, 0));
+    const char* text = Rf_translateCharUTF8(STRING_ELT(text_str, 0));
     node->text().set(text);
     return R_NilValue;
   }
 
   SEXP pugi_node_text(SEXP node_ptr) {
     CHECK_NODE(node_ptr)
-    return Rf_mkString(node->text().get());
+    return Rf_ScalarString(Rf_mkCharCE(node->text().get(), CE_UTF8));
   }
 
   // --- Metadata & Serialization ---
 
   SEXP pugi_node_name(SEXP node_ptr) {
     CHECK_NODE(node_ptr)
-    return Rf_mkString(node->name());
+    return Rf_ScalarString(Rf_mkCharCE(node->name(), CE_UTF8));
   }
 
   SEXP pugi_serialize_node(SEXP node_ptr) {
@@ -283,7 +283,8 @@ extern "C" {
     std::stringstream ss;
     ptr->print(ss, "", pugi::format_raw | pugi::format_no_declaration |
                pugi::format_no_escapes | pugi::format_skip_control_chars);
-    return Rf_mkString(ss.str().c_str());
+    std::string xml = ss.str();
+    return Rf_ScalarString(Rf_mkCharLenCE(xml.data(), static_cast<int>(xml.size()), CE_UTF8));
   }
 
   SEXP pugi_node_type(SEXP node_ptr) {
