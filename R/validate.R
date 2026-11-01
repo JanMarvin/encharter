@@ -228,3 +228,15 @@ check_axis_params <- function(p) {
   check_disp_units(p$disp_units)
   invisible(NULL)
 }
+
+# chartEx series element visibilities, written as attributes of cx:visibility
+check_visibility <- function(val) {
+  if (is.null(val)) return(invisible(NULL))
+  choices <- c("connectorLines", "meanLine", "meanMarker", "nonoutliers", "outliers")
+  if (!is.list(val) || (length(val) && (is.null(names(val)) || !all(names(val) %in% choices)))) {
+    stop(sprintf("'visibility' must be a named list with elements of %s",
+                 paste0("'", choices, "'", collapse = ", ")), call. = FALSE)
+  }
+  for (nm in names(val)) check_bool(val[[nm]], paste0("visibility$", nm))
+  invisible(val)
+}

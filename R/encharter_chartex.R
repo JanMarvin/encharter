@@ -159,6 +159,7 @@ ChartEx <- R6::R6Class(
       check_num(gap_width, "gap_width", min = 0)
       statistics   <- check_choice(statistics, c("inclusive", "exclusive"), "statistics")
       parent_label <- check_choice(parent_label, c("overlapping", "banner", "none"), "parent_label") %||% "overlapping"
+      check_visibility(visibility)
       if (is.list(binning)) {
         check_choice(as.character(binning$intervalClosed %||% "l"), c("l", "r", "left", "right"), "binning$intervalClosed")
         check_num(binning$binSize, "binning$binSize", min = 0, exclusive_min = TRUE)
@@ -258,6 +259,7 @@ ChartEx <- R6::R6Class(
       h_label <- tryCatch(if (is.symbol(substitute(name))) deparse1(substitute(name)) else name, error = function(e) NULL)
       c_label <- tryCatch(if (is.symbol(substitute(label))) deparse1(substitute(label)) else label, error = function(e) NULL)
 
+      check_visibility(visibility)
       color        <- check_color(color, "color")
       line_color   <- check_color(line_color, "line_color")
       check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)

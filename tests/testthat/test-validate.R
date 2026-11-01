@@ -274,3 +274,30 @@ test_that("characters xml does not allow are removed", {
   cx$add_series(name = "a]]>b", data = "Sheet1!B2:B5", label = "Sheet1!A2:A5")
   expect_false(grepl("]]>", as.character(cx$render(1)), fixed = TRUE))
 })
+
+test_that("values found by the second fuzzing round are checked", {
+  ch <- Chart$new("doughnutChart")
+  expect_error(ch$set_pie_options(hole_size = NaN), "hole_size")
+  expect_error(ch$set_pie_options(hole_size = 409), "hole_size")
+  expect_error(ch$set_pie_options(expansion = 1e10), "expansion")
+  expect_error(Chart$new("bubbleChart")$set_bubble_options(scale = 2.75), "scale")
+
+  ex <- ec("boxWhisker")
+  expect_error(ex$add_series(data = "data!$A$2:$A$4", visibility = list(mean_line = TRUE)), "visibility")
+  expect_error(ex$add_series(data = "data!$A$2:$A$4", visibility = list(meanLine = "yes")), "meanLine")
+
+  op <- ec("ofPieChart")$add_series(data = "data!$A$2:$A$4")$set_of_pie_options(split_type = "auto", split_pos = 2)
+  xml <- as.character(op$render())
+  expect_error(ec("ofPieChart")$set_of_pie_options(split_type = "cust", split_pos = 1e10), "split_pos")
+  expect_no_match(xml, "c:splitType")
+  expect_match(xml, "<c:splitPos val=\"2\"/>")
+
+  ln <- ec("barChart")$add_series(data = "data!$A$2:$A$4")$
+    add_series(data = "data!$A$2:$A$4", type = "lineChart", grouping = "clustered")
+  expect_match(as.character(ln$render()), "<c:lineChart><c:grouping val=\"standard\"/>")
+
+  st <- ec("stockChart")
+  for (i in 1:3) st$add_series(data = "data!$A$2:$A$4")
+  st$add_series(data = "data!$A$2:$A$4", secondary = TRUE)
+  expect_warning(st$render(), "got 1")
+})

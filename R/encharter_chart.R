@@ -313,7 +313,9 @@ Chart <- R6::R6Class(
     set_pie_options  = function(rotation = NULL, expansion = NULL, hole_size = NULL) {
 
       check_num(rotation, "rotation", min = 0, max = 360, integer = TRUE)
-      check_num(expansion, "expansion", min = 0, integer = TRUE)
+      check_num(expansion, "expansion", min = 0, max = 400, integer = TRUE)
+      # values outside the schema range, like 0, render fine in Excel, but the value must be a byte
+      check_num(hole_size, "hole_size", min = 0, max = 90, integer = TRUE)
 
       if (!is.null(rotation)) {
         self$first_slice_ang <- rotation
@@ -351,7 +353,7 @@ Chart <- R6::R6Class(
       if (!is.null(split_pos)) {
         if (identical(split_type %||% self$split_type, "cust")) {
           if (!is.numeric(split_pos) || anyNA(split_pos) || any(split_pos < 0) ||
-              any(split_pos != trunc(split_pos))) {
+              any(split_pos > 4294967295) || any(split_pos != trunc(split_pos))) {
             stop("'split_pos' must be a vector of non-negative point indices for split_type = \"cust\"", call. = FALSE)
           }
         } else {
@@ -413,7 +415,7 @@ Chart <- R6::R6Class(
     #'   (default in Excel) or `"w"` (width/diameter). `NULL` omits the
     #'   element.
     set_bubble_options = function(scale = 100, show_neg = FALSE, size_represents = NULL) {
-      check_num(scale, "scale", min = 0, max = 300)
+      check_num(scale, "scale", min = 0, max = 300, integer = TRUE)
       check_bool(show_neg, "show_neg")
       self$size_represents <- check_choice(size_represents, c("area", "w"), "size_represents")
       self$bubble_scale <- scale
@@ -974,9 +976,11 @@ Chart <- R6::R6Class(
       if (any(ser_types %in% ENCHARTER_PIE_FAMILY) && !all(ser_types %in% ENCHARTER_PIE_FAMILY)) {
         warning("Excel cannot combine pie-type charts (pie, doughnut, ofPie) with axis-based chart types in one plot area.", call. = FALSE)
       }
-      n_stock <- sum(ser_types == "stockChart")
-      if (n_stock > 0 && (n_stock < 3 || n_stock > 4)) {
-        warning(sprintf("stockChart requires 3 or 4 series (High-Low-Close or Open-High-Low-Close), got %d. Excel will refuse to display the chart.", n_stock), call. = FALSE)
+      # counted per axis group, a stockChart on the secondary axes needs its own series
+      sec_types <- vapply(self$series_data, function(x) x$sec_type %||% "none", character(1))
+      n_stock <- table(sec_types[ser_types == "stockChart"])
+      if (any(n_stock < 3 | n_stock > 4)) {
+        warning(sprintf("stockChart requires 3 or 4 series (High-Low-Close or Open-High-Low-Close), got %d. Excel will refuse to display the chart.", n_stock[n_stock < 3 | n_stock > 4][[1]]), call. = FALSE)
       }
       if (is_3d && length(unique(ser_types)) > 1) {
         warning("3D chart types cannot be combined with other chart types in one plot area.", call. = FALSE)
@@ -1286,8 +1290,10 @@ Chart <- R6::R6Class(
 
       if (!type %in% c("scatterChart", "pieChart", "doughnutChart", "bubbleChart", "barChart", "radarChart", "stockChart", "surfaceChart",
                        "bar3DChart", "pie3DChart", "ofPieChart", "surface3DChart")) {
-        # lineChart, areaChart, line3DChart, area3DChart
-        xml_add_child(c_node, "c:grouping", val = sub_series[[1]]$grouping %||% "standard")
+        # lineChart, areaChart, line3DChart, area3DChart, clustered exists only for bar charts
+        grp <- sub_series[[1]]$grouping %||% "standard"
+        if (grp == "clustered") grp <- "standard"
+        xml_add_child(c_node, "c:grouping", val = grp)
       }
 
       if (!type %in% c("stockChart", "surfaceChart", "surface3DChart")) {
@@ -1802,12 +1808,13 @@ Chart <- R6::R6Class(
         gw <- sub_series[[1]]$gap_width %||% 100
         xml_add_child(c_node, "c:gapWidth", val = as.character(gw))
         if (!is.null(self$split_type)) {
-          xml_add_child(c_node, "c:splitType", val = self$split_type)
+          # auto is the default, writing it is valid ECMA-376 but the Open XML SDK rejects it
+          if (self$split_type != "auto") xml_add_child(c_node, "c:splitType", val = self$split_type)
           if (identical(self$split_type, "cust")) {
             if (!is.null(self$split_pos)) {
               cs <- xml_add_child(c_node, "c:custSplit")
               for (idx in self$split_pos) {
-                xml_add_child(cs, "c:secondPiePt", val = as.character(idx))
+                xml_add_child(cs, "c:secondPiePt", val = sprintf("%.0f", idx))
               }
             }
           } else if (!is.null(self$split_pos)) {
