@@ -155,7 +155,7 @@ ChartEx <- R6::R6Class(
 
       color        <- check_color(color, "color")
       line_color   <- check_color(line_color, "line_color")
-      check_num(line_width, "line_width", min = 0)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       check_num(gap_width, "gap_width", min = 0)
       statistics   <- check_choice(statistics, c("inclusive", "exclusive"), "statistics")
       parent_label <- check_choice(parent_label, c("overlapping", "banner", "none"), "parent_label") %||% "overlapping"
@@ -260,7 +260,7 @@ ChartEx <- R6::R6Class(
 
       color        <- check_color(color, "color")
       line_color   <- check_color(line_color, "line_color")
-      check_num(line_width, "line_width", min = 0)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       check_num(gap_width, "gap_width", min = 0)
       statistics   <- check_choice(statistics, c("inclusive", "exclusive"), "statistics")
       parent_label <- check_choice(parent_label, c("overlapping", "banner", "none"), "parent_label")
@@ -631,7 +631,7 @@ ChartEx <- R6::R6Class(
 
     # Validates one cycle/scale color: single, concrete (no "auto"/"none").
     check_cycle_color = function(val, name) {
-      if (inherits(val, "wbColour")) return(val)
+      if (inherits(val, "wbColour")) return(check_wb_color(val, name, allow_auto = FALSE))
       val <- check_color(val, name)
       if (length(val) != 1) stop(sprintf("'%s' must be a single color", name), call. = FALSE)
       if (val %in% c("auto", "none")) {
@@ -833,17 +833,7 @@ ChartEx <- R6::R6Class(
     add_rich_text = function(parent, text, s) {
       xml_remove(xml_children(parent))
 
-      # 1. Shape properties for the title background/border
-      if (!is.null(s$fill) || !is.null(s$line)) {
-        spPr <- xml_add_child(parent, "cx:spPr")
-        if (!is.null(s$fill)) private$render_color(spPr, s$fill)
-        if (!is.null(s$line)) {
-          ln <- xml_add_child(spPr, "a:ln", w = as.character(round(s$line_width %||% 1L * 12700)))
-          private$render_color_core(xml_add_child(ln, "a:solidFill"), s$line)
-        }
-      }
-
-      # 2. Text Content
+      # 1. Text Content, CT_Text comes before the shape properties
       tx <- xml_add_child(xml_add_child(parent, "cx:tx"), "cx:rich")
       bodyPr <- xml_add_child(tx, "a:bodyPr")
       if (!is.null(s$rotation)) {
@@ -874,6 +864,16 @@ ChartEx <- R6::R6Class(
         if (!is.null(s$font_name)) xml_add_child(rPr, "a:latin", typeface = s$font_name)
 
         xml_add_child(r, "a:t", text)
+      }
+
+      # 2. Shape properties for the title background/border
+      if (!is.null(s$fill) || !is.null(s$line)) {
+        spPr <- xml_add_child(parent, "cx:spPr")
+        if (!is.null(s$fill)) private$render_color(spPr, s$fill)
+        if (!is.null(s$line)) {
+          ln <- xml_add_child(spPr, "a:ln", w = as.character(round(s$line_width %||% 1L * 12700)))
+          private$render_color_core(xml_add_child(ln, "a:solidFill"), s$line)
+        }
       }
     },
     apply_axis_style = function(node, style) {

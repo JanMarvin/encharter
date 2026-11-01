@@ -137,6 +137,8 @@ Chart <- R6::R6Class(
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
+      check_font_size(font_size)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$x2_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
@@ -173,6 +175,8 @@ Chart <- R6::R6Class(
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
+      check_font_size(font_size)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$y2_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
@@ -562,8 +566,8 @@ Chart <- R6::R6Class(
       check_num(overlap, "overlap", min = -100, max = 100, integer = TRUE)   # ST_Overlap
       check_num(gap_width, "gap_width", min = 0, max = 500, integer = TRUE) # ST_GapAmount
       check_num(marker_size, "marker_size", min = 2, max = 72, integer = TRUE) # ST_MarkerSize
-      check_num(line_width, "line_width", min = 0)
-      check_num(marker_line_width, "marker_line_width", min = 0)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
+      check_num(marker_line_width, "marker_line_width", min = 0, max = MAX_LINE_WIDTH)
       check_trendline(trendline)
       check_bool(smooth, "smooth")
       check_bool(show_line, "show_line")
@@ -628,6 +632,12 @@ Chart <- R6::R6Class(
 
       if (!is.null(data) && !grepl("!", data)) {
         stop("Series data must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
+      }
+      if (is.null(cat_vals) && !is.null(label) && !all(grepl("!", label))) {
+        stop("Series labels must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
+      }
+      if ((is.list(trendline) || is.list(error_bars)) && !series_type %in% TRENDLINE_TYPES) {
+        stop(sprintf("trendlines and error bars are not available for %s series", series_type), call. = FALSE)
       }
 
       # Create the clean object
@@ -789,8 +799,8 @@ Chart <- R6::R6Class(
       check_num(overlap, "overlap", min = -100, max = 100, integer = TRUE)
       check_num(gap_width, "gap_width", min = 0, max = 500, integer = TRUE)
       check_num(marker_size, "marker_size", min = 2, max = 72, integer = TRUE)
-      check_num(line_width, "line_width", min = 0)
-      check_num(marker_line_width, "marker_line_width", min = 0)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
+      check_num(marker_line_width, "marker_line_width", min = 0, max = MAX_LINE_WIDTH)
       if (!is.null(trendline)) check_trendline(trendline)
       if (!is.null(error_bars)) check_error_bars(error_bars)
       check_bool(smooth, "smooth")
@@ -854,6 +864,7 @@ Chart <- R6::R6Class(
             s["data_cache"] <- list(NULL)
           }
           if (!is.null(label)) {
+            if (!all(grepl("!", label))) stop("Series labels must be a sheet reference (e.g., 'Sheet1!A1:A10').", call. = FALSE)
             s$label <- to_abs_ref(label)
             s["cat_cache"] <- list(NULL)
           }
@@ -1424,7 +1435,9 @@ Chart <- R6::R6Class(
 
         # Only enter if lp exists AND at least one show flag is TRUE, or
         # single points carry labels of their own
-        if (!is.null(lp) && (isTRUE(lp$show_val) || isTRUE(lp$show_cat) || isTRUE(lp$show_legend_key) ||
+        # surface series (CT_SurfaceSer) have no data labels
+        if (!type %in% c("surfaceChart", "surface3DChart") &&
+            !is.null(lp) && (isTRUE(lp$show_val) || isTRUE(lp$show_cat) || isTRUE(lp$show_legend_key) ||
                              isTRUE(lp$show_ser_name) || isTRUE(lp$show_percent) || isTRUE(lp$show_bubble_size) ||
                              length(s$point_labels) > 0)) {
 

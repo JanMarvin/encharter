@@ -223,3 +223,54 @@ test_that("add_series() checks its logical flags and numbers are finite", {
   expect_error(ec("line")$set_y_axis(crosses_at = -Inf), "finite")
   expect_error(ec("line")$add_series(data = "S!$B$2:$B$4", line_width = NaN), "finite")
 })
+
+test_that("values written to the chart xml are checked", {
+  ch <- Chart$new("barChart")
+  expect_error(ch$set_chart_title("x", font_size = 5000), "font_size")
+  expect_error(ch$set_chart_title("x", line_width = 2000), "line_width")
+  expect_error(ch$set_chart_style(line_width = Inf), "line_width")
+  expect_error(ch$set_legend_style(font_size = 1e12), "font_size")
+  expect_error(ch$set_legend_style(font_size = 1e-8), "font_size")
+  expect_error(ch$set_legend_style(font_size = 10.333), "0.01")
+  expect_error(ch$set_x_axis(rotation = 600), "rotation")
+  expect_error(ch$set_chart_style(fill = openxlsx2::wb_color(theme = 99)), "theme")
+  expect_error(ch$set_chart_style(fill = openxlsx2::wb_color(indexed = 8)), "fill")
+  expect_error(ch$add_series(data = "Sheet1!B2:B5", label = "C2:C5"), "sheet reference")
+  expect_error(ch$add_series(data = "Sheet1!B2:B5", trendline = list(type = "log", order = 1e-10)), "order")
+  expect_error(
+    Chart$new("pieChart")$add_series(data = "Sheet1!B2:B5", error_bars = list(type = "stdDev")),
+    "not available"
+  )
+  expect_error(ChartEx$new("waterfall")$set_waterfall_colors(total = openxlsx2::wb_color(auto = TRUE)), "total")
+
+  expect_silent(ch$set_chart_title("x", font_size = 14, line_width = 1))
+  expect_silent(ch$set_x_axis(rotation = -45))
+  expect_silent(ch$set_chart_style(fill = openxlsx2::wb_color(theme = 4)))
+})
+
+test_that("surface charts have no data labels and chartex titles keep their order", {
+  ch <- Chart$new("surface3DChart")
+  ch$add_series(data = "Sheet1!B2:B5")
+  ch$set_data_label_style(show_val = TRUE, pos = "r")
+  expect_false(grepl("c:dLbls", as.character(ch$render()), fixed = TRUE))
+
+  cx <- ChartEx$new("sunburst")
+  cx$add_series(data = "Sheet1!B2:B5", label = "Sheet1!A2:A5")
+  cx$set_chart_title("title", line = "FF0000")
+  xml <- as.character(cx$render(1))
+  title <- regmatches(xml, regexpr("<cx:title.*?</cx:title>", xml, perl = TRUE))
+  expect_lt(regexpr("<cx:tx>", title, fixed = TRUE), regexpr("<cx:spPr>", title, fixed = TRUE))
+})
+
+test_that("characters xml does not allow are removed", {
+  ch <- Chart$new("barChart")
+  ch$add_series(data = "Sheet1!B2:B5")
+  ch$set_chart_title(paste0("a", intToUtf8(0xFFFE), "b&#1;c"), font_name = paste0("Arial", intToUtf8(0xFFFF)))
+  xml <- enc2utf8(as.character(ch$render()))
+  expect_false(grepl("\\xEF\\xBF[\\xBE\\xBF]", xml, perl = TRUE, useBytes = TRUE))
+  expect_false(grepl("&#1;", xml, fixed = TRUE))
+
+  cx <- ChartEx$new("funnel")
+  cx$add_series(name = "a]]>b", data = "Sheet1!B2:B5", label = "Sheet1!A2:A5")
+  expect_false(grepl("]]>", as.character(cx$render(1)), fixed = TRUE))
+})
