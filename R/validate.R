@@ -4,6 +4,30 @@
 # ECMA-376 (5th edition) dml-chart.xsd. Violating them produces files that
 # Excel repairs or refuses to load, so they are rejected at input time.
 
+# ST_TextFontSize allows 100 to 400000 hundredths of a point, ST_LineWidth
+# 0 to 20116800 EMU (1584 points)
+#' @noRd
+MAX_FONT_SIZE <- 4000
+
+#' @noRd
+MAX_LINE_WIDTH <- 1584
+
+# series types whose series element (CT_BarSer, CT_LineSer, CT_AreaSer,
+# CT_ScatterSer, CT_BubbleSer) has trendline and errBars children
+#' @noRd
+TRENDLINE_TYPES <- c("barChart", "bar3DChart", "lineChart", "line3DChart", "areaChart",
+                     "area3DChart", "scatterChart", "bubbleChart", "stockChart")
+
+# font sizes are written in hundredths of a point (ST_TextFontSize, 100 to 400000)
+#' @noRd
+check_font_size <- function(val, name = "font_size") {
+  check_num(val, name, min = 1, max = MAX_FONT_SIZE)
+  if (!is.null(val) && abs(val * 100 - round(val * 100)) > 1e-8) {
+    stop(sprintf("'%s' must be a multiple of 0.01 points", name), call. = FALSE)
+  }
+  invisible(val)
+}
+
 #' @noRd
 num_bounds_txt <- function(min, max, exclusive_min) {
   if (is.infinite(max)) {
@@ -90,11 +114,30 @@ convert_color_token <- function(x, name) {
 # as black silently.
 #' @noRd
 check_color <- function(val, name) {
-  if (is.null(val) || length(val) == 0 || inherits(val, "wbColour")) return(val)
+  if (is.null(val) || length(val) == 0) return(val)
+  if (inherits(val, "wbColour")) return(check_wb_color(val, name))
   if (!is.character(val)) {
     stop(sprintf("'%s' must be a character color or a wb_color() object", name), call. = FALSE)
   }
   vapply(val, convert_color_token, character(1), name = name, USE.NAMES = FALSE)
+}
+
+# wb_color() objects are written as srgbClr or schemeClr. Theme colors map to
+# the 17 scheme color names, indexed colors have no DrawingML equivalent.
+#' @noRd
+check_wb_color <- function(val, name, allow_auto = TRUE) {
+  type <- names(val)[1]
+  if (identical(type, "rgb")) return(val)
+  if (identical(type, "auto") && allow_auto) return(val)
+  if (identical(type, "theme")) {
+    theme <- suppressWarnings(as.numeric(val[["theme"]]))
+    scheme <- c("bg1", "tx1", "bg2", "tx2", "accent1", "accent2", "accent3", "accent4", "accent5",
+                "accent6", "hlink", "folHlink", "phClr", "dk1", "lt1", "dk2", "lt2")
+    if (val[["theme"]] %in% scheme || (!is.na(theme) && theme %in% 0:16)) return(val)
+    stop(sprintf("'%s' has the theme color %s, theme colors must be from 0 to 16", name, val[["theme"]]), call. = FALSE)
+  }
+  stop(sprintf("'%s' must be a hex color, R color name or wb_color() with hex, name or theme%s",
+               name, if (allow_auto) " or auto" else ""), call. = FALSE)
 }
 
 #' @noRd
@@ -129,18 +172,14 @@ check_disp_units <- function(val) {
 check_trendline <- function(tl) {
   if (!is.list(tl)) return(invisible(NULL))
   check_choice(tl$type, c("exp", "linear", "log", "movingAvg", "poly", "power"), "trendline$type")
-  if (identical(tl$type, "poly")) {
-    if (is.null(tl$order)) {
-      stop("'trendline$order' is required for polynomial trendlines", call. = FALSE)
-    }
-    check_num(tl$order, "trendline$order", min = 2, max = 6, integer = TRUE)
+  if (identical(tl$type, "poly") && is.null(tl$order)) {
+    stop("'trendline$order' is required for polynomial trendlines", call. = FALSE)
   }
-  if (identical(tl$type, "movingAvg")) {
-    if (is.null(tl$period)) {
-      stop("'trendline$period' is required for moving average trendlines", call. = FALSE)
-    }
-    check_num(tl$period, "trendline$period", min = 2, integer = TRUE)
+  if (identical(tl$type, "movingAvg") && is.null(tl$period)) {
+    stop("'trendline$period' is required for moving average trendlines", call. = FALSE)
   }
+  check_num(tl$order, "trendline$order", min = 2, max = 6, integer = TRUE)
+  check_num(tl$period, "trendline$period", min = 2, max = 255, integer = TRUE)
   check_num(tl$forward, "trendline$forward", min = 0)
   check_num(tl$backward, "trendline$backward", min = 0)
   check_num(tl$intercept, "trendline$intercept")
@@ -175,11 +214,11 @@ check_axis_params <- function(p) {
   check_choice(p$minor_time, c("days", "months", "years"), "minor_time")
   check_choice(p$base_time,  c("days", "months", "years"), "base_time")
   check_num(p$log_base, "log_base", min = 2, max = 1000)
-  check_num(p$rotation, "rotation")
-  check_num(p$font_size, "font_size", min = 0, exclusive_min = TRUE)
-  check_num(p$line_width, "line_width", min = 0)
-  check_num(p$grid_width, "grid_width", min = 0)
-  check_num(p$minor_grid_width, "minor_grid_width", min = 0)
+  check_num(p$rotation, "rotation", min = -90, max = 90)
+  check_font_size(p$font_size)
+  check_num(p$line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
+  check_num(p$grid_width, "grid_width", min = 0, max = MAX_LINE_WIDTH)
+  check_num(p$minor_grid_width, "minor_grid_width", min = 0, max = MAX_LINE_WIDTH)
   check_num(p$crosses_at, "crosses_at")
   check_num(p$tick_lbl_skip,  "tick_lbl_skip",  min = 1, integer = TRUE)
   check_num(p$tick_mark_skip, "tick_mark_skip", min = 1, integer = TRUE)
@@ -188,4 +227,16 @@ check_axis_params <- function(p) {
   check_bool(p$rev, "rev")
   check_disp_units(p$disp_units)
   invisible(NULL)
+}
+
+# chartEx series element visibilities, written as attributes of cx:visibility
+check_visibility <- function(val) {
+  if (is.null(val)) return(invisible(NULL))
+  choices <- c("connectorLines", "meanLine", "meanMarker", "nonoutliers", "outliers")
+  if (!is.list(val) || (length(val) && (is.null(names(val)) || !all(names(val) %in% choices)))) {
+    stop(sprintf("'visibility' must be a named list with elements of %s",
+                 paste0("'", choices, "'", collapse = ", ")), call. = FALSE)
+  }
+  for (nm in names(val)) check_bool(val[[nm]], paste0("visibility$", nm))
+  invisible(val)
 }

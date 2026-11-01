@@ -229,6 +229,8 @@ EncharterBase <- R6::R6Class(
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
+      check_font_size(font_size)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$chart_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
@@ -250,6 +252,8 @@ EncharterBase <- R6::R6Class(
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
+      check_font_size(font_size)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$x_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
@@ -271,6 +275,8 @@ EncharterBase <- R6::R6Class(
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
+      check_font_size(font_size)
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       if (!inherits(text, "fmt_txt")) text <- private$sanitize_xml(text)
       self$y_title <- list(text = text, style = list(font_size = font_size, font_name = font_name, font_color = font_color, bold = bold, italic = italic, fill = fill, line = line, line_width = line_width))
       invisible(self)
@@ -489,7 +495,7 @@ EncharterBase <- R6::R6Class(
       align <- normalize_encharter_string(align)
       pos <- check_choice(pos, c("t", "b", "l", "r", "tr", "none"), "pos") %||% self$legend_params$pos
       check_bool(overlay, "overlay")
-      check_num(font_size, "font_size", min = 0, exclusive_min = TRUE)
+      check_font_size(font_size)
       color <- check_color(color, "color")
       self$legend_params <- list(pos = pos, align = align, overlay = ifelse(overlay, "1", "0"),
                                  style = list(font_size = font_size, font_name = font_name, bold = bold, italic = italic, color = color))
@@ -507,6 +513,7 @@ EncharterBase <- R6::R6Class(
     set_chart_style = function(fill = "FFFFFF", line = NULL, line_width = 1) {
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       self$chart_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },
@@ -521,6 +528,7 @@ EncharterBase <- R6::R6Class(
     set_plot_style = function(fill = NULL, line = NULL, line_width = 1) {
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
+      check_num(line_width, "line_width", min = 0, max = MAX_LINE_WIDTH)
       self$plot_style <- list(fill = fill, line = line, line_width = line_width)
       invisible(self)
     },

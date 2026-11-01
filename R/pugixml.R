@@ -20,8 +20,21 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
   # the document is serialized without escaping, so attribute values and
   # text are escaped here; entities that are already there stay as they are
   escape <- function(x) {
+    # control characters are skipped when the document is written, the
+    # noncharacters U+FFFE and U+FFFF and references to characters that XML 1.0
+    # does not allow are removed here
+    utf8 <- Encoding(x) == "UTF-8" | (Encoding(x) == "unknown" & l10n_info()[["UTF-8"]])
+    hit <- utf8 & grepl("\\xEF\\xBF[\\xBE\\xBF]", x, perl = TRUE, useBytes = TRUE)
+    if (any(hit)) {
+      enc <- Encoding(x[hit])
+      x[hit] <- gsub("\\xEF\\xBF[\\xBE\\xBF]", "", x[hit], perl = TRUE, useBytes = TRUE)
+      Encoding(x[hit]) <- enc
+    }
+    x <- gsub("&#(?:[xX]0*(?:[0-8bBcCeEfF]|1[0-9a-fA-F]|[fF]{3}[eEfF])|0*(?:[0-8]|1[124-9]|2[0-9]|3[01]|6553[45]));",
+              "", x, perl = TRUE)
     x <- gsub("&(?!(amp|lt|gt|quot|apos|#[0-9]+|#x[0-9A-Fa-f]+);)", "&amp;", x, perl = TRUE)
     x <- gsub("<", "&lt;", x, fixed = TRUE)
+    x <- gsub(">", "&gt;", x, fixed = TRUE)
     gsub("\"", "&quot;", x, fixed = TRUE)
   }
 
