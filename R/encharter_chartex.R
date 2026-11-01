@@ -612,6 +612,14 @@ ChartEx <- R6::R6Class(
       has_header <- nrow(wb_dims) > length(attr(data, "row.names"))
       start_row  <- if (has_header) 2 else 1
 
+      # wb_data() limits full column dims to the used range. The references
+      # still cover the full column.
+      end_dims <- wb_dims[nrow(wb_dims), ]
+      dims_req <- attr(data, "dims_requested")
+      if (!is.null(dims_req) && grepl("^\\$?[A-Za-z]+:\\$?[A-Za-z]+$", dims_req)) {
+        end_dims <- paste0(sub("[0-9]+$", "", end_dims), "1048576")
+      }
+
       for (lbl in c(h_label, c_label)) {
         if (!lbl %in% col_names) stop(sprintf("object '%s' not found in the wb_data object", lbl), call. = FALSE)
       }
@@ -621,12 +629,12 @@ ChartEx <- R6::R6Class(
       if (length(h_idx) > 0) {
         h_idx <- h_idx[1]
         out$name <- if (has_header) sprintf("%s!%s", wb_sheet, wb_dims[1, h_idx]) else NULL
-        out$data <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, h_idx], wb_dims[nrow(wb_dims), h_idx])
+        out$data <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, h_idx], end_dims[h_idx])
       }
       c_idx <- which(col_names == c_label)
       if (length(c_idx) > 0) {
         c_idx <- c_idx[1]
-        out$label <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, c_idx], wb_dims[nrow(wb_dims), c_idx])
+        out$label <- sprintf("%s!%s:%s", wb_sheet, wb_dims[start_row, c_idx], end_dims[c_idx])
       }
       out
     },

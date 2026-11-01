@@ -426,3 +426,26 @@ test_that("empty cells in the upper rows of a series name take the group on thei
   res <- plot_collect(chart, wb)
   expect_equal(vapply(res, function(s) s$label_text, character(1)), c("0-14 Male", "0-14 Female", "15-64 Male", "15-64 Female"))
 })
+
+test_that("full column wb_data() keeps full column references", {
+  skip_if_not("used_range" %in% names(formals(openxlsx2::wb_data)))
+
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S")$add_data(x = mtcars)
+  dat <- openxlsx2::wb_data(wb, dims = "A:K")
+
+  ch <- ec("barplot")$add_series(data = dat, name = mpg, label = cyl)
+  wb$add_encharter(dims = "M2", graph = ch)
+  xml <- wb$charts$chart[1]
+  expect_match(xml, "<c:f>'S'!$A$2:$A$1048576</c:f>", fixed = TRUE)
+  expect_match(xml, "<c:f>'S'!$B$2:$B$1048576</c:f>", fixed = TRUE)
+  expect_match(xml, "<c:ptCount val=\"33\"/>", fixed = TRUE)
+
+  wf <- ec("waterfall")$add_series(data = dat, name = mpg)
+  wb$add_encharter(dims = "M20", graph = wf)
+  expect_true(any(grepl("'S'!$A$2:$A$1048576", wb$workbook$definedNames, fixed = TRUE)))
+
+  dat <- openxlsx2::wb_data(wb, dims = "A1:K33")
+  ch <- ec("barplot")$add_series(data = dat, name = mpg, label = cyl)
+  wb$add_encharter(dims = "M40", graph = ch)
+  expect_match(wb$charts$chart[2], "<c:f>'S'!$A$2:$A$33</c:f>", fixed = TRUE)
+})

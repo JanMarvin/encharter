@@ -1119,6 +1119,14 @@ Chart <- R6::R6Class(
       has_header <- n_header > 0
       start_row  <- n_header + 1
 
+      # wb_data() limits full column dims to the used range. The references
+      # still cover the full column, the cached values only the used range.
+      end_dims <- dims_mat[nrow(dims_mat), ]
+      dims_req <- attr(data, "dims_requested")
+      if (!is.null(dims_req) && grepl("^\\$?[A-Za-z]+:\\$?[A-Za-z]+$", dims_req)) {
+        end_dims <- paste0(sub("[0-9]+$", "", end_dims), "1048576")
+      }
+
       out <- list(name = NULL, name_vals = NULL, data = NULL, label = NULL, weight = NULL,
                   data_vals = NULL, cat_vals = NULL, z_vals = NULL)
 
@@ -1137,7 +1145,7 @@ Chart <- R6::R6Class(
         if (n_header == 1) out$name_vals <- h_label
         if (!is.null(hdr_dims) && !is.null(attr(data, "header"))) out$name_vals <- attr(data, "header")[, col_idx]
         if (is.null(hdr_dims) && n_header > 1 && !is.null(attr(data, "header"))) out$name_vals <- attr(data, "header")[, col_idx]
-        out$data <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, col_idx], dims_mat[nrow(dims_mat), col_idx])
+        out$data <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, col_idx], end_dims[col_idx])
       }
 
       cat_idx <- match(c_label, col_names)
@@ -1151,14 +1159,14 @@ Chart <- R6::R6Class(
         names(out$cat_vals) <- c_label
       }
       if (length(cat_idx) > 0) {
-        out$label <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, cat_idx[1]], dims_mat[nrow(dims_mat), cat_idx[length(cat_idx)]])
+        out$label <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, cat_idx[1]], end_dims[cat_idx[length(cat_idx)]])
       }
 
       z_idx <- which(col_names == z_label)
       if (length(z_idx) > 0) {
         z_idx <- z_idx[1]
         out$z_vals <- data[[z_label]]
-        out$weight <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, z_idx], dims_mat[nrow(dims_mat), z_idx])
+        out$weight <- sprintf("%s!%s:%s", wb_sheet, dims_mat[start_row, z_idx], end_dims[z_idx])
       }
       out
     },
