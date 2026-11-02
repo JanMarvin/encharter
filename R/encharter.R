@@ -226,6 +226,7 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_chart_title("Monthly Sales", font_size = 14, bold = TRUE)
     set_chart_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      check_title_text(text)
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
@@ -249,6 +250,7 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_x_title("Month", font_color = "888888", italic = TRUE)
     set_x_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      check_title_text(text)
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
@@ -272,6 +274,7 @@ EncharterBase <- R6::R6Class(
     #' @examples
     #' ec("line")$set_y_title("Revenue (USD)", bold = TRUE)
     set_y_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL, bold = NULL, italic = NULL, fill = NULL, line = NULL, line_width = NULL) {
+      check_title_text(text)
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
