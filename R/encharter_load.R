@@ -624,6 +624,7 @@ load_chart <- function(xml) {
   }
 
   series_list <- list()
+  pos_given <- logical()
   for (nd in type_nodes) {
     type <- sub("^c:", "", xml_name(nd))
     ids <- xml_attr(xml_find_all(nd, "./c:axId"), "val")
@@ -699,6 +700,7 @@ load_chart <- function(xml) {
         else if (type %in% c("lineChart", "scatterChart", "bubbleChart")) "r"
         else "ctr"
       if (!is.null(s$label_params) && is.null(s$label_params$pos)) s$label_params$pos <- default_pos
+      pos_given <- c(pos_given, !is.null(s$label_pos))
       if (is.null(s$label_pos)) s$label_pos <- default_pos
       series_list[[length(series_list) + 1]] <- s
     }
@@ -709,7 +711,8 @@ load_chart <- function(xml) {
       s <- series_list[[i]]
       if (is.null(s$label_params) && !identical(s$label_pos, chart$label_params$pos)) {
         s$label_params <- chart$label_params
-        s$label_params$pos <- s$label_pos
+        # a series without a position of its own keeps the default of its chart group
+        s$label_params["pos"] <- list(if (pos_given[i]) s$label_pos)
         series_list[[i]] <- s
       }
     }

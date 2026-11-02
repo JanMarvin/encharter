@@ -240,3 +240,13 @@ check_visibility <- function(val) {
   for (nm in names(val)) check_bool(val[[nm]], paste0("visibility$", nm))
   invisible(val)
 }
+
+# title text is limited to 255 characters (MS-OI29500, Part 1 21.2.2.156)
+check_title_text <- function(text, name = "text") {
+  if (is.null(text)) return(invisible(NULL))
+  plain <- if (inherits(text, "fmt_txt")) as.character(text) else paste(as.character(text), collapse = "")
+  if (nchar(plain) > 255L) {
+    stop(sprintf("'%s' must have at most 255 characters", name), call. = FALSE)
+  }
+  invisible(text)
+}

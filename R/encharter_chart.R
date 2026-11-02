@@ -128,6 +128,7 @@ Chart <- R6::R6Class(
     set_x2_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL,
                             bold = NULL, italic = NULL, fill = NULL, line = NULL,
                             line_width = NULL) {
+      check_title_text(text)
       has_secondary <- any(vapply(self$series_data, function(s) s$sec_type == "x", NA))
 
       if (!has_secondary) {
@@ -166,6 +167,7 @@ Chart <- R6::R6Class(
     set_y2_title = function(text, font_size = NULL, font_name = NULL, font_color = NULL,
                             bold = NULL, italic = NULL, fill = NULL, line = NULL,
                             line_width = NULL) {
+      check_title_text(text)
       has_secondary <- any(vapply(self$series_data, function(s) s$sec_type == "y", NA))
 
       if (!has_secondary) {
@@ -337,7 +339,7 @@ Chart <- R6::R6Class(
     #' @param second_size Size of the second plot as a percentage of the main
     #'   pie, from 5 to 200. Default 75.
     #' @param split_type How data points are assigned to the second plot:
-    #'   `"auto"` (default), `"percent"`, `"pos"` (last n
+    #'   `"auto"` (default, the last third of the points), `"percent"`, `"pos"` (last n
     #'   points), `"val"` (values below threshold), or `"cust"`.
     #' @param split_pos Numeric split threshold for `"percent"`,
     #'   `"pos"`, and `"val"`; for `"cust"` a vector of
@@ -357,7 +359,12 @@ Chart <- R6::R6Class(
             stop("'split_pos' must be a vector of non-negative point indices for split_type = \"cust\"", call. = FALSE)
           }
         } else {
-          check_num(split_pos, "split_pos", min = 0, exclusive_min = TRUE)
+          # a position split is limited to 32000 points and a percent split to 100
+          # (MS-OI29500, Part 1 21.2.2.195)
+          split_by <- split_type %||% self$split_type %||% "auto"
+          split_max <- switch(split_by, pos = 32000, percent = 100, Inf)
+          check_num(split_pos, "split_pos", min = 0, max = split_max,
+                    integer = split_by == "pos", exclusive_min = TRUE)
         }
       }
 
@@ -1449,6 +1456,18 @@ Chart <- R6::R6Class(
 
           dLbls <- xml_add_child(ser, "c:dLbls")
 
+          # label positions accepted per chart group (MS-OI29500, Part 1 21.2.2.48),
+          # area, doughnut and radar charts take none; other positions are left out
+          bar_grouping <- sub_series[[1]]$grouping %||% "standard"
+          allowed_pos <- switch(
+            type,
+            pieChart = , pie3DChart = , ofPieChart = c("bestFit", "outEnd", "inEnd", "ctr"),
+            barChart = if (bar_grouping %in% c("stacked", "percentStacked")) c("inBase", "inEnd", "ctr")
+                       else c("inBase", "inEnd", "outEnd", "ctr"),
+            lineChart = , scatterChart = , bubbleChart = , stockChart = c("l", "r", "b", "t", "ctr"),
+            character()
+          )
+
           # per-point labels (c:dLbl) come first: a deleted label, or the
           # settings of that one point
           for (pl in s$point_labels) {
@@ -1471,14 +1490,14 @@ Chart <- R6::R6Class(
               if (type == "barChart") {
                 if (pt_pos == "t") pt_pos <- "outEnd" else if (pt_pos == "b") pt_pos <- "inBase"
               }
-              xml_add_child(dLbl, "c:dLblPos", val = pt_pos)
+              if (pt_pos %in% allowed_pos) xml_add_child(dLbl, "c:dLblPos", val = pt_pos)
             }
             xml_add_child(dLbl, "c:showLegendKey",  val = if (isTRUE(pl$show_legend_key)) "1" else "0")
             xml_add_child(dLbl, "c:showVal",        val = if (isTRUE(pl$show_val)) "1" else "0")
             xml_add_child(dLbl, "c:showCatName",    val = if (isTRUE(pl$show_cat)) "1" else "0")
             xml_add_child(dLbl, "c:showSerName",    val = if (isTRUE(pl$show_ser_name)) "1" else "0")
-            xml_add_child(dLbl, "c:showPercent",    val = if (isTRUE(pl$show_percent)) "1" else "0")
-            xml_add_child(dLbl, "c:showBubbleSize", val = if (isTRUE(pl$show_bubble_size)) "1" else "0")
+            xml_add_child(dLbl, "c:showPercent",    val = if (isTRUE(pl$show_percent) && type %in% c("pieChart", "pie3DChart", "doughnutChart", "ofPieChart")) "1" else "0")
+            xml_add_child(dLbl, "c:showBubbleSize", val = if (isTRUE(pl$show_bubble_size) && type == "bubbleChart") "1" else "0")
             if (!is.null(pl$sep)) xml_add_child(dLbl, "c:separator", pl$sep)
           }
 
@@ -1497,25 +1516,28 @@ Chart <- R6::R6Class(
 
           # C. dLblPos (not allowed on 3D chart groups)
           final_pos <- lp$pos
-          if (type == "barChart") {
-            if (final_pos == "t")      final_pos <- "outEnd"
-            else if (final_pos == "b") final_pos <- "inBase"
-          } else if (type %in% c("pieChart", "doughnutChart", "ofPieChart")) {
-            final_pos <- "bestFit"
+          if (!is.null(final_pos)) {
+            if (type == "barChart") {
+              if (final_pos == "t")      final_pos <- "outEnd"
+              else if (final_pos == "b") final_pos <- "inBase"
+            } else if (type %in% c("pieChart", "ofPieChart") && !final_pos %in% allowed_pos) {
+              final_pos <- "bestFit"
+            }
+            if (type %in% ENCHARTER_3D || !final_pos %in% allowed_pos) final_pos <- NULL
           }
-          if (type %in% ENCHARTER_3D) final_pos <- NULL
 
           if (!is.null(final_pos)) {
             xml_add_child(dLbls, "c:dLblPos", val = final_pos)
           }
 
-          # D. show flags
+          # D. show flags, percentages only on pie charts and bubble sizes only on bubble charts
+          # (MS-OI29500, Part 1 21.2.2.178 and 21.2.2.187)
           xml_add_child(dLbls, "c:showLegendKey",  val = if (isTRUE(lp$show_legend_key)) "1" else "0")
           xml_add_child(dLbls, "c:showVal",        val = if (isTRUE(lp$show_val)) "1" else "0")
           xml_add_child(dLbls, "c:showCatName",    val = if (isTRUE(lp$show_cat)) "1" else "0")
           xml_add_child(dLbls, "c:showSerName",    val = if (isTRUE(lp$show_ser_name)) "1" else "0")
-          xml_add_child(dLbls, "c:showPercent",    val = if (isTRUE(lp$show_percent)) "1" else "0")
-          xml_add_child(dLbls, "c:showBubbleSize", val = if (isTRUE(lp$show_bubble_size)) "1" else "0")
+          xml_add_child(dLbls, "c:showPercent",    val = if (isTRUE(lp$show_percent) && type %in% c("pieChart", "pie3DChart", "doughnutChart", "ofPieChart")) "1" else "0")
+          xml_add_child(dLbls, "c:showBubbleSize", val = if (isTRUE(lp$show_bubble_size) && type == "bubbleChart") "1" else "0")
           if (!is.null(lp$sep)) xml_add_child(dLbls, "c:separator", lp$sep)
           if (!is.null(lp$leader_lines)) {
             # the c15 extension is what decides for chart types other than pie
@@ -1817,7 +1839,9 @@ Chart <- R6::R6Class(
                 xml_add_child(cs, "c:secondPiePt", val = sprintf("%.0f", idx))
               }
             }
-          } else if (!is.null(self$split_pos)) {
+          } else if (self$split_type != "auto" && !is.null(self$split_pos)) {
+            # without splitType the points are split by position (MS-OI29500, Part 1
+            # 21.2.2.196), so a splitPos would turn auto into a split at that position
             xml_add_child(c_node, "c:splitPos", val = as.character(self$split_pos))
           }
         }

@@ -633,7 +633,7 @@ This rotates the chart clockwise.}
       \item{\code{second_size}}{Size of the second plot as a percentage of the main
 pie, from 5 to 200. Default 75.}
       \item{\code{split_type}}{How data points are assigned to the second plot:
-\code{"auto"} (default), \code{"percent"}, \code{"pos"} (last n
+\code{"auto"} (default, the last third of the points), \code{"percent"}, \code{"pos"} (last n
 points), \code{"val"} (values below threshold), or \code{"cust"}.}
       \item{\code{split_pos}}{Numeric split threshold for \code{"percent"},
 \code{"pos"}, and \code{"val"}; for \code{"cust"} a vector of

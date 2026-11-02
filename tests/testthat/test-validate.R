@@ -289,8 +289,12 @@ test_that("values found by the second fuzzing round are checked", {
   op <- ec("ofPieChart")$add_series(data = "data!$A$2:$A$4")$set_of_pie_options(split_type = "auto", split_pos = 2)
   xml <- as.character(op$render())
   expect_error(ec("ofPieChart")$set_of_pie_options(split_type = "cust", split_pos = 1e10), "split_pos")
+  expect_error(ec("ofPieChart")$set_of_pie_options(split_type = "pos", split_pos = 32001), "split_pos")
+  expect_error(ec("ofPieChart")$set_of_pie_options(split_type = "pos", split_pos = 2.5), "split_pos")
+  expect_error(ec("ofPieChart")$set_of_pie_options(split_type = "percent", split_pos = 101), "split_pos")
+  expect_silent(ec("ofPieChart")$set_of_pie_options(split_type = "val", split_pos = 1e6))
   expect_no_match(xml, "c:splitType")
-  expect_match(xml, "<c:splitPos val=\"2\"/>")
+  expect_no_match(xml, "c:splitPos")
 
   ln <- ec("barChart")$add_series(data = "data!$A$2:$A$4")$
     add_series(data = "data!$A$2:$A$4", type = "lineChart", grouping = "clustered")
@@ -300,4 +304,35 @@ test_that("values found by the second fuzzing round are checked", {
   for (i in 1:3) st$add_series(data = "data!$A$2:$A$4")
   st$add_series(data = "data!$A$2:$A$4", secondary = TRUE)
   expect_warning(st$render(), "got 1")
+})
+
+test_that("data labels keep to what each chart group accepts", {
+  render <- function(type, pos, ...) {
+    ch <- ec(type)$add_series(data = "data!$A$2:$A$4", ...)
+    ch$set_data_label_style(pos = pos, show_percent = TRUE, show_bubble_size = TRUE)
+    as.character(ch$render())
+  }
+
+  expect_no_match(render("areaChart", "t"), "c:dLblPos")
+  expect_no_match(render("radarChart", "ctr"), "c:dLblPos")
+  expect_no_match(render("doughnutChart", "ctr"), "c:dLblPos")
+  expect_no_match(render("lineChart", "outEnd"), "c:dLblPos")
+  expect_no_match(render("barChart", "l"), "c:dLblPos")
+  expect_no_match(render("barChart", "outEnd", grouping = "stacked"), "c:dLblPos")
+  expect_no_match(render("scatterChart", "none"), "c:dLblPos")
+  expect_match(render("barChart", "outEnd"), "<c:dLblPos val=\"outEnd\"/>")
+  expect_match(render("lineChart", "t"), "<c:dLblPos val=\"t\"/>")
+  expect_match(render("pieChart", "t"), "<c:dLblPos val=\"bestFit\"/>")
+
+  expect_match(render("pieChart", "ctr"), "<c:showPercent val=\"1\"/>")
+  expect_no_match(render("barChart", "ctr"), "<c:showPercent val=\"1\"/>")
+  expect_no_match(render("lineChart", "t"), "<c:showBubbleSize val=\"1\"/>")
+})
+
+test_that("rich titles have at most 255 characters", {
+  ch <- ec("barChart")
+  expect_error(ch$set_chart_title(strrep("t", 256)), "255")
+  expect_error(ch$set_x_title(strrep("t", 256)), "255")
+  expect_error(ch$set_y_title(strrep("t", 256)), "255")
+  expect_silent(ch$set_chart_title(strrep("t", 255)))
 })
