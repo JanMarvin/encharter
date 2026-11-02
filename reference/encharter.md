@@ -834,9 +834,9 @@ Configure the Pie of Pie / Bar of Pie chart (`ofPieChart`).
 
 - `split_type`:
 
-  How data points are assigned to the second plot: `"auto"` (default),
-  `"percent"`, `"pos"` (last n points), `"val"` (values below
-  threshold), or `"cust"`.
+  How data points are assigned to the second plot: `"auto"` (default,
+  the last third of the points), `"percent"`, `"pos"` (last n points),
+  `"val"` (values below threshold), or `"cust"`.
 
 - `split_pos`:
 
