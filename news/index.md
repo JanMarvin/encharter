@@ -1,6 +1,6 @@
 # Changelog
 
-## encharter 0.12.1
+## encharter 0.13
 
 ### New features
 
