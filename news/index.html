@@ -34,11 +34,11 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/JanMarvin/encharter/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/JanMarvin/encharter/blob/v0.13.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.13" id="encharter-013">encharter 0.13<a class="anchor" aria-label="anchor" href="#encharter-013"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.13" id="encharter-013">encharter 0.13<a class="anchor" aria-label="anchor" href="#encharter-013"></a></h2><p class="text-muted">CRAN release: 2026-11-04</p>
 <div class="section level3">
 <h3 id="new-features-0-13">New features<a class="anchor" aria-label="anchor" href="#new-features-0-13"></a></h3>
 <ul><li><p><code>plot(chart, wb)</code> reads the series from the ranges in <code>wb</code> and skips cells in hidden rows and columns, as a spreadsheet application does unless “Show data in hidden rows and columns” is switched on. The workbook takes precedence over the <code><a href="https://janmarvin.github.io/openxlsx2/reference/wb_data.html" class="external-link">wb_data()</a></code> caches, so one chart can be drawn for different workbooks; <code>plot(chart)</code> still uses the caches. The new <code>plot_vis_only</code> field and <code>set_plot_vis_only()</code> control this; the setting is written as <code>c:plotVisOnly</code> and read back by <code><a href="../reference/encharter_load.html">ec_load()</a></code>. Extended charts are not affected.</p></li>

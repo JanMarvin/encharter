@@ -2,6 +2,8 @@
 
 ## encharter 0.13
 
+CRAN release: 2026-11-04
+
 ### New features
 
 - `plot(chart, wb)` reads the series from the ranges in `wb` and skips
