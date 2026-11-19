@@ -21,7 +21,8 @@ waterfall, treemap, sunburst, box-and-whisker, funnel, and region map.
 
 You can install the last stable release from CRAN:
 
-``` R
+``` r
+
 install.packages('encharter')
 ```
 
@@ -649,28 +650,6 @@ chart$set_disp_blanks("span")   # connect across missing values
 chart$set_disp_blanks("zero")   # treat as zero
 chart$set_disp_blanks("gap")    # default
 ```
-
-------------------------------------------------------------------------
-
-## Notes
-
-- `encharter` is relatively young and does not yet validate all input
-  against the OOXML standard. For example, a label position like
-  `"outEnd"` works correctly on bar charts but may produce unexpected
-  results on line charts, as no check for chart-type compatibility is in
-  place. Test your output before using it in important files.
-- Series cell references use standard spreadsheet notation:
-  `"Sheet1!$A$2:$A$10"`. The sheet name is required.
-- For extended chart types (waterfall, treemap, etc.), OOXML uses a
-  different XML schema internally (`chartEx`). `encharter` handles this
-  transparently — `ec("waterfall")` returns a `ChartEx` object rather
-  than a `Chart` object, but the interface is the same.
-- Radar charts accept `filled = TRUE` in `add_series()` to fill the
-  polygon interior.
-- Bubble charts require a third data range for bubble sizes, passed as
-  `weight` in `add_series()`.
-- Bar direction (vertical column vs horizontal bar) is set via
-  `dir = "col"` (default) or `dir = "bar"` in `add_series()`.
 
 ------------------------------------------------------------------------
 
