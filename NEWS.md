@@ -1,3 +1,21 @@
+# encharter (development version)
+
+## Bug fixes
+
+* `set_x2_title()` and `set_y2_title()` no longer drop the title when it is
+  set before a series is assigned to the secondary axis. The order of these
+  calls does not matter anymore. Without a series on the secondary axis the
+  title is not written.
+
+* `plot()` takes the colors of `wb_color(theme = )` and of the automatic series
+  colors from the theme the workbook is saved with. For a workbook that has no
+  theme of its own yet, these are the colors openxlsx2 writes, so the plot
+  matches the saved file.
+
+* Theme colors with a tint, e.g. `wb_color(theme = 4, tint = 0.4)`, no longer
+  fail when a chart is written. The tint is written as `a:lumMod` and
+  `a:lumOff`, and `plot()` draws it.
+
 # encharter 0.13
 
 ## New features
