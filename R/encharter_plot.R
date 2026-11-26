@@ -1368,7 +1368,8 @@ plot_cartesian <- function(chart, series) {
         for (i in seq_along(v)) {
           if (!is.finite(yv[i]) || !is.finite(xs[i]) || is.na(d[i])) next
           if (z[i] < 0 && !isTRUE(chart$show_neg_bubbles)) next
-          bubble_fill <- if (bubble_vary) plot_auto_color(i, if (length(s$line$color) > 1L) s$line$color else chart$palette) else col
+          bubble_pal <- if (length(s$line$color) > 1L) s$line$color else chart$palette
+          bubble_fill <- if (bubble_vary && i <= length(bubble_pal)) plot_auto_color(i, bubble_pal) else col
           for (p in s$points) if (p$idx == i - 1 && !is.null(p$color)) bubble_fill <- plot_color(p$color, bubble_fill)
           grid::grid.circle(x = grid::unit(xs[i], "native"), y = grid::unit(yv[i], "native"),
                             r = grid::unit(d[i] / 2, "snpc"),
@@ -2196,8 +2197,10 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
     }
     if (types[1] == "bubbleChart" && length(series) == 1L && (is.null(series[[1]]$line$color) || length(series[[1]]$line$color) > 1L || identical(toupper(as.character(series[[1]]$line$color)[1]), "4472C4"))) {
       s <- series[[1]]
+      bubble_pal <- if (length(s$line$color) > 1L) s$line$color else chart$palette
+      series_col <- plot_color(s$line$color[1] %||% bubble_pal[1], "#4472C4")
       entries <- lapply(seq_along(s$values), function(i) {
-        list(kind = "rect", label = plot_format(s$cats[i]), col = plot_auto_color(i, if (length(s$line$color) > 1L) s$line$color else chart$palette))
+        list(kind = "rect", label = plot_format(s$cats[i]), col = if (i <= length(bubble_pal)) plot_auto_color(i, bubble_pal) else series_col)
       })
     }
     stacked <- all(vapply(series, function(s) {
