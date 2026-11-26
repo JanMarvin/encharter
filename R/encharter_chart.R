@@ -109,9 +109,9 @@ Chart <- R6::R6Class(
 
     #' @description Set the secondary X-axis title.
     #'
-    #' Only takes effect if at least one series has been assigned to the
-    #' secondary X-axis via `add_series(secondary = "x")`. Issues a warning
-    #' and returns `self` silently otherwise.
+    #' The title can be set before or after series are added. It is only
+    #' written if at least one series is assigned to the secondary X-axis via
+    #' `add_series(secondary = "x")`.
     #'
     #' @param text Title string.
     #' @param font_size Numeric font size in points.
@@ -129,12 +129,6 @@ Chart <- R6::R6Class(
                             bold = NULL, italic = NULL, fill = NULL, line = NULL,
                             line_width = NULL) {
       check_title_text(text)
-      has_secondary <- any(vapply(self$series_data, function(s) s$sec_type == "x", NA))
-
-      if (!has_secondary) {
-        warning("Secondary axis title ignored: no series is assigned to a secondary X-axis.", call. = FALSE)
-        return(invisible(self))
-      }
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
@@ -147,9 +141,9 @@ Chart <- R6::R6Class(
 
     #' @description Set the secondary Y-axis title.
     #'
-    #' Only takes effect if at least one series has been assigned to the
-    #' secondary Y-axis via `add_series(secondary = TRUE)` or
-    #' `secondary = "y"`. Issues a warning otherwise.
+    #' The title can be set before or after series are added. It is only
+    #' written if at least one series is assigned to the secondary Y-axis via
+    #' `add_series(secondary = TRUE)` or `secondary = "y"`.
     #'
     #' @param text Title string.
     #' @param font_size Numeric font size in points.
@@ -168,12 +162,6 @@ Chart <- R6::R6Class(
                             bold = NULL, italic = NULL, fill = NULL, line = NULL,
                             line_width = NULL) {
       check_title_text(text)
-      has_secondary <- any(vapply(self$series_data, function(s) s$sec_type == "y", NA))
-
-      if (!has_secondary) {
-        warning("Secondary axis title ignored: no series is assigned to a secondary Y-axis.", call. = FALSE)
-        return(invisible(self))
-      }
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
@@ -1061,13 +1049,13 @@ Chart <- R6::R6Class(
         # 3. Primary Y-Axis (Left / Vertical Height)
 
         # 4. Secondary Y-Axis (Right)
-        if (needs_sec_y || !is.null(self$y2_title$text)) {
+        if (needs_sec_y) {
           # Secondary Y crosses the Primary X at its maximum (the right side)
           private$render_val_ax(plot_area, id_sec_val, id_prim_cat, "r", title_obj = self$y2_title, crosses = "max", params = self$axis_params$y2)
         }
 
         # 5. Secondary X-Axis (Top)
-        if (needs_sec_x || !is.null(self$x2_title$text)) {
+        if (needs_sec_x) {
           # IMPORTANT: To get the X-axis to the TOP, it must cross the Y-axis at its MAX value.
           # We cross the Primary Y (id_prim_val) unless we specifically want a fully independent system.
 

@@ -916,8 +916,8 @@ plot_cartesian <- function(chart, series) {
   r1 <- axis_range(prim)
   y1 <- plot_scale(r1[1], r1[2], chart$axis_params$y, pad = !pct_prim)
   y2 <- NULL
-  if (length(sec) || !is.null(chart$y2_title$text)) {
-    r2 <- if (length(sec)) axis_range(sec) else r1
+  if (length(sec)) {
+    r2 <- axis_range(sec)
     y2 <- plot_scale(r2[1], r2[2], chart$axis_params$y2, pad = !pct_sec)
   }
   on_x2 <- vapply(series, function(s) s$sec_type %in% c("x", "xy"), logical(1))
@@ -930,8 +930,8 @@ plot_cartesian <- function(chart, series) {
       if (is.list(s$trendline)) xs <- c(xs, min(xs) - (s$trendline$backward %||% 0), max(xs) + (s$trendline$forward %||% 0))
     }
     xa <- plot_scale(min(xs, na.rm = TRUE), max(xs, na.rm = TRUE), chart$axis_params$x)
-    if (any(on_x2) || !is.null(chart$x2_title$text)) {
-      xs2 <- if (any(on_x2)) unlist(lapply(series[on_x2], x_of)) else xs
+    if (any(on_x2)) {
+      xs2 <- unlist(lapply(series[on_x2], x_of))
       x2 <- plot_scale(min(xs2, na.rm = TRUE), max(xs2, na.rm = TRUE), chart$axis_params$x2)
     }
   } else if (is_date) {
@@ -1094,7 +1094,7 @@ plot_cartesian <- function(chart, series) {
   xt_h <- plot_title_height(chart$x_title, 10)
   x2t_h <- if (is.null(x2)) 0 else plot_title_height(chart$x2_title, 10)
   yt_w <- plot_title_height(chart$y_title, 10)
-  y2t_w <- plot_title_height(chart$y2_title, 10)
+  y2t_w <- if (is.null(y2)) 0 else plot_title_height(chart$y2_title, 10)
   if (horizontal) {
     left_w <- left_w + xt_h
     bottom_h <- bottom_h + yt_w
@@ -1771,7 +1771,7 @@ plot_cartesian <- function(chart, series) {
     grid::grid.text(plot_title_text(chart$x2_title), y = grid::unit(1, "npc") - grid::unit(x2t_h / 2, "points"), gp = plot_gpar_text(chart$x2_title$style, 10, "#000000"))
     grid::upViewport()
   }
-  if (!is.null(chart$y2_title$text) && !horizontal) {
+  if (!is.null(y2) && !is.null(chart$y2_title$text) && !horizontal) {
     grid::pushViewport(grid::viewport(layout.pos.row = 2, layout.pos.col = 3))
     grid::grid.text(plot_title_text(chart$y2_title), x = grid::unit(1, "npc") - grid::unit(y2t_w / 2, "points"), rot = 90, gp = plot_gpar_text(chart$y2_title$style, 10, "#000000"))
     grid::upViewport()

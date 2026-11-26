@@ -384,12 +384,24 @@ test_that("render() suppresses legend when pos = 'none'", {
   expect_false(grepl("<c:legend>", xml_str))
 })
 
-test_that("set_y2_title warns when no secondary series", {
+test_that("set_y2_title before a secondary series is kept", {
   ch <- ec("line")
-  expect_warning(
-    ch$set_y2_title("Secondary"),
-    regexp = "secondary"
-  )
+  ch$add_series(data = "'Sheet1'!$A$2:$A$5")
+  expect_no_warning(ch$set_y2_title("Secondary"))
+  xml <- as.character(ch$render())
+  expect_no_match(xml, "Secondary")
+  ch$add_series(data = "'Sheet1'!$B$2:$B$5", secondary = TRUE)
+  expect_match(as.character(ch$render()), "Secondary")
+})
+
+test_that("set_x2_title before a secondary series is kept", {
+  ch <- ec("scatter")
+  ch$add_series(data = "'Sheet1'!$A$2:$A$5")
+  expect_no_warning(ch$set_x2_title("Top"))
+  xml <- as.character(ch$render())
+  expect_no_match(xml, "Top")
+  ch$add_series(data = "'Sheet1'!$B$2:$B$5", secondary = "x")
+  expect_match(as.character(ch$render()), "Top")
 })
 
 test_that("set_y2_title accepts title after secondary series added", {
