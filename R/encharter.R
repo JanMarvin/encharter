@@ -656,7 +656,7 @@ EncharterBase <- R6::R6Class(
         return()
       }
 
-      type <- names(color_val)
+      type <- names(color_val)[1]
 
       # wbColour objects (from openxlsx2::wb_color())
       if (inherits(color_val, "wbColour")) {
@@ -672,16 +672,22 @@ EncharterBase <- R6::R6Class(
             "hlink", "folHlink", "phClr",
             "dk1", "lt1", "dk2", "lt2"
           )
-          if (as.character(color_val) %in% theme_map) {
-            val_name <- as.character(color_val)
+          if (as.character(color_val)[1] %in% theme_map) {
+            val_name <- as.character(color_val)[1]
           } else {
-            theme_idx <- as.integer(color_val)
+            theme_idx <- as.integer(as.character(color_val)[1])
             val_name <- theme_map[as.numeric(theme_idx) + 1]
           }
           scheme <- xml_add_child(node, "a:schemeClr", val = val_name)
           # luminance modifiers kept by encharter_load() on theme colors
           lum_mod <- attr(color_val, "lumMod")
           lum_off <- attr(color_val, "lumOff")
+          # a wb_color() tint is the same as lumMod / lumOff
+          tint <- if ("tint" %in% names(color_val)) as.numeric(color_val[["tint"]]) else 0
+          if (is.null(lum_mod) && is.null(lum_off) && !is.na(tint) && tint != 0) {
+            lum_mod <- 1 - abs(tint)
+            if (tint > 0) lum_off <- tint
+          }
           if (!is.null(lum_mod)) xml_add_child(scheme, "a:lumMod", val = as.character(round(lum_mod * 100000)))
           if (!is.null(lum_off)) xml_add_child(scheme, "a:lumOff", val = as.character(round(lum_off * 100000)))
           return()

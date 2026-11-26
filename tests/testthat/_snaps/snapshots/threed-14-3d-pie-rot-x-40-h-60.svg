@@ -212,8 +212,8 @@
 <polygon points='324.67,251.88 46.98,277.19 47.18,274.13 47.46,271.09 47.82,268.06 48.25,265.04 48.76,262.04 49.34,259.05 50.00,256.08 50.73,253.12 51.53,250.18 52.40,247.26 53.35,244.35 54.36,241.47 55.45,238.60 56.60,235.75 57.81,232.93 59.10,230.12 60.45,227.34 61.86,224.58 63.34,221.84 64.88,219.13 66.48,216.44 68.14,213.77 69.86,211.13 71.64,208.52 73.48,205.92 75.38,203.36 77.33,200.82 79.34,198.31 81.40,195.83 83.51,193.37 85.68,190.94 87.90,188.54 90.17,186.17 92.49,183.83 94.86,181.52 97.27,179.23 99.74,176.98 102.25,174.75 104.80,172.56 107.40,170.40 110.05,168.27 112.74,166.16 115.46,164.10 118.23,162.06 121.05,160.05 123.90,158.08 126.78,156.14 129.71,154.23 132.67,152.35 135.67,150.50 138.71,148.69 141.78,146.91 144.88,145.17 148.02,143.46 151.19,141.78 154.39,140.13 157.62,138.52 ' style='stroke-width: 0.75; stroke: none; fill: #FFC000;' />
 <polygon points='324.67,251.88 157.62,138.52 160.97,136.91 164.34,135.32 167.75,133.78 171.18,132.27 174.65,130.79 178.14,129.36 181.65,127.96 185.20,126.59 188.76,125.26 192.36,123.97 195.97,122.71 199.61,121.49 203.27,120.31 206.95,119.17 210.66,118.06 214.38,116.98 218.12,115.95 221.88,114.95 225.66,113.99 229.46,113.07 233.27,112.18 237.09,111.33 240.93,110.52 244.79,109.74 ' style='stroke-width: 0.75; stroke: none; fill: #5B9BD5;' />
 <polygon points='324.67,251.88 244.79,109.74 248.90,108.96 253.02,108.22 257.15,107.52 261.30,106.86 265.45,106.25 269.62,105.68 273.80,105.15 277.99,104.66 282.19,104.22 286.40,103.81 ' style='stroke-width: 0.75; stroke: none; fill: #70AD47;' />
-<polygon points='324.67,251.88 286.40,103.81 290.74,103.44 295.10,103.11 299.45,102.83 303.82,102.60 308.19,102.40 312.56,102.26 ' style='stroke-width: 0.75; stroke: none; fill: #294476;' />
-<polygon points='324.67,251.88 312.56,102.26 316.60,102.16 320.63,102.10 324.67,102.08 ' style='stroke-width: 0.75; stroke: none; fill: #8E4B1D;' />
+<polygon points='324.67,251.88 286.40,103.81 290.74,103.44 295.10,103.11 299.45,102.83 303.82,102.60 308.19,102.40 312.56,102.26 ' style='stroke-width: 0.75; stroke: none; fill: #8599AA;' />
+<polygon points='324.67,251.88 312.56,102.26 316.60,102.16 320.63,102.10 324.67,102.08 ' style='stroke-width: 0.75; stroke: none; fill: #EEA18A;' />
 <text x='469.74' y='200.24' text-anchor='middle' style='font-size: 9.00px; font-family: sans;' textLength='18.01px' lengthAdjust='spacingAndGlyphs'>33%</text>
 <text x='400.19' y='373.07' text-anchor='middle' style='font-size: 9.00px; font-family: sans;' textLength='18.01px' lengthAdjust='spacingAndGlyphs'>21%</text>
 <text x='179.62' y='335.93' text-anchor='middle' style='font-size: 9.00px; font-family: sans;' textLength='18.01px' lengthAdjust='spacingAndGlyphs'>18%</text>
@@ -234,9 +234,9 @@
 <text x='673.26' y='310.77' style='font-size: 10.00px; font-family: sans;' textLength='28.91px' lengthAdjust='spacingAndGlyphs'>Online</text>
 <rect x='655.32' y='317.29' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #70AD47;' />
 <text x='673.26' y='324.72' style='font-size: 10.00px; font-family: sans;' textLength='32.80px' lengthAdjust='spacingAndGlyphs'>Partner</text>
-<rect x='655.32' y='331.24' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #294476;' />
+<rect x='655.32' y='331.24' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #8599AA;' />
 <text x='673.26' y='338.66' style='font-size: 10.00px; font-family: sans;' textLength='28.91px' lengthAdjust='spacingAndGlyphs'>Export</text>
-<rect x='655.32' y='345.19' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #8E4B1D;' />
+<rect x='655.32' y='345.19' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #EEA18A;' />
 <text x='673.26' y='352.61' style='font-size: 10.00px; font-family: sans;' textLength='25.01px' lengthAdjust='spacingAndGlyphs'>Other</text>
 </g>
 </svg>

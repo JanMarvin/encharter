@@ -28,15 +28,15 @@
 <text x='164.35' y='173.60' text-anchor='middle' style='font-size: 9.00px; font-family: sans;' textLength='48.04px' lengthAdjust='spacingAndGlyphs'>East; 26500</text>
 <polygon points='204.80,286.41 249.39,102.88 252.45,103.65 255.50,104.47 258.54,105.35 261.56,106.27 264.56,107.25 267.55,108.27 270.52,109.35 273.47,110.47 276.41,111.64 279.32,112.86 282.21,114.13 285.08,115.45 287.93,116.82 290.75,118.23 293.55,119.69 296.33,121.20 299.08,122.76 301.80,124.36 304.50,126.00 307.17,127.69 309.81,129.42 312.42,131.20 315.00,133.02 317.55,134.89 320.07,136.79 322.55,138.74 325.01,140.73 327.43,142.76 329.81,144.83 332.16,146.95 334.48,149.09 336.75,151.28 339.00,153.51 341.20,155.77 343.37,158.07 345.49,160.41 347.58,162.78 349.63,165.18 351.63,167.62 353.60,170.09 355.52,172.60 357.41,175.13 359.25,177.70 361.04,180.30 362.80,182.93 364.50,185.58 366.17,188.27 367.79,190.98 369.36,193.72 370.89,196.49 372.37,199.28 373.80,202.09 375.19,204.93 376.53,207.79 377.82,210.67 379.06,213.58 380.25,216.50 ' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #FFC000;' />
 <text x='285.29' y='196.81' text-anchor='middle' style='font-size: 9.00px; font-family: sans;' textLength='50.53px' lengthAdjust='spacingAndGlyphs'>West; 22000</text>
-<polygon points='204.80,286.41 380.25,216.50 381.41,219.47 382.51,222.45 383.56,225.46 384.56,228.48 385.51,231.51 386.41,234.57 387.26,237.63 388.06,240.72 388.80,243.81 389.49,246.92 390.13,250.03 390.72,253.16 391.25,256.30 391.73,259.45 392.16,262.60 392.53,265.76 392.86,268.93 393.12,272.10 393.34,275.27 393.50,278.45 393.61,281.63 393.66,284.81 393.66,288.00 393.61,291.18 393.50,294.36 393.34,297.54 393.12,300.71 392.86,303.89 392.53,307.05 392.16,310.21 391.73,313.37 391.25,316.51 390.72,319.65 390.13,322.78 389.49,325.90 388.80,329.00 388.06,332.10 387.26,335.18 386.41,338.25 385.51,341.30 384.56,344.34 383.56,347.36 382.51,350.36 381.41,353.35 380.25,356.31 ' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #636363;' />
+<polygon points='204.80,286.41 380.25,216.50 381.41,219.47 382.51,222.45 383.56,225.46 384.56,228.48 385.51,231.51 386.41,234.57 387.26,237.63 388.06,240.72 388.80,243.81 389.49,246.92 390.13,250.03 390.72,253.16 391.25,256.30 391.73,259.45 392.16,262.60 392.53,265.76 392.86,268.93 393.12,272.10 393.34,275.27 393.50,278.45 393.61,281.63 393.66,284.81 393.66,288.00 393.61,291.18 393.50,294.36 393.34,297.54 393.12,300.71 392.86,303.89 392.53,307.05 392.16,310.21 391.73,313.37 391.25,316.51 390.72,319.65 390.13,322.78 389.49,325.90 388.80,329.00 388.06,332.10 387.26,335.18 386.41,338.25 385.51,341.30 384.56,344.34 383.56,347.36 382.51,350.36 381.41,353.35 380.25,356.31 ' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #869E87;' />
 <text x='327.56' y='289.50' text-anchor='middle' style='font-size: 9.00px; font-family: sans;' textLength='52.54px' lengthAdjust='spacingAndGlyphs'>Other; 17500</text>
 <rect x='499.90' y='144.76' width='141.65' height='153.79' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #5B9BD5;' />
 <text x='645.53' y='224.75' style='font-size: 9.00px; font-family: sans;' textLength='51.04px' lengthAdjust='spacingAndGlyphs'>Online; 9500</text>
 <rect x='499.90' y='298.55' width='141.65' height='67.99' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #70AD47;' />
 <text x='645.53' y='335.64' style='font-size: 9.00px; font-family: sans;' textLength='54.54px' lengthAdjust='spacingAndGlyphs'>Partner; 4200</text>
-<rect x='499.90' y='366.54' width='141.65' height='42.09' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #294476;' />
+<rect x='499.90' y='366.54' width='141.65' height='42.09' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #8599AA;' />
 <text x='645.53' y='390.68' style='font-size: 9.00px; font-family: sans;' textLength='51.04px' lengthAdjust='spacingAndGlyphs'>Export; 2600</text>
-<rect x='499.90' y='408.63' width='141.65' height='19.43' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #8E4B1D;' />
+<rect x='499.90' y='408.63' width='141.65' height='19.43' style='stroke-width: 0.75; stroke: #FFFFFF; fill: #EEA18A;' />
 <text x='645.53' y='421.44' style='font-size: 9.00px; font-family: sans;' textLength='47.54px' lengthAdjust='spacingAndGlyphs'>Other; 1200</text>
 <polyline points='380.25,216.50 499.90,144.76 ' style='stroke-width: 0.75; stroke: #404040;' />
 <polyline points='380.25,356.31 499.90,428.05 ' style='stroke-width: 0.75; stroke: #404040;' />
@@ -52,9 +52,9 @@
 <text x='372.79' y='557.52' style='font-size: 10.00px; font-family: sans;' textLength='28.91px' lengthAdjust='spacingAndGlyphs'>Online</text>
 <rect x='413.66' y='550.10' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #70AD47;' />
 <text x='431.59' y='557.52' style='font-size: 10.00px; font-family: sans;' textLength='32.80px' lengthAdjust='spacingAndGlyphs'>Partner</text>
-<rect x='476.34' y='550.10' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #294476;' />
+<rect x='476.34' y='550.10' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #8599AA;' />
 <text x='494.27' y='557.52' style='font-size: 10.00px; font-family: sans;' textLength='28.91px' lengthAdjust='spacingAndGlyphs'>Export</text>
-<rect x='535.14' y='550.10' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #8E4B1D;' />
+<rect x='535.14' y='550.10' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #EEA18A;' />
 <text x='553.07' y='557.52' style='font-size: 10.00px; font-family: sans;' textLength='25.01px' lengthAdjust='spacingAndGlyphs'>Other</text>
 </g>
 </svg>

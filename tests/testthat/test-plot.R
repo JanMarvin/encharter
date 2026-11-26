@@ -289,3 +289,30 @@ test_that("plot() reads the series from the workbook it is given, not from the c
   ch$set_plot_vis_only(FALSE)
   expect_equal(plot_collect(ch, wb2)[[1]]$values, 1:14)
 })
+
+test_that("plot colors use the theme the workbook is saved with", {
+  withr::defer(plot_set_theme(NULL))
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S")$add_data(x = data.frame(a = 1:3))
+  f <- tempfile(fileext = ".xlsx")
+  openxlsx2::wb_save(wb, f)
+  wb_loaded <- openxlsx2::wb_load(f)
+
+  plot_set_theme(wb)
+  in_memory <- plot_color(openxlsx2::wb_color(theme = 4))
+  plot_set_theme(wb_loaded)
+  loaded <- plot_color(openxlsx2::wb_color(theme = 4))
+  expect_identical(in_memory, loaded)
+
+  plot_set_theme(NULL)
+  expect_identical(plot_color(openxlsx2::wb_color(theme = 4)), "#4472C4")
+})
+
+test_that("theme colors with a tint are lighter or darker", {
+  withr::defer(plot_set_theme(NULL))
+  plot_set_theme(NULL)
+  expect_identical(plot_color(openxlsx2::wb_color(theme = 4, tint = 0.4)), "#8FAADC")
+  expect_identical(plot_color(openxlsx2::wb_color(theme = 4, tint = -0.25)), "#2F5597")
+
+  ch <- ec("line")$add_series(data = "S!$A$2:$A$3", line_color = openxlsx2::wb_color(theme = 4, tint = 0.4))
+  expect_match(as.character(ch$render()), "<a:lumMod val=\"60000\"/><a:lumOff val=\"40000\"/>", fixed = TRUE)
+})

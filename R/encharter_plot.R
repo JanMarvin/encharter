@@ -14,6 +14,15 @@ ENCHARTER_THEME_HEX <- c(
   dk1 = "000000", lt1 = "FFFFFF", dk2 = "44546A", lt2 = "E7E6E6"
 )
 
+# theme colors openxlsx2 writes for a workbook that has no theme of its own
+ENCHARTER_BASE_THEME_HEX <- c(
+  bg1 = "FFFFFF", tx1 = "000000", bg2 = "E8E8E8", tx2 = "0E2841",
+  accent1 = "156082", accent2 = "E97132", accent3 = "196B24",
+  accent4 = "0F9ED5", accent5 = "A02B93", accent6 = "4EA72E",
+  hlink = "467886", folHlink = "96607D", phClr = "000000",
+  dk1 = "000000", lt1 = "FFFFFF", dk2 = "0E2841", lt2 = "E8E8E8"
+)
+
 # theme colors of the workbook being plotted; plot() sets them from the
 # workbook's theme part and restores the Office defaults afterwards
 plot_state <- new.env(parent = emptyenv())
@@ -24,7 +33,9 @@ plot_state$text_style <- list()
 plot_set_theme <- function(wb) {
   theme <- ENCHARTER_THEME_HEX
   xml <- if (!is.null(wb)) wb$theme else NULL
-  if (is.character(xml) && length(xml) == 1 && nzchar(xml)) {
+  has_theme <- is.character(xml) && length(xml) == 1 && nzchar(xml)
+  if (!is.null(wb) && !has_theme) theme <- ENCHARTER_BASE_THEME_HEX
+  if (has_theme) {
     scheme <- xml_find_first(read_xml(xml), ".//a:clrScheme")
     if (!is_missing(scheme)) {
       for (nm in c("dk1", "lt1", "dk2", "lt2", paste0("accent", 1:6), "hlink", "folHlink")) {
@@ -49,12 +60,17 @@ plot_set_theme <- function(wb) {
 plot_color <- function(x, default = "#000000") {
   if (is.null(x) || length(x) == 0) return(default)
   if (inherits(x, "wbColour")) {
-    type <- names(x)
+    type <- names(x)[1]
     if (identical(type, "theme")) {
-      val <- as.character(x)
+      val <- as.character(x)[1]
       if (!val %in% names(plot_state$theme)) val <- names(plot_state$theme)[as.integer(val) + 1]
       lum_mod <- attr(x, "lumMod")
       lum_off <- attr(x, "lumOff")
+      tint <- if ("tint" %in% names(x)) as.numeric(x[["tint"]]) else 0
+      if (is.null(lum_mod) && is.null(lum_off) && !is.na(tint) && tint != 0) {
+        lum_mod <- 1 - abs(tint)
+        if (tint > 0) lum_off <- tint
+      }
       x <- plot_state$theme[[val]]
       if (!is.null(lum_mod) || !is.null(lum_off)) {
         # DrawingML lumMod/lumOff act on the HSL luminance
