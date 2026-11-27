@@ -41,8 +41,8 @@
 <circle cx='501.67' cy='113.30' r='38.14' style='stroke-width: 0.75; stroke: none; fill: #FFC000;' />
 <circle cx='268.35' cy='331.24' r='26.97' style='stroke-width: 0.75; stroke: none; fill: #5B9BD5;' />
 <circle cx='423.89' cy='403.89' r='22.02' style='stroke-width: 0.75; stroke: none; fill: #70AD47;' />
-<circle cx='579.44' cy='222.27' r='33.03' style='stroke-width: 0.75; stroke: none; fill: #294476;' />
-<circle cx='112.81' cy='476.54' r='15.57' style='stroke-width: 0.75; stroke: none; fill: #8E4B1D;' />
+<circle cx='579.44' cy='222.27' r='33.03' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
+<circle cx='112.81' cy='476.54' r='15.57' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
 </g>
 <g clip-path='url(#cpMC4wMHw3MjAuMDB8MC4wMHw1NzYuMDA=)'>
 <polyline points='35.03,549.19 657.21,549.19 ' style='stroke-width: 1.00;' />
@@ -153,9 +153,9 @@
 <text x='701.05' y='309.73' style='font-size: 9.00px; font-family: sans;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>3</text>
 <rect x='683.11' y='315.20' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #70AD47;' />
 <text x='701.05' y='322.28' style='font-size: 9.00px; font-family: sans;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>5</text>
-<rect x='683.11' y='327.75' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #294476;' />
+<rect x='683.11' y='327.75' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
 <text x='701.05' y='334.83' style='font-size: 9.00px; font-family: sans;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>7</text>
-<rect x='683.11' y='340.30' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #8E4B1D;' />
+<rect x='683.11' y='340.30' width='7.97' height='7.97' style='stroke-width: 0.75; stroke: none; fill: #4472C4;' />
 <text x='701.05' y='347.39' style='font-size: 9.00px; font-family: sans;' textLength='5.01px' lengthAdjust='spacingAndGlyphs'>1</text>
 </g>
 </svg>

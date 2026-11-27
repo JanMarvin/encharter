@@ -289,3 +289,99 @@ test_that("plot() reads the series from the workbook it is given, not from the c
   ch$set_plot_vis_only(FALSE)
   expect_equal(plot_collect(ch, wb2)[[1]]$values, 1:14)
 })
+
+test_that("plot colors use the theme the workbook is saved with", {
+  withr::defer(plot_set_theme(NULL))
+  wb <- openxlsx2::wb_workbook()$add_worksheet("S")$add_data(x = data.frame(a = 1:3))
+  f <- tempfile(fileext = ".xlsx")
+  openxlsx2::wb_save(wb, f)
+  wb_loaded <- openxlsx2::wb_load(f)
+
+  plot_set_theme(wb)
+  in_memory <- plot_color(openxlsx2::wb_color(theme = 4))
+  plot_set_theme(wb_loaded)
+  loaded <- plot_color(openxlsx2::wb_color(theme = 4))
+  expect_identical(in_memory, loaded)
+
+  plot_set_theme(NULL)
+  expect_identical(plot_color(openxlsx2::wb_color(theme = 4)), "#4472C4")
+})
+
+test_that("theme colors with a tint are lighter or darker", {
+  withr::defer(plot_set_theme(NULL))
+  plot_set_theme(NULL)
+  expect_identical(plot_color(openxlsx2::wb_color(theme = 4, tint = 0.4)), "#8FAADC")
+  expect_identical(plot_color(openxlsx2::wb_color(theme = 4, tint = -0.25)), "#2F5597")
+
+  ch <- ec("line")$add_series(data = "S!$A$2:$A$3", line_color = openxlsx2::wb_color(theme = 4, tint = 0.4))
+  expect_match(as.character(ch$render()), "<a:lumMod val=\"60000\"/><a:lumOff val=\"40000\"/>", fixed = TRUE)
+})
+
+plot_grobs <- function(chart, wb = NULL) {
+  f <- tempfile(fileext = ".png")
+  grDevices::png(f, 600, 400)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  plot(chart, wb = wb)
+  nm <- grid::grid.ls(grobs = TRUE, viewports = FALSE, print = FALSE)$name
+  lapply(nm[grepl("^GRID\\.(text|lines)", nm)], grid::grid.get)
+}
+
+test_that("labels at the outer end of pies are placed outside", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    K = c("a", "b", "c", "d", "e", "f"), V = c(30, 25, 20, 10, 8, 7)))
+  wd <- openxlsx2::wb_data(wb, sheet = "Data")
+  outside <- function(chart) {
+    g <- plot_grobs(chart, wb)
+    sum(vapply(g, function(x) inherits(x, "text") && is.numeric(x$just), NA))
+  }
+
+  pie <- function(pos) {
+    ec("pie")$add_series(name = "V", data = wd, label = "K")$set_data_label_style(show_percent = TRUE, pos = pos)
+  }
+  expect_equal(outside(pie("outEnd")), 6L)
+  expect_equal(outside(pie("ctr")), 0L)
+
+  pie_of_pie <- function(pos) {
+    ec("pieOfPie")$add_series(name = "V", data = wd, label = "K")$
+      set_of_pie_options(split_type = "pos", split_pos = 3)$
+      set_data_label_style(show_percent = TRUE, pos = pos)
+  }
+  expect_equal(outside(pie_of_pie("outEnd")), 7L)
+  expect_equal(outside(pie_of_pie("ctr")), 0L)
+})
+
+test_that("3D axes draw the tick marks that are set", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    M = month.abb[1:6], A = c(5, 6, 7, 6, 8, 9), B = c(3, 4, 4, 5, 6, 5)))
+  wd <- openxlsx2::wb_data(wb, sheet = "Data")
+  n_lines <- function(chart) {
+    g <- plot_grobs(chart, wb)
+    sum(vapply(g, function(x) inherits(x, "lines"), NA))
+  }
+  line3d <- function() {
+    ec("line3DChart")$add_series(name = "A", data = wd, label = "M")$add_series(name = "B", data = wd, label = "M")
+  }
+
+  n_default <- n_lines(line3d())
+  expect_equal(n_default - n_lines(line3d()$set_x_axis(minor_tick = "none")), 6L)
+  expect_equal(n_lines(line3d()$set_y_axis(major_tick = "out", minor_tick = "in")), n_default)
+  expect_lt(n_lines(line3d()$set_x_axis(major_tick = "none", minor_tick = "none")$set_y_axis(major_tick = "none", minor_tick = "none")), n_default)
+})
+
+test_that("3D charts with a single category and series draw their axis ticks", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(M = "a", V = 3))
+  wd <- openxlsx2::wb_data(wb, sheet = "Data")
+  for (type in c("line3DChart", "bar3DChart")) {
+    ch <- ec(type)$add_series(name = "V", data = wd, label = "M")
+    expect_gt(length(plot_grobs(ch)), 0L)
+  }
+})
+
+test_that("bubbles take the colors given per point", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    X = c(1, 2, 3), Y = c(2, 3, 1), Z = c(5, 10, 7)))
+  wd <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("bubble")$add_series(name = "Y", data = wd, label = "X", weight = "Z",
+                                color = c("FF0000", "00FF00", "0000FF"))
+  expect_gt(length(plot_grobs(ch)), 0L)
+})

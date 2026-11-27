@@ -14,6 +14,15 @@ ENCHARTER_THEME_HEX <- c(
   dk1 = "000000", lt1 = "FFFFFF", dk2 = "44546A", lt2 = "E7E6E6"
 )
 
+# theme colors openxlsx2 writes for a workbook that has no theme of its own
+ENCHARTER_BASE_THEME_HEX <- c(
+  bg1 = "FFFFFF", tx1 = "000000", bg2 = "E8E8E8", tx2 = "0E2841",
+  accent1 = "156082", accent2 = "E97132", accent3 = "196B24",
+  accent4 = "0F9ED5", accent5 = "A02B93", accent6 = "4EA72E",
+  hlink = "467886", folHlink = "96607D", phClr = "000000",
+  dk1 = "000000", lt1 = "FFFFFF", dk2 = "0E2841", lt2 = "E8E8E8"
+)
+
 # theme colors of the workbook being plotted; plot() sets them from the
 # workbook's theme part and restores the Office defaults afterwards
 plot_state <- new.env(parent = emptyenv())
@@ -24,7 +33,9 @@ plot_state$text_style <- list()
 plot_set_theme <- function(wb) {
   theme <- ENCHARTER_THEME_HEX
   xml <- if (!is.null(wb)) wb$theme else NULL
-  if (is.character(xml) && length(xml) == 1 && nzchar(xml)) {
+  has_theme <- is.character(xml) && length(xml) == 1 && nzchar(xml)
+  if (!is.null(wb) && !has_theme) theme <- ENCHARTER_BASE_THEME_HEX
+  if (has_theme) {
     scheme <- xml_find_first(read_xml(xml), ".//a:clrScheme")
     if (!is_missing(scheme)) {
       for (nm in c("dk1", "lt1", "dk2", "lt2", paste0("accent", 1:6), "hlink", "folHlink")) {
@@ -49,12 +60,17 @@ plot_set_theme <- function(wb) {
 plot_color <- function(x, default = "#000000") {
   if (is.null(x) || length(x) == 0) return(default)
   if (inherits(x, "wbColour")) {
-    type <- names(x)
+    type <- names(x)[1]
     if (identical(type, "theme")) {
-      val <- as.character(x)
+      val <- as.character(x)[1]
       if (!val %in% names(plot_state$theme)) val <- names(plot_state$theme)[as.integer(val) + 1]
       lum_mod <- attr(x, "lumMod")
       lum_off <- attr(x, "lumOff")
+      tint <- if ("tint" %in% names(x)) as.numeric(x[["tint"]]) else 0
+      if (is.null(lum_mod) && is.null(lum_off) && !is.na(tint) && tint != 0) {
+        lum_mod <- 1 - abs(tint)
+        if (tint > 0) lum_off <- tint
+      }
       x <- plot_state$theme[[val]]
       if (!is.null(lum_mod) || !is.null(lum_off)) {
         # DrawingML lumMod/lumOff act on the HSL luminance
@@ -916,8 +932,8 @@ plot_cartesian <- function(chart, series) {
   r1 <- axis_range(prim)
   y1 <- plot_scale(r1[1], r1[2], chart$axis_params$y, pad = !pct_prim)
   y2 <- NULL
-  if (length(sec) || !is.null(chart$y2_title$text)) {
-    r2 <- if (length(sec)) axis_range(sec) else r1
+  if (length(sec)) {
+    r2 <- axis_range(sec)
     y2 <- plot_scale(r2[1], r2[2], chart$axis_params$y2, pad = !pct_sec)
   }
   on_x2 <- vapply(series, function(s) s$sec_type %in% c("x", "xy"), logical(1))
@@ -930,8 +946,8 @@ plot_cartesian <- function(chart, series) {
       if (is.list(s$trendline)) xs <- c(xs, min(xs) - (s$trendline$backward %||% 0), max(xs) + (s$trendline$forward %||% 0))
     }
     xa <- plot_scale(min(xs, na.rm = TRUE), max(xs, na.rm = TRUE), chart$axis_params$x)
-    if (any(on_x2) || !is.null(chart$x2_title$text)) {
-      xs2 <- if (any(on_x2)) unlist(lapply(series[on_x2], x_of)) else xs
+    if (any(on_x2)) {
+      xs2 <- unlist(lapply(series[on_x2], x_of))
       x2 <- plot_scale(min(xs2, na.rm = TRUE), max(xs2, na.rm = TRUE), chart$axis_params$x2)
     }
   } else if (is_date) {
@@ -1094,7 +1110,7 @@ plot_cartesian <- function(chart, series) {
   xt_h <- plot_title_height(chart$x_title, 10)
   x2t_h <- if (is.null(x2)) 0 else plot_title_height(chart$x2_title, 10)
   yt_w <- plot_title_height(chart$y_title, 10)
-  y2t_w <- plot_title_height(chart$y2_title, 10)
+  y2t_w <- if (is.null(y2)) 0 else plot_title_height(chart$y2_title, 10)
   if (horizontal) {
     left_w <- left_w + xt_h
     bottom_h <- bottom_h + yt_w
@@ -1352,7 +1368,8 @@ plot_cartesian <- function(chart, series) {
         for (i in seq_along(v)) {
           if (!is.finite(yv[i]) || !is.finite(xs[i]) || is.na(d[i])) next
           if (z[i] < 0 && !isTRUE(chart$show_neg_bubbles)) next
-          bubble_fill <- if (bubble_vary) plot_auto_color(i, if (length(s$line$color) > 1L) s$line$color else chart$palette) else col
+          bubble_pal <- if (length(s$line$color) > 1L) s$line$color else chart$palette
+          bubble_fill <- if (bubble_vary && i <= length(bubble_pal)) plot_auto_color(i, bubble_pal) else col
           for (p in s$points) if (p$idx == i - 1 && !is.null(p$color)) bubble_fill <- plot_color(p$color, bubble_fill)
           grid::grid.circle(x = grid::unit(xs[i], "native"), y = grid::unit(yv[i], "native"),
                             r = grid::unit(d[i] / 2, "snpc"),
@@ -1771,7 +1788,7 @@ plot_cartesian <- function(chart, series) {
     grid::grid.text(plot_title_text(chart$x2_title), y = grid::unit(1, "npc") - grid::unit(x2t_h / 2, "points"), gp = plot_gpar_text(chart$x2_title$style, 10, "#000000"))
     grid::upViewport()
   }
-  if (!is.null(chart$y2_title$text) && !horizontal) {
+  if (!is.null(y2) && !is.null(chart$y2_title$text) && !horizontal) {
     grid::pushViewport(grid::viewport(layout.pos.row = 2, layout.pos.col = 3))
     grid::grid.text(plot_title_text(chart$y2_title), x = grid::unit(1, "npc") - grid::unit(y2t_w / 2, "points"), rot = 90, gp = plot_gpar_text(chart$y2_title$style, 10, "#000000"))
     grid::upViewport()
@@ -1798,7 +1815,10 @@ plot_pie <- function(chart, series) {
   n_ring <- length(rings)
 
   grid::pushViewport(grid::viewport(width = grid::unit(1, "snpc"), height = grid::unit(1, "snpc")))
-  r_max <- 0.42 / (1 + expl)
+  # labels at the outer end sit outside of a pie, which then leaves them room
+  first_lp <- rings[[1]]$label_params %||% lp
+  outside <- hole == 0 && plot_labels_on(first_lp) && identical(first_lp$pos, "outEnd")
+  r_max <- 0.42 / (1 + expl) * (if (outside) 0.85 else 1)
   ring_w <- r_max * (1 - hole) / n_ring
   for (k in seq_len(n_ring)) {
     s <- rings[[k]]
@@ -1833,9 +1853,16 @@ plot_pie <- function(chart, series) {
           else if (pos == "ctr") r_out * 0.5
           else if (pos %in% c("outEnd", "bestFit", "inEnd")) r_out * 0.72
           else r_out * 0.65
-        just <- c("center", "center")
-        grid::grid.text(plot_label_text(slp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = "\n"),
-                        x = cx + rr * sin(mid), y = cy + rr * cos(mid), just = just, gp = plot_gpar_text(slp$style, 9, "#000000"))
+        if (outside) {
+          # the text box touches the rim at the middle of the slice, so
+          # it follows the rotation of the pie
+          grid::grid.text(plot_label_text(slp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = slp$sep %||% "; "),
+                          x = cx + (r_out + 0.03) * sin(mid), y = cy + (r_out + 0.03) * cos(mid),
+                          just = c((1 - sin(mid)) / 2, (1 - cos(mid)) / 2), gp = plot_gpar_text(slp$style, 9, "#000000"))
+        } else {
+          grid::grid.text(plot_label_text(slp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = "\n"),
+                          x = cx + rr * sin(mid), y = cy + rr * cos(mid), just = c("center", "center"), gp = plot_gpar_text(slp$style, 9, "#000000"))
+        }
       }
       a0 <- a1
     }
@@ -1896,7 +1923,8 @@ plot_of_pie <- function(chart, series) {
   }
   # first pie of diameter d, the second plot d * size2 (a bar is half as
   # wide as high), the group centered
-  d <- min(h_pt, (w_pt - bar_lab_w) / (1 + gap + w2))
+  out <- plot_labels_on(lp) && identical(lp$pos, "outEnd")
+  d <- min(h_pt, (w_pt - bar_lab_w) / (1 + gap + w2)) * (if (out) 0.8 else 1)
   d2 <- d * size2
   span <- d * (1 + gap + w2) + bar_lab_w
   x1 <- (w_pt - span) / 2 + d / 2
@@ -1910,8 +1938,12 @@ plot_of_pie <- function(chart, series) {
   }
   label <- function(i, x, y, just = c("center", "center")) {
     if (!plot_labels_on(lp) || v[i] == 0) return()
-    grid::grid.text(plot_label_text(lp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = if (is_bar) "; " else "\n"),
+    grid::grid.text(plot_label_text(lp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = if (is_bar || out) "; " else "\n"),
                     x = grid::unit(x, "points"), y = grid::unit(y, "points"), just = just, gp = label_gp)
+  }
+  # position and justification of a label outside of a pie of radius r
+  out_pos <- function(cx, r, mid) {
+    list(x = cx + (r + 6) * sin(mid), y = cy + (r + 6) * cos(mid), just = c((1 - sin(mid)) / 2, (1 - cos(mid)) / 2))
   }
 
   # first pie: the slice holding the rest faces the second plot, centered
@@ -1920,11 +1952,19 @@ plot_of_pie <- function(chart, series) {
   r <- d / 2
   other_sweep <- 2 * pi * other / total
   a0 <- pi / 2 + other_sweep / 2 + (chart$first_slice_ang %||% 0) * pi / 180
+  # the second pie is turned the same way: its first point starts where the
+  # first point of the first pie does
+  start_ang <- a0
   for (k in main) {
     a1 <- a0 + 2 * pi * v[k] / total
     slice(x1, r, a0, a1, cols[k])
     mid <- (a0 + a1) / 2
-    label(k, x1 + 0.65 * r * sin(mid), cy + 0.65 * r * cos(mid))
+    if (out) {
+      o <- out_pos(x1, r, mid)
+      label(k, o$x, o$y, just = o$just)
+    } else {
+      label(k, x1 + 0.65 * r * sin(mid), cy + 0.65 * r * cos(mid))
+    }
     a0 <- a1
   }
   other_arc <- c(a0, a0 + other_sweep)
@@ -1932,13 +1972,14 @@ plot_of_pie <- function(chart, series) {
     slice(x1, r, other_arc[1], other_arc[2], plot_auto_color(n + 1, pal))
     if (plot_labels_on(lp)) {
       mid <- mean(other_arc)
-      grid::grid.text(plot_label_text(lp, "Other", other, pct = other / total, name = s$label_text, sep = if (is_bar) "; " else "\n"),
-                      x = grid::unit(x1 + 0.65 * r * sin(mid), "points"), y = grid::unit(cy + 0.65 * r * cos(mid), "points"), gp = label_gp)
+      o <- if (out) out_pos(x1, r, mid) else list(x = x1 + 0.65 * r * sin(mid), y = cy + 0.65 * r * cos(mid), just = c("center", "center"))
+      grid::grid.text(plot_label_text(lp, "Other", other, pct = other / total, name = s$label_text, sep = if (is_bar || out) "; " else "\n"),
+                      x = grid::unit(o$x, "points"), y = grid::unit(o$y, "points"), just = o$just, gp = label_gp)
     }
   }
 
   # second plot: a bar stacks the points from the top down, a pie starts
-  # them at the right
+  # them at the angle of the first pie
   if (is_bar) {
     bw <- d2 / 2
     y0 <- cy + d2 / 2
@@ -1954,12 +1995,17 @@ plot_of_pie <- function(chart, series) {
     bottom <- c(x2 - bw / 2, cy - d2 / 2)
   } else {
     r2 <- d2 / 2
-    b0 <- pi / 2
+    b0 <- start_ang
     for (i in sec) {
       b1 <- b0 + if (other > 0) 2 * pi * v[i] / other else 0
       slice(x2, r2, b0, b1, cols[i])
       mid <- (b0 + b1) / 2
-      label(i, x2 + 0.65 * r2 * sin(mid), cy + 0.65 * r2 * cos(mid))
+      if (out) {
+        o <- out_pos(x2, r2, mid)
+        label(i, o$x, o$y, just = o$just)
+      } else {
+        label(i, x2 + 0.65 * r2 * sin(mid), cy + 0.65 * r2 * cos(mid))
+      }
       b0 <- b1
     }
     top <- c(x2, cy + r2)
@@ -2180,8 +2226,10 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
     }
     if (types[1] == "bubbleChart" && length(series) == 1L && (is.null(series[[1]]$line$color) || length(series[[1]]$line$color) > 1L || identical(toupper(as.character(series[[1]]$line$color)[1]), "4472C4"))) {
       s <- series[[1]]
+      bubble_pal <- if (length(s$line$color) > 1L) s$line$color else chart$palette
+      series_col <- plot_color(s$line$color[1] %||% bubble_pal[1], "#4472C4")
       entries <- lapply(seq_along(s$values), function(i) {
-        list(kind = "rect", label = plot_format(s$cats[i]), col = plot_auto_color(i, if (length(s$line$color) > 1L) s$line$color else chart$palette))
+        list(kind = "rect", label = plot_format(s$cats[i]), col = if (i <= length(bubble_pal)) plot_auto_color(i, bubble_pal) else series_col)
       })
     }
     stacked <- all(vapply(series, function(s) {

@@ -384,12 +384,24 @@ test_that("render() suppresses legend when pos = 'none'", {
   expect_false(grepl("<c:legend>", xml_str))
 })
 
-test_that("set_y2_title warns when no secondary series", {
+test_that("set_y2_title before a secondary series is kept", {
   ch <- ec("line")
-  expect_warning(
-    ch$set_y2_title("Secondary"),
-    regexp = "secondary"
-  )
+  ch$add_series(data = "'Sheet1'!$A$2:$A$5")
+  expect_no_warning(ch$set_y2_title("Secondary"))
+  xml <- as.character(ch$render())
+  expect_no_match(xml, "Secondary")
+  ch$add_series(data = "'Sheet1'!$B$2:$B$5", secondary = TRUE)
+  expect_match(as.character(ch$render()), "Secondary")
+})
+
+test_that("set_x2_title before a secondary series is kept", {
+  ch <- ec("scatter")
+  ch$add_series(data = "'Sheet1'!$A$2:$A$5")
+  expect_no_warning(ch$set_x2_title("Top"))
+  xml <- as.character(ch$render())
+  expect_no_match(xml, "Top")
+  ch$add_series(data = "'Sheet1'!$B$2:$B$5", secondary = "x")
+  expect_match(as.character(ch$render()), "Top")
 })
 
 test_that("set_y2_title accepts title after secondary series added", {
@@ -614,4 +626,42 @@ test_that("fmt_txt() is supported", {
   xml <- e$render()
   expect_match(xml, "b=\"1\"")
   expect_match(xml, "i=\"1\"")
+})
+
+test_that("number caches hold the values with 15 significant digits", {
+  vals <- c(1e-7, 1e-4, 0.1 + 0.2, 1 / 3, -1.5, 0, 5, 123456.789, 1e15, 1e20, NA)
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+    x = data.frame(l = seq_along(vals), v = vals)
+  )
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("line")$add_series(name = "v", data = d, label = "l")
+  xml <- as.character(ch$render())
+  xml <- substring(xml, regexpr("<c:val>", xml, fixed = TRUE))
+  pts <- regmatches(xml, gregexpr("<c:v>[^<]*</c:v>", xml))[[1]]
+  got <- as.numeric(gsub("</?c:v>", "", pts))
+  expect_equal(got, vals[!is.na(vals)], tolerance = 1e-14)
+  expect_false(any(grepl("e", pts, fixed = TRUE)))
+})
+
+test_that("numbers are written with a decimal point whatever OutDec is", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+    x = data.frame(l = 1:3, v = c(1.5, 100000, 1 / 3))
+  )
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("line")$add_series(name = "v", data = d, label = "l")
+  op <- options(OutDec = ",")
+  on.exit(options(op), add = TRUE)
+  xml <- as.character(ch$render())
+  expect_true(grepl("<c:v>1.5</c:v>", xml, fixed = TRUE))
+  expect_true(grepl("<c:v>100000</c:v>", xml, fixed = TRUE))
+  expect_true(grepl("<c:v>0.333333333333333</c:v>", xml, fixed = TRUE))
+})
+
+test_that("infinite values in a number cache are written by format()", {
+  ch <- ec("line")
+  doc <- read_xml("<root/>")
+  ch$.__enclos_env__$private$render_num_cache(xml_add_child(doc, "c:numLit"), c(1, Inf, -Inf), lit = TRUE)
+  xml <- as.character(doc)
+  expect_true(grepl("<c:v>Inf</c:v>", xml, fixed = TRUE))
+  expect_true(grepl("<c:v>-Inf</c:v>", xml, fixed = TRUE))
 })

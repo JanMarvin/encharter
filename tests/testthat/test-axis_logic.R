@@ -14,11 +14,13 @@ test_that("Chart: Date Axes and Axis Units", {
   )
 
   chart$set_x_title("Foo", font_size = 14, bold = TRUE)
-  expect_warning(chart$set_x2_title("Bar", font_size = 14, bold = TRUE), "Secondary axis title ignored.")
+  chart$set_x2_title("Bar", font_size = 14, bold = TRUE)
   chart$set_y_title("Baz", font_size = 14, bold = TRUE)
-  expect_warning(chart$set_y2_title("Bam", font_size = 14, bold = TRUE), "Secondary axis title ignored.")
+  chart$set_y2_title("Bam", font_size = 14, bold = TRUE)
 
   xml <- as.character(chart$render())
+  expect_no_match(xml, "Bar")
+  expect_no_match(xml, "Bam")
 
   expect_match(xml, "<c:majorUnit val=\"2\"/>")
   expect_match(xml, "<c:majorTimeUnit val=\"months\"/>")

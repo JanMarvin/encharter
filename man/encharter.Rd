@@ -316,9 +316,9 @@ its own.}
 \subsection{\code{Chart$set_x2_title()}}{
   Set the secondary X-axis title.
 
-Only takes effect if at least one series has been assigned to the
-secondary X-axis via \code{add_series(secondary = "x")}. Issues a warning
-and returns \code{self} silently otherwise.
+The title can be set before or after series are added. It is only
+written if at least one series is assigned to the secondary X-axis via
+\code{add_series(secondary = "x")}.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{Chart$set_x2_title(
@@ -364,9 +364,9 @@ and returns \code{self} silently otherwise.
 \subsection{\code{Chart$set_y2_title()}}{
   Set the secondary Y-axis title.
 
-Only takes effect if at least one series has been assigned to the
-secondary Y-axis via \code{add_series(secondary = TRUE)} or
-\code{secondary = "y"}. Issues a warning otherwise.
+The title can be set before or after series are added. It is only
+written if at least one series is assigned to the secondary Y-axis via
+\code{add_series(secondary = TRUE)} or \code{secondary = "y"}.
   \subsection{Usage}{
     \if{html}{\out{<div class="r">}}
     \preformatted{Chart$set_y2_title(

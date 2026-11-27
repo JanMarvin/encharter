@@ -109,9 +109,9 @@ Chart <- R6::R6Class(
 
     #' @description Set the secondary X-axis title.
     #'
-    #' Only takes effect if at least one series has been assigned to the
-    #' secondary X-axis via `add_series(secondary = "x")`. Issues a warning
-    #' and returns `self` silently otherwise.
+    #' The title can be set before or after series are added. It is only
+    #' written if at least one series is assigned to the secondary X-axis via
+    #' `add_series(secondary = "x")`.
     #'
     #' @param text Title string.
     #' @param font_size Numeric font size in points.
@@ -129,12 +129,6 @@ Chart <- R6::R6Class(
                             bold = NULL, italic = NULL, fill = NULL, line = NULL,
                             line_width = NULL) {
       check_title_text(text)
-      has_secondary <- any(vapply(self$series_data, function(s) s$sec_type == "x", NA))
-
-      if (!has_secondary) {
-        warning("Secondary axis title ignored: no series is assigned to a secondary X-axis.", call. = FALSE)
-        return(invisible(self))
-      }
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
@@ -147,9 +141,9 @@ Chart <- R6::R6Class(
 
     #' @description Set the secondary Y-axis title.
     #'
-    #' Only takes effect if at least one series has been assigned to the
-    #' secondary Y-axis via `add_series(secondary = TRUE)` or
-    #' `secondary = "y"`. Issues a warning otherwise.
+    #' The title can be set before or after series are added. It is only
+    #' written if at least one series is assigned to the secondary Y-axis via
+    #' `add_series(secondary = TRUE)` or `secondary = "y"`.
     #'
     #' @param text Title string.
     #' @param font_size Numeric font size in points.
@@ -168,12 +162,6 @@ Chart <- R6::R6Class(
                             bold = NULL, italic = NULL, fill = NULL, line = NULL,
                             line_width = NULL) {
       check_title_text(text)
-      has_secondary <- any(vapply(self$series_data, function(s) s$sec_type == "y", NA))
-
-      if (!has_secondary) {
-        warning("Secondary axis title ignored: no series is assigned to a secondary Y-axis.", call. = FALSE)
-        return(invisible(self))
-      }
       font_color <- check_color(font_color, "font_color")
       fill <- check_color(fill, "fill")
       line <- check_color(line, "line")
@@ -919,9 +907,9 @@ Chart <- R6::R6Class(
     #' @return A character string containing the OOXML chart definition.
     #' @param u_ids five unique ids
     render = function(u_ids = c("53178645", "60812428", "64752656", "81893617", "90007639")) {
-      # numbers are written with as.character(), which switches to
-      # scientific notation (e.g. "3e+05") that the schema does not allow
-      op <- options(scipen = 999)
+      # numbers are written with as.character(), which follows these options;
+      # same as openxlsx2 uses when saving
+      op <- options(scipen = 200, OutDec = ".", digits = 22)
       on.exit(options(op), add = TRUE)
 
       if (length(self$series_data) == 0) {
@@ -1061,13 +1049,13 @@ Chart <- R6::R6Class(
         # 3. Primary Y-Axis (Left / Vertical Height)
 
         # 4. Secondary Y-Axis (Right)
-        if (needs_sec_y || !is.null(self$y2_title$text)) {
+        if (needs_sec_y) {
           # Secondary Y crosses the Primary X at its maximum (the right side)
           private$render_val_ax(plot_area, id_sec_val, id_prim_cat, "r", title_obj = self$y2_title, crosses = "max", params = self$axis_params$y2)
         }
 
         # 5. Secondary X-Axis (Top)
-        if (needs_sec_x || !is.null(self$x2_title$text)) {
+        if (needs_sec_x) {
           # IMPORTANT: To get the X-axis to the TOP, it must cross the Y-axis at its MAX value.
           # We cross the Primary Y (id_prim_val) unless we specifically want a fully independent system.
 
@@ -2112,11 +2100,24 @@ Chart <- R6::R6Class(
         xml_add_child(cache, "c:formatCode", fmt)
       }
       xml_add_child(cache, "c:ptCount", val = as.character(length(vals)))
-      for (i in seq_along(vals)) {
-        if (!is.na(vals[[i]])) {
-          pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-          xml_add_child(pt, "c:v", format(vals[[i]], scientific = FALSE, digits = 15, trim = TRUE))
-        }
+      keep <- which(!is.na(vals))
+      txt <- character(length(keep))
+      # finite numbers are converted in one go, non-finite and classed values
+      # one by one (render() has set scipen, so there is no exponent)
+      simple <- rep(FALSE, length(keep))
+      if (is.numeric(vals) && !is.object(vals)) {
+        x <- as.double(vals[keep])
+        simple <- is.finite(x)
+        txt[simple] <- as.character(x[simple])
+      }
+      for (j in which(!simple)) {
+        txt[j] <- format(vals[[keep[j]]], scientific = FALSE, digits = 15, trim = TRUE)
+      }
+      idx <- as.character(keep - 1L)
+      # digits, signs and dots need no escaping
+      for (j in seq_along(keep)) {
+        pt <- xml_add_child(cache, "c:pt", idx = idx[j], .escape = FALSE)
+        xml_add_child(pt, "c:v", txt[j], .escape = FALSE)
       }
     },
 
@@ -2124,11 +2125,12 @@ Chart <- R6::R6Class(
     render_str_cache = function(ref_node, vals, lit = FALSE) {
       cache <- if (lit) ref_node else xml_add_child(ref_node, "c:strCache")
       xml_add_child(cache, "c:ptCount", val = as.character(length(vals)))
-      for (i in seq_along(vals)) {
-        if (!is.na(vals[[i]])) {
-          pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-          xml_add_child(pt, "c:v", as.character(vals[[i]]))
-        }
+      keep <- which(!is.na(vals))
+      txt <- as.character(vals)[keep]
+      idx <- as.character(keep - 1L)
+      for (j in seq_along(keep)) {
+        pt <- xml_add_child(cache, "c:pt", idx = idx[j])
+        xml_add_child(pt, "c:v", txt[j])
       }
     },
 

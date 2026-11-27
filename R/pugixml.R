@@ -5,9 +5,11 @@
 #' @param ... Named arguments for attributes, unnamed for text content.
 #' @param .where Integer; 0 to prepend, -1 to append.
 #' @param .value Optional character string to set as text content.
+#' @param .escape Logical; \code{FALSE} skips the escaping of attribute values
+#'   and text, for values that are known to need none, e.g. numbers.
 #' @return The newly created pugi_node.
 #' @keywords internal
-xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
+xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL, .escape = TRUE) {
   target <- if (is.list(.x)) .x[[1]] else .x
 
   if (inherits(target, "pugi_xml") || .Call(C_pugi_node_type, target) == "document") {
@@ -20,6 +22,8 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
   # the document is serialized without escaping, so attribute values and
   # text are escaped here; entities that are already there stay as they are
   escape <- function(x) {
+    # text without a character that needs a change is the common case
+    if (!any(grepl("[&<>\"\\xEF]", x, perl = TRUE, useBytes = TRUE))) return(x)
     # control characters are skipped when the document is written, the
     # noncharacters U+FFFE and U+FFFF and references to characters that XML 1.0
     # does not allow are removed here
@@ -42,7 +46,8 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
   if (length(args) > 0) {
     arg_names <- names(args)
     for (i in seq_along(args)) {
-      val <- escape(as.character(args[[i]]))
+      val <- as.character(args[[i]])
+      if (.escape) val <- escape(val)
       if (is.null(arg_names) || arg_names[i] == "") {
         .Call(C_pugi_set_text, new_node, val)
       } else {
@@ -52,7 +57,9 @@ xml_add_child <- function(.x, .name, ..., .where = -1, .value = NULL) {
   }
 
   if (!is.null(.value)) {
-    .Call(C_pugi_set_text, new_node, escape(as.character(.value)))
+    val <- as.character(.value)
+    if (.escape) val <- escape(val)
+    .Call(C_pugi_set_text, new_node, val)
   }
   new_node
 }

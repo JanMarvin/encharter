@@ -1,3 +1,40 @@
+# encharter (development version)
+
+## Bug fixes
+
+* `set_x2_title()` and `set_y2_title()` no longer drop the title when it is
+  set before a series is assigned to the secondary axis. The order of these
+  calls does not matter anymore. Without a series on the secondary axis the
+  title is not written.
+
+* `plot()` takes the colors of `wb_color(theme = )` and of the automatic series
+  colors from the theme the workbook is saved with. For a workbook that has no
+  theme of its own yet, these are the colors openxlsx2 writes, so the plot
+  matches the saved file.
+
+* Theme colors with a tint, e.g. `wb_color(theme = 4, tint = 0.4)`, no longer
+  fail when a chart is written. The tint is written as `a:lumMod` and
+  `a:lumOff`, and `plot()` draws it.
+
+* `plot()` draws the bubbles of a single bubble series that are beyond the
+  palette colors in the color of the series, as the chart is written, and uses
+  that color in the legend too.
+
+* `plot()` places the data labels of a pie and of the pies of a pie of pie
+  chart outside of the pie for the outer end position. They follow the
+  rotation of the pie and are written on one line.
+
+* `plot()` draws tick marks on the category, value and series axis of 3D
+  column, bar, line and area charts. The ribbons of a 3D line chart are
+  thinner and show the series color at their front.
+
+* `plot()` starts the second pie of a pie of pie chart at the same angle as
+  the first pie, so the points of both pies start at the same place.
+
+* Writing charts with many points is several times faster. The number caches
+  are formatted in one step instead of per value, and numbers are no longer
+  escaped when they are added to the XML.
+
 # encharter 0.13
 
 ## New features
