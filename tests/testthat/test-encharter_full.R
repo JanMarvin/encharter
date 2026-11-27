@@ -642,3 +642,26 @@ test_that("number caches hold the values with 15 significant digits", {
   expect_equal(got, vals[!is.na(vals)], tolerance = 1e-14)
   expect_false(any(grepl("e", pts, fixed = TRUE)))
 })
+
+test_that("numbers are written with a decimal point whatever OutDec is", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+    x = data.frame(l = 1:3, v = c(1.5, 100000, 1 / 3))
+  )
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("line")$add_series(name = "v", data = d, label = "l")
+  op <- options(OutDec = ",")
+  on.exit(options(op), add = TRUE)
+  xml <- as.character(ch$render())
+  expect_true(grepl("<c:v>1.5</c:v>", xml, fixed = TRUE))
+  expect_true(grepl("<c:v>100000</c:v>", xml, fixed = TRUE))
+  expect_true(grepl("<c:v>0.333333333333333</c:v>", xml, fixed = TRUE))
+})
+
+test_that("infinite values in a number cache are written by format()", {
+  ch <- ec("line")
+  doc <- read_xml("<root/>")
+  ch$.__enclos_env__$private$render_num_cache(xml_add_child(doc, "c:numLit"), c(1, Inf, -Inf), lit = TRUE)
+  xml <- as.character(doc)
+  expect_true(grepl("<c:v>Inf</c:v>", xml, fixed = TRUE))
+  expect_true(grepl("<c:v>-Inf</c:v>", xml, fixed = TRUE))
+})

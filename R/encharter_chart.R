@@ -907,9 +907,9 @@ Chart <- R6::R6Class(
     #' @return A character string containing the OOXML chart definition.
     #' @param u_ids five unique ids
     render = function(u_ids = c("53178645", "60812428", "64752656", "81893617", "90007639")) {
-      # numbers are written with as.character(), which switches to
-      # scientific notation (e.g. "3e+05") that the schema does not allow
-      op <- options(scipen = 999)
+      # numbers are written with as.character(), which follows these options;
+      # same as openxlsx2 uses when saving
+      op <- options(scipen = 200, OutDec = ".", digits = 22)
       on.exit(options(op), add = TRUE)
 
       if (length(self$series_data) == 0) {
@@ -2102,14 +2102,13 @@ Chart <- R6::R6Class(
       xml_add_child(cache, "c:ptCount", val = as.character(length(vals)))
       keep <- which(!is.na(vals))
       txt <- character(length(keep))
-      # up to 15 significant digits in fixed notation, written by sprintf()
-      # in one go; format() is only needed for values it would write in
-      # scientific notation and for non-finite or classed values
+      # finite numbers are converted in one go, non-finite and classed values
+      # one by one (render() has set scipen, so there is no exponent)
       simple <- rep(FALSE, length(keep))
       if (is.numeric(vals) && !is.object(vals)) {
         x <- as.double(vals[keep])
-        simple <- is.finite(x) & (abs(x) >= 1e-4 | x == 0) & abs(x) < 1e15
-        txt[simple] <- sprintf("%.15g", x[simple] + 0)
+        simple <- is.finite(x)
+        txt[simple] <- as.character(x[simple])
       }
       for (j in which(!simple)) {
         txt[j] <- format(vals[[keep[j]]], scientific = FALSE, digits = 15, trim = TRUE)

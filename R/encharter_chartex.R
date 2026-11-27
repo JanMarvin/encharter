@@ -322,7 +322,7 @@ ChartEx <- R6::R6Class(
     render = function(id_start = 1, guid = "{C59B1284-E301-0D0F-1B20-FD96A66D6E43}") {
       # numbers are written with as.character(), which switches to
       # scientific notation (e.g. "3e+05") that the schema does not allow
-      op <- options(scipen = 999)
+      op <- options(scipen = 200, OutDec = ".", digits = 22)
       on.exit(options(op), add = TRUE)
 
       chart_data_node <- xml_find_first(self$xml, "//cx:chartData")
