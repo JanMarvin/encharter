@@ -367,3 +367,21 @@ test_that("3D axes draw the tick marks that are set", {
   expect_equal(n_lines(line3d()$set_y_axis(major_tick = "out", minor_tick = "in")), n_default)
   expect_lt(n_lines(line3d()$set_x_axis(major_tick = "none", minor_tick = "none")$set_y_axis(major_tick = "none", minor_tick = "none")), n_default)
 })
+
+test_that("3D charts with a single category and series draw their axis ticks", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(M = "a", V = 3))
+  wd <- openxlsx2::wb_data(wb, sheet = "Data")
+  for (type in c("line3DChart", "bar3DChart")) {
+    ch <- ec(type)$add_series(name = "V", data = wd, label = "M")
+    expect_gt(length(plot_grobs(ch)), 0L)
+  }
+})
+
+test_that("bubbles take the colors given per point", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    X = c(1, 2, 3), Y = c(2, 3, 1), Z = c(5, 10, 7)))
+  wd <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("bubble")$add_series(name = "Y", data = wd, label = "X", weight = "Z",
+                                color = c("FF0000", "00FF00", "0000FF"))
+  expect_gt(length(plot_grobs(ch)), 0L)
+})
