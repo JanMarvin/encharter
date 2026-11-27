@@ -268,7 +268,7 @@ plot_3d_frame <- function(chart, proj, w, h, d, sc, cats, cat_pos, ser_labels = 
   if (length(ser_pos)) {
     plot_3d_line(proj, c(w, w), c(0, 0), c(0, d), axis_col)
     if (slot_ticks) {
-      row_d <- if (length(ser_pos) > 1) ser_pos[2] - ser_pos[1] else 2 * ser_pos[1]
+      row_d <- ser_pos[2] - ser_pos[1]
       for (z in c(ser_pos - row_d / 2, ser_pos[length(ser_pos)] + row_d / 2)) tick(proj(w, 0, z), tick_ends("cross", 4, 1), TRUE)
       for (z in ser_pos) tick(proj(w, 0, z), tick_ends("cross", 3, 1), TRUE)
     }
