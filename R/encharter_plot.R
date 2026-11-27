@@ -1815,7 +1815,10 @@ plot_pie <- function(chart, series) {
   n_ring <- length(rings)
 
   grid::pushViewport(grid::viewport(width = grid::unit(1, "snpc"), height = grid::unit(1, "snpc")))
-  r_max <- 0.42 / (1 + expl)
+  # labels at the outer end sit outside of a pie, which then leaves them room
+  first_lp <- rings[[1]]$label_params %||% lp
+  outside <- hole == 0 && plot_labels_on(first_lp) && identical(first_lp$pos, "outEnd")
+  r_max <- 0.42 / (1 + expl) * (if (outside) 0.85 else 1)
   ring_w <- r_max * (1 - hole) / n_ring
   for (k in seq_len(n_ring)) {
     s <- rings[[k]]
@@ -1850,9 +1853,16 @@ plot_pie <- function(chart, series) {
           else if (pos == "ctr") r_out * 0.5
           else if (pos %in% c("outEnd", "bestFit", "inEnd")) r_out * 0.72
           else r_out * 0.65
-        just <- c("center", "center")
-        grid::grid.text(plot_label_text(slp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = "\n"),
-                        x = cx + rr * sin(mid), y = cy + rr * cos(mid), just = just, gp = plot_gpar_text(slp$style, 9, "#000000"))
+        if (outside) {
+          # the text box touches the rim at the middle of the slice, so
+          # it follows the rotation of the pie
+          grid::grid.text(plot_label_text(slp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = slp$sep %||% "; "),
+                          x = cx + (r_out + 0.03) * sin(mid), y = cy + (r_out + 0.03) * cos(mid),
+                          just = c((1 - sin(mid)) / 2, (1 - cos(mid)) / 2), gp = plot_gpar_text(slp$style, 9, "#000000"))
+        } else {
+          grid::grid.text(plot_label_text(slp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = "\n"),
+                          x = cx + rr * sin(mid), y = cy + rr * cos(mid), just = c("center", "center"), gp = plot_gpar_text(slp$style, 9, "#000000"))
+        }
       }
       a0 <- a1
     }
@@ -1913,7 +1923,8 @@ plot_of_pie <- function(chart, series) {
   }
   # first pie of diameter d, the second plot d * size2 (a bar is half as
   # wide as high), the group centered
-  d <- min(h_pt, (w_pt - bar_lab_w) / (1 + gap + w2))
+  out <- plot_labels_on(lp) && identical(lp$pos, "outEnd")
+  d <- min(h_pt, (w_pt - bar_lab_w) / (1 + gap + w2)) * (if (out) 0.8 else 1)
   d2 <- d * size2
   span <- d * (1 + gap + w2) + bar_lab_w
   x1 <- (w_pt - span) / 2 + d / 2
@@ -1927,8 +1938,12 @@ plot_of_pie <- function(chart, series) {
   }
   label <- function(i, x, y, just = c("center", "center")) {
     if (!plot_labels_on(lp) || v[i] == 0) return()
-    grid::grid.text(plot_label_text(lp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = if (is_bar) "; " else "\n"),
+    grid::grid.text(plot_label_text(lp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = if (is_bar || out) "; " else "\n"),
                     x = grid::unit(x, "points"), y = grid::unit(y, "points"), just = just, gp = label_gp)
+  }
+  # position and justification of a label outside of a pie of radius r
+  out_pos <- function(cx, r, mid) {
+    list(x = cx + (r + 6) * sin(mid), y = cy + (r + 6) * cos(mid), just = c((1 - sin(mid)) / 2, (1 - cos(mid)) / 2))
   }
 
   # first pie: the slice holding the rest faces the second plot, centered
@@ -1937,11 +1952,19 @@ plot_of_pie <- function(chart, series) {
   r <- d / 2
   other_sweep <- 2 * pi * other / total
   a0 <- pi / 2 + other_sweep / 2 + (chart$first_slice_ang %||% 0) * pi / 180
+  # the second pie is turned the same way: its first point starts where the
+  # first point of the first pie does
+  start_ang <- a0
   for (k in main) {
     a1 <- a0 + 2 * pi * v[k] / total
     slice(x1, r, a0, a1, cols[k])
     mid <- (a0 + a1) / 2
-    label(k, x1 + 0.65 * r * sin(mid), cy + 0.65 * r * cos(mid))
+    if (out) {
+      o <- out_pos(x1, r, mid)
+      label(k, o$x, o$y, just = o$just)
+    } else {
+      label(k, x1 + 0.65 * r * sin(mid), cy + 0.65 * r * cos(mid))
+    }
     a0 <- a1
   }
   other_arc <- c(a0, a0 + other_sweep)
@@ -1949,13 +1972,14 @@ plot_of_pie <- function(chart, series) {
     slice(x1, r, other_arc[1], other_arc[2], plot_auto_color(n + 1, pal))
     if (plot_labels_on(lp)) {
       mid <- mean(other_arc)
-      grid::grid.text(plot_label_text(lp, "Other", other, pct = other / total, name = s$label_text, sep = if (is_bar) "; " else "\n"),
-                      x = grid::unit(x1 + 0.65 * r * sin(mid), "points"), y = grid::unit(cy + 0.65 * r * cos(mid), "points"), gp = label_gp)
+      o <- if (out) out_pos(x1, r, mid) else list(x = x1 + 0.65 * r * sin(mid), y = cy + 0.65 * r * cos(mid), just = c("center", "center"))
+      grid::grid.text(plot_label_text(lp, "Other", other, pct = other / total, name = s$label_text, sep = if (is_bar || out) "; " else "\n"),
+                      x = grid::unit(o$x, "points"), y = grid::unit(o$y, "points"), just = o$just, gp = label_gp)
     }
   }
 
   # second plot: a bar stacks the points from the top down, a pie starts
-  # them at the right
+  # them at the angle of the first pie
   if (is_bar) {
     bw <- d2 / 2
     y0 <- cy + d2 / 2
@@ -1971,12 +1995,17 @@ plot_of_pie <- function(chart, series) {
     bottom <- c(x2 - bw / 2, cy - d2 / 2)
   } else {
     r2 <- d2 / 2
-    b0 <- pi / 2
+    b0 <- start_ang
     for (i in sec) {
       b1 <- b0 + if (other > 0) 2 * pi * v[i] / other else 0
       slice(x2, r2, b0, b1, cols[i])
       mid <- (b0 + b1) / 2
-      label(i, x2 + 0.65 * r2 * sin(mid), cy + 0.65 * r2 * cos(mid))
+      if (out) {
+        o <- out_pos(x2, r2, mid)
+        label(i, o$x, o$y, just = o$just)
+      } else {
+        label(i, x2 + 0.65 * r2 * sin(mid), cy + 0.65 * r2 * cos(mid))
+      }
       b0 <- b1
     }
     top <- c(x2, cy + r2)

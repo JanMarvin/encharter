@@ -171,7 +171,7 @@ plot_3d_box <- function(proj, x0, x1, y0, y1, z0, z1, col, shape = "box", part =
 # y (or along x for horizontal bars). `cat_pos` are the label positions on
 # the category axis, `ser_pos` those of the series labels along z.
 plot_3d_frame <- function(chart, proj, w, h, d, sc, cats, cat_pos, ser_labels = NULL, ser_pos = NULL,
-                          horizontal = FALSE, floor_grid = FALSE) {
+                          horizontal = FALSE, floor_grid = FALSE, slot_ticks = TRUE) {
   px <- chart$axis_params$x
   py <- chart$axis_params$y
   wall <- plot_color(chart$plot_style$fill, NA)
@@ -211,11 +211,46 @@ plot_3d_frame <- function(chart, proj, w, h, d, sc, cats, cat_pos, ser_labels = 
   left_of <- function(txt, p, gp) {
     grid::grid.text(txt, x = grid::unit(p$x, "npc") - grid::unit(6, "points"), y = p$y, just = c("right", "center"), gp = gp)
   }
+  # Tick marks are short lines on the screen across an axis. A missing
+  # style is "cross", the same as for the 2D charts; the minor ticks of
+  # the category and the series axis sit at the centers of their slots.
+  tick_ends <- function(style, len, outward) {
+    switch(style, none = NULL, out = c(0, outward * len), "in" = c(0, -outward * len), c(-len, len))
+  }
+  tick <- function(p, ends, across_x) {
+    if (is.null(ends)) return(invisible())
+    if (across_x) {
+      grid::grid.lines(grid::unit(p$x, "npc") + grid::unit(ends, "points"), grid::unit(c(p$y, p$y), "npc"), gp = grid::gpar(col = axis_col))
+    } else {
+      grid::grid.lines(grid::unit(c(p$x, p$x), "npc"), grid::unit(p$y, "npc") + grid::unit(ends, "points"), gp = grid::gpar(col = axis_col))
+    }
+  }
+  if (slot_ticks) {
+    y_major <- tick_ends(py$major_tick %||% "cross", 4, -1)
+    y_minor <- tick_ends(py$minor_tick %||% "cross", 2, -1)
+    x_major <- tick_ends(px$major_tick %||% "cross", 4, -1)
+    x_minor <- tick_ends(px$minor_tick %||% "cross", 3, -1)
+    if (!isTRUE(py$delete)) {
+      minors <- numeric()
+      if (is.null(sc$log)) {
+        minors <- seq(sc$min, sc$max, by = py$minor %||% (sc$major / 5))
+        rest <- abs((minors - sc$min) %% sc$major)
+        minors <- minors[rest > 1e-9 * sc$major & abs(rest - sc$major) > 1e-9 * sc$major]
+      }
+      for (t in ticks) tick(if (horizontal) proj(val_at(t) * w, 0, 0) else proj(0, val_at(t) * h, 0), y_major, !horizontal)
+      for (t in minors) tick(if (horizontal) proj(val_at(t) * w, 0, 0) else proj(0, val_at(t) * h, 0), y_minor, !horizontal)
+    }
+    if (!isTRUE(px$delete) && length(cat_pos)) {
+      slot <- if (length(cat_pos) > 1) cat_pos[2] - cat_pos[1] else 2 * cat_pos[1]
+      for (b in c(cat_pos - slot / 2, cat_pos[length(cat_pos)] + slot / 2)) tick(if (horizontal) proj(0, b, 0) else proj(b, 0, 0), x_major, horizontal)
+      for (b in cat_pos) tick(if (horizontal) proj(0, b, 0) else proj(b, 0, 0), x_minor, horizontal)
+    }
+  }
   if (horizontal) {
     if (show_val) {
       for (t in ticks) {
         p <- proj(val_at(t) * w, 0, 0)
-        grid::grid.lines(grid::unit(c(p$x, p$x), "npc"), grid::unit(p$y, "npc") - grid::unit(c(0, 4), "points"), gp = grid::gpar(col = axis_col))
+        if (!slot_ticks) grid::grid.lines(grid::unit(c(p$x, p$x), "npc"), grid::unit(p$y, "npc") - grid::unit(c(0, 4), "points"), gp = grid::gpar(col = axis_col))
         below(plot_format(t, py$format), p, y_gp)
       }
     }
@@ -224,7 +259,7 @@ plot_3d_frame <- function(chart, proj, w, h, d, sc, cats, cat_pos, ser_labels = 
     if (show_val) {
       for (t in ticks) {
         p <- proj(0, val_at(t) * h, 0)
-        grid::grid.lines(grid::unit(p$x, "npc") - grid::unit(c(0, 4), "points"), grid::unit(c(p$y, p$y), "npc"), gp = grid::gpar(col = axis_col))
+        if (!slot_ticks) grid::grid.lines(grid::unit(p$x, "npc") - grid::unit(c(0, 4), "points"), grid::unit(c(p$y, p$y), "npc"), gp = grid::gpar(col = axis_col))
         left_of(plot_format(t, py$format), p, y_gp)
       }
     }
@@ -233,6 +268,11 @@ plot_3d_frame <- function(chart, proj, w, h, d, sc, cats, cat_pos, ser_labels = 
   # series axis along the right front-to-back edge
   if (length(ser_pos)) {
     plot_3d_line(proj, c(w, w), c(0, 0), c(0, d), axis_col)
+    if (slot_ticks) {
+      row_d <- if (length(ser_pos) > 1) ser_pos[2] - ser_pos[1] else 2 * ser_pos[1]
+      for (z in c(ser_pos - row_d / 2, ser_pos[length(ser_pos)] + row_d / 2)) tick(proj(w, 0, z), tick_ends("cross", 4, 1), TRUE)
+      for (z in ser_pos) tick(proj(w, 0, z), tick_ends("cross", 3, 1), TRUE)
+    }
     for (i in seq_along(ser_pos)) {
       p <- proj(w, 0, ser_pos[i])
       grid::grid.text(ser_labels[i], x = grid::unit(p$x, "npc") + grid::unit(6, "points"), y = p$y, just = c("left", "center"), gp = x_gp)
@@ -370,10 +410,10 @@ plot_3d_cartesian <- function(chart, series) {
     }
   } else {
     # line3DChart: a flat ribbon per series, as deep as a bar would be and
-    # slightly raised so its front shows
+    # slightly raised so its front shows as a thin strip in the series color
     gap_depth <- (chart$gap_depth %||% 150) / 100
     bd <- row_d / (1 + gap_depth)
-    lift <- 0.02 * val_len
+    lift <- 0.01 * val_len
     for (r in rev(seq_len(rows))) {
       z0 <- (r - 1) * row_d + (row_d - bd) / 2
       z1 <- z0 + bd
@@ -387,7 +427,7 @@ plot_3d_cartesian <- function(chart, series) {
         plot_3d_poly(proj, c(xs[i], xs[i + 1], xs[i + 1], xs[i]), c(ys[i], ys[i + 1], ys[i + 1], ys[i]), c(z0, z0, z1, z1),
                      plot_shade(ribbon, 0.76), cols[r])
         plot_3d_poly(proj, c(xs[i], xs[i + 1], xs[i + 1], xs[i]), c(ys[i] - lift, ys[i + 1] - lift, ys[i + 1], ys[i]), rep(z0, 4),
-                     ribbon, cols[r])
+                     cols[r], cols[r])
       }
     }
   }
@@ -580,7 +620,7 @@ plot_surface <- function(chart, series) {
     proj <- plot_3d_projection(chart, w, h, dd, stretch = is.null(h_pct))
     xs <- (seq_len(n_col) - 1) * w / max(1, n_col - 1)
     zs <- (seq_len(n_row) - 1) * dd / max(1, n_row - 1)
-    plot_3d_frame(chart, proj, w, h, dd, sc, cats, xs, ser_labels, zs, floor_grid = TRUE)
+    plot_3d_frame(chart, proj, w, h, dd, sc, cats, xs, ser_labels, zs, floor_grid = TRUE, slot_ticks = FALSE)
   }
   yy <- function(v) h * (v - sc$min) / (sc$max - sc$min)
   n_r <- nrow(z)

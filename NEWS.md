@@ -16,6 +16,21 @@
   fail when a chart is written. The tint is written as `a:lumMod` and
   `a:lumOff`, and `plot()` draws it.
 
+* `plot()` draws the bubbles of a single bubble series that are beyond the
+  palette colors in the color of the series, as the chart is written, and uses
+  that color in the legend too.
+
+* `plot()` places the data labels of a pie and of the pies of a pie of pie
+  chart outside of the pie for the outer end position. They follow the
+  rotation of the pie and are written on one line.
+
+* `plot()` draws tick marks on the category, value and series axis of 3D
+  column, bar, line and area charts. The ribbons of a 3D line chart are
+  thinner and show the series color at their front.
+
+* `plot()` starts the second pie of a pie of pie chart at the same angle as
+  the first pie, so the points of both pies start at the same place.
+
 # encharter 0.13
 
 ## New features
