@@ -330,9 +330,9 @@ Initialize a new Chart object.
 
 Set the secondary X-axis title.
 
-Only takes effect if at least one series has been assigned to the
-secondary X-axis via `add_series(secondary = "x")`. Issues a warning and
-returns `self` silently otherwise.
+The title can be set before or after series are added. It is only
+written if at least one series is assigned to the secondary X-axis via
+`add_series(secondary = "x")`.
 
 #### Usage
 
@@ -394,9 +394,9 @@ returns `self` silently otherwise.
 
 Set the secondary Y-axis title.
 
-Only takes effect if at least one series has been assigned to the
-secondary Y-axis via `add_series(secondary = TRUE)` or
-`secondary = "y"`. Issues a warning otherwise.
+The title can be set before or after series are added. It is only
+written if at least one series is assigned to the secondary Y-axis via
+`add_series(secondary = TRUE)` or `secondary = "y"`.
 
 #### Usage
 

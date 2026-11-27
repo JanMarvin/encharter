@@ -5,7 +5,7 @@ Add a child node to an XML target
 ## Usage
 
 ``` r
-xml_add_child(.x, .name, ..., .where = -1, .value = NULL)
+xml_add_child(.x, .name, ..., .where = -1, .value = NULL, .escape = TRUE)
 ```
 
 ## Arguments
@@ -29,6 +29,11 @@ xml_add_child(.x, .name, ..., .where = -1, .value = NULL)
 - .value:
 
   Optional character string to set as text content.
+
+- .escape:
+
+  Logical; `FALSE` skips the escaping of attribute values and text, for
+  values that are known to need none, e.g. numbers.
 
 ## Value
 
