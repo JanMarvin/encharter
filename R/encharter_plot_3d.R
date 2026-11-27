@@ -250,7 +250,6 @@ plot_3d_frame <- function(chart, proj, w, h, d, sc, cats, cat_pos, ser_labels = 
     if (show_val) {
       for (t in ticks) {
         p <- proj(val_at(t) * w, 0, 0)
-        if (!slot_ticks) grid::grid.lines(grid::unit(c(p$x, p$x), "npc"), grid::unit(p$y, "npc") - grid::unit(c(0, 4), "points"), gp = grid::gpar(col = axis_col))
         below(plot_format(t, py$format), p, y_gp)
       }
     }

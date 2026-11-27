@@ -316,3 +316,54 @@ test_that("theme colors with a tint are lighter or darker", {
   ch <- ec("line")$add_series(data = "S!$A$2:$A$3", line_color = openxlsx2::wb_color(theme = 4, tint = 0.4))
   expect_match(as.character(ch$render()), "<a:lumMod val=\"60000\"/><a:lumOff val=\"40000\"/>", fixed = TRUE)
 })
+
+plot_grobs <- function(chart, wb = NULL) {
+  f <- tempfile(fileext = ".png")
+  grDevices::png(f, 600, 400)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  plot(chart, wb = wb)
+  nm <- grid::grid.ls(grobs = TRUE, viewports = FALSE, print = FALSE)$name
+  lapply(nm[grepl("^GRID\\.(text|lines)", nm)], grid::grid.get)
+}
+
+test_that("labels at the outer end of pies are placed outside", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    K = c("a", "b", "c", "d", "e", "f"), V = c(30, 25, 20, 10, 8, 7)))
+  wd <- openxlsx2::wb_data(wb, sheet = "Data")
+  outside <- function(chart) {
+    g <- plot_grobs(chart, wb)
+    sum(vapply(g, function(x) inherits(x, "text") && is.numeric(x$just), NA))
+  }
+
+  pie <- function(pos) {
+    ec("pie")$add_series(name = "V", data = wd, label = "K")$set_data_label_style(show_percent = TRUE, pos = pos)
+  }
+  expect_equal(outside(pie("outEnd")), 6L)
+  expect_equal(outside(pie("ctr")), 0L)
+
+  pie_of_pie <- function(pos) {
+    ec("pieOfPie")$add_series(name = "V", data = wd, label = "K")$
+      set_of_pie_options(split_type = "pos", split_pos = 3)$
+      set_data_label_style(show_percent = TRUE, pos = pos)
+  }
+  expect_equal(outside(pie_of_pie("outEnd")), 7L)
+  expect_equal(outside(pie_of_pie("ctr")), 0L)
+})
+
+test_that("3D axes draw the tick marks that are set", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    M = month.abb[1:6], A = c(5, 6, 7, 6, 8, 9), B = c(3, 4, 4, 5, 6, 5)))
+  wd <- openxlsx2::wb_data(wb, sheet = "Data")
+  n_lines <- function(chart) {
+    g <- plot_grobs(chart, wb)
+    sum(vapply(g, function(x) inherits(x, "lines"), NA))
+  }
+  line3d <- function() {
+    ec("line3DChart")$add_series(name = "A", data = wd, label = "M")$add_series(name = "B", data = wd, label = "M")
+  }
+
+  n_default <- n_lines(line3d())
+  expect_equal(n_default - n_lines(line3d()$set_x_axis(minor_tick = "none")), 6L)
+  expect_equal(n_lines(line3d()$set_y_axis(major_tick = "out", minor_tick = "in")), n_default)
+  expect_lt(n_lines(line3d()$set_x_axis(major_tick = "none", minor_tick = "none")$set_y_axis(major_tick = "none", minor_tick = "none")), n_default)
+})
