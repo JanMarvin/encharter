@@ -31,6 +31,10 @@
 * `plot()` starts the second pie of a pie of pie chart at the same angle as
   the first pie, so the points of both pies start at the same place.
 
+* Writing charts with many points is several times faster. The number caches
+  are formatted in one step instead of per value, and numbers are no longer
+  escaped when they are added to the XML.
+
 # encharter 0.13
 
 ## New features

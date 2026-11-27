@@ -2100,11 +2100,25 @@ Chart <- R6::R6Class(
         xml_add_child(cache, "c:formatCode", fmt)
       }
       xml_add_child(cache, "c:ptCount", val = as.character(length(vals)))
-      for (i in seq_along(vals)) {
-        if (!is.na(vals[[i]])) {
-          pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-          xml_add_child(pt, "c:v", format(vals[[i]], scientific = FALSE, digits = 15, trim = TRUE))
-        }
+      keep <- which(!is.na(vals))
+      txt <- character(length(keep))
+      # up to 15 significant digits in fixed notation, written by sprintf()
+      # in one go; format() is only needed for values it would write in
+      # scientific notation and for non-finite or classed values
+      simple <- rep(FALSE, length(keep))
+      if (is.numeric(vals) && !is.object(vals)) {
+        x <- as.double(vals[keep])
+        simple <- is.finite(x) & (abs(x) >= 1e-4 | x == 0) & abs(x) < 1e15
+        txt[simple] <- sprintf("%.15g", x[simple] + 0)
+      }
+      for (j in which(!simple)) {
+        txt[j] <- format(vals[[keep[j]]], scientific = FALSE, digits = 15, trim = TRUE)
+      }
+      idx <- as.character(keep - 1L)
+      # digits, signs and dots need no escaping
+      for (j in seq_along(keep)) {
+        pt <- xml_add_child(cache, "c:pt", idx = idx[j], .escape = FALSE)
+        xml_add_child(pt, "c:v", txt[j], .escape = FALSE)
       }
     },
 
@@ -2112,11 +2126,12 @@ Chart <- R6::R6Class(
     render_str_cache = function(ref_node, vals, lit = FALSE) {
       cache <- if (lit) ref_node else xml_add_child(ref_node, "c:strCache")
       xml_add_child(cache, "c:ptCount", val = as.character(length(vals)))
-      for (i in seq_along(vals)) {
-        if (!is.na(vals[[i]])) {
-          pt <- xml_add_child(cache, "c:pt", idx = as.character(i - 1))
-          xml_add_child(pt, "c:v", as.character(vals[[i]]))
-        }
+      keep <- which(!is.na(vals))
+      txt <- as.character(vals)[keep]
+      idx <- as.character(keep - 1L)
+      for (j in seq_along(keep)) {
+        pt <- xml_add_child(cache, "c:pt", idx = idx[j])
+        xml_add_child(pt, "c:v", txt[j])
       }
     },
 

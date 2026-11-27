@@ -4,7 +4,7 @@
 \alias{xml_add_child}
 \title{Add a child node to an XML target}
 \usage{
-xml_add_child(.x, .name, ..., .where = -1, .value = NULL)
+xml_add_child(.x, .name, ..., .where = -1, .value = NULL, .escape = TRUE)
 }
 \arguments{
 \item{.x}{A pugi_node, pugi_xml, or a list containing one.}
@@ -16,6 +16,9 @@ xml_add_child(.x, .name, ..., .where = -1, .value = NULL)
 \item{.where}{Integer; 0 to prepend, -1 to append.}
 
 \item{.value}{Optional character string to set as text content.}
+
+\item{.escape}{Logical; \code{FALSE} skips the escaping of attribute values
+and text, for values that are known to need none, e.g. numbers.}
 }
 \value{
 The newly created pugi_node.

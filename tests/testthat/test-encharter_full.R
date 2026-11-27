@@ -627,3 +627,18 @@ test_that("fmt_txt() is supported", {
   expect_match(xml, "b=\"1\"")
   expect_match(xml, "i=\"1\"")
 })
+
+test_that("number caches hold the values with 15 significant digits", {
+  vals <- c(1e-7, 1e-4, 0.1 + 0.2, 1 / 3, -1.5, 0, 5, 123456.789, 1e15, 1e20, NA)
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(
+    x = data.frame(l = seq_along(vals), v = vals)
+  )
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("line")$add_series(name = "v", data = d, label = "l")
+  xml <- as.character(ch$render())
+  xml <- substring(xml, regexpr("<c:val>", xml, fixed = TRUE))
+  pts <- regmatches(xml, gregexpr("<c:v>[^<]*</c:v>", xml))[[1]]
+  got <- as.numeric(gsub("</?c:v>", "", pts))
+  expect_equal(got, vals[!is.na(vals)], tolerance = 1e-14)
+  expect_false(any(grepl("e", pts, fixed = TRUE)))
+})
