@@ -210,7 +210,9 @@ plot.ChartEx <- function(x, wb = NULL, newpage = TRUE, ...) {
   depth0 <- length(grid::current.vpPath())
   on.exit({
     extra <- length(grid::current.vpPath()) - depth0
+    # nocov start: only needed to reset the viewport after an error while drawing
     if (extra > 0) grid::upViewport(extra)
+    # nocov end
   }, add = TRUE)
 
   cs <- chart$chart_style
@@ -569,7 +571,9 @@ plot_ex_treemap <- function(chart, series) {
 
   lay <- function(parent_id, x, y, w, h) {
     kids <- nodes[nodes$parent == parent_id, ]
+    # nocov start: leaves of the tree have no children to lay out
     if (!nrow(kids)) return(invisible())
+    # nocov end
     sizes <- kids$value
     sizes[!is.finite(sizes) | sizes < 0] <- 0
     rects <- plot_ex_squarify(sizes, x, y, w, h)

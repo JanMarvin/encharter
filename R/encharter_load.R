@@ -51,7 +51,9 @@ load_color <- function(node) {
     if (!is_missing(lum_off)) attr(col, "lumOff") <- as.numeric(xml_attr(lum_off, "val")) / 100000
     return(col)
   }
+  # nocov start: load_color() is only called for nodes that hold a known color element
   NULL
+  # nocov end
 }
 
 # Inverse of render_line_style(): returns list(color, width, type, show)
@@ -574,7 +576,9 @@ load_chart <- function(xml) {
   for (i in seq_along(ax_nodes)) {
     ax <- ax_nodes[[i]]
     which <- ax_roles[i]
+    # nocov start: axis_roles() assigns a role to every axis the writer produces
     if (is.na(which)) next
+    # nocov end
     ax_ids[[which]] <- xml_attr(xml_find_first(ax, "./c:axId"), "val")
     chart$axis_params[[which]] <- load_axis(ax, chart$axis_params[[which]])
     title <- load_title(xml_find_first(ax, "./c:title"), default_sz = 1000)

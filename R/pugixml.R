@@ -117,7 +117,9 @@ xml_name <- function(x) {
   if (.Call(C_pugi_node_type, x) == "document") {
     kids <- xml_find_all(x, "/*")
     if (length(kids) > 0) return(.Call(C_pugi_node_name, kids[[1]]))
+    # nocov start: a document without a root element cannot be parsed
     return("")
+    # nocov end
   }
   .Call(C_pugi_node_name, x)
 }

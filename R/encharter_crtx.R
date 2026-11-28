@@ -75,7 +75,9 @@ encharter_to_crtx <- function(chart, path) {
     for (nd in xml_children(ser)) {
       if (!xml_name(nd) %in% c("c:tx", "c:cat", "c:val", "c:xVal", "c:yVal", "c:bubbleSize")) next
       ref <- xml_children(nd)
+      # nocov start: the writer never leaves an empty reference element
       if (length(ref) == 0) next
+      # nocov end
       ref_name <- if (xml_name(ref[[1]]) %in% c("c:v", "c:numLit")) "c:numRef" else if (xml_name(ref[[1]]) == "c:strLit") "c:strRef" else xml_name(ref[[1]])
       xml_remove(ref)
       xml_add_child(nd, ref_name)

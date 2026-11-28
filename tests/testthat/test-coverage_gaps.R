@@ -243,7 +243,7 @@ test_that("extended charts take legend font colors and rotated titles", {
 
 test_that("pugixml helpers handle bad paths, printing and non-string names", {
   doc <- read_xml("<a><!-- note --><b/></a>")
-  expect_output(print(doc), "<a>")
+  expect_output(print(xml_find_first(doc, "//b")), "<b")
   expect_error(xml_find_all(doc, "//["))
   expect_null(.Call(encharter:::C_pugi_add_child, xml_find_first(doc, "//b"), 1L, -1L))
   expect_type(fmt_txt2("plain"), "character")
@@ -340,4 +340,16 @@ test_that("loaded charts with missing values and point colors are drawn", {
                      gap_ser(2, cat_val(c(2, 3, 1, 4))), gap_ser(3, cat_val(c(3, NA, 2, 5))), ax2, "</c:stockChart>"))
   )
   for (ch in charts) expect_true(gap_plot(ch))
+})
+
+test_that("3D columns with negative values, height percent and no perspective are drawn", {
+  g <- gap_wb()
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    k = c("a", "b", "c"), v = c(3, -4, 2)))
+  d <- openxlsx2::wb_data(wb, sheet = "Data")
+  ch <- ec("bar3DChart")$add_series(name = v, data = d, label = k)$
+    set_3d_options(perspective = 0, h_percent = 80, right_angle_axes = FALSE)
+  expect_true(gap_plot(ch))
+  ch$set_3d_options(h_percent = 80, right_angle_axes = TRUE)
+  expect_true(gap_plot(ch))
 })

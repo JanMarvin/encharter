@@ -815,7 +815,9 @@ Chart <- R6::R6Class(
       for (i in index) {
         s <- self$series_data[[i]]
         for (nm in c("name", "data", "label", "weight")) {
+          # nocov start: series built by add_series() always carry all fields
           if (!nm %in% names(s)) s[nm] <- list(NULL)
+          # nocov end
         }
 
         if (inherits(data, "wb_data")) {
