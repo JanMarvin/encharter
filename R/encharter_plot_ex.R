@@ -289,7 +289,7 @@ plot.ChartEx <- function(x, wb = NULL, newpage = TRUE, ...) {
 # extended chart types; draws gridlines, axes, titles and pushes a viewport
 # with native coordinates 0..n_cat horizontally and the value scale
 # vertically. Returns the value scale.
-plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
+plot_ex_frame <- function(chart, cats, lo, hi) {
   px <- chart$axis_params$x
   py <- chart$axis_params$y
   sc <- plot_scale(lo, hi, py)
@@ -301,7 +301,7 @@ plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
   text_h <- function(gp) grid::convertHeight(grid::grobHeight(grid::textGrob("Xg", gp = gp)), "points", valueOnly = TRUE)
   # extended charts draw axis titles at the chart title size
   left_w <- text_w(labels, y_gp) + 8 + plot_title_height(chart$y_title, 14)
-  right_w <- if (is.null(y2)) 4 else text_w(y2_labels, y_gp) + 8
+  right_w <- 4
   # crowded category labels are staggered over two rows (extended charts
   # do not rotate them)
   rot_x <- if (is.null(px$rotation) || abs(px$rotation) > 90) 0 else -px$rotation
@@ -351,12 +351,6 @@ plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
       grid::grid.lines(x = grid::unit(0, "npc") + grid::unit(c(0, -4), "points"), y = grid::unit(c(ticks[i], ticks[i]), "native"), gp = y_line_gp)
     }
     grid::grid.text(labels[i], x = grid::unit(0, "npc") - grid::unit(6, "points"), y = grid::unit(ticks[i], "native"), just = c("right", "center"), gp = y_gp)
-  }
-  if (!is.null(y2)) {
-    grid::grid.lines(x = grid::unit(1, "npc"), y = grid::unit(c(0, 1), "npc"), gp = y_line_gp)
-    for (i in seq_along(y2)) {
-      grid::grid.text(y2_labels[i], x = grid::unit(1, "npc") + grid::unit(6, "points"), y = grid::unit(y2[i], "npc"), just = c("left", "center"), gp = y_gp)
-    }
   }
   if (!is.null(chart$y_title$text)) {
     grid::grid.text(plot_title_text(chart$y_title), x = grid::unit(0, "npc") - grid::unit(left_w - plot_title_height(chart$y_title, 14) / 2, "points"),

@@ -300,3 +300,44 @@ test_that("plot helpers skip colors in number formats and read ranges", {
   wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(f = factor(c("a", "b")), n = 1:2))
   expect_equal(encharter:::plot_read_ref(wb, "Data!$A$2:$A$3"), c("a", "b"))
 })
+
+gap_lit_na <- function(vals) {
+  keep <- which(!is.na(vals))
+  paste0('<c:numLit><c:ptCount val="', length(vals), '"/>',
+         paste0('<c:pt idx="', keep - 1L, '"><c:v>', vals[keep], "</c:v></c:pt>", collapse = ""),
+         "</c:numLit>")
+}
+
+gap_ser <- function(idx, ..., dpt = "") {
+  paste0('<c:ser><c:idx val="', idx, '"/><c:order val="', idx, '"/>', dpt, ..., "</c:ser>")
+}
+
+gap_dpt <- function(idx, color) {
+  paste0('<c:dPt><c:idx val="', idx, '"/><c:spPr><a:solidFill><a:srgbClr val="', color, '"/></a:solidFill></c:spPr></c:dPt>')
+}
+
+test_that("loaded charts with missing values and point colors are drawn", {
+  v <- c(3, NA, 2, 5)
+  x <- c(1, 2, NA, 4)
+  ax2 <- '<c:axId val="1"/><c:axId val="2"/>'
+  ax3 <- '<c:axId val="1"/><c:axId val="2"/><c:axId val="3"/>'
+  cat_val <- function(vals) paste0("<c:cat>", gap_lit(1:4), "</c:cat><c:val>", gap_lit_na(vals), "</c:val>")
+  charts <- list(
+    gap_chart(paste0('<c:lineChart><c:grouping val="standard"/>', gap_ser(0, cat_val(v)), ax2, "</c:lineChart>")),
+    gap_chart(paste0('<c:line3DChart><c:grouping val="standard"/>', gap_ser(0, cat_val(v)), ax3, "</c:line3DChart>")),
+    gap_chart(paste0('<c:bar3DChart><c:barDir val="col"/><c:grouping val="clustered"/>',
+                     gap_ser(0, cat_val(c(3, 4, 2, 5)), dpt = gap_dpt(1, "FF0000")), ax3, "</c:bar3DChart>")),
+    gap_chart(paste0('<c:pieChart><c:varyColors val="1"/>', gap_ser(0, cat_val(v), dpt = gap_dpt(0, "00FF00")),
+                     "</c:pieChart>")),
+    gap_chart(paste0('<c:pie3DChart><c:varyColors val="1"/>', gap_ser(0, cat_val(c(3, 0, 2, 5))), "</c:pie3DChart>")),
+    gap_chart(paste0('<c:scatterChart><c:scatterStyle val="lineMarker"/>',
+                     gap_ser(0, "<c:xVal>", gap_lit_na(x), "</c:xVal><c:yVal>", gap_lit_na(v), "</c:yVal>"), ax2,
+                     "</c:scatterChart>")),
+    gap_chart(paste0("<c:bubbleChart>", gap_ser(0, "<c:xVal>", gap_lit_na(x), "</c:xVal><c:yVal>", gap_lit_na(v),
+                     "</c:yVal><c:bubbleSize>", gap_lit(c(5, 6, 4, 7)), "</c:bubbleSize>", dpt = gap_dpt(0, "0000FF")),
+                     ax2, "</c:bubbleChart>")),
+    gap_chart(paste0("<c:stockChart>", gap_ser(0, cat_val(c(3, 4, NA, 5))), gap_ser(1, cat_val(c(4, 5, 3, 6))),
+                     gap_ser(2, cat_val(c(2, 3, 1, 4))), gap_ser(3, cat_val(c(3, NA, 2, 5))), ax2, "</c:stockChart>"))
+  )
+  for (ch in charts) expect_true(gap_plot(ch))
+})
