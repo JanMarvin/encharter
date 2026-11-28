@@ -509,14 +509,8 @@ ChartEx <- R6::R6Class(
           # 5. subtotals (CT_Subtotals)
           if (s$type == "waterfall" && !is.null(s$subtotals) && !identical(s$subtotals, FALSE)) {
             sub_node <- xml_add_child(lpr, "cx:subtotals")
-            if (is.numeric(s$subtotals)) {
-              for (idx in s$subtotals) {
-                xml_add_child(sub_node, "cx:idx", val = as.character(idx))
-              }
-            } else {
-              coords <- openxlsx2::dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
-              last_idx <- max(length(coords$row), length(coords$col)) - 1
-              xml_add_child(sub_node, "cx:idx", val = as.character(last_idx))
+            for (idx in s$subtotals) {
+              xml_add_child(sub_node, "cx:idx", val = as.character(idx))
             }
           }
         }
@@ -656,9 +650,6 @@ ChartEx <- R6::R6Class(
       n_have <- if (m[1] < 0) 0L else length(m)
       if (!extend && (n_have < max(slots))) {
         stop("the chart's color style part must contain at least three color entries", call. = FALSE)
-      }
-      if (max(slots) > n_have && !extend) {
-        stop("color cycle has fewer entries than requested", call. = FALSE)
       }
 
       # replace existing slots from the back (keeps offsets valid), then
