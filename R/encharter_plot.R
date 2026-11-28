@@ -2134,6 +2134,7 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
     stop("Only standard charts (class 'Chart') can be plotted.", call. = FALSE)
   }
   if (length(chart$series_data) == 0) stop("The chart has no series.", call. = FALSE)
+  if (!is.null(wb) && !inherits(wb, "wbWorkbook")) stop("'wb' must be a wbWorkbook object.", call. = FALSE)
   plot_set_theme(wb)
   plot_state$text_style <- chart$text_style
   on.exit({
@@ -2145,7 +2146,6 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   if (length(bad)) {
     stop("Chart type not supported by plot(): ", paste(bad, collapse = ", "), call. = FALSE)
   }
-  if (!is.null(wb) && !inherits(wb, "wbWorkbook")) stop("'wb' must be a wbWorkbook object.", call. = FALSE)
 
   series <- plot_collect(chart, wb)
   group_key <- vapply(series, function(s) paste(s$type, s$sec_type), character(1))
