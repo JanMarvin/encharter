@@ -814,12 +814,13 @@ ChartEx <- R6::R6Class(
       if (!is.null(s$font_size)) xml_set_attr(defRPr, "sz", as.character(s$font_size * 100))
       if (!is.null(s$bold)) xml_set_attr(defRPr, "b", if (isTRUE(s$bold)) "1" else "0")
       if (!is.null(s$italic)) xml_set_attr(defRPr, "i", if (isTRUE(s$italic)) "1" else "0")
-      if (!is.null(s$font_color)) private$render_color_core(defRPr, s$font_color, wrap = TRUE)
+      font_color <- s$font_color %||% s$color
+      if (!is.null(font_color)) private$render_color_core(defRPr, font_color, wrap = TRUE)
       endRPr <- xml_add_child(p, "a:endParaRPr")
       if (!is.null(s$font_size)) xml_set_attr(endRPr, "sz", as.character(s$font_size * 100))
       if (!is.null(s$bold)) xml_set_attr(endRPr, "b", if (isTRUE(s$bold)) "1" else "0")
       if (!is.null(s$italic)) xml_set_attr(endRPr, "i", if (isTRUE(s$italic)) "1" else "0")
-      if (!is.null(s$font_color)) private$render_color_core(endRPr, s$font_color, wrap = TRUE)
+      if (!is.null(font_color)) private$render_color_core(endRPr, font_color, wrap = TRUE)
       if (!is.null(s$font_name)) xml_add_child(endRPr, "a:latin", typeface = s$font_name)
     },
 

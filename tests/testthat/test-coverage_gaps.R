@@ -223,3 +223,80 @@ test_that("plots honor tick skips, crossing values and plot area styles", {
   expect_true(gap_plot(ec("scatter")$add_series(name = v, data = g$d, label = w)$
     set_x_axis(minor_tick = "out")$set_y_axis(minor_tick = "out")))
 })
+
+test_that("extended chart references are quoted and checked", {
+  priv <- ec("waterfall")$.__enclos_env__$private
+  expect_null(priv$fix_quote(NULL))
+  expect_equal(priv$fix_quote("Data!B1"), "'Data'!B1")
+  expect_equal(priv$fix_quote("'Data'!B1"), "'Data'!B1")
+  expect_equal(priv$fix_quote("B1"), "B1")
+  expect_false(priv$is_ref(""))
+  expect_false(priv$is_ref(NULL))
+  expect_true(priv$is_ref("'Data'!B1"))
+})
+
+test_that("extended charts take legend font colors and rotated titles", {
+  ce <- ec("waterfall")$add_series(name = "Data!B1", data = "Data!B2:B5", label = "Data!A2:A5")$
+    set_legend_style(color = "FF0000", font_name = "Arial")
+  expect_match(as.character(ce$render(1)), "FF0000", fixed = TRUE)
+})
+
+test_that("pugixml helpers handle bad paths, printing and non-string names", {
+  doc <- read_xml("<a><!-- note --><b/></a>")
+  expect_output(print(doc), "<a>")
+  expect_error(xml_find_all(doc, "//["))
+  expect_null(.Call(encharter:::C_pugi_add_child, xml_find_first(doc, "//b"), 1L, -1L))
+  expect_type(fmt_txt2("plain"), "character")
+})
+
+gap_cx <- function(series) {
+  paste0('<cx:chartSpace xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" ',
+         'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><cx:chartData>',
+         '<cx:data id="0"><cx:numDim type="val"><cx:f>Data!$B$2:$B$5</cx:f></cx:numDim></cx:data></cx:chartData>',
+         "<cx:chart><cx:plotArea><cx:plotAreaRegion>", series, "</cx:plotAreaRegion></cx:plotArea></cx:chart></cx:chartSpace>")
+}
+
+test_that("extended charts load a literal series name and need at least one series", {
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(a = letters[1:4], b = 1:4))
+  wb$add_encharter(dims = "D2:L20", graph = ec("funnel")$
+    add_series(name = "Data!B1", data = "Data!B2:B5", label = "Data!A2:A5"))
+  ch <- encharter:::load_chartex(gap_cx(paste0(
+    '<cx:series layoutId="funnel" uniqueId="{1}"><cx:tx><cx:txData><cx:v>Name</cx:v></cx:txData></cx:tx>',
+    '<cx:dataId val="0"/></cx:series>')), wb, 1)
+  expect_equal(ch$series_data[[1]]$name, "Name")
+  expect_error(encharter:::load_chartex(gap_cx(""), wb, 1), "No series found")
+})
+
+test_that("data points without any formatting are skipped when loading", {
+  bar <- gap_chart(paste0(
+    '<c:barChart><c:barDir val="col"/><c:grouping val="clustered"/><c:ser><c:idx val="0"/><c:order val="0"/>',
+    '<c:dPt><c:idx val="0"/></c:dPt>', "<c:val>", gap_lit(c(3, 4, 2)), "</c:val></c:ser>",
+    '<c:axId val="1"/><c:axId val="2"/></c:barChart>'))
+  expect_length(bar$series_data[[1]]$points, 0L)
+})
+
+test_that("extended charts plot pareto lines, missing name sheets and crowded treemaps", {
+  set.seed(1)
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(
+    k = paste("A rather long category label", 1:30), v = round(runif(30, 1, 100))))
+  f <- tempfile(fileext = ".png")
+  grDevices::png(f, 600, 400)
+  on.exit(grDevices::dev.off(), add = TRUE)
+  pareto <- ec("clusteredColumn")$
+    add_series(name = "Data!$B$1", data = "Data!$B$2:$B$31", label = "Data!$A$2:$A$31", type = "clusteredColumn")$
+    add_series(name = "Data!$B$1", data = "Data!$B$2:$B$31", label = "Data!$A$2:$A$31", type = "paretoLine")
+  expect_no_error(plot(pareto, wb = wb))
+  nosheet <- ec("funnel")$add_series(name = "Gone!$B$1", data = "Data!$B$2:$B$6", label = "Data!$A$2:$A$6")
+  expect_no_error(plot(nosheet, wb = wb))
+  tm <- ec("treemap")$add_series(name = "Data!$B$1", data = "Data!$B$2:$B$31", label = "Data!$A$2:$A$31")$
+    set_data_label_style(show_val = TRUE, show_cat = TRUE)
+  expect_no_error(plot(tm, wb = wb))
+})
+
+test_that("plot helpers skip colors in number formats and read ranges", {
+  expect_equal(encharter:::plot_format(1.5, "[Red]0.0"), "1.5")
+  expect_equal(encharter:::plot_format(1.5, "\"text\""), "text")
+  expect_lte(encharter:::plot_scale(-10, -1)$max, 0)
+  wb <- openxlsx2::wb_workbook()$add_worksheet("Data")$add_data(x = data.frame(f = factor(c("a", "b")), n = 1:2))
+  expect_equal(encharter:::plot_read_ref(wb, "Data!$A$2:$A$3"), c("a", "b"))
+})
