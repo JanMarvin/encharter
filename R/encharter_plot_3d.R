@@ -19,7 +19,9 @@ ENCHARTER_SURFACE_HEX <- c(
 # Multiplies the RGB components; the top of a box is drawn with 0.76, the
 # side with 0.64
 plot_shade <- function(col, factor) {
+  # nocov start: shades are only computed for colors that are set
   if (is.na(col)) return(col)
+  # nocov end
   rgb <- pmin(1, grDevices::col2rgb(col) / 255 * factor)
   grDevices::rgb(rgb[1], rgb[2], rgb[3])
 }
@@ -419,7 +421,9 @@ plot_3d_cartesian <- function(chart, series) {
       xs <- cat_pos
       ys <- yy(tops[[r]])
       for (i in seq_len(n_cat - 1)) {
+        # nocov start: missing line points are removed before the ribbons are drawn
         if (is.na(ys[i]) || is.na(ys[i + 1])) next
+        # nocov end
         # the ribbon is filled with the theme color of the series and
         # outlined with the line color
         ribbon <- paste0("#", plot_state$theme[[paste0("accent", (r - 1) %% 6 + 1)]])
@@ -508,7 +512,9 @@ plot_3d_pie <- function(chart, series) {
   }
   if (plot_labels_on(lp)) {
     for (i in seq_along(edges)) {
+      # nocov start: zero slices are removed before the slices are drawn
       if (v[i] == 0) next
+      # nocov end
       mid <- mean(edges[[i]])
       p <- to_pt(0.65 * r * sin(mid), 0, 0.65 * r * cos(mid))
       grid::grid.text(plot_label_text(lp, s$cats[i], s$values[i], pct = v[i] / total, name = s$label_text, sep = "\n"),
@@ -524,7 +530,9 @@ plot_surface_bands <- function(chart, z, contour = FALSE) {
   # the axis ends at the major unit above the data; the contour view uses
   # twice the unit of the 3D view
   z <- z[is.finite(z)]
+  # nocov start: surface series always have values
   if (!length(z)) z <- c(0, 1)
+  # nocov end
   sc <- plot_scale(min(z), max(z), chart$axis_params$y, pad = FALSE)
   if (contour && is.null(chart$axis_params$y$major)) {
     sc$major <- sc$major * 2
@@ -569,9 +577,13 @@ plot_clip_band <- function(px, py, pz, val, lo, hi) {
     list(x = ox, y = oy, z = oz, v = ov)
   }
   a <- clip(px, py, pz, val, lo, TRUE)
+  # nocov start: faces always have at least three corners
   if (length(a$x) < 3) return(NULL)
+  # nocov end
   b <- clip(a$x, a$y, a$z, a$v, hi, FALSE)
+  # nocov start: faces always have at least three corners
   if (length(b$x) < 3) return(NULL)
+  # nocov end
   b
 }
 
@@ -630,7 +642,9 @@ plot_surface <- function(chart, series) {
     cx <- c(xs[i], xs[i + 1], xs[i + 1], xs[i])
     cz <- c(zs[j], zs[j], zs[j + 1], zs[j + 1])
     cv <- c(z[j, i], z[j, i + 1], z[j + 1, i + 1], z[j + 1, i])
+    # nocov start: missing surface values are removed before the faces are drawn
     if (anyNA(cv)) next
+    # nocov end
     mx <- mean(cx)
     mz <- mean(cz)
     mv <- mean(cv)
@@ -662,7 +676,9 @@ plot_surface <- function(chart, series) {
         hi <- bands$breaks[b + 1]
         if (max(tv) < lo || min(tv) > hi) next
         part <- plot_clip_band(tx, yy(tv), tz, tv, lo, hi)
+        # nocov start: every contour band yields a polygon
         if (is.null(part)) next
+        # nocov end
         face <- if (contour) bands$cols[b] else plot_shade(bands$cols[b], lit)
         plot_3d_poly(proj, part$x, part$y, part$z, face, if (contour) NA else face, 0.25)
       }

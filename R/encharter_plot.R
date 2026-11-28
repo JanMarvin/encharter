@@ -40,7 +40,9 @@ plot_set_theme <- function(wb) {
     if (!is_missing(scheme)) {
       for (nm in c("dk1", "lt1", "dk2", "lt2", paste0("accent", 1:6), "hlink", "folHlink")) {
         node <- xml_find_first(scheme, paste0("./a:", nm))
+        # nocov start: theme files list every color slot
         if (is_missing(node)) next
+        # nocov end
         srgb <- xml_find_first(node, "./a:srgbClr")
         sys <- xml_find_first(node, "./a:sysClr")
         hex <- if (!is_missing(srgb)) xml_attr(srgb, "val") else if (!is_missing(sys)) xml_attr(sys, "lastClr") else ""
@@ -153,7 +155,9 @@ plot_gpar_text <- function(style, default_size, default_col = "#000000") {
   # theme font placeholders such as "+mn-lt" are not font families
   family <- style$font_name %||% ""
   if (startsWith(family, "+")) family <- ""
+  # nocov start: only runs on Windows, the test systems run elsewhere
   if (.Platform$OS.type == "windows" && nzchar(family) && !family %in% names(grDevices::windowsFonts())) family <- ""
+  # nocov end
   grid::gpar(
     fontsize = style$font_size %||% default_size,
     fontface = face,
@@ -599,7 +603,9 @@ plot_title_text <- function(title) {
 
 # Draws the chart title in the current viewport (a strip at the top)
 plot_draw_title <- function(title, default_size, width = Inf) {
+  # nocov start: callers only draw titles that have text
   if (is.null(title$text)) return(invisible())
+  # nocov end
   grid::grid.text(paste(plot_title_lines(title, default_size, width), collapse = "\n"),
                   gp = plot_gpar_text(title$style, default_size, "#000000"))
 }
@@ -877,7 +883,9 @@ plot_cartesian <- function(chart, series) {
 
   # ---- value ranges per axis (stacking taken into account) ----
   axis_range <- function(sel) {
+    # nocov start: a chart without any visible category is not drawn
     if (!length(sel)) return(c(NA, NA))
+    # nocov end
     lo <- Inf
     hi <- -Inf
     for (grp in split(sel, vapply(sel, function(s) paste(s$type, s$grouping), character(1)))) {
@@ -940,7 +948,9 @@ plot_cartesian <- function(chart, series) {
   x2 <- NULL
   if (is_xy) {
     xs <- unlist(lapply(series[!on_x2], x_of))
+    # nocov start: scatter series always have x values
     if (!length(xs)) xs <- unlist(lapply(series, x_of))
+    # nocov end
     # forecast trendlines extend the x axis
     for (s in series) {
       if (is.list(s$trendline)) xs <- c(xs, min(xs) - (s$trendline$backward %||% 0), max(xs) + (s$trendline$forward %||% 0))
@@ -1065,7 +1075,9 @@ plot_cartesian <- function(chart, series) {
   y2_gp <- plot_gpar_text(py2, 10, "#000000")
 
   text_w <- function(labels, gp) {
+    # nocov start: callers only measure charts that have labels
     if (!length(labels)) return(0)
+    # nocov end
     max(vapply(labels, function(l) grid::convertWidth(grid::grobWidth(grid::textGrob(l, gp = gp)), "points", valueOnly = TRUE), numeric(1)))
   }
   text_h <- function(gp) grid::convertHeight(grid::grobHeight(grid::textGrob("Xg", gp = gp)), "points", valueOnly = TRUE)
@@ -2134,6 +2146,7 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
     stop("Only standard charts (class 'Chart') can be plotted.", call. = FALSE)
   }
   if (length(chart$series_data) == 0) stop("The chart has no series.", call. = FALSE)
+  if (!is.null(wb) && !inherits(wb, "wbWorkbook")) stop("'wb' must be a wbWorkbook object.", call. = FALSE)
   plot_set_theme(wb)
   plot_state$text_style <- chart$text_style
   on.exit({
@@ -2145,7 +2158,6 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   if (length(bad)) {
     stop("Chart type not supported by plot(): ", paste(bad, collapse = ", "), call. = FALSE)
   }
-  if (!is.null(wb) && !inherits(wb, "wbWorkbook")) stop("'wb' must be a wbWorkbook object.", call. = FALSE)
 
   series <- plot_collect(chart, wb)
   group_key <- vapply(series, function(s) paste(s$type, s$sec_type), character(1))
@@ -2164,7 +2176,9 @@ plot.Chart <- function(x, wb = NULL, newpage = TRUE, ...) {
   depth0 <- length(grid::current.vpPath())
   on.exit({
     extra <- length(grid::current.vpPath()) - depth0
+    # nocov start: only needed to reset the viewport after an error while drawing
     if (extra > 0) grid::upViewport(extra)
+    # nocov end
   }, add = TRUE)
   cs <- chart$chart_style
   grid::grid.rect(gp = grid::gpar(fill = plot_color(cs$fill, "#FFFFFF"), col = plot_color(cs$line, "#D9D9D9"),

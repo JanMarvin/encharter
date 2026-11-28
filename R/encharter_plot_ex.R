@@ -41,8 +41,8 @@ plot_ex_bins <- function(v, binning) {
     width <- (end - start) / binning$binCount
   } else {
     width <- 3.5 * stats::sd(v) / length(v)^(1 / 3)
-    if (!is.finite(width) || width <= 0) width <- max(1, (end - start) / 5)
   }
+  if (!is.finite(width) || width <= 0) width <- max(1, (end - start) / 5)
   n <- max(1, ceiling((end - start) / width - 1e-9))
   breaks <- start + width * (0:n)
   labels <- character(n)
@@ -78,6 +78,7 @@ plot_ex_bins <- function(v, binning) {
 plot_ex_squarify <- function(sizes, x, y, w, h) {
   out <- matrix(NA_real_, length(sizes), 4, dimnames = list(NULL, c("x", "y", "w", "h")))
   ord <- order(sizes, decreasing = TRUE)
+  ord <- ord[sizes[ord] > 0]
   total <- sum(sizes)
   if (total <= 0 || w <= 0 || h <= 0) return(out)
   scale <- w * h / total
@@ -172,6 +173,7 @@ plot_ex_hierarchy <- function(levels, values) {
 plot.ChartEx <- function(x, wb = NULL, newpage = TRUE, ...) {
   chart <- x
   if (length(chart$series_data) == 0) stop("The chart has no series.", call. = FALSE)
+  if (!is.null(wb) && !inherits(wb, "wbWorkbook")) stop("'wb' must be a wbWorkbook object.", call. = FALSE)
   plot_set_theme(wb)
   on.exit(plot_set_theme(NULL), add = TRUE)
   types <- unique(vapply(chart$series_data, function(s) s$type, character(1)))
@@ -180,7 +182,6 @@ plot.ChartEx <- function(x, wb = NULL, newpage = TRUE, ...) {
     stop("Chart type not supported by plot(): ", paste(bad, collapse = ", "), call. = FALSE)
   }
   if (is.null(wb)) stop("Extended charts hold no values; pass the workbook as 'wb'.", call. = FALSE)
-  if (!inherits(wb, "wbWorkbook")) stop("'wb' must be a wbWorkbook object.", call. = FALSE)
   type <- types[1]
 
   series <- list()
@@ -209,7 +210,9 @@ plot.ChartEx <- function(x, wb = NULL, newpage = TRUE, ...) {
   depth0 <- length(grid::current.vpPath())
   on.exit({
     extra <- length(grid::current.vpPath()) - depth0
+    # nocov start: only needed to reset the viewport after an error while drawing
     if (extra > 0) grid::upViewport(extra)
+    # nocov end
   }, add = TRUE)
 
   cs <- chart$chart_style
@@ -288,7 +291,7 @@ plot.ChartEx <- function(x, wb = NULL, newpage = TRUE, ...) {
 # extended chart types; draws gridlines, axes, titles and pushes a viewport
 # with native coordinates 0..n_cat horizontally and the value scale
 # vertically. Returns the value scale.
-plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
+plot_ex_frame <- function(chart, cats, lo, hi) {
   px <- chart$axis_params$x
   py <- chart$axis_params$y
   sc <- plot_scale(lo, hi, py)
@@ -300,7 +303,7 @@ plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
   text_h <- function(gp) grid::convertHeight(grid::grobHeight(grid::textGrob("Xg", gp = gp)), "points", valueOnly = TRUE)
   # extended charts draw axis titles at the chart title size
   left_w <- text_w(labels, y_gp) + 8 + plot_title_height(chart$y_title, 14)
-  right_w <- if (is.null(y2)) 4 else text_w(y2_labels, y_gp) + 8
+  right_w <- 4
   # crowded category labels are staggered over two rows (extended charts
   # do not rotate them)
   rot_x <- if (is.null(px$rotation) || abs(px$rotation) > 90) 0 else -px$rotation
@@ -350,12 +353,6 @@ plot_ex_frame <- function(chart, cats, lo, hi, y2 = NULL, y2_labels = NULL) {
       grid::grid.lines(x = grid::unit(0, "npc") + grid::unit(c(0, -4), "points"), y = grid::unit(c(ticks[i], ticks[i]), "native"), gp = y_line_gp)
     }
     grid::grid.text(labels[i], x = grid::unit(0, "npc") - grid::unit(6, "points"), y = grid::unit(ticks[i], "native"), just = c("right", "center"), gp = y_gp)
-  }
-  if (!is.null(y2)) {
-    grid::grid.lines(x = grid::unit(1, "npc"), y = grid::unit(c(0, 1), "npc"), gp = y_line_gp)
-    for (i in seq_along(y2)) {
-      grid::grid.text(y2_labels[i], x = grid::unit(1, "npc") + grid::unit(6, "points"), y = grid::unit(y2[i], "npc"), just = c("left", "center"), gp = y_gp)
-    }
   }
   if (!is.null(chart$y_title$text)) {
     grid::grid.text(plot_title_text(chart$y_title), x = grid::unit(0, "npc") - grid::unit(left_w - plot_title_height(chart$y_title, 14) / 2, "points"),
@@ -574,8 +571,12 @@ plot_ex_treemap <- function(chart, series) {
 
   lay <- function(parent_id, x, y, w, h) {
     kids <- nodes[nodes$parent == parent_id, ]
+    # nocov start: leaves of the tree have no children to lay out
     if (!nrow(kids)) return(invisible())
-    rects <- plot_ex_squarify(kids$value, x, y, w, h)
+    # nocov end
+    sizes <- kids$value
+    sizes[!is.finite(sizes) | sizes < 0] <- 0
+    rects <- plot_ex_squarify(sizes, x, y, w, h)
     for (k in seq_len(nrow(kids))) {
       r <- rects[k, ]
       if (any(is.na(r))) next

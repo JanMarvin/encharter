@@ -509,14 +509,8 @@ ChartEx <- R6::R6Class(
           # 5. subtotals (CT_Subtotals)
           if (s$type == "waterfall" && !is.null(s$subtotals) && !identical(s$subtotals, FALSE)) {
             sub_node <- xml_add_child(lpr, "cx:subtotals")
-            if (is.numeric(s$subtotals)) {
-              for (idx in s$subtotals) {
-                xml_add_child(sub_node, "cx:idx", val = as.character(idx))
-              }
-            } else {
-              coords <- openxlsx2::dims_to_rowcol(gsub(".*!", "", s$data), as_integer = TRUE)
-              last_idx <- max(length(coords$row), length(coords$col)) - 1
-              xml_add_child(sub_node, "cx:idx", val = as.character(last_idx))
+            for (idx in s$subtotals) {
+              xml_add_child(sub_node, "cx:idx", val = as.character(idx))
             }
           }
         }
@@ -656,9 +650,6 @@ ChartEx <- R6::R6Class(
       n_have <- if (m[1] < 0) 0L else length(m)
       if (!extend && (n_have < max(slots))) {
         stop("the chart's color style part must contain at least three color entries", call. = FALSE)
-      }
-      if (max(slots) > n_have && !extend) {
-        stop("color cycle has fewer entries than requested", call. = FALSE)
       }
 
       # replace existing slots from the back (keeps offsets valid), then
@@ -823,12 +814,13 @@ ChartEx <- R6::R6Class(
       if (!is.null(s$font_size)) xml_set_attr(defRPr, "sz", as.character(s$font_size * 100))
       if (!is.null(s$bold)) xml_set_attr(defRPr, "b", if (isTRUE(s$bold)) "1" else "0")
       if (!is.null(s$italic)) xml_set_attr(defRPr, "i", if (isTRUE(s$italic)) "1" else "0")
-      if (!is.null(s$font_color)) private$render_color_core(defRPr, s$font_color, wrap = TRUE)
+      font_color <- s$font_color %||% s$color
+      if (!is.null(font_color)) private$render_color_core(defRPr, font_color, wrap = TRUE)
       endRPr <- xml_add_child(p, "a:endParaRPr")
       if (!is.null(s$font_size)) xml_set_attr(endRPr, "sz", as.character(s$font_size * 100))
       if (!is.null(s$bold)) xml_set_attr(endRPr, "b", if (isTRUE(s$bold)) "1" else "0")
       if (!is.null(s$italic)) xml_set_attr(endRPr, "i", if (isTRUE(s$italic)) "1" else "0")
-      if (!is.null(s$font_color)) private$render_color_core(endRPr, s$font_color, wrap = TRUE)
+      if (!is.null(font_color)) private$render_color_core(endRPr, font_color, wrap = TRUE)
       if (!is.null(s$font_name)) xml_add_child(endRPr, "a:latin", typeface = s$font_name)
     },
 
